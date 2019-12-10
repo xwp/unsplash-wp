@@ -17,7 +17,7 @@
 
 		npm install
 
-	_running the `npm` commands locally requires PHP 7.2+ be installed on your machine_
+	_running the `npm` commands locally requires PHP 7.2.5+ be installed on your machine_
 
 3. If you need a WordPress development environment, start one using [Vagrant](https://www.vagrantup.com/) and [VirtualBox](https://www.virtualbox.org/), or [Docker](https://docs.docker.com/install/):
 
