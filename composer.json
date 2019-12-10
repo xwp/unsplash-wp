@@ -1,0 +1,50 @@
+{
+  "name": "xwp/unsplash-wp",
+  "description": "Unsplash for WordPress.",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "composer/installers": "^1.7"
+  },
+  "require-dev": {
+    "dealerdirect/phpcodesniffer-composer-installer": "0.5.0",
+    "10up/wp_mock": "0.4.2",
+    "mockery/mockery": "1.3.0",
+    "php-coveralls/php-coveralls": "2.2.0",
+    "phpcompatibility/phpcompatibility-wp": "2.1.0",
+    "phpunit/phpunit": "8.5.0",
+    "wp-coding-standards/wpcs": "2.2.0",
+    "wpsh/local": "0.2.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "XWP\\Unsplash\\": "php/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "XWP\\Unsplash\\": "tests/php/"
+    }
+  },
+  "scripts": {
+    "lint": [
+      "@composer validate --strict",
+      "phpcs ."
+    ],
+    "test": [
+      "phpunit"
+    ],
+    "coverage": [
+      "php-coveralls --verbose"
+    ],
+    "build": [
+      "composer install --no-dev --prefer-dist --optimize-autoloader --no-scripts"
+    ]
+  },
+  "config": {
+    "sort-packages": true,
+    "platform": {
+      "php": "7.3"
+    }
+  }
+}
