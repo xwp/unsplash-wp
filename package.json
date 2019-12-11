@@ -18,6 +18,7 @@
     "build": "wp-scripts build",
     "lint": "npm-run-all --parallel lint:*",
     "lint:js": "eslint js/src",
+    "lint:js:fix": "eslint js/src --fix",
     "lint:php": "composer lint",
     "test": "npm-run-all --parallel test:*",
     "test:php": "composer test -- --no-coverage",

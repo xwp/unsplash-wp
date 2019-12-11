@@ -48,7 +48,7 @@ class Router {
 			'unsplash-js',
 			$this->plugin->asset_url( 'js/dist/editor.js' ),
 			[
-				'jquery', 'media-views'
+				'jquery', 'media-views','lodash',
 			],
 			$this->plugin->asset_version()
 		);
