@@ -34,7 +34,8 @@ class Router {
 	 * @return void
 	 */
 	public function init() {
-		add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_editor_assets' ] );
+		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_script' ] );
+		add_action( 'print_media_templates', [ $this, 'print_media_templates' ] );
 	}
 
 	/**
@@ -42,16 +43,32 @@ class Router {
 	 *
 	 * @return void
 	 */
-	public function enqueue_editor_assets() {
+	public function enqueue_script() {
 		wp_enqueue_script(
 			'unsplash-js',
 			$this->plugin->asset_url( 'js/dist/editor.js' ),
 			[
-				'lodash',
-				'react',
-				'wp-block-editor',
+				'jquery', 'media-views'
 			],
 			$this->plugin->asset_version()
 		);
+
+		wp_localize_script(
+			'unsplash-js',
+			'unsplashSettings',
+			[
+				'tabTitle' => __( 'Unsplash', 'unsplash' ),
+			]
+		);
 	}
+
+	public function print_media_templates(){
+		?>
+		<script type="text/html" id="tmpl-unsplash">
+			<h2><?php _e( 'Hello there' ); ?></h2>
+		</script>
+		<?php
+	}
+
+
 }
