@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "64db65631944d2d7bdaefadb7bd246fb",
+    "content-hash": "389e7ea8df697b3aa905a115744329cb",
     "packages": [
         {
             "name": "composer/installers",
@@ -3097,38 +3097,17 @@
                 "wordpress"
             ],
             "time": "2019-11-11T12:34:03+00:00"
-        },
-        {
-            "name": "wpsh/local",
-            "version": "0.2.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/wpsh/wpsh-local.git",
-                "reference": "17338432ed06386273a1ee4db8c8467aa8feab17"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/wpsh/wpsh-local/zipball/17338432ed06386273a1ee4db8c8467aa8feab17",
-                "reference": "17338432ed06386273a1ee4db8c8467aa8feab17",
-                "shasum": ""
-            },
-            "type": "library",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "A Docker Compose development environment for any project.",
-            "time": "2019-06-12T10:54:32+00:00"
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": [],
-    "prefer-stable": false,
+    "prefer-stable": true,
     "prefer-lowest": false,
-    "platform": [],
-    "platform-dev": [],
-    "platform-overrides": {
-        "php": "7.3"
+    "platform": {
+        "php": ">=5.6"
+    },
+    "platform-dev": {
+        "php": ">=7.2.5"
     }
 }

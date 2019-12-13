@@ -6,44 +6,56 @@
 ## Requirements
 
 - WordPress 5.0+ or the [Gutenberg Plugin](https://wordpress.org/plugins/gutenberg/).
-- [Composer](https://getcomposer.org) and [Node.js](https://nodejs.org) for dependency management.
-- [Vagrant](https://www.vagrantup.com) and [VirtualBox](https://www.virtualbox.org), or [Docker](https://docs.docker.com/install/), for a local development environment.
+- PHP 7.2.5 or greater for development and 5.6 or greater for production, [Composer](https://getcomposer.org) and [Node.js](https://nodejs.org) for dependency management.
+- [Docker](https://docs.docker.com/install/) for a local development environment.
+
+We suggest using a software package manager for installing the development dependencies such as [Homebrew](https://brew.sh) on MacOS:
+
+	brew install php composer node docker docker-compose
+
+or [Chocolatey](https://chocolatey.org) for Windows:
+
+	choco install php composer node nodejs docker-compose
 
 ## Development
 
 1. Clone the plugin repository.
 
+		git clone git@github.com:xwp/unsplash-wp.git
+
 2. Setup the development environment and tools using [Node.js](https://nodejs.org) and [Composer](https://getcomposer.org):
 
 		npm install
 
-	_running the `npm` commands locally requires PHP 7.2.5+ be installed on your machine_
+	_Note that both Node.js and PHP 7.2.5 or greater are required on your computer for running the `npm` scripts. Use `npm run docker -- npm install --unsafe-perm` to run the installer inside a Docker container if you don't have the required version of PHP installed locally._
 
-3. If you need a WordPress development environment, start one using [Vagrant](https://www.vagrantup.com/) and [VirtualBox](https://www.virtualbox.org/), or [Docker](https://docs.docker.com/install/):
+## Development Environment
 
-	**These steps are optional, and the plugin will still run in a typical WordPress development environment.**
+This repository includes a WordPress development environment based on [Docker](https://docs.docker.com/install/) that can be run on your computer.
 
-		vagrant up
+To use the Docker based environment with the Docker engine running on your host, run:
 
-	which will be available at [unsplash-wp.local](http://unsplash-wp.local) after provisioning (username: `admin`, password: `password`).
+	docker-compose up
 
-	Alternatively, run it on your local Docker host:
+which will make it available at [localhost](http://localhost). Ensure that no other Docker containers or services are using port 80 or 3306 on your machine. 
 
-		docker-compose up -d
+Use the included wrapper command for running scripts inside the Docker container:
 
-	which will make it available at [localhost](http://localhost)  (username: `admin`, password: `password`).
+	npm run docker -- npm run test:php
 
-	To run `npm` inside the Vagrant environment you can use the `npm` script that will `ssh` into the box and run a single command like so:
-    	
-		npm run vagrant -- npm run test:php
-	
-	To run the same command directly with your Docker host:
+where `npm run test:php` is any of the scripts you would like to run.
 
-		npm run docker -- npm run test:php
+Visit [localhost:8025](http://localhost:8025) to check all emails sent by WordPress.
+
+Add the following entry to your hosts file if you want to map `localhost` to a domain like [unsplash-wp.local](http://unsplash-wp.local).
+
+	127.0.0.1 unsplash-wp.local
 
 ### Scripts
 
 We use `npm` as the canonical task runner for the project. Some of the PHP related scripts are defined in `composer.json`.
+
+All of these commands can be run inside the Docker by prefixing the scripts with `npm run docker --`.
 
 - `npm run build` to build the plugin JS and CSS assets. Use `npm run dev` to watch and re-build as you work.
 
