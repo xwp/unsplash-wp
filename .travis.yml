@@ -11,9 +11,10 @@ install:
 
 script:
   - npm run lint
-  - npm run docker -- npm run test:php:coverage:unit
+  - npm run docker -- npm run test:php:coverage
 
 after_success:
+  - npm run coverage:merge:php
   - npm run coverage
 
 notifications:

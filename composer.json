@@ -46,7 +46,7 @@
       "php-coveralls --verbose"
     ],
     "coverage-merge": [
-      "phpunit-merger coverage tests/reports --html=tests/reports/html tests/reports/clover.xml"
+      "phpunit-merger coverage tests/reports/php --html=tests/reports/html tests/reports/clover.xml"
     ],
     "build": [
       "composer install --no-dev --prefer-dist --optimize-autoloader --no-scripts"
