@@ -16,13 +16,13 @@ services:
       MYSQL_ROOT_PASSWORD: password
 
   wordpress:
-    build: ./scripts/docker/wordpress
+    build: ./data/wordpress
     depends_on:
       - mysql
     ports:
       - 80:80
     volumes:
-      - ./data/wordpress:/var/www/html
+      - ./data/wordpress/html:/var/www/html
       - .:/var/www/html/wp-content/plugins/unsplash-wp
     restart: always
     environment:
