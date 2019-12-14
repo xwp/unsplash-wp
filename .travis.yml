@@ -17,7 +17,8 @@ script:
 
 after_success:
   - npm run coverage:merge:php
-  - npm run coverage
+  - sleep 5
+  - npm run coverage:php
 
 notifications:
   email: false
