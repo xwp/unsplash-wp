@@ -1,18 +1,17 @@
-dist: xenial
-
-language:
-  - php
-  - node_js
+language: php
 
 php:
   - "7.3"
+
+services:
+  - docker
 
 install:
   - npm install
 
 script:
   - npm run lint
-  - npm run test:php:coverage
+  - npm run docker -- composer test -- -c phpunit.xml --coverage-clover tests/reports/clover.xml
 
 after_success:
   - npm run coverage
