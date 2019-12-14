@@ -8,8 +8,7 @@ services:
 
 install:
   - npm install
-  - docker-compose up -d
-  - sleep 10
+  - docker-compose up -d && sleep 10
 
 script:
   - npm run lint
@@ -17,7 +16,6 @@ script:
 
 after_success:
   - npm run coverage:merge:php
-  - sleep 5
   - npm run coverage:php
 
 notifications:
