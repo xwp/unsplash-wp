@@ -43,10 +43,13 @@ if ( empty( $_plugin_files ) ) {
 
 unset( $_plugins, $_plugin_candidate, $_plugin_file_candidate, $_plugin_file_src );
 
+/**
+ * Loads the plugins for testing.
+ */
 function unit_test_load_plugin_file() {
 	global $_plugin_files;
 
-	// Load the plugins
+	// Load the plugins.
 	foreach ( $_plugin_files as $file ) {
 		require_once "$file";
 	}

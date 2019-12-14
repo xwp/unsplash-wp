@@ -11,7 +11,7 @@ install:
 
 script:
   - npm run lint
-  - npm run docker -- composer test -- -c phpunit.xml --coverage-clover tests/reports/clover.xml
+  - npm run docker -- npm run test:php:coverage:unit
 
 after_success:
   - npm run coverage
