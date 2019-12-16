@@ -16,7 +16,7 @@ script:
 
 after_success:
   - npm run coverage:merge:php
-  - vendor/bin/php-coveralls --verbose --root_dir $TRAVIS_BUILD_DIR
+  - vendor/bin/php-coveralls --verbose --root_dir /home/travis/build/xwp/unsplash-wp
 
 notifications:
   email: false
