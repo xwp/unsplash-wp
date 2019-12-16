@@ -1,3 +1,4 @@
 coverage_clover: tests/reports/clover.xml
 json_path: tests/reports/coveralls-upload.json
 service_name: travis-pro
+src_dir: ./
