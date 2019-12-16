@@ -15,8 +15,8 @@ script:
   - npm run docker -- npm run test:php:coverage
 
 after_success:
-  - npm run coverage:merge:php
-  - vendor/bin/php-coveralls --verbose --root_dir /home/travis/build/xwp/unsplash-wp
+  - npm run docker -- npm run coverage:merge:php
+  - npm run docker -- npm run coverage:php
 
 notifications:
   email: false
