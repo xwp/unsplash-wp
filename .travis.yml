@@ -16,7 +16,7 @@ script:
 
 after_success:
   - npm run docker -- npm run coverage:merge:php
-  - npm run docker -- npm run coverage:php
+  - docker-compose run -e COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN --workdir=/var/www/html/wp-content/plugins/unsplash-wp wordpress -- composer coverage
 
 notifications:
   email: false
