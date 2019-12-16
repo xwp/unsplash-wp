@@ -16,7 +16,7 @@ script:
 
 after_success:
   - npm run coverage:merge:php
-  - npm run coverage:php
+  - npm run coverage:php -- -r $TRAVIS_BUILD_DIR
 
 notifications:
   email: false
