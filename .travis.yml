@@ -17,7 +17,7 @@ script:
 after_success:
   - npm run docker -- npm run coverage:merge:php
   - DOCKER_BUILD_DIR=/var/www/html/wp-content/plugins/unsplash-wp
-  - sudo find tests/reports/php -type f -exec sed -i "s#$DOCKER_BUILD_DIR#$TRAVIS_BUILD_DIR#g" {} \;
+  - sudo find tests/reports -type f -exec sed -i "s#$DOCKER_BUILD_DIR#$TRAVIS_BUILD_DIR#g" {} \;
   - npm run coverage:php
 
 notifications:
