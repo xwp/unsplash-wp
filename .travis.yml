@@ -15,8 +15,10 @@ script:
   - npm run docker -- npm run test:php:coverage
 
 after_success:
-  - npm run docker -- npm run coverage:merge:php
-  - docker-compose run -e COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN --workdir=/var/www/html/wp-content/plugins/unsplash-wp wordpress -- composer coverage
+  - DOCKER_BUILD_DIR=/var/www/html/wp-content/plugins/unsplash-wp
+  - find tests/reports/php -type f -exec sed -i "s#$DOCKER_BUILD_DIR#$TRAVIS_BUILD_DIR#g" {} \;
+  - npm run coverage:merge:php
+  - npm run coverage:php
 
 notifications:
   email: false
