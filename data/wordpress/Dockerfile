@@ -3,7 +3,7 @@ FROM wordpress:php7.3-apache
 # Development tooling dependencies
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
-		bash less default-mysql-client git zip unzip \
+		bash less default-mysql-client git subversion zip unzip \
 		nodejs npm curl \
 		msmtp \
 	&& npm install --global npm@latest \

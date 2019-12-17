@@ -1,21 +1,24 @@
-dist: xenial
-
-language:
-  - php
-  - node_js
+language: php
 
 php:
   - "7.3"
 
+services:
+  - docker
+
 install:
   - npm install
+  - docker-compose up -d && sleep 10
 
 script:
   - npm run lint
-  - npm run test:php:coverage
+  - npm run docker -- npm run test:php:coverage
 
 after_success:
-  - npm run coverage
+  - DOCKER_BUILD_DIR=/var/www/html/wp-content/plugins/unsplash-wp
+  - sudo find tests/reports/php -type f -exec sed -i "s#$DOCKER_BUILD_DIR#$TRAVIS_BUILD_DIR#g" {} \;
+  - npm run coverage:merge:php
+  - npm run coverage:php
 
 notifications:
   email: false

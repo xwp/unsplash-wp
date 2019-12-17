@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
-<ruleset name="Unsplash Coding Standards">
+<ruleset name="Unsplash for WordPress">
 	<arg name="extensions" value="php" />
 	<arg name="colors" />
+	<arg name="parallel" value="16" />
 	<arg value="s" /><!-- Show sniff codes in all reports -->
 
 	<rule ref="WordPress-Core">
@@ -16,6 +17,8 @@
 
 	<file>.</file>
 
-	<exclude-pattern>/node_modules/</exclude-pattern>
-	<exclude-pattern>/vendor/</exclude-pattern>
+	<exclude-pattern>*/data/*</exclude-pattern>
+	<exclude-pattern>*/node_modules/*</exclude-pattern>
+	<exclude-pattern>*/tests/reports/*</exclude-pattern>
+	<exclude-pattern>*/vendor/*</exclude-pattern>
 </ruleset>

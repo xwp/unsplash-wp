@@ -6,6 +6,7 @@ services:
     image: mysql:5
     volumes:
       - ./data/mysql:/var/lib/mysql
+      - ./tests/phpunit/wptests.sql:/docker-entrypoint-initdb.d/wptests.sql
     restart: always
     ports:
       - 3306:3306
