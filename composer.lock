@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a970d164a5e17af423a49a8a1f04f270",
+    "content-hash": "4843eac0653f81b4ff91ad947442cdfb",
     "packages": [
         {
             "name": "composer/installers",
@@ -687,6 +687,73 @@
                 "object graph"
             ],
             "time": "2019-12-15T19:12:40+00:00"
+        },
+        {
+            "name": "nimut/phpunit-merger",
+            "version": "0.3.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Nimut/phpunit-merger.git",
+                "reference": "7f24d3a138b32876ecdc88bc665c90ba453f19e3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Nimut/phpunit-merger/zipball/7f24d3a138b32876ecdc88bc665c90ba453f19e3",
+                "reference": "7f24d3a138b32876ecdc88bc665c90ba453f19e3",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
+                "ext-json": "*",
+                "ext-simplexml": "*",
+                "php": ">=7.0.8 < 7.5",
+                "phpunit/php-code-coverage": "^5.0 || ^6.0 || ^7.0",
+                "symfony/console": "^3.0 || ^4.0",
+                "symfony/finder": "^3.0 || ^4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6.0 || ^7.0 || ^8.0",
+                "symfony/filesystem": "^3.4"
+            },
+            "suggest": {
+                "friendsofphp/php-cs-fixer": "Tool to automatically fix PHP coding standards issues"
+            },
+            "bin": [
+                "bin/phpunit-merger"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Nimut\\PhpunitMerger\\": "src/PhpunitMerger/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "authors": [
+                {
+                    "name": "Nicole Cordes",
+                    "email": "typo3@cordes.co",
+                    "homepage": "https://www.biz-design.biz",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Helmut Hummel",
+                    "email": "info@helhum.io",
+                    "homepage": "https://helhum.io",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Merge multiple PHPUnit reports into one file",
+            "homepage": "https://github.com/Nimut/phpunit-merger",
+            "keywords": [
+                "TYPO3 CMS",
+                "coverage",
+                "phpunit",
+                "sonarqube"
+            ],
+            "time": "2019-12-06T15:27:05+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -1499,58 +1566,6 @@
             "time": "2019-09-17T06:23:10+00:00"
         },
         {
-            "name": "phpunit/phpcov",
-            "version": "5.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/sebastianbergmann/phpcov.git",
-                "reference": "72fb974e6fe9b39d7e0b0d44061d2ba4c49ee0b8"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpcov/zipball/72fb974e6fe9b39d7e0b0d44061d2ba4c49ee0b8",
-                "reference": "72fb974e6fe9b39d7e0b0d44061d2ba4c49ee0b8",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.1",
-                "phpunit/php-code-coverage": "^6.0",
-                "phpunit/phpunit": "^7.0",
-                "sebastian/diff": "^3.0",
-                "sebastian/finder-facade": "^1.1",
-                "sebastian/version": "^2.0",
-                "symfony/console": "^3.0 || ^4.0"
-            },
-            "bin": [
-                "phpcov"
-            ],
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "5.0-dev"
-                }
-            },
-            "autoload": {
-                "classmap": [
-                    "src/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
-                }
-            ],
-            "description": "CLI frontend for php-code-coverage",
-            "homepage": "https://github.com/sebastianbergmann/phpcov",
-            "time": "2018-02-04T10:18:50+00:00"
-        },
-        {
             "name": "phpunit/phpunit",
             "version": "7.5.18",
             "source": {
@@ -2104,45 +2119,6 @@
                 "exporter"
             ],
             "time": "2019-09-14T09:02:43+00:00"
-        },
-        {
-            "name": "sebastian/finder-facade",
-            "version": "1.2.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/sebastianbergmann/finder-facade.git",
-                "reference": "4a3174709c2dc565fe5fb26fcf827f6a1fc7b09f"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/finder-facade/zipball/4a3174709c2dc565fe5fb26fcf827f6a1fc7b09f",
-                "reference": "4a3174709c2dc565fe5fb26fcf827f6a1fc7b09f",
-                "shasum": ""
-            },
-            "require": {
-                "symfony/finder": "~2.3|~3.0|~4.0",
-                "theseer/fdomdocument": "~1.3"
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "src/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
-                }
-            ],
-            "description": "FinderFacade is a convenience wrapper for Symfony's Finder component.",
-            "homepage": "https://github.com/sebastianbergmann/finder-facade",
-            "time": "2017-11-18T17:31:49+00:00"
         },
         {
             "name": "sebastian/global-state",
@@ -3104,46 +3080,6 @@
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
             "time": "2019-11-18T17:27:11+00:00"
-        },
-        {
-            "name": "theseer/fdomdocument",
-            "version": "1.6.6",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/theseer/fDOMDocument.git",
-                "reference": "6e8203e40a32a9c770bcb62fe37e68b948da6dca"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/theseer/fDOMDocument/zipball/6e8203e40a32a9c770bcb62fe37e68b948da6dca",
-                "reference": "6e8203e40a32a9c770bcb62fe37e68b948da6dca",
-                "shasum": ""
-            },
-            "require": {
-                "ext-dom": "*",
-                "lib-libxml": "*",
-                "php": ">=5.3.3"
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "src/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Arne Blankerts",
-                    "email": "arne@blankerts.de",
-                    "role": "lead"
-                }
-            ],
-            "description": "The classes contained within this repository extend the standard DOM to use exceptions at all occasions of errors instead of PHP warnings or notices. They also add various custom methods and shortcuts for convenience and to simplify the usage of DOM.",
-            "homepage": "https://github.com/theseer/fDOMDocument",
-            "time": "2017-06-30T11:53:12+00:00"
         },
         {
             "name": "theseer/tokenizer",

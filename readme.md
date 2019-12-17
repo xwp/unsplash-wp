@@ -55,7 +55,9 @@ Add the following entry to your hosts file if you want to map `localhost` to a d
 
 We use `npm` as the canonical task runner for the project. Some of the PHP related scripts are defined in `composer.json`.
 
-All of these commands can be run inside the Docker by prefixing the scripts with `npm run docker --`.
+All of these commands can be run inside the Docker container by prefixing the scripts with `npm run docker --`.
+
+**Important**: The commands that generate coverage reports or merge them (i.e. contain `coverage` in the name) must run inside the Docker container.
 
 - `npm run build` to build the plugin JS and CSS assets. Use `npm run dev` to watch and re-build as you work.
 
@@ -65,4 +67,6 @@ All of these commands can be run inside the Docker by prefixing the scripts with
 
 - `npm run test:php` to run PHPUnit tests without generating a coverage report.
 
-- `npm run test:php:coverage` to run PHPUnit tests and generate a coverage report in both XML Clover and HTML format.
+- `npm run docker -- npm run test:php:coverage` to run the PHPUnit tests and generate multiple `coverage-php` `.cov` reports.
+
+- `npm run docker -- npm run coverage:merge:php` to merge the `.cov` reports and generate a `clover.xml` and `html` report.
