@@ -24,6 +24,7 @@ services:
       - 80:80
     volumes:
       - ./data/wordpress/html:/var/www/html
+      - ./data/uploads:/var/www/html/wp-content/uploads
       - .:/var/www/html/wp-content/plugins/unsplash-wp
     restart: always
     environment:
