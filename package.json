@@ -20,6 +20,7 @@
     "lint:js": "eslint js/src",
     "lint:js:fix": "eslint js/src --fix",
     "lint:php": "composer lint",
+    "lint:php:fix": "composer fix",
     "test": "npm-run-all --parallel test:*",
     "test:php": "composer test -- --no-coverage",
     "test:php:coverage": "composer test -- --coverage-html tests/reports/coverage/",

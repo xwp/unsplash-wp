@@ -31,6 +31,10 @@
       "@composer validate --strict",
       "phpcs ."
     ],
+    "fix": [
+      "@composer validate --strict",
+      "phpcbf ."
+    ],
     "test": [
       "phpunit"
     ],
