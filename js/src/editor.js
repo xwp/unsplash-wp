@@ -2,26 +2,10 @@
 import domReady from '@wordpress/dom-ready';
 import { isEqual } from 'lodash';
 
-
-
 const SelectUnsplash = ( View ) => {
 	const { unsplashSettings } = window;
 
 	return View.extend( {
-
-		createStates() {
-			View.prototype.createStates.apply( this, arguments );
-				var options = this.options;
-				this.states.add([
-					new wp.media.controller.Library({
-						id:         'unsplash',
-						date: false,
-						filters: false,
-						searchable: false,
-						library: wp.media.unsplashQuery()
-					}),
-				]);
-		},
 
 		browseRouter( routerView ) {
 			View.prototype.browseRouter.apply( this, arguments );
@@ -46,29 +30,24 @@ const SelectUnsplash = ( View ) => {
 			this.on( 'content:render:unsplash', this.unsplashContent, this );
 		},
 		unsplashContent() {
-
-			var state = this.state('unsplash'),
-				view;
-
-			console.log(state.get('library'));
-
-			view = new wp.media.view.AttachmentsBrowser({
+			const state = this.state();
+			const view = new wp.media.view.AttachmentsBrowser( {
 				controller: this,
-				collection: state.get('library'),
-				selection:  state.get('selection'),
-				model:      state,
-				sortable:   state.get('sortable'),
-				search:     state.get('searchable'),
-				filters:    state.get('filterable'),
-				date:       state.get('date'),
-				display:    state.has('display') ? state.get('display') : state.get('displaySettings'),
-				dragInfo:   state.get('dragInfo'),
+				collection: wp.media.unsplashQuery(),
+				selection: state.get( 'selection' ),
+				model: state,
+				sortable: state.get( 'sortable' ),
+				search: state.get( 'searchable' ),
+				filters: state.get( 'filterable' ),
+				date: state.get( 'date' ),
+				display: state.has( 'display' ) ? state.get( 'display' ) : state.get( 'displaySettings' ),
+				dragInfo: state.get( 'dragInfo' ),
 
-				idealColumnWidth: state.get('idealColumnWidth'),
-				suggestedWidth:   state.get('suggestedWidth'),
-				suggestedHeight:  state.get('suggestedHeight'),
+				idealColumnWidth: state.get( 'idealColumnWidth' ),
+				suggestedWidth: state.get( 'suggestedWidth' ),
+				suggestedHeight: state.get( 'suggestedHeight' ),
 
-			}).render();
+			} ).render();
 
 			// Browse our library of attachments.
 			this.content.set( view );
@@ -76,34 +55,22 @@ const SelectUnsplash = ( View ) => {
 	} );
 };
 
-
 const QueryUnsplash = () => {
-	var Attachments = wp.media.model.Attachments,
-		Query = wp.media.model.Query,
-		UnSplashAttachments,
-		UnSplashQuery;
+	const Attachments = wp.media.model.Attachments,
+		Query = wp.media.model.Query;
 
-	UnSplashQuery = Query.extend( {
-		/**
-		 * Overrides Backbone.Collection.sync
-		 * Overrides wp.media.model.Attachments.sync
-		 *
-		 * @param {String} method
-		 * @param {Backbone.Model} model
-		 * @param {Object} [options={}]
-		 * @return {Promise}
-		 */
-		sync: function( method, model, options ) {
-			var args, fallback;
+	const UnSplashQuery = Query.extend( {
+		sync( method, model, options ) {
+			let args;
 
 			// Overload the read method so Attachment.fetch() functions correctly.
 			if ( 'read' === method ) {
 				options = options || {};
 				options.context = this;
 				options.data = _.extend( options.data || {}, {
-					action:  'query-unsplash',
-					post_id: wp.media.model.settings.post.id
-				});
+					action: 'query-unsplash',
+					post_id: wp.media.model.settings.post.id,
+				} );
 
 				// Clone the args so manipulation is non-destructive.
 				args = _.clone( this.args );
@@ -117,32 +84,23 @@ const QueryUnsplash = () => {
 				return wp.media.ajax( options );
 
 				// Otherwise, fall back to Backbone.sync()
-			} else {
-				/**
-				 * Call wp.media.model.Attachments.sync or Backbone.sync
-				 */
-				fallback = Attachments.prototype.sync ? Attachments.prototype : Backbone;
-				return fallback.sync.apply( this, arguments );
 			}
-		}
+			/**
+			 * Call wp.media.model.Attachments.sync or Backbone.sync
+			 */
+			const fallback = Attachments.prototype.sync ? Attachments.prototype : Backbone;
+			return fallback.sync.apply( this, arguments );
+		},
 	}, {
-		get: (function(){
+		get: ( function() {
+			let queries = [];
 
-			/**
-			 * @static
-			 * @type Array
-			 */
-			var queries = [];
-
-			/**
-			 * @return {Query}
-			 */
 			return function( props, options ) {
-				var args     = {},
-					orderby  = UnSplashQuery.orderby,
+				let args = {},
+					query;
+				const orderby = UnSplashQuery.orderby,
 					defaults = UnSplashQuery.defaultProps,
-					query,
-					cache    = !! props.cache || _.isUndefined( props.cache );
+					cache = !! props.cache || _.isUndefined( props.cache );
 
 				// Remove the `query` property. This isn't linked to a query,
 				// this *is* the query.
@@ -177,7 +135,7 @@ const QueryUnsplash = () => {
 					}
 
 					args[ UnSplashQuery.propmap[ prop ] || prop ] = value;
-				});
+				} );
 
 				// Fill any other default query args.
 				_.defaults( args, UnSplashQuery.defaultArgs );
@@ -190,7 +148,7 @@ const QueryUnsplash = () => {
 				if ( cache ) {
 					query = _.find( queries, function( query ) {
 						return _.isEqual( query.args, args );
-					});
+					} );
 				} else {
 					queries = [];
 				}
@@ -198,41 +156,36 @@ const QueryUnsplash = () => {
 				// Otherwise, create a new query and add it to the cache.
 				if ( ! query ) {
 					query = new UnSplashQuery( [], _.extend( options || {}, {
-						props: props,
-						args:  args
+						props,
+						args,
 					} ) );
 					queries.push( query );
 				}
 
 				return query;
 			};
-		}())
-	});
+		}() ),
+	} );
 
-	UnSplashAttachments = Attachments.extend( {
-		/**
-		 * If the collection is a query, create and mirror an Attachments Query collection.
-		 *
-		 * @access private
-		 */
-		_requery: function( refresh ) {
-			var props;
-			if ( this.props.get('query') ) {
+	const UnSplashAttachments = Attachments.extend( {
+		_requery( refresh ) {
+			let props;
+			if ( this.props.get( 'query' ) ) {
 				props = this.props.toJSON();
 				props.cache = ( true !== refresh );
 				this.mirror( UnSplashQuery.get( props ) );
 			}
 		},
-	});
+	} );
 
 	const unsplashQuery = ( props ) => {
 		return new UnSplashAttachments( null, {
-			props: _.extend( _.defaults( props || {}, { orderby: 'date' } ), { query: true } )
-		});
+			props: _.extend( _.defaults( props || {}, { orderby: 'date' } ), { query: true } ),
+		} );
 	};
 
 	return unsplashQuery;
-}
+};
 
 const checkType = ( type ) => {
 	const arr = ( type instanceof Array ) ? type : [ type ];
@@ -242,7 +195,6 @@ const checkType = ( type ) => {
 domReady( () => {
 	if ( wp.media.query ) {
 		wp.media.unsplashQuery = QueryUnsplash();
-		console.log(wp.media.unsplashQuery());
 	}
 
 	if ( wp.media.view.MediaFrame && wp.media.view.MediaFrame.Select ) {
