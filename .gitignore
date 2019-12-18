@@ -7,3 +7,4 @@ node_modules/
 phpcs.xml
 phpunit.xml
 vendor/
+scripts/docker/uploads/

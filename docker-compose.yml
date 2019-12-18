@@ -22,6 +22,7 @@ services:
       - "443:443"
     volumes:
       - wp_data:/var/www/html
+      - ./scripts/docker/uploads:/var/www/html/wp-content/uploads
       - .:/var/www/html/wp-content/plugins/unsplash-wp
     restart: always
     environment:
@@ -36,6 +37,7 @@ services:
       - wordpress
     volumes:
       - wp_data:/var/www/html
+      - ./scripts/docker/uploads:/var/www/html/wp-content/uploads
       - .:/var/www/html/wp-content/plugins/unsplash-wp
       - ./scripts/docker/wp-cli.yml:/var/www/html/wp-cli.yml
 
@@ -43,6 +45,7 @@ services:
     image: thecodingmachine/php:7.3-v3-fpm-node8
     volumes:
       - wp_data:/var/www/html
+      - ./scripts/docker/uploads:/var/www/html/wp-content/uploads
       - .:/var/www/html/wp-content/plugins/unsplash-wp
     working_dir: /var/www/html/wp-content/plugins/unsplash-wp
     environment:
