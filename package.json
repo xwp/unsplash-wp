@@ -22,12 +22,16 @@
     "lint:php": "composer lint",
     "lint:php:fix": "composer fix",
     "test": "npm-run-all --parallel test:*",
-    "test:php": "composer test -- --no-coverage",
-    "test:php:coverage": "composer test -- --coverage-html tests/reports/coverage/",
+    "test:php": "npm-run-all --parallel test:php:no-coverage:*",
+    "test:php:no-coverage:unit": "composer test",
+    "test:php:no-coverage:integration": "composer test -- -c phpunit.integration.xml",
+    "test:php:coverage": "npm-run-all --parallel test:php:coverage:*",
+    "test:php:coverage:unit": "composer test -- --coverage-php tests/reports/php/unit.cov",
+    "test:php:coverage:integration": "composer test -- -c phpunit.integration.xml --coverage-php tests/reports/php/integration.cov",
     "coverage": "npm-run-all --parallel coverage:*",
     "coverage:php": "composer coverage",
-    "docker": "docker-compose run test",
-    "vagrant": "vagrant ssh -- COMPOSE_FILE=/vagrant/docker-compose.yml docker-compose run test"
+    "coverage:merge:php": "composer coverage-merge",
+    "docker": "docker-compose run --workdir=/var/www/html/wp-content/plugins/unsplash-wp wordpress"
   },
   "devDependencies": {
     "@wordpress/block-editor": "3.3.0",

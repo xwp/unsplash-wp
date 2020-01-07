@@ -5,4 +5,5 @@
  * @package Unsplash
  */
 
+// Run Unit Tests.
 WP_Mock::bootstrap();
