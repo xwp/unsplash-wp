@@ -25,8 +25,8 @@
     "phpunit/phpunit": "7.5.18",
     "slowprog/composer-copy-file": "0.3.1",
     "wp-coding-standards/wpcs": "2.2.0",
-    "xwp/wordpress-tests-installer": "1.0.0",
-    "wpackagist-plugin/classic-editor": "@stable"
+    "wpackagist-plugin/classic-editor": "@stable",
+    "xwp/wordpress-tests-installer": "1.0.0"
   },
   "autoload": {
     "psr-4": {
