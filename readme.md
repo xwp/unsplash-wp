@@ -6,7 +6,7 @@
 ## Requirements
 
 - WordPress 5.0+ or the [Gutenberg Plugin](https://wordpress.org/plugins/gutenberg/).
-- PHP 7.2.5 or greater for development and 5.6 or greater for production, [Composer](https://getcomposer.org) and [Node.js](https://nodejs.org) for dependency management.
+- PHP 7.4 or greater for development and 5.6 or greater for production, [Composer](https://getcomposer.org) and [Node.js](https://nodejs.org) for dependency management.
 - [Docker](https://docs.docker.com/install/) for a local development environment.
 
 We suggest using a software package manager for installing the development dependencies such as [Homebrew](https://brew.sh) on MacOS:
@@ -27,7 +27,7 @@ or [Chocolatey](https://chocolatey.org) for Windows:
 
 		npm install
 
-	_Note that both Node.js and PHP 7.2.5 or greater are required on your computer for running the `npm` scripts. Use `npm run docker -- npm install --unsafe-perm` to run the installer inside a Docker container if you don't have the required version of PHP installed locally._
+	_Note that both Node.js and PHP 7.4 or greater are required on your computer for running the `npm` scripts. Use `npm run docker -- npm install --unsafe-perm` to run the installer inside a Docker container if you don't have the required version of PHP installed locally._
 
 ## Development Environment
 
