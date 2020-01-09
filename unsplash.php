@@ -6,6 +6,8 @@
  * Author: XWP
  * Author URI: https://github.com/xwp/unsplash-wp
  * Text Domain: unsplash
+ * Requires at least: 4.9
+ * Requires PHP: 5.6
  *
  * @package Unsplash
  */
