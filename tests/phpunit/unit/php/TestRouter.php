@@ -23,17 +23,17 @@ class TestRouter extends TestCase {
 	public function test_init() {
 		$plugin = new Router( Mockery::mock( Plugin::class ) );
 
-		WP_Mock::expectActionAdded( 'enqueue_block_editor_assets', [ $plugin, 'enqueue_editor_assets' ], 10, 1 );
+		WP_Mock::expectActionAdded( 'admin_enqueue_scripts', [ $plugin, 'enqueue_script' ], 10, 1 );
 
 		$plugin->init();
 	}
 
 	/**
-	 * Test enqueue_editor_assets.
+	 * Test enqueue_script.
 	 *
-	 * @covers \XWP\Unsplash\Router::enqueue_editor_assets()
+	 * @covers \XWP\Unsplash\Router::enqueue_script()
 	 */
-	public function test_enqueue_editor_assets() {
+	public function test_enqueue_script() {
 		$plugin = Mockery::mock( Plugin::class );
 
 		$plugin->shouldReceive( 'asset_url' )
@@ -55,6 +55,6 @@ class TestRouter extends TestCase {
 			);
 
 		$block_extend = new Router( $plugin );
-		$block_extend->enqueue_editor_assets();
+		$block_extend->enqueue_script();
 	}
 }
