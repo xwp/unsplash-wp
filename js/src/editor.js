@@ -96,8 +96,8 @@ const QueryUnsplash = () => {
 			let queries = [];
 
 			return function( props, options ) {
-				let args = {},
-					query;
+				const args = {};
+				let	unsplashQueryObject;
 				const orderby = UnSplashQuery.orderby,
 					defaults = UnSplashQuery.defaultProps,
 					cache = !! props.cache || _.isUndefined( props.cache );
@@ -146,7 +146,7 @@ const QueryUnsplash = () => {
 
 				// Search the query cache for a matching query.
 				if ( cache ) {
-					query = _.find( queries, function( query ) {
+					unsplashQueryObject = _.find( queries, function( query ) {
 						return _.isEqual( query.args, args );
 					} );
 				} else {
@@ -154,15 +154,15 @@ const QueryUnsplash = () => {
 				}
 
 				// Otherwise, create a new query and add it to the cache.
-				if ( ! query ) {
-					query = new UnSplashQuery( [], _.extend( options || {}, {
+				if ( ! unsplashQueryObject ) {
+					unsplashQueryObject = new UnSplashQuery( [], _.extend( options || {}, {
 						props,
 						args,
 					} ) );
-					queries.push( query );
+					queries.push( unsplashQueryObject );
 				}
 
-				return query;
+				return unsplashQueryObject;
 			};
 		}() ),
 	} );
