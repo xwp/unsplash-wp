@@ -2,6 +2,8 @@
   "extends": [
     "plugin:@wordpress/eslint-plugin/recommended"
   ],
-  "globals": { "_": true, "Backbone": true }
-
+  "globals": { "_": true, "Backbone": true },
+  "rules": {
+    "@wordpress/dependency-group": "error"
+  }
 }

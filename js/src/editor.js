@@ -1,5 +1,11 @@
 
+/**
+ * WordPress dependencies
+ */
 import domReady from '@wordpress/dom-ready';
+/**
+ * External dependencies
+ */
 import { isEqual } from 'lodash';
 
 const SelectUnsplash = ( View ) => {
