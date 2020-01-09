@@ -21,6 +21,14 @@ class TestRouter extends TestCase {
 	 * @covers \XWP\Unsplash\Router::init()
 	 */
 	public function test_init() {
+		WP_Mock::userFunction( 'remove_action' )
+		       ->once()
+		       ->with(
+			       'wp_ajax_send-attachment-to-editor',
+			       'wp_ajax_send_attachment_to_editor',
+			       1
+		       );
+
 		$plugin = new Router( Mockery::mock( Plugin::class ) );
 
 		WP_Mock::expectActionAdded( 'admin_enqueue_scripts', [ $plugin, 'enqueue_script' ], 10, 1 );
@@ -53,6 +61,16 @@ class TestRouter extends TestCase {
 				Mockery::type( 'array' ),
 				'1.2.3'
 			);
+
+		WP_Mock::userFunction( 'wp_localize_script' )
+		       ->once()
+		       ->with(
+			       'unsplash-js',
+			       'unsplashSettings',
+			       [
+				       'tabTitle' => __( 'Unsplash', 'unsplash' ),
+			       ]
+		       );
 
 		$block_extend = new Router( $plugin );
 		$block_extend->enqueue_script();

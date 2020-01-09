@@ -7,8 +7,6 @@
 
 namespace XWP\Unsplash;
 
-use  WP_Query;
-
 /**
  * Plugin Router.
  */
@@ -91,7 +89,7 @@ class Router {
 	 */
 	function get_images() {
 		$path   = $this->plugin->asset_dir( 'php/response.json' );
-		$images = json_decode( file_get_contents( $path ), true );
+		$images = wp_json_decode( file_get_contents( $path ), true );
 		return $images;
 	}
 
