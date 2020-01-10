@@ -42,7 +42,7 @@ class Router {
 	}
 
 	/**
-	 * Load our classic assets.
+	 * Load our classic editor assets.
 	 *
 	 * @return void
 	 */
