@@ -72,7 +72,7 @@ class TestRouter extends TestCase {
 				]
 			);
 
-		$block_extend = new Router( $plugin );
-		$block_extend->enqueue_scripts();
+		$editor_mode = new Router( $plugin );
+		$editor_mode->enqueue_scripts();
 	}
 }

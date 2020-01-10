@@ -35,13 +35,14 @@ class Router {
 	 */
 	public function init() {
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
+		add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_editor_assets' ] );
 		add_action( 'wp_ajax_query-unsplash', [ $this, 'wp_ajax_query_unsplash' ] );
 		remove_action( 'wp_ajax_send-attachment-to-editor', 'wp_ajax_send_attachment_to_editor', 1 );
 		add_action( 'wp_ajax_send-attachment-to-editor', [ $this, 'wp_ajax_send_attachment_to_editor' ], 0 );
 	}
 
 	/**
-	 * Load our block assets.
+	 * Load our classic assets.
 	 *
 	 * @return void
 	 */
@@ -64,6 +65,15 @@ class Router {
 				'tabTitle' => __( 'Unsplash', 'unsplash' ),
 			]
 		);
+	}
+
+	/**
+	 * Load our block assets.
+	 *
+	 * @return void
+	 */
+	public function enqueue_editor_assets() {
+		// Placeholder for gutenberg script.
 	}
 
 	/**
