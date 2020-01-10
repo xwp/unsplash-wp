@@ -34,7 +34,7 @@ class Router {
 	 * @return void
 	 */
 	public function init() {
-		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_script' ] );
+		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 		add_action( 'wp_ajax_query-unsplash', [ $this, 'wp_ajax_query_unsplash' ] );
 		remove_action( 'wp_ajax_send-attachment-to-editor', 'wp_ajax_send_attachment_to_editor', 1 );
 		add_action( 'wp_ajax_send-attachment-to-editor', [ $this, 'wp_ajax_send_attachment_to_editor' ], 0 );
@@ -45,7 +45,7 @@ class Router {
 	 *
 	 * @return void
 	 */
-	public function enqueue_script() {
+	public function enqueue_scripts() {
 		wp_enqueue_script(
 			'unsplash-js',
 			$this->plugin->asset_url( 'js/dist/editor.js' ),
