@@ -25,9 +25,9 @@ class Router {
 	const POST_TYPE = 'attachment';
 
 	/**
-	 * Unsplash REST API Controller.
+	 * REST API Controller.
 	 *
-	 * @var UnsplashRestController
+	 * @var RestController
 	 */
 	protected $rest_controller;
 
@@ -38,7 +38,7 @@ class Router {
 	 */
 	public function __construct( $plugin ) {
 		$this->plugin          = $plugin;
-		$this->rest_controller = new UnsplashRestController();
+		$this->rest_controller = new RestController();
 	}
 
 	/**
