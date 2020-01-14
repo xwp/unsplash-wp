@@ -20,12 +20,20 @@ class Router {
 	protected $plugin;
 
 	/**
+	 * Unsplash REST API Controller.
+	 *
+	 * @var UnsplashRestController
+	 */
+	protected $rest_controller;
+
+	/**
 	 * Setup the plugin instance.
 	 *
 	 * @param Plugin $plugin Instance of the plugin abstraction.
 	 */
 	public function __construct( $plugin ) {
-		$this->plugin = $plugin;
+		$this->plugin          = $plugin;
+		$this->rest_controller = new UnsplashRestController();
 	}
 
 	/**
@@ -35,6 +43,7 @@ class Router {
 	 */
 	public function init() {
 		add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_editor_assets' ] );
+		add_action( 'rest_api_init', [ $this->rest_controller, 'register_routes' ] );
 	}
 
 	/**
