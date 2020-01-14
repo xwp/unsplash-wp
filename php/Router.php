@@ -25,12 +25,20 @@ class Router {
 	const POST_TYPE = 'attachment';
 
 	/**
+	 * Unsplash REST API Controller.
+	 *
+	 * @var UnsplashRestController
+	 */
+	protected $rest_controller;
+
+	/**
 	 * Setup the plugin instance.
 	 *
 	 * @param Plugin $plugin Instance of the plugin abstraction.
 	 */
 	public function __construct( $plugin ) {
-		$this->plugin = $plugin;
+		$this->plugin          = $plugin;
+		$this->rest_controller = new UnsplashRestController();
 	}
 
 	/**
@@ -46,6 +54,7 @@ class Router {
 		add_action( 'wp_ajax_send-attachment-to-editor', [ $this, 'wp_ajax_send_attachment_to_editor' ], 0 );
 		add_action( 'init', [ $this, 'register_taxonomy' ] );
 		add_action( 'init', [ $this, 'register_meta' ] );
+		add_action( 'rest_api_init', [ $this->rest_controller, 'register_routes' ] );
 	}
 
 	/**
