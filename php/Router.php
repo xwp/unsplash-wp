@@ -7,6 +7,8 @@
 
 namespace XWP\Unsplash;
 
+use XWP\Unsplash\RestAPI\RestController;
+
 /**
  * Plugin Router.
  */
@@ -20,9 +22,9 @@ class Router {
 	protected $plugin;
 
 	/**
-	 * Unsplash REST API Controller.
+	 * REST API Controller.
 	 *
-	 * @var UnsplashRestController
+	 * @var RestController
 	 */
 	protected $rest_controller;
 
@@ -33,7 +35,7 @@ class Router {
 	 */
 	public function __construct( $plugin ) {
 		$this->plugin          = $plugin;
-		$this->rest_controller = new UnsplashRestController();
+		$this->rest_controller = new RestController();
 	}
 
 	/**
