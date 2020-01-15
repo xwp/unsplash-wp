@@ -194,9 +194,7 @@ class RestController extends WP_REST_Controller {
 		$query_params['per_page']['maximum'] = 30;
 		$query_params['order_by']            = [
 			'default'           => 'latest',
-			'validate_callback' => static function ( $param ) {
-				return in_array( $param, [ 'latest', 'oldest', 'popular' ], true );
-			},
+			'enum'              => [ 'latest', 'oldest', 'popular' ],
 		];
 
 		return $query_params;
@@ -212,9 +210,8 @@ class RestController extends WP_REST_Controller {
 
 		$query_params['orientation'] = [
 			'default'           => null,
-			'validate_callback' => static function ( $param ) {
-				return ! empty( $param ) && in_array( $param, [ 'landscape', 'portrait', 'squarish' ], true );
-			},
+			'enum'              => [ 'landscape', 'portrait', 'squarish' ],
+
 		];
 		$query_params['collections'] = [
 			'default'           => null,
