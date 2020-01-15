@@ -37,8 +37,7 @@ class Router {
 	 * @param Plugin $plugin Instance of the plugin abstraction.
 	 */
 	public function __construct( $plugin ) {
-		$this->plugin          = $plugin;
-		$this->rest_controller = new RestController();
+		$this->plugin = $plugin;
 	}
 
 	/**
@@ -54,7 +53,7 @@ class Router {
 		add_action( 'wp_ajax_send-attachment-to-editor', [ $this, 'wp_ajax_send_attachment_to_editor' ], 0 );
 		add_action( 'init', [ $this, 'register_taxonomy' ] );
 		add_action( 'init', [ $this, 'register_meta' ] );
-		add_action( 'rest_api_init', [ $this->rest_controller, 'register_routes' ] );
+		add_action( 'rest_api_init', [ $this, 'rest_api_init' ] );
 	}
 
 	/**
@@ -416,5 +415,13 @@ class Router {
 			$args = wp_parse_args( $args, $default_args );
 			register_taxonomy( $name, self::POST_TYPE, $args );
 		}
+	}
+
+	/**
+	 *
+	 */
+	public function rest_api_init() {
+		$controller = new RestController();
+		$controller->register_routes();
 	}
 }
