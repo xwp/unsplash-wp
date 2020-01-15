@@ -34,8 +34,7 @@ class Router {
 	 * @param Plugin $plugin Instance of the plugin abstraction.
 	 */
 	public function __construct( $plugin ) {
-		$this->plugin          = $plugin;
-		$this->rest_controller = new RestController();
+		$this->plugin = $plugin;
 	}
 
 	/**
@@ -49,7 +48,7 @@ class Router {
 		add_action( 'wp_ajax_query-unsplash', [ $this, 'wp_ajax_query_unsplash' ] );
 		remove_action( 'wp_ajax_send-attachment-to-editor', 'wp_ajax_send_attachment_to_editor', 1 );
 		add_action( 'wp_ajax_send-attachment-to-editor', [ $this, 'wp_ajax_send_attachment_to_editor' ], 0 );
-		add_action( 'rest_api_init', [ $this->rest_controller, 'register_routes' ] );
+		add_action( 'rest_api_init', [ $this, 'rest_api_init' ] );
 	}
 
 	/**
@@ -313,5 +312,11 @@ class Router {
 		wp_send_json_success( $html );
 	}
 
-
+	/**
+	 *
+	 */
+	public function rest_api_init() {
+		$controller = new RestController();
+		$controller->register_routes();
+	}
 }
