@@ -57,6 +57,28 @@ class RestController extends WP_REST_Controller {
 
 		register_rest_route(
 			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\w-]+)',
+			array(
+				'args'   => array(
+					'id' => array(
+						'description' => __( 'Unique identifier for the object.' ),
+						'type'        => 'string',
+					),
+				),
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_item' ),
+					'permission_callback' => array( $this, 'get_items_permissions_check' ),
+					'args'                => array(
+						'context' => $this->get_context_param( array( 'default' => 'view' ) ),
+					),
+				),
+				'schema' => array( $this, 'get_public_item_schema' ),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
 			'/' . $this->rest_base . '/search/(?P<search>[\w-]+)',
 			array(
 				array(
@@ -89,7 +111,35 @@ class RestController extends WP_REST_Controller {
 				$photos[] = $this->prepare_response_for_collection( $data );
 			}
 		} catch ( \Exception $e ) {
-			$photos = new WP_Error( 'search-photos', __( 'An unknown error occurred while searching for a photo', 'unsplash' ), [ 'status' => '500' ] );
+			$photos = new WP_Error( 'all-photos', __( 'An unknown error occurred while searching for a photo', 'unsplash' ), [ 'status' => '500' ] );
+
+			/**
+			 * Stop IDE from complaining.
+			 *
+			 * @noinspection ForgottenDebugOutputInspection
+			 */
+			error_log( $e->getMessage(), $e->getCode() );
+		}
+
+		$response = rest_ensure_response( $photos );
+
+		return $response;
+	}
+
+	/**
+	 * Retrieve a page of photo.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 *
+	 * @return WP_REST_Response Single page of photo results.
+	 */
+	public function get_item( $request ) {
+		$id     = $request->get_param( 'id' );
+		try {
+			$results = Photo::find( $id )->toArray();
+			$photos  = $this->prepare_item_for_response( $results, $request );
+		} catch ( \Exception $e ) {
+			$photos = new WP_Error( 'single-photos', __( 'An unknown error occurred while searching for a photo', 'unsplash' ), [ 'status' => '500' ] );
 
 			/**
 			 * Stop IDE from complaining.
