@@ -34,8 +34,7 @@ class Router {
 	 * @param Plugin $plugin Instance of the plugin abstraction.
 	 */
 	public function __construct( $plugin ) {
-		$this->plugin          = $plugin;
-		$this->rest_controller = new RestController();
+		$this->plugin = $plugin;
 	}
 
 	/**
@@ -45,7 +44,7 @@ class Router {
 	 */
 	public function init() {
 		add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_editor_assets' ] );
-		add_action( 'rest_api_init', [ $this->rest_controller, 'register_routes' ] );
+		add_action( 'rest_api_init', [ $this, 'rest_api_init' ] );
 	}
 
 	/**
@@ -64,5 +63,13 @@ class Router {
 			],
 			$this->plugin->asset_version()
 		);
+	}
+
+	/**
+	 *
+	 */
+	public function rest_api_init() {
+		$controller = new RestController();
+		$controller->register_routes();
 	}
 }
