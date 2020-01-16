@@ -19,8 +19,12 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 	require_once __DIR__ . '/vendor/autoload.php';
 }
 
-$dotenv = \Dotenv\Dotenv::createImmutable( __DIR__ );
-$dotenv->load();
+if ( ! defined( 'UNSPLASH_APP_ID' ) ) {
+	define( 'UNSPLASH_APP_ID', getenv( 'UNSPLASH_APP_ID' ) );
+}
+if ( ! defined( 'UNSPLASH_APP_SECRET' ) ) {
+	define( 'UNSPLASH_APP_SECRET', getenv( 'UNSPLASH_APP_SECRET' ) );
+}
 
 $router = new Router( new Plugin( __FILE__ ) );
 
