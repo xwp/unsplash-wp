@@ -98,7 +98,7 @@ class Router {
 	 * @return mixed
 	 */
 	function get_images() {
-		$path   = $this->plugin->asset_dir( 'php/response.json' );
+		$path = $this->plugin->asset_dir( 'php/response.json' );
 		if ( is_readable( $path ) ) {
 			$images = json_decode( file_get_contents( $path ), true );
 		} else {
