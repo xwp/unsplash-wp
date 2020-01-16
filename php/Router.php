@@ -217,7 +217,7 @@ class Router {
 	 *
 	 * @since 3.5.0
 	 */
-	function wp_ajax_send_attachment_to_editor() {
+	public function wp_ajax_send_attachment_to_editor() {
 		check_ajax_referer( 'media-send-to-editor', 'nonce' );
 
 		$attachment = wp_unslash( $_POST['attachment'] );
