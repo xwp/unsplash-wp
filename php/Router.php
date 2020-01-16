@@ -198,7 +198,7 @@ class Router {
 				$sizes[ $s ]['width']  = get_option( $s . '_size_w' );
 				$sizes[ $s ]['height'] = get_option( $s . '_size_h' );
 			} else {
-				if ( isset( $_wp_additional_image_sizes ) && isset( $_wp_additional_image_sizes[ $s ] ) ) {
+				if ( isset( $_wp_additional_image_sizes, $_wp_additional_image_sizes[ $s ] ) ) {
 					$sizes[ $s ]['height'] = $_wp_additional_image_sizes[ $s ]['height'];
 				}
 					$sizes[ $s ]['width'] = $_wp_additional_image_sizes[ $s ]['width'];
