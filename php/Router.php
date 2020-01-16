@@ -222,6 +222,7 @@ class Router {
 
 		$attachment = wp_unslash( $_POST['attachment'] );
 		$html       = stripslashes_deep( $_POST['html'] );
+		$align      = isset( $attachment['align'] ) ? $attachment['align'] : 'none';
 		if ( is_numeric( $attachment['id'] ) ) {
 			$id = intval( $attachment['id'] );
 
@@ -254,9 +255,9 @@ class Router {
 			remove_filter( 'media_send_to_editor', 'image_media_send_to_editor' );
 
 			if ( 'image' === substr( $post->post_mime_type, 0, 5 ) ) {
-				$align = isset( $attachment['align'] ) ? $attachment['align'] : 'none';
-				$size  = isset( $attachment['image-size'] ) ? $attachment['image-size'] : 'medium';
-				$alt   = isset( $attachment['image_alt'] ) ? $attachment['image_alt'] : '';
+
+				$size = isset( $attachment['image-size'] ) ? $attachment['image-size'] : 'medium';
+				$alt  = isset( $attachment['image_alt'] ) ? $attachment['image_alt'] : '';
 
 				// No whitespace-only captions.
 				$caption = isset( $attachment['post_excerpt'] ) ? $attachment['post_excerpt'] : '';
@@ -285,10 +286,9 @@ class Router {
 				}
 			);
 			if ( $image ) {
-				$data  = array_shift( $image );
-				$align = isset( $attachment['align'] ) ? $attachment['align'] : 'none';
-				$size  = isset( $attachment['image-size'] ) ? $attachment['image-size'] : 'medium';
-				$alt   = isset( $attachment['image_alt'] ) ? $attachment['image_alt'] : '';
+				$data = array_shift( $image );
+				$size = isset( $attachment['image-size'] ) ? $attachment['image-size'] : 'medium';
+				$alt  = isset( $attachment['image_alt'] ) ? $attachment['image_alt'] : '';
 
 				$class   = 'align' . esc_attr( $align ) . ' size-' . esc_attr( $size ) . ' wp-image-' . $data['id'];
 				$img_src = $data['urls']['raw'];
