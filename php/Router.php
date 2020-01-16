@@ -290,14 +290,6 @@ class Router {
 				$size  = isset( $attachment['image-size'] ) ? $attachment['image-size'] : 'medium';
 				$alt   = isset( $attachment['image_alt'] ) ? $attachment['image_alt'] : '';
 
-				// No whitespace-only captions.
-				$caption = isset( $attachment['post_excerpt'] ) ? $attachment['post_excerpt'] : '';
-				if ( '' === trim( $caption ) ) {
-					$caption = '';
-				}
-
-				$title = $title ? 'title="' . esc_attr( $title ) . '" ' : '';
-
 				$class   = 'align' . esc_attr( $align ) . ' size-' . esc_attr( $size ) . ' wp-image-' . $data['id'];
 				$img_src = $data['urls']['raw'];
 				$html    = '<img src="' . esc_attr( $img_src ) . '" alt="' . esc_attr( $alt ) . '" ' . $title . 'class="' . $class . '" />';
