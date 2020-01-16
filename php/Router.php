@@ -99,7 +99,11 @@ class Router {
 	 */
 	function get_images() {
 		$path   = $this->plugin->asset_dir( 'php/response.json' );
-		$images = wp_json_decode( file_get_contents( $path ), true );
+		if ( is_readable( $path ) ) {
+			$images = json_decode( file_get_contents( $path ), true );
+		} else {
+			$images = [];
+		}
 		return $images;
 	}
 
