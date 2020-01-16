@@ -190,7 +190,7 @@ class Router {
 	 *
 	 * @return array
 	 */
-	function image_sizes() {
+	public function image_sizes() {
 		global $_wp_additional_image_sizes;
 		$sizes = array();
 		foreach ( get_intermediate_image_sizes() as $s ) {
