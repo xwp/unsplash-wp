@@ -79,7 +79,7 @@ class Router {
 	/**
 	 * Ajax handler for querying attachments.
 	 */
-	function wp_ajax_query_unsplash() {
+	public function wp_ajax_query_unsplash() {
 		if ( ! current_user_can( 'upload_files' ) ) {
 			wp_send_json_error();
 		}
