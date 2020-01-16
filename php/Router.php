@@ -114,7 +114,7 @@ class Router {
 	 *
 	 * @return array
 	 */
-	function wp_prepare_attachment_for_js( array $image ) {
+	public function wp_prepare_attachment_for_js( array $image ) {
 		$image = (object) $image;
 
 		$response = array(
