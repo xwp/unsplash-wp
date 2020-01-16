@@ -28,8 +28,8 @@ class RestController extends WP_REST_Controller {
 		$this->rest_base = 'photos';
 		HttpClient::init(
 			[
-				'applicationId' => getenv( 'UNSPLASH_APP_ID' ),
-				'secret'        => getenv( 'UNSPLASH_APP_SECRET' ),
+				'applicationId' => constant( 'UNSPLASH_APP_ID' ),
+				'secret'        => constant( 'UNSPLASH_APP_SECRET' ),
 				'utmSource'     => 'WordPress-XWP',
 			]
 		);
