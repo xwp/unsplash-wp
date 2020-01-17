@@ -134,7 +134,7 @@ class RestController extends WP_REST_Controller {
 	 * @return WP_REST_Response Single page of photo results.
 	 */
 	public function get_item( $request ) {
-		$id     = $request->get_param( 'id' );
+		$id = $request->get_param( 'id' );
 		try {
 			$results = Photo::find( $id )->toArray();
 			$photos  = $this->prepare_item_for_response( $results, $request );
@@ -243,8 +243,8 @@ class RestController extends WP_REST_Controller {
 		unset( $query_params['search'] );
 		$query_params['per_page']['maximum'] = 30;
 		$query_params['order_by']            = [
-			'default'           => 'latest',
-			'enum'              => [ 'latest', 'oldest', 'popular' ],
+			'default' => 'latest',
+			'enum'    => [ 'latest', 'oldest', 'popular' ],
 		];
 
 		return $query_params;
@@ -259,8 +259,8 @@ class RestController extends WP_REST_Controller {
 		$query_params = parent::get_collection_params();
 
 		$query_params['orientation'] = [
-			'default'           => null,
-			'enum'              => [ 'landscape', 'portrait', 'squarish' ],
+			'default' => null,
+			'enum'    => [ 'landscape', 'portrait', 'squarish' ],
 
 		];
 		$query_params['collections'] = [
@@ -304,7 +304,7 @@ class RestController extends WP_REST_Controller {
 					'context'     => array( 'view', 'edit', 'embed' ),
 				),
 				'updated_at'      => array(
-					'description' => __( "The date the object was last modified.", 'unsplash' ),
+					'description' => __( 'The date the object was last modified.', 'unsplash' ),
 					'type'        => 'string',
 					'format'      => 'date-time',
 					'context'     => array( 'view', 'edit' ),

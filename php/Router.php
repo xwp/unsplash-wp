@@ -66,7 +66,7 @@ class Router {
 	}
 
 	/**
-	 *
+	 * Register REST API endpoints.
 	 */
 	public function rest_api_init() {
 		$controller = new RestController();
