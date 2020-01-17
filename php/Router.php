@@ -281,7 +281,7 @@ class Router {
 			$images = $this->get_images();
 			$image  = array_filter(
 				$images,
-				function ( $var ) use ( $attachment ) {
+				static function ( $var ) use ( $attachment ) {
 					return ( $var['id'] === $attachment['id'] );
 				}
 			);
