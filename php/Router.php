@@ -22,13 +22,6 @@ class Router {
 	protected $plugin;
 
 	/**
-	 * REST API Controller.
-	 *
-	 * @var RestController
-	 */
-	protected $rest_controller;
-
-	/**
 	 * Setup the plugin instance.
 	 *
 	 * @param Plugin $plugin Instance of the plugin abstraction.
@@ -313,7 +306,7 @@ class Router {
 	}
 
 	/**
-	 * Register REST API endpoints.
+	 * Initialize the REST API.
 	 */
 	public function rest_api_init() {
 		$controller = new RestController();
