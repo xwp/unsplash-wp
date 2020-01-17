@@ -11,6 +11,7 @@ use Crew\Unsplash\HttpClient;
 use Crew\Unsplash\Photo;
 use Crew\Unsplash\Search;
 use WP_REST_Controller;
+use WP_REST_Request;
 use WP_REST_Server;
 use WP_REST_Response;
 use WP_Error;
@@ -26,6 +27,7 @@ class RestController extends WP_REST_Controller {
 	public function __construct() {
 		$this->namespace = 'unsplash/v1';
 		$this->rest_base = 'photos';
+
 		HttpClient::init(
 			[
 				'applicationId' => constant( 'UNSPLASH_APP_ID' ),
@@ -44,51 +46,51 @@ class RestController extends WP_REST_Controller {
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_base,
-			array(
-				array(
+			[
+				[
 					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_items' ),
-					'permission_callback' => array( $this, 'get_items_permissions_check' ),
+					'callback'            => [ $this, 'get_items' ],
+					'permission_callback' => [ $this, 'get_items_permissions_check' ],
 					'args'                => $this->get_collection_params(),
-				),
-				'schema' => array( $this, 'get_item_schema' ),
-			)
+				],
+				'schema' => [ $this, 'get_item_schema' ],
+			]
 		);
 
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_base . '/(?P<id>[\w-]+)',
-			array(
-				'args'   => array(
-					'id' => array(
+			[
+				'args'   => [
+					'id' => [
 						'description' => __( 'Unique identifier for the object.' ),
 						'type'        => 'string',
-					),
-				),
-				array(
+					],
+				],
+				[
 					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_item' ),
-					'permission_callback' => array( $this, 'get_items_permissions_check' ),
-					'args'                => array(
-						'context' => $this->get_context_param( array( 'default' => 'view' ) ),
-					),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			)
+					'callback'            => [ $this, 'get_item' ],
+					'permission_callback' => [ $this, 'get_items_permissions_check' ],
+					'args'                => [
+						'context' => $this->get_context_param( [ 'default' => 'view' ] ),
+					],
+				],
+				'schema' => [ $this, 'get_public_item_schema' ],
+			]
 		);
 
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_base . '/search/(?P<search>[\w-]+)',
-			array(
-				array(
+			[
+				[
 					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_search' ),
-					'permission_callback' => array( $this, 'get_items_permissions_check' ),
+					'callback'            => [ $this, 'get_search' ],
+					'permission_callback' => [ $this, 'get_items_permissions_check' ],
 					'args'                => $this->get_search_params(),
-				),
-				'schema' => array( $this, 'get_item_schema' ),
-			)
+				],
+				'schema' => [ $this, 'get_item_schema' ],
+			]
 		);
 	}
 
@@ -103,7 +105,8 @@ class RestController extends WP_REST_Controller {
 		$page     = $request->get_param( 'page' );
 		$per_page = $request->get_param( 'per_page' );
 		$order_by = $request->get_param( 'order_by' );
-		$photos   = array();
+		$photos   = [];
+
 		try {
 			$results = Photo::all( $page, $per_page, $order_by )->toArray();
 			foreach ( $results as $photo ) {
@@ -121,9 +124,7 @@ class RestController extends WP_REST_Controller {
 			error_log( $e->getMessage(), $e->getCode() );
 		}
 
-		$response = rest_ensure_response( $photos );
-
-		return $response;
+		return rest_ensure_response( $photos );
 	}
 
 	/**
@@ -135,6 +136,7 @@ class RestController extends WP_REST_Controller {
 	 */
 	public function get_item( $request ) {
 		$id = $request->get_param( 'id' );
+
 		try {
 			$results = Photo::find( $id )->toArray();
 			$photos  = $this->prepare_item_for_response( $results, $request );
@@ -149,9 +151,7 @@ class RestController extends WP_REST_Controller {
 			error_log( $e->getMessage(), $e->getCode() );
 		}
 
-		$response = rest_ensure_response( $photos );
-
-		return $response;
+		return rest_ensure_response( $photos );
 	}
 
 	/**
@@ -167,7 +167,7 @@ class RestController extends WP_REST_Controller {
 		$per_page    = $request->get_param( 'per_page' );
 		$orientation = $request->get_param( 'orientation' );
 		$collections = $request->get_param( 'collections' );
-		$photos      = array();
+		$photos      = [];
 		try {
 			$results = Search::photos( $search, $page, $per_page, $orientation, $collections )->getArrayObject()->toArray();
 			foreach ( $results as $photo ) {
@@ -185,9 +185,7 @@ class RestController extends WP_REST_Controller {
 			error_log( $e->getMessage(), $e->getCode() );
 		}
 
-		$response = rest_ensure_response( $photos );
-
-		return $response;
+		return rest_ensure_response( $photos );
 	}
 
 	/**
@@ -204,16 +202,17 @@ class RestController extends WP_REST_Controller {
 	/**
 	 * Prepares a single photo output for response.
 	 *
-	 * @param Object          $photo Photo object.
+	 * @param array|Object    $photo Photo object.
 	 * @param WP_REST_Request $request Request object.
 	 *
-	 * @return WP_REST_Response Response object.
+	 * @return WP_REST_Response|WP_Error Response object.
 	 */
 	public function prepare_item_for_response( $photo, $request ) {
 		$fields     = $this->get_fields_for_response( $request );
 		$schema     = $this->get_item_schema();
 		$properties = $schema['properties'];
-		$data       = array();
+		$data       = [];
+
 		foreach ( $photo as $field => $value ) {
 			if ( in_array( $field, $fields, true ) ) {
 				$value = rest_sanitize_value_from_schema( $photo[ $field ], $properties[ $field ] );
@@ -227,31 +226,33 @@ class RestController extends WP_REST_Controller {
 		$context = ! empty( $request['context'] ) ? $request['context'] : 'view';
 		$data    = $this->add_additional_fields_to_object( $data, $request );
 		$data    = $this->filter_response_by_context( $data, $context );
-		// Wrap the data in a response object.
-		$response = rest_ensure_response( $data );
 
-		return $response;
+		// Wrap the data in a response object.
+		return rest_ensure_response( $data );
 	}
 
 	/**
-	 * Override default collection params to add unplash fields.
+	 * Override default collection params to add Unsplash fields.
 	 *
 	 * @return array
 	 */
 	public function get_collection_params() {
 		$query_params = parent::get_collection_params();
 		unset( $query_params['search'] );
+
 		$query_params['per_page']['maximum'] = 30;
 		$query_params['order_by']            = [
-			'default' => 'latest',
-			'enum'    => [ 'latest', 'oldest', 'popular' ],
+			'description' => __( 'How to sort the photos. Optional. (Valid values: latest, oldest, popular; default: latest)', 'unsplash' ),
+			'type'        => 'string',
+			'default'     => 'latest',
+			'enum'        => [ 'latest', 'oldest', 'popular' ],
 		];
 
 		return $query_params;
 	}
 
 	/**
-	 * Override default collection for search  params to add unplash fields.
+	 * Override default collection for search  params to add Unsplash fields.
 	 *
 	 * @return array
 	 */
@@ -286,69 +287,70 @@ class RestController extends WP_REST_Controller {
 		}
 		// TODO Add in all required fields.
 
-		$schema       = array(
+		$schema = [
 			'$schema'    => 'http://json-schema.org/draft-04/schema#',
 			'title'      => 'type',
 			'type'       => 'photo',
-			'properties' => array(
-				'id'              => array(
+			'properties' => [
+				'id'              => [
 					'description' => __( 'Unique identifier for the object.', 'unsplash' ),
 					'type'        => 'string',
-					'context'     => array( 'view', 'edit', 'embed' ),
+					'context'     => [ 'view', 'edit', 'embed' ],
 					'readonly'    => true,
-				),
-				'created_at'      => array(
-					'description' => __( "The date the object was published, in the site's timezone.", 'unsplash' ),
-					'type'        => array( 'string', 'null' ),
+				],
+				'created_at'      => [
+					'description' => __( 'The date the object was published.', 'unsplash' ),
+					'type'        => [ 'string', 'null' ],
 					'format'      => 'date-time',
-					'context'     => array( 'view', 'edit', 'embed' ),
-				),
-				'updated_at'      => array(
+					'context'     => [ 'view', 'edit', 'embed' ],
+				],
+				'updated_at'      => [
 					'description' => __( 'The date the object was last modified.', 'unsplash' ),
 					'type'        => 'string',
 					'format'      => 'date-time',
-					'context'     => array( 'view', 'edit' ),
+					'context'     => [ 'view', 'edit' ],
 					'readonly'    => true,
-				),
-				'alt_description' => array(
+				],
+				'alt_description' => [
 					'description' => __( 'Alternative text to display when attachment is not displayed.', 'unsplash' ),
 					'type'        => 'string',
-					'context'     => array( 'view', 'edit', 'embed' ),
+					'context'     => [ 'view', 'edit', 'embed' ],
 					'readonly'    => true,
-				),
-				'description'     => array(
+				],
+				'description'     => [
 					'description' => __( 'Description for the object, as it exists in the database.' ),
 					'type'        => 'string',
-					'context'     => array( 'view', 'edit', 'embed' ),
+					'context'     => [ 'view', 'edit', 'embed' ],
 					'readonly'    => true,
-				),
-				'color'           => array(
+				],
+				'color'           => [
 					'description' => __( 'Color for the object, as it exists in the database.' ),
 					'type'        => 'string',
-					'context'     => array( 'view', 'edit', 'embed' ),
+					'context'     => [ 'view', 'edit', 'embed' ],
 					'readonly'    => true,
-				),
-				'height'          => array(
+				],
+				'height'          => [
 					'description' => __( 'Height for the object.' ),
 					'type'        => 'integer',
-					'context'     => array( 'view', 'edit', 'embed' ),
+					'context'     => [ 'view', 'edit', 'embed' ],
 					'readonly'    => true,
-				),
-				'width'           => array(
+				],
+				'width'           => [
 					'description' => __( 'Width for the object.' ),
 					'type'        => 'integer',
-					'context'     => array( 'view', 'edit', 'embed' ),
+					'context'     => [ 'view', 'edit', 'embed' ],
 					'readonly'    => true,
-				),
-				'urls'            => array(
+				],
+				'urls'            => [
 					'description' => __( 'List of url for default image sizes for the object.' ),
 					'type'        => 'object',
-					'properties'  => array(),
-					'context'     => array( 'view', 'edit', 'embed' ),
+					'properties'  => [],
+					'context'     => [ 'view', 'edit', 'embed' ],
 					'readonly'    => true,
-				),
-			),
-		);
+				],
+			],
+		];
+
 		$this->schema = $schema;
 
 		return $this->add_additional_fields_schema( $this->schema );
