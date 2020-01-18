@@ -14,6 +14,8 @@
 
 namespace XWP\Unsplash;
 
+use XWP\Unsplash\RestAPI\RestController;
+
 // Support for site-level autoloading.
 if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 	require_once __DIR__ . '/vendor/autoload.php';
@@ -26,6 +28,8 @@ if ( ! defined( 'UNSPLASH_APP_SECRET' ) ) {
 	define( 'UNSPLASH_APP_SECRET', getenv( 'UNSPLASH_APP_SECRET' ) );
 }
 
-$router = new Router( new Plugin( __FILE__ ) );
+$plugin          = new Plugin( __FILE__ );
+$rest_controller = new RestController();
+$router          = new Router( $plugin, $rest_controller );
 
 add_action( 'plugins_loaded', [ $router, 'init' ] );
