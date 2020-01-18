@@ -9,11 +9,22 @@ namespace XWP\Unsplash;
 
 use Mockery;
 use WP_Mock;
+use XWP\Unsplash\RestAPI\RestController;
 
 /**
  * Tests for the Router class.
  */
 class TestRouter extends TestCase {
+
+	/**
+	 * This method is called before each test.
+	 */
+	public function setUp() {
+		parent::setUp();
+
+		// This is needed as it won't be available for unit tests.
+		Mockery::mock( 'WP_REST_Controller' );
+	}
 
 	/**
 	 * Test init.
@@ -29,11 +40,14 @@ class TestRouter extends TestCase {
 				1
 			);
 
-		$plugin = new Router( Mockery::mock( Plugin::class ) );
+		$plugin          = Mockery::mock( Plugin::class );
+		$rest_controller = Mockery::mock( RestController::class );
+		$router          = new Router( $plugin, $rest_controller );
 
-		WP_Mock::expectActionAdded( 'admin_enqueue_scripts', [ $plugin, 'enqueue_scripts' ], 10, 1 );
+		WP_Mock::expectActionAdded( 'admin_enqueue_scripts', [ $router, 'enqueue_scripts' ], 10, 1 );
+		WP_Mock::expectActionAdded( 'rest_api_init', [ $router, 'rest_api_init' ], 10, 1 );
 
-		$plugin->init();
+		$router->init();
 	}
 
 	/**
@@ -42,7 +56,8 @@ class TestRouter extends TestCase {
 	 * @covers \XWP\Unsplash\Router::enqueue_scripts()
 	 */
 	public function test_enqueue_scripts() {
-		$plugin = Mockery::mock( Plugin::class );
+		$plugin          = Mockery::mock( Plugin::class );
+		$rest_controller = Mockery::mock( RestController::class );
 
 		$plugin->shouldReceive( 'asset_url' )
 			->once()
@@ -72,7 +87,22 @@ class TestRouter extends TestCase {
 				]
 			);
 
-		$editor_mode = new Router( $plugin );
+		$editor_mode = new Router( $plugin, $rest_controller );
 		$editor_mode->enqueue_scripts();
+	}
+
+	/**
+	 * Test rest_api_init.
+	 *
+	 * @covers \XWP\Unsplash\Router::rest_api_init()
+	 */
+	public function test_rest_api_init() {
+		$plugin          = Mockery::mock( Plugin::class );
+		$rest_controller = Mockery::mock( RestController::class );
+
+		$rest_controller->shouldReceive( 'register_routes' )->once();
+
+		$router = new Router( $plugin, $rest_controller );
+		$router->rest_api_init();
 	}
 }
