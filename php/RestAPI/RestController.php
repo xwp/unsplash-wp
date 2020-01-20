@@ -63,6 +63,7 @@ class RestController extends WP_REST_Controller {
 			[
 				'args'   => [
 					'id' => [
+						'required'    => true,
 						'description' => __( 'Unique identifier for the object.' ),
 						'type'        => 'string',
 					],
@@ -114,14 +115,8 @@ class RestController extends WP_REST_Controller {
 				$photos[] = $this->prepare_response_for_collection( $data );
 			}
 		} catch ( \Exception $e ) {
-			$photos = new WP_Error( 'all-photos', __( 'An unknown error occurred while searching for a photo', 'unsplash' ), [ 'status' => '500' ] );
-
-			/**
-			 * Stop IDE from complaining.
-			 *
-			 * @noinspection ForgottenDebugOutputInspection
-			 */
-			error_log( $e->getMessage(), $e->getCode() );
+			$photos = new WP_Error( 'all-photos', __( 'An unknown error occurred while retrieving the photos', 'unsplash' ), [ 'status' => '500' ] );
+			$this->log_error( $e );
 		}
 
 		return rest_ensure_response( $photos );
@@ -141,14 +136,8 @@ class RestController extends WP_REST_Controller {
 			$results = Photo::find( $id )->toArray();
 			$photos  = $this->prepare_item_for_response( $results, $request );
 		} catch ( \Exception $e ) {
-			$photos = new WP_Error( 'single-photos', __( 'An unknown error occurred while searching for a photo', 'unsplash' ), [ 'status' => '500' ] );
-
-			/**
-			 * Stop IDE from complaining.
-			 *
-			 * @noinspection ForgottenDebugOutputInspection
-			 */
-			error_log( $e->getMessage(), $e->getCode() );
+			$photos = new WP_Error( 'single-photo', __( 'An unknown error occurred while retrieving the photo', 'unsplash' ), [ 'status' => '500' ] );
+			$this->log_error( $e );
 		}
 
 		return rest_ensure_response( $photos );
@@ -176,13 +165,7 @@ class RestController extends WP_REST_Controller {
 			}
 		} catch ( \Exception $e ) {
 			$photos = new WP_Error( 'search-photos', __( 'An unknown error occurred while searching for a photo', 'unsplash' ), [ 'status' => '500' ] );
-
-			/**
-			 * Stop IDE from complaining.
-			 *
-			 * @noinspection ForgottenDebugOutputInspection
-			 */
-			error_log( $e->getMessage(), $e->getCode() );
+			$this->log_error( $e );
 		}
 
 		return rest_ensure_response( $photos );
@@ -195,7 +178,7 @@ class RestController extends WP_REST_Controller {
 	 * @return WP_Error|bool True if the request has read access for the item, WP_Error object otherwise.
 	 */
 	public function get_items_permissions_check( $request ) {
-		// TODO Change permsissions to edit_posts.
+		// TODO Change permissions to edit_posts.
 		return true;
 	}
 
@@ -240,9 +223,12 @@ class RestController extends WP_REST_Controller {
 		$query_params = parent::get_collection_params();
 		unset( $query_params['search'] );
 
+		$query_params['context']['default'] = 'view';
+
 		$query_params['per_page']['maximum'] = 30;
-		$query_params['order_by']            = [
-			'description' => __( 'How to sort the photos. Optional. (Valid values: latest, oldest, popular; default: latest)', 'unsplash' ),
+
+		$query_params['order_by'] = [
+			'description' => __( 'How to sort the photos.', 'unsplash' ),
 			'type'        => 'string',
 			'default'     => 'latest',
 			'enum'        => [ 'latest', 'oldest', 'popular' ],
@@ -259,13 +245,24 @@ class RestController extends WP_REST_Controller {
 	public function get_search_params() {
 		$query_params = parent::get_collection_params();
 
+		$query_params['context']['default'] = 'view';
+
+		$query_params['search'] = [
+			'required'    => true,
+			'description' => 'Limit results to those matching a string.',
+			'type'        => 'string',
+		];
+
 		$query_params['orientation'] = [
 			'default' => null,
 			'enum'    => [ 'landscape', 'portrait', 'squarish' ],
-
+			'type'    => 'string',
 		];
+
 		$query_params['collections'] = [
 			'default'           => null,
+			'type'              => 'string',
+			'description'       => 'Collection ID(‘s) to narrow search. If multiple, comma-separated.',
 			'validate_callback' => static function ( $param ) {
 				return ! empty( $param );
 			},
@@ -354,5 +351,27 @@ class RestController extends WP_REST_Controller {
 		$this->schema = $schema;
 
 		return $this->add_additional_fields_schema( $this->schema );
+	}
+
+	/**
+	 * Log an exception.
+	 *
+	 * @param \Exception $e Exception.
+	 */
+	private function log_error( \Exception $e ) {
+		$message = sprintf(
+			"%1\$s: %2\$s\n%3\$s:\n%4\$s",
+			__( 'Error', 'unsplash' ),
+			$e->getMessage(),
+			__( 'Stack Trace', 'unsplash' ),
+			$e->getTraceAsString()
+		);
+
+		/**
+		 * Stop IDE from complaining.
+		 *
+		 * @noinspection ForgottenDebugOutputInspection
+		 */
+		error_log( $message, $e->getCode() );
 	}
 }
