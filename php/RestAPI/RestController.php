@@ -63,7 +63,6 @@ class RestController extends WP_REST_Controller {
 			[
 				'args'   => [
 					'id' => [
-						'required'    => true,
 						'description' => __( 'Unique identifier for the object.' ),
 						'type'        => 'string',
 					],
@@ -248,21 +247,21 @@ class RestController extends WP_REST_Controller {
 		$query_params['context']['default'] = 'view';
 
 		$query_params['search'] = [
-			'required'    => true,
-			'description' => 'Limit results to those matching a string.',
+			'description' => __( 'Limit results to those matching a string.', 'unsplash' ),
 			'type'        => 'string',
 		];
 
 		$query_params['orientation'] = [
-			'default' => null,
-			'enum'    => [ 'landscape', 'portrait', 'squarish' ],
-			'type'    => 'string',
+			'default'     => null,
+			'enum'        => [ 'landscape', 'portrait', 'squarish' ],
+			'description' => __( 'Filter search results by photo orientation.', 'unsplash' ),
+			'type'        => 'string',
 		];
 
 		$query_params['collections'] = [
 			'default'           => null,
 			'type'              => 'string',
-			'description'       => 'Collection ID(‘s) to narrow search. If multiple, comma-separated.',
+			'description'       => __( 'Collection ID(‘s) to narrow search. If multiple, comma-separated.', 'unsplash' ),
 			'validate_callback' => static function ( $param ) {
 				return ! empty( $param );
 			},
