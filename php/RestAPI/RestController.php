@@ -263,7 +263,8 @@ class RestController extends WP_REST_Controller {
 			'type'              => 'string',
 			'description'       => __( 'Collection ID(‘s) to narrow search. If multiple, comma-separated.', 'unsplash' ),
 			'validate_callback' => static function ( $param ) {
-				return ! empty( $param );
+				// Only comma-separated digits are accepted.
+				return (bool) preg_match( '/^(\d+)(,\d+)*/', $param );
 			},
 		];
 
