@@ -7,8 +7,6 @@
 
 namespace XWP\Unsplash;
 
-use XWP\Unsplash\RestAPI\RestController;
-
 /**
  * Plugin Router.
  */
