@@ -5,7 +5,7 @@
  * @package XWP\Unsplash\RestAPI.
  */
 
-namespace XWP\Unsplash\RestAPI;
+namespace XWP\Unsplash;
 
 use Crew\Unsplash\HttpClient;
 use Crew\Unsplash\Photo;
@@ -262,15 +262,29 @@ class RestController extends WP_REST_Controller {
 			'default'           => null,
 			'type'              => 'string',
 			'description'       => __( 'Collection ID(‘s) to narrow search. If multiple, comma-separated.', 'unsplash' ),
-			'validate_callback' => static function ( $param ) {
-				// Only comma-separated digits are accepted.
-				return (bool) preg_match( '/^(\d+)(,\d+)*/', $param );
-			},
+			'validate_callback' => [ static::class, 'validate_get_search_param' ],
 		];
 
 		$query_params['per_page']['maximum'] = 30;
 
 		return $query_params;
+	}
+
+	/**
+	 * Validate parameters for get_search().
+	 *
+	 * @param string          $value   Parameter value.
+	 * @param WP_REST_Request $request Request.
+	 * @param string          $param   Parameter name.
+	 * @return bool True if valid, false if not.
+	 */
+	public static function validate_get_search_param( $value, $request, $param ) {
+		if ( 'collections' === $param ) {
+			// Only digits are accepted. If there are multiple IDs, they must be comma delimited.
+			return (bool) preg_match( '/^(\d+(,\d+)*)$/', $value );
+		}
+
+		return true;
 	}
 
 	/**
@@ -300,12 +314,13 @@ class RestController extends WP_REST_Controller {
 					'type'        => [ 'string', 'null' ],
 					'format'      => 'date-time',
 					'context'     => [ 'view', 'edit', 'embed' ],
+					'readonly'    => true,
 				],
 				'updated_at'      => [
 					'description' => __( 'The date the object was last modified.', 'unsplash' ),
 					'type'        => 'string',
 					'format'      => 'date-time',
-					'context'     => [ 'view', 'edit' ],
+					'context'     => [ 'view', 'edit', 'embed' ],
 					'readonly'    => true,
 				],
 				'alt_description' => [

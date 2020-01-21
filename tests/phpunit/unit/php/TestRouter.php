@@ -2,14 +2,13 @@
 /**
  * Tests for Router class.
  *
- * @package Unsplash
+ * @package XWP\Unsplash
  */
 
 namespace XWP\Unsplash;
 
 use Mockery;
 use WP_Mock;
-use XWP\Unsplash\RestAPI\RestController;
 
 /**
  * Tests for the Router class.
