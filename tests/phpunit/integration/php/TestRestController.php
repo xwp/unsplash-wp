@@ -137,10 +137,12 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
 
+		// The `updated_at` value is expected to change frequently.
+		unset( $data['updated_at'] );
+
 		$expected = [
 			'id'              => 'uRuPYB0P8to',
 			'created_at'      => '2019-05-27T14:23:58-04:00',
-			'updated_at'      => '2020-01-14T00:03:19-05:00',
 			'width'           => 4002,
 			'height'          => 6000,
 			'color'           => '#D9E8EF',
