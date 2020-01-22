@@ -6,7 +6,6 @@ services:
 install:
   - npm install
   - docker-compose up -d && sleep 10
-  - npm run docker -- PATH=$PATH:$HOME/.composer/vendor/bin
   - npm run docker -- composer global require --no-suggest --no-scripts --no-interaction --no-ansi nimut/phpunit-merger:0.3.2
 
 script:
@@ -14,7 +13,7 @@ script:
   - npm run docker -- npm run test:php:coverage
 
 after_success:
-  - npm run docker -- npm run coverage:merge:php
+  - npm run docker -- PATH=$PATH:$HOME/.composer/vendor/bin npm run coverage:merge:php
   - DOCKER_BUILD_DIR=/var/www/html/wp-content/plugins/unsplash-wp
   - sudo find tests/reports -type f -exec sed -i "s#$DOCKER_BUILD_DIR#$TRAVIS_BUILD_DIR#g" {} \;
   - npm run coverage:php
