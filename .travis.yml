@@ -13,7 +13,7 @@ script:
   - npm run docker -- npm run test:php:coverage
 
 after_success:
-  - npm run docker -- PATH=\$PATH:/root/.composer/vendor/bin npm run coverage:merge:php
+  - docker-compose run --workdir=/var/www/html/wp-content/plugins/unsplash-wp -e PATH=${PATH}:/root/.composer/vendor/bin wordpress npm run coverage:merge:php
   - DOCKER_BUILD_DIR=/var/www/html/wp-content/plugins/unsplash-wp
   - sudo find tests/reports -type f -exec sed -i "s#$DOCKER_BUILD_DIR#$TRAVIS_BUILD_DIR#g" {} \;
   - npm run coverage:php
