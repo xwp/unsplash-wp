@@ -251,7 +251,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 
 		$this->assertEquals( $status_code, $response->get_status() );
 		if ( 400 === $status_code ) {
-			$this->assertEquals( $response->data['code'], 'rest_invalid_param' );
+			$this->assertEquals( 'rest_invalid_param', $response->data['code'] );
 		}
 	}
 
