@@ -46,6 +46,9 @@
       "@composer validate --strict",
       "phpcs . -v"
     ],
+    "format": [
+      "phpcbf . -v"
+    ],
     "test": [
       "phpunit"
     ],
