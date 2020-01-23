@@ -117,6 +117,7 @@ class RestController extends WP_REST_Controller {
 		$page      = $request->get_param( 'page' );
 		$per_page  = $request->get_param( 'per_page' );
 		$order_by  = $request->get_param( 'order_by' );
+		$format    = $request->get_param( 'format' );
 		$photos    = [];
 		$total     = 0;
 		$max_pages = 0;
@@ -135,7 +136,15 @@ class RestController extends WP_REST_Controller {
 			$this->log_error( $e );
 		}
 
-		$response = rest_ensure_response( $photos );
+		$data = $photos;
+		if ( 'ajax' === $format && ! is_wp_error( $photos ) ) {
+			$data = [
+				'success' => true,
+				'data'    => $photos,
+			];
+		}
+
+		$response = rest_ensure_response( $data );
 
 		$response->header( 'X-WP-Total', (int) $total );
 		$response->header( 'X-WP-TotalPages', (int) $max_pages );
@@ -207,6 +216,7 @@ class RestController extends WP_REST_Controller {
 	 * Checks if a given request has access to get a specific item.
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
+	 *
 	 * @return WP_Error|bool True if the request has read access for the item, WP_Error object otherwise.
 	 */
 	public function get_items_permissions_check( $request ) {
@@ -223,6 +233,11 @@ class RestController extends WP_REST_Controller {
 	 * @return WP_REST_Response|WP_Error Response object.
 	 */
 	public function prepare_item_for_response( $photo, $request ) {
+
+		if ( 'ajax' === $request['format'] ) {
+			return $this->wp_prepare_attachment_for_js( $photo );
+		}
+
 		$fields     = $this->get_fields_for_response( $request );
 		$schema     = $this->get_item_schema();
 		$properties = $schema['properties'];
@@ -296,6 +311,12 @@ class RestController extends WP_REST_Controller {
 			'type'              => 'string',
 			'description'       => __( 'Collection ID(‘s) to narrow search. If multiple, comma-separated.', 'unsplash' ),
 			'validate_callback' => [ static::class, 'validate_get_search_param' ],
+		];
+
+		$query_params['format'] = [
+			'default' => 'rest',
+			'type'    => 'string',
+			'enum'    => [ 'rest', 'ajax' ],
 		];
 
 		$query_params['per_page']['maximum'] = 30;
@@ -426,5 +447,108 @@ class RestController extends WP_REST_Controller {
 		 * @noinspection ForgottenDebugOutputInspection
 		 */
 		error_log( $message, $e->getCode() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+	}
+
+
+	/**
+	 * Custom wp_prepare_attachment_for_js copied from core.
+	 *
+	 * @param array $image Image object.
+	 *
+	 * @return array
+	 */
+	public function wp_prepare_attachment_for_js( array $image ) {
+		$image = (object) $image;
+
+		$response = array(
+			'id'            => $image->id,
+			'title'         => '',
+			'filename'      => $image->id . '.jpg',
+			'url'           => $image->urls['raw'],
+			'link'          => $image->links['html'],
+			'alt'           => $image->alt_description,
+			'author'        => 1,
+			'description'   => $image->description,
+			'caption'       => '',
+			'name'          => '',
+			'height'        => $image->height,
+			'width'         => $image->width,
+			'status'        => 'inherit',
+			'uploadedTo'    => 0,
+			'date'          => strtotime( $image->created_at ) * 1000,
+			'modified'      => strtotime( $image->updated_at ) * 1000,
+			'menuOrder'     => 0,
+			'mime'          => 'image/jpeg',
+			'type'          => 'image',
+			'subtype'       => 'jpeg',
+			'icon'          => add_query_arg(
+				[
+					'w'   => 150,
+					'h'   => 150,
+					'q'   => 85,
+					'fit' => 'crop',
+				],
+				$image->urls['raw']
+			),
+			'dateFormatted' => mysql2date( __( 'F j, Y' ), $image->created_at ),
+			'nonces'        => array(
+				'update' => false,
+				'delete' => false,
+				'edit'   => false,
+			),
+			'editLink'      => false,
+			'meta'          => false,
+		);
+
+		$sizes = [
+			'full' => [
+				'url'    => $image->urls['raw'],
+				'height' => $image->height,
+				'width'  => $image->width,
+			],
+		];
+
+		foreach ( $this->image_sizes() as $name => $size ) {
+			$url            = add_query_arg(
+				[
+					'w'   => $size['height'],
+					'h'   => $size['width'],
+					'q'   => 85,
+					'fit' => 'crop',
+				],
+				$image->urls['raw']
+			);
+			$sizes[ $name ] = [
+				'url'    => $url,
+				'height' => $size['height'],
+				'width'  => $size['width'],
+			];
+		}
+		$response['sizes'] = $sizes;
+
+		return $response;
+	}
+
+	/**
+	 * Get a list of image sizes.
+	 *
+	 * @return array
+	 */
+	public function image_sizes() {
+		global $_wp_additional_image_sizes;
+		$sizes = array();
+		foreach ( get_intermediate_image_sizes() as $s ) {
+			if ( in_array( $s, array( 'thumbnail', 'medium', 'medium_large', 'large' ), true ) ) {
+				$sizes[ $s ]['width']  = get_option( $s . '_size_w' );
+				$sizes[ $s ]['height'] = get_option( $s . '_size_h' );
+			} else {
+				if ( isset( $_wp_additional_image_sizes, $_wp_additional_image_sizes[ $s ] ) ) {
+					$sizes[ $s ]['height'] = $_wp_additional_image_sizes[ $s ]['height'];
+				}
+				$sizes[ $s ]['width'] = $_wp_additional_image_sizes[ $s ]['width'];
+			}
+		}
+
+		return $sizes;
 	}
 }
