@@ -31,22 +31,30 @@ class TestRouter extends TestCase {
 	 * @covers \XWP\Unsplash\Router::init()
 	 */
 	public function test_init() {
+		WP_Mock::userFunction( 'remove_action' )
+		       ->once()
+		       ->with(
+			       'wp_ajax_send-attachment-to-editor',
+			       'wp_ajax_send_attachment_to_editor',
+			       1
+		       );
+
 		$plugin          = Mockery::mock( Plugin::class );
 		$rest_controller = Mockery::mock( RestController::class );
 		$router          = new Router( $plugin, $rest_controller );
 
-		WP_Mock::expectActionAdded( 'enqueue_block_editor_assets', [ $router, 'enqueue_editor_assets' ], 10, 1 );
+		WP_Mock::expectActionAdded( 'admin_enqueue_scripts', [ $plugin, 'enqueue_scripts' ], 10, 1 );
 		WP_Mock::expectActionAdded( 'rest_api_init', [ $router, 'rest_api_init' ], 10, 1 );
 
 		$router->init();
 	}
 
 	/**
-	 * Test enqueue_editor_assets.
+	 * Test enqueue_scripts.
 	 *
-	 * @covers \XWP\Unsplash\Router::enqueue_editor_assets()
+	 * @covers \XWP\Unsplash\Router::enqueue_scripts()
 	 */
-	public function test_enqueue_editor_assets() {
+	public function test_enqueue_scripts() {
 		$plugin          = Mockery::mock( Plugin::class );
 		$rest_controller = Mockery::mock( RestController::class );
 
@@ -68,8 +76,18 @@ class TestRouter extends TestCase {
 				'1.2.3'
 			);
 
+		WP_Mock::userFunction( 'wp_localize_script' )
+		       ->once()
+		       ->with(
+			       'unsplash-js',
+			       'unsplashSettings',
+			       [
+				       'tabTitle' => __( 'Unsplash', 'unsplash' ),
+			       ]
+		       );
+
 		$block_extend = new Router( $plugin, $rest_controller );
-		$block_extend->enqueue_editor_assets();
+		$block_extend->enqueue_scripts();
 	}
 
 	/**
