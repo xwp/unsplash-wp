@@ -77,10 +77,9 @@ const QueryUnsplash = () => {
 					action: 'query-unsplash',
 					post_id: wp.media.model.settings.post.id,
 				} );
-				this.args.posts_per_page = Math.min(this.args.posts_per_page, 20);
+				this.args.posts_per_page = Math.min( this.args.posts_per_page, 30 );
 				// Clone the args so manipulation is non-destructive.
 				args = _.clone( this.args );
-
 
 				// Determine which page to query.
 				if ( -1 !== args.posts_per_page ) {
@@ -91,7 +90,7 @@ const QueryUnsplash = () => {
 				options.url = '/wp-json/unsplash/v1/photos';
 				options.type = 'GET';
 				options.data.format = 'ajax';
-				options.data.per_page = Math.min(options.data.query.posts_per_page, 20);
+				options.data.per_page = Math.min( options.data.query.posts_per_page, 30 );
 				options.data.search = options.data.query.s;
 				options.data.page = options.data.query.paged;
 
