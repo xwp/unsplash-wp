@@ -16,6 +16,8 @@
     "postinstall": "composer install --ignore-platform-reqs",
     "dev": "wp-scripts start",
     "build": "wp-scripts build",
+    "env:start": "docker-compose up -d",
+    "env:stop": "docker-compose stop",
     "lint": "npm-run-all --parallel lint:*",
     "lint:css": "wp-scripts lint-style",
     "lint:js": "eslint js/src",
