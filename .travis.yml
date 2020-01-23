@@ -26,6 +26,7 @@ notifications:
 branches:
   only:
   - master
+  - develop
 
 cache:
   npm: true
