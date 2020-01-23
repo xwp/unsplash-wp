@@ -39,6 +39,8 @@ class Router {
 		add_action( 'wp_ajax_query-unsplash', [ $this, 'wp_ajax_query_unsplash' ] );
 		remove_action( 'wp_ajax_send-attachment-to-editor', 'wp_ajax_send_attachment_to_editor', 1 );
 		add_action( 'wp_ajax_send-attachment-to-editor', [ $this, 'wp_ajax_send_attachment_to_editor' ], 0 );
+		add_action( 'init', [ $this, 'register_taxonomy' ] );
+		add_action( 'init', [ $this, 'register_meta' ] );
 	}
 
 	/**
@@ -302,5 +304,101 @@ class Router {
 		wp_send_json_success( $html );
 	}
 
+	/**
+	 * Register meta field for attachments.
+	 */
+	public function register_meta() {
+		$default_args = [
+			'single'         => true,
+			'show_in_rest'   => true,
+			'object_subtype' => $this->post_type,
+		];
 
+		$default_object_schema = [
+			'type'                 => 'object',
+			'properties'           => [],
+			'additionalProperties' => true,
+		];
+
+		$meta_args = [
+			'original_id'       => [],
+			'original_url'      => [
+				'type'         => 'string',
+				'show_in_rest' => [
+					'name'   => 'original_url',
+					'type'   => 'string',
+					'schema' => [
+						'type'   => 'string',
+						'format' => 'uri',
+					],
+				],
+			],
+			'color'             => [],
+			'unsplash_location' => [
+				'type'         => 'object',
+				'show_in_rest' => [
+					'name'   => 'unsplash_location',
+					'type'   => 'object',
+					'schema' => $default_object_schema,
+				],
+			],
+			'unsplash_sponsor'  => [
+				'type'         => 'object',
+				'show_in_rest' => [
+					'name'   => 'unsplash_sponsor',
+					'type'   => 'object',
+					'schema' => $default_object_schema,
+				],
+			],
+			'unsplash_exif'     => [
+				'type'         => 'object',
+				'show_in_rest' => [
+					'name'   => 'unsplash_exif',
+					'type'   => 'object',
+					'schema' => $default_object_schema,
+				],
+			],
+		];
+
+		foreach ( $meta_args as $name => $args ) {
+			$args = wp_parse_args( $args, $default_args );
+			register_meta( 'post', $name, $args );
+		}
+	}
+
+	/**
+	 * Register taxonomies for attachments.
+	 */
+	public function register_taxonomy() {
+		$default_args = [
+			'public'       => false,
+			'rewrite'      => false,
+			'hierarchical' => false,
+			'show_in_rest' => true,
+		];
+
+		$tax_args = [
+			'media_tag'     => [],
+			'media_source'  => [
+				'labels'            => [
+					'name'          => __( 'Sources', 'unsplash' ),
+					'singular_name' => __( 'Source', 'unsplash' ),
+					'all_items'     => __( 'All Sources', 'unsplash' ),
+				],
+				'show_admin_column' => true,
+			],
+			'unsplash_user' => [
+				'labels' => [
+					'name'          => __( 'Users', 'unsplash' ),
+					'singular_name' => __( 'User', 'unsplash' ),
+					'all_items'     => __( 'All users', 'unsplash' ),
+				],
+			],
+		];
+
+		foreach ( $tax_args as $name => $args ) {
+			$args = wp_parse_args( $args, $default_args );
+			register_taxonomy( $name, $this->post_type, $args );
+		}
+	}
 }
