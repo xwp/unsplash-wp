@@ -102,13 +102,18 @@ class RestController extends WP_REST_Controller {
 	 * @return WP_REST_Response Single page of photo results.
 	 */
 	public function get_items( $request ) {
-		$page     = $request->get_param( 'page' );
-		$per_page = $request->get_param( 'per_page' );
-		$order_by = $request->get_param( 'order_by' );
-		$photos   = [];
+		$page      = $request->get_param( 'page' );
+		$per_page  = $request->get_param( 'per_page' );
+		$order_by  = $request->get_param( 'order_by' );
+		$photos    = [];
+		$total     = 0;
+		$max_pages = 0;
 
 		try {
-			$results = Photo::all( $page, $per_page, $order_by )->toArray();
+			$api_response = Photo::all( $page, $per_page, $order_by );
+			$results      = $api_response->toArray();
+			$max_pages    = $api_response->totalPages();
+			$total        = $api_response->totalObjects();
 			foreach ( $results as $photo ) {
 				$data     = $this->prepare_item_for_response( $photo, $request );
 				$photos[] = $this->prepare_response_for_collection( $data );
@@ -118,7 +123,12 @@ class RestController extends WP_REST_Controller {
 			$this->log_error( $e );
 		}
 
-		return rest_ensure_response( $photos );
+		$response = rest_ensure_response( $photos );
+
+		$response->header( 'X-WP-Total', (int) $total );
+		$response->header( 'X-WP-TotalPages', (int) $max_pages );
+
+		return $response;
 	}
 
 	/**
@@ -156,8 +166,14 @@ class RestController extends WP_REST_Controller {
 		$orientation = $request->get_param( 'orientation' );
 		$collections = $request->get_param( 'collections' );
 		$photos      = [];
+		$total       = 0;
+		$max_pages   = 0;
+
 		try {
-			$results = Search::photos( $search, $page, $per_page, $orientation, $collections )->getArrayObject()->toArray();
+			$api_response = Search::photos( $search, $page, $per_page, $orientation, $collections );
+			$results      = $api_response->getArrayObject()->toArray();
+			$max_pages    = $api_response->totalPages();
+			$total        = $api_response->totalObjects();
 			foreach ( $results as $photo ) {
 				$data     = $this->prepare_item_for_response( $photo, $request );
 				$photos[] = $this->prepare_response_for_collection( $data );
@@ -167,7 +183,12 @@ class RestController extends WP_REST_Controller {
 			$this->log_error( $e );
 		}
 
-		return rest_ensure_response( $photos );
+		$response = rest_ensure_response( $photos );
+
+		$response->header( 'X-WP-Total', (int) $total );
+		$response->header( 'X-WP-TotalPages', (int) $max_pages );
+
+		return $response;
 	}
 
 	/**
