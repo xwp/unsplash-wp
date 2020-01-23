@@ -170,8 +170,8 @@ class RestController extends WP_REST_Controller {
 		$max_pages   = 0;
 
 		try {
-			$api_response = Search::photos( $search, $page, $per_page, $orientation, $collections );
-			$results      = $api_response->getArrayObject()->toArray();
+			$api_response = Search::photos( $search, $page, $per_page, $orientation, $collections )->getArrayObject();
+			$results      = $api_response->toArray();
 			$max_pages    = $api_response->totalPages();
 			$total        = $api_response->totalObjects();
 			foreach ( $results as $photo ) {
