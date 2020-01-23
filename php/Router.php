@@ -45,7 +45,6 @@ class Router {
 	public function init() {
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 		add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_editor_assets' ] );
-		add_action( 'wp_ajax_query-unsplash', [ $this, 'wp_ajax_query_unsplash' ] );
 		remove_action( 'wp_ajax_send-attachment-to-editor', 'wp_ajax_send_attachment_to_editor', 1 );
 		add_action( 'wp_ajax_send-attachment-to-editor', [ $this, 'wp_ajax_send_attachment_to_editor' ], 0 );
 		add_action( 'rest_api_init', [ $this, 'rest_api_init' ] );
@@ -87,22 +86,6 @@ class Router {
 	}
 
 	/**
-	 * Ajax handler for querying attachments.
-	 */
-	public function wp_ajax_query_unsplash() {
-		if ( ! current_user_can( 'upload_files' ) ) {
-			wp_send_json_error();
-		}
-
-		$images = $this->get_images();
-
-		$images = array_map( [ $this, 'wp_prepare_attachment_for_js' ], $images );
-		$images = array_filter( $images );
-
-		wp_send_json_success( $images );
-	}
-
-	/**
 	 * Placeholder to get images
 	 *
 	 * @return mixed
@@ -115,107 +98,6 @@ class Router {
 			$images = [];
 		}
 		return $images;
-	}
-
-	/**
-	 * Custom wp_prepare_attachment_for_js copied from core.
-	 *
-	 * @param array $image Image object.
-	 *
-	 * @return array
-	 */
-	public function wp_prepare_attachment_for_js( array $image ) {
-		$image = (object) $image;
-
-		$response = array(
-			'id'            => $image->id,
-			'title'         => '',
-			'filename'      => $image->id . '.jpg',
-			'url'           => $image->urls['raw'],
-			'link'          => $image->links['html'],
-			'alt'           => $image->alt_description,
-			'author'        => $image->author,
-			'description'   => $image->description,
-			'caption'       => '',
-			'name'          => '',
-			'height'        => $image->height,
-			'width'         => $image->width,
-			'status'        => 'inherit',
-			'uploadedTo'    => 0,
-			'date'          => strtotime( $image->created_at ) * 1000,
-			'modified'      => strtotime( $image->updated_at ) * 1000,
-			'menuOrder'     => 0,
-			'mime'          => 'image/jpeg',
-			'type'          => 'image',
-			'subtype'       => 'jpeg',
-			'icon'          => add_query_arg(
-				[
-					'w'   => 150,
-					'h'   => 150,
-					'q'   => 85,
-					'fit' => 'crop',
-				],
-				$image->urls['raw']
-			),
-			'dateFormatted' => mysql2date( __( 'F j, Y' ), $image->created_at ),
-			'nonces'        => array(
-				'update' => false,
-				'delete' => false,
-				'edit'   => false,
-			),
-			'editLink'      => false,
-			'meta'          => false,
-		);
-
-		$sizes = [
-			'full' => [
-				'url'    => $image->urls['raw'],
-				'height' => $image->height,
-				'width'  => $image->width,
-			],
-		];
-
-		foreach ( $this->image_sizes() as $name => $size ) {
-			$url            = add_query_arg(
-				[
-					'w'   => $size['height'],
-					'h'   => $size['width'],
-					'q'   => 85,
-					'fit' => 'crop',
-				],
-				$image->urls['raw']
-			);
-			$sizes[ $name ] = [
-				'url'    => $url,
-				'height' => $size['height'],
-				'width'  => $size['width'],
-			];
-		}
-		$response['sizes'] = $sizes;
-		return $response;
-	}
-
-	/**
-	 * Get a list of image sizes.
-	 *
-	 * @return array
-	 */
-	public function image_sizes() {
-		global $_wp_additional_image_sizes;
-		$sizes = array();
-		foreach ( get_intermediate_image_sizes() as $s ) {
-			if ( in_array( $s, array( 'thumbnail', 'medium', 'medium_large', 'large' ), true ) ) {
-				$sizes[ $s ]['width']  = get_option( $s . '_size_w' );
-				$sizes[ $s ]['height'] = get_option( $s . '_size_h' );
-			} else {
-				if ( isset( $_wp_additional_image_sizes, $_wp_additional_image_sizes[ $s ] ) ) {
-					$sizes[ $s ]['height'] = $_wp_additional_image_sizes[ $s ]['height'];
-				}
-					$sizes[ $s ]['width'] = $_wp_additional_image_sizes[ $s ]['width'];
-			}
-		}
-
-		return $sizes;
 	}
 
 	/**
