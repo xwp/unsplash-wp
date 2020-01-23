@@ -29,11 +29,11 @@ class Router {
 	/**
 	 * Setup the plugin instance.
 	 *
-	 * @param Plugin $plugin Instance of the plugin abstraction.
+	 * @param Plugin         $plugin Instance of the plugin abstraction.
 	 * @param RestController $rest_controller Instance of the REST API controller.
 	 */
 	public function __construct( $plugin, $rest_controller ) {
-		$this->plugin = $plugin;
+		$this->plugin          = $plugin;
 		$this->rest_controller = $rest_controller;
 	}
 

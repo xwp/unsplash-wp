@@ -32,12 +32,12 @@ class TestRouter extends TestCase {
 	 */
 	public function test_init() {
 		WP_Mock::userFunction( 'remove_action' )
-		       ->once()
-		       ->with(
-			       'wp_ajax_send-attachment-to-editor',
-			       'wp_ajax_send_attachment_to_editor',
-			       1
-		       );
+			->once()
+			->with(
+				'wp_ajax_send-attachment-to-editor',
+				'wp_ajax_send_attachment_to_editor',
+				1
+			);
 
 		$plugin          = Mockery::mock( Plugin::class );
 		$rest_controller = Mockery::mock( RestController::class );
@@ -77,14 +77,14 @@ class TestRouter extends TestCase {
 			);
 
 		WP_Mock::userFunction( 'wp_localize_script' )
-		       ->once()
-		       ->with(
-			       'unsplash-js',
-			       'unsplashSettings',
-			       [
-				       'tabTitle' => __( 'Unsplash', 'unsplash' ),
-			       ]
-		       );
+			->once()
+			->with(
+				'unsplash-js',
+				'unsplashSettings',
+				[
+					'tabTitle' => __( 'Unsplash', 'unsplash' ),
+				]
+			);
 
 		$block_extend = new Router( $plugin, $rest_controller );
 		$block_extend->enqueue_scripts();
