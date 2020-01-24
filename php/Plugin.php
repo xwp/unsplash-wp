@@ -89,6 +89,16 @@ class Plugin {
 	}
 
 	/**
+	 * Get the public PATH to the asset file.
+	 *
+	 * @param string $path_relative Path relative to this plugin directory root.
+	 * @return string The PATH to the asset.
+	 */
+	public function asset_dir( $path_relative ) {
+		return plugin_dir_path( $this->file() ) . $path_relative;
+	}
+
+	/**
 	 * Get absolute path to a file in the uploads directory.
 	 *
 	 * @param  string $path_relative File path relative to the root of the WordPress uploads directory.
