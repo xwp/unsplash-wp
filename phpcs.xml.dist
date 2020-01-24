@@ -24,7 +24,7 @@
 	<exclude-pattern>*/node_modules/*</exclude-pattern>
 	<exclude-pattern>*/tests/reports/*</exclude-pattern>
 	<exclude-pattern>*/vendor/*</exclude-pattern>
-	<exclude-pattern>*js/dist/*</exclude-pattern>
+	<exclude-pattern>*/js/dist/*</exclude-pattern>
 	<exclude-pattern>tests/phpunit/bootstrap-integration.php</exclude-pattern>
 	<exclude-pattern>tests/phpunit/wp-tests-config.php</exclude-pattern>
 </ruleset>
