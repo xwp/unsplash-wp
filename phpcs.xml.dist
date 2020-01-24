@@ -25,6 +25,4 @@
 	<exclude-pattern>*/tests/reports/*</exclude-pattern>
 	<exclude-pattern>*/vendor/*</exclude-pattern>
 	<exclude-pattern>*/js/*</exclude-pattern>
-	<exclude-pattern>tests/phpunit/bootstrap-integration.php</exclude-pattern>
-	<exclude-pattern>tests/phpunit/wp-tests-config.php</exclude-pattern>
 </ruleset>
