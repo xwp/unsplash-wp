@@ -20,6 +20,11 @@ class Router {
 	protected $plugin;
 
 	/**
+	 * Post Type to add fields to.
+	 */
+	const POST_TYPE = 'attachment';
+
+	/**
 	 * Setup the plugin instance.
 	 *
 	 * @param Plugin $plugin Instance of the plugin abstraction.
@@ -311,7 +316,7 @@ class Router {
 		$default_args = [
 			'single'         => true,
 			'show_in_rest'   => true,
-			'object_subtype' => $this->post_type,
+			'object_subtype' => self::POST_TYPE,
 		];
 
 		$default_object_schema = [
@@ -398,7 +403,7 @@ class Router {
 
 		foreach ( $tax_args as $name => $args ) {
 			$args = wp_parse_args( $args, $default_args );
-			register_taxonomy( $name, $this->post_type, $args );
+			register_taxonomy( $name, self::POST_TYPE, $args );
 		}
 	}
 }
