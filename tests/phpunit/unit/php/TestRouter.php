@@ -18,7 +18,7 @@ class TestRouter extends TestCase {
 	/**
 	 * This method is called before each test.
 	 */
-	public function setUp() {
+	public function setUp() : void {
 		parent::setUp();
 
 		// This is needed as it won't be available for unit tests.
