@@ -5,7 +5,7 @@
  * @package Unsplash
  */
 
-define( 'ABSPATH', __DIR__ . '/../../data/wordpress/html/' );
+define( 'ABSPATH', '/var/www/html/' );
 
 // Test with multisite enabled.
 // Alternatively, use the tests/phpunit/multisite.xml configuration file.
