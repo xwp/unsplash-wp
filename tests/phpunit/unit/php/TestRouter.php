@@ -14,23 +14,13 @@ use WP_Mock;
  * Tests for the Router class.
  */
 class TestRouter extends TestCase {
-
-	/**
-	 * This method is called before each test.
-	 */
-	public function setUp() : void {
-		parent::setUp();
-
-		// This is needed as it won't be available for unit tests.
-		Mockery::mock( 'WP_REST_Controller' );
-	}
-
 	/**
 	 * Test init.
 	 *
 	 * @covers \XWP\Unsplash\Router::init()
 	 */
 	public function test_init() {
+		Mockery::mock( 'WP_REST_Controller' );
 		WP_Mock::userFunction( 'remove_action' )
 			->once()
 			->with(
@@ -55,6 +45,7 @@ class TestRouter extends TestCase {
 	 * @covers \XWP\Unsplash\Router::enqueue_scripts()
 	 */
 	public function test_enqueue_scripts() {
+		Mockery::mock( 'WP_REST_Controller' );
 		$plugin          = Mockery::mock( Plugin::class );
 		$rest_controller = Mockery::mock( RestController::class );
 
@@ -96,6 +87,7 @@ class TestRouter extends TestCase {
 	 * @covers \XWP\Unsplash\Router::rest_api_init()
 	 */
 	public function test_rest_api_init() {
+		Mockery::mock( 'WP_REST_Controller' );
 		$plugin          = Mockery::mock( Plugin::class );
 		$rest_controller = Mockery::mock( RestController::class );
 
