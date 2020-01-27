@@ -5,7 +5,7 @@
  * @package Unsplash
  */
 
-define( 'ABSPATH', __DIR__ . '/../../data/wordpress/html/' );
+define( 'ABSPATH', '/var/www/html/' );
 
 // Test with WordPress debug mode (default).
 define( 'WP_DEBUG', true );
