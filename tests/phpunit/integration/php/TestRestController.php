@@ -202,7 +202,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 			'color',
 			'description',
 			'alt_description',
-			'urls'
+			'urls',
 		];
 		foreach ( $data as $photo_data ) {
 			foreach ( $expected_keys as $key ) {
