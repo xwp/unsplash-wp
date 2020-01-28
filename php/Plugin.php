@@ -147,6 +147,15 @@ class Plugin {
 	}
 
 	/**
+	 * Return whether we're on WordPress.com VIP production.
+	 *
+	 * @return bool
+	 */
+	public function is_wpcom_vip_prod() {
+		return ( defined( '\WPCOM_IS_VIP_ENV' ) && \WPCOM_IS_VIP_ENV );
+	}
+
+	/**
 	 * Return the current version of the plugin.
 	 *
 	 * @return mixed
