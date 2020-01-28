@@ -193,10 +193,21 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 		$data     = $response->get_data();
 
 		$this->assertCount( 10, $data );
-
+		$expected_keys = [
+			'id',
+			'created_at',
+			'updated_at',
+			'width',
+			'height',
+			'color',
+			'description',
+			'alt_description',
+			'urls'
+		];
 		foreach ( $data as $photo_data ) {
-			$expected_keys = [ 'id', 'created_at', 'updated_at', 'width', 'height', 'color', 'description', 'alt_description', 'urls' ];
-			$this->assertEquals( $expected_keys, array_keys( $photo_data ) );
+			foreach ( $expected_keys as $key ) {
+				$this->assertArrayHasKey( $key, $photo_data );
+			}
 		}
 	}
 
