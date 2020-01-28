@@ -292,31 +292,6 @@ class Router {
 
 				$title = ''; // We no longer insert title tags into <img> tags, as they are redundant.
 				$html  = get_image_send_to_editor( $id, $caption, $title, $align, $url, $rel, $size, $alt );
-			} elseif ( wp_attachment_is( 'video', $post ) || wp_attachment_is( 'audio', $post ) ) {
-				$html = wp_kses(
-					$_POST['html'],
-					[
-						'video' => [
-							'autoplay' => true,
-							'controls' => true,
-							'height'   => true,
-							'loop'     => true,
-							'muted'    => true,
-							'poster'   => true,
-							'preload'  => true,
-							'src'      => true,
-							'width'    => true,
-						],
-						'audio' => [
-							'autoplay' => true,
-							'controls' => true,
-							'loop'     => true,
-							'muted'    => true,
-							'preload'  => true,
-							'src'      => true,
-						],
-					]
-				);
 			} else {
 				$html = isset( $attachment['post_title'] ) ? $attachment['post_title'] : '';
 				$rel  = $rel ? ' rel="attachment wp-att-' . $id . '"' : ''; // Hard-coded string, $id is already sanitized.
