@@ -395,6 +395,11 @@ class RestController extends WP_REST_Controller {
 	 * @param \Exception $e Exception.
 	 */
 	private function log_error( \Exception $e ) {
+
+		if ( ! constant( 'UNSPLASH_DEBUG' ) ) {
+			return;
+		}
+
 		$message = sprintf(
 			"%1\$s: %2\$s\n%3\$s:\n%4\$s",
 			__( 'Error', 'unsplash' ),
@@ -408,6 +413,6 @@ class RestController extends WP_REST_Controller {
 		 *
 		 * @noinspection ForgottenDebugOutputInspection
 		 */
-		error_log( $message, $e->getCode() );
+		error_log( $message, $e->getCode() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 	}
 }

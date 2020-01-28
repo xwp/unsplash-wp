@@ -25,9 +25,12 @@ if ( ! defined( 'UNSPLASH_APP_ID' ) ) {
 if ( ! defined( 'UNSPLASH_APP_SECRET' ) ) {
 	define( 'UNSPLASH_APP_SECRET', getenv( 'UNSPLASH_APP_SECRET' ) );
 }
+if ( ! defined( 'UNSPLASH_DEBUG' ) ) {
+	define( 'UNSPLASH_DEBUG', constant( 'WP_DEBUG' ) );
+}
 
-$plugin          = new Plugin( __FILE__ );
+$unsplash_plugin = new Plugin( __FILE__ );
 $rest_controller = new RestController();
-$router          = new Router( $plugin, $rest_controller );
+$router          = new Router( $unsplash_plugin, $rest_controller );
 
 add_action( 'plugins_loaded', [ $router, 'init' ] );
