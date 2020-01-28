@@ -98,9 +98,10 @@ class Router {
 	 * @return mixed
 	 */
 	public function get_images() {
+		// TODO: Replace with call to REST API.
 		$path = $this->plugin->asset_dir( 'php/response.json' );
 		if ( is_readable( $path ) ) {
-			$images = json_decode( file_get_contents( $path ), true );
+			$images = json_decode( file_get_contents( $path ), true ); // phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown
 		} else {
 			$images = [];
 		}
@@ -191,18 +192,38 @@ class Router {
 	 * @return array
 	 */
 	public function image_sizes() {
+		/**
+		 * Intermediate images do not exist on the VIP platform, and thus get_intermediate_image_sizes() returns an
+		 * empty array() on the platform.
+		 *
+		 * TODO: Image sizes should correspond to Unsplash default sizes
+		 */
+		$sizes = [
+			'thumbnail'    => [
+				'width'  => '150',
+				'height' => '150',
+			],
+			'medium'       => [
+				'width'  => '300',
+				'height' => '300',
+			],
+			'medium_large' => [
+				'width'  => '768',
+				'height' => '0',
+			],
+			'large'        => [
+				'width'  => '1024',
+				'height' => '1024',
+			],
+		];
+
 		global $_wp_additional_image_sizes;
-		$sizes = array();
-		foreach ( get_intermediate_image_sizes() as $s ) {
-			if ( in_array( $s, array( 'thumbnail', 'medium', 'medium_large', 'large' ), true ) ) {
-				$sizes[ $s ]['width']  = get_option( $s . '_size_w' );
-				$sizes[ $s ]['height'] = get_option( $s . '_size_h' );
-			} else {
-				if ( isset( $_wp_additional_image_sizes, $_wp_additional_image_sizes[ $s ] ) ) {
-					$sizes[ $s ]['height'] = $_wp_additional_image_sizes[ $s ]['height'];
-				}
-					$sizes[ $s ]['width'] = $_wp_additional_image_sizes[ $s ]['width'];
+
+		foreach ( $sizes as $s ) {
+			if ( isset( $_wp_additional_image_sizes, $_wp_additional_image_sizes[ $s ] ) ) {
+				$sizes[ $s ]['height'] = $_wp_additional_image_sizes[ $s ]['height'];
 			}
+			$sizes[ $s ]['width'] = $_wp_additional_image_sizes[ $s ]['width'];
 		}
 
 		return $sizes;
@@ -220,12 +241,12 @@ class Router {
 	public function wp_ajax_send_attachment_to_editor() {
 		check_ajax_referer( 'media-send-to-editor', 'nonce' );
 
-		$attachment = wp_unslash( $_POST['attachment'] );
-		$html       = stripslashes_deep( $_POST['html'] );
-		$align      = isset( $attachment['align'] ) ? $attachment['align'] : 'none';
-		if ( is_numeric( $attachment['id'] ) ) {
-			$id = intval( $attachment['id'] );
+		$allowed_html = wp_array_slice_assoc( wp_kses_allowed_html( 'post' ), [ 'img', 'video', 'audio' ] );
+		$html         = isset( $_POST['html'] ) ? wp_kses( stripslashes_deep( $_POST['html'] ), $allowed_html ) : '';
+		$align        = isset( $_POST['attachment']['align'] ) ? sanitize_text_field( $_POST['attachment']['align'] ) : 'none';
+		$id           = isset( $_POST['attachment']['id'] ) ? intval( $_POST['attachment']['id'] ) : null;
 
+		if ( is_numeric( $_POST['attachment']['id'] ) ) {
 			$post = get_post( $id );
 			if ( ! $post ) {
 				wp_send_json_error();
@@ -236,6 +257,10 @@ class Router {
 			}
 
 			if ( current_user_can( 'edit_post', $id ) ) {
+				if ( ! isset( $_POST['post_id'] ) ) {
+					wp_send_json_error();
+				}
+
 				// If this attachment is unattached, attach it. Primarily a back compat thing.
 				$insert_into_post_id = intval( $_POST['post_id'] );
 
@@ -268,7 +293,30 @@ class Router {
 				$title = ''; // We no longer insert title tags into <img> tags, as they are redundant.
 				$html  = get_image_send_to_editor( $id, $caption, $title, $align, $url, $rel, $size, $alt );
 			} elseif ( wp_attachment_is( 'video', $post ) || wp_attachment_is( 'audio', $post ) ) {
-				$html = stripslashes_deep( $_POST['html'] );
+				$html = wp_kses(
+					$_POST['html'],
+					[
+						'video' => [
+							'autoplay' => true,
+							'controls' => true,
+							'height'   => true,
+							'loop'     => true,
+							'muted'    => true,
+							'poster'   => true,
+							'preload'  => true,
+							'src'      => true,
+							'width'    => true,
+						],
+						'audio' => [
+							'autoplay' => true,
+							'controls' => true,
+							'loop'     => true,
+							'muted'    => true,
+							'preload'  => true,
+							'src'      => true,
+						],
+					]
+				);
 			} else {
 				$html = isset( $attachment['post_title'] ) ? $attachment['post_title'] : '';
 				$rel  = $rel ? ' rel="attachment wp-att-' . $id . '"' : ''; // Hard-coded string, $id is already sanitized.
@@ -281,26 +329,24 @@ class Router {
 			$images = $this->get_images();
 			$image  = array_filter(
 				$images,
-				static function ( $var ) use ( $attachment ) {
-					return ( $var['id'] === $attachment['id'] );
+				static function ( $var ) {
+					return ( $var['id'] === $_POST['attachment']['id'] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 				}
 			);
 			if ( $image ) {
 				$data = array_shift( $image );
-				$size = isset( $attachment['image-size'] ) ? $attachment['image-size'] : 'medium';
-				$alt  = isset( $attachment['image_alt'] ) ? $attachment['image_alt'] : '';
+				$size = isset( $_POST['attachment']['image-size'] ) ? sanitize_text_field( $_POST['attachment']['image-size'] ) : 'medium';
+				$alt  = isset( $_POST['attachment']['image_alt'] ) ? sanitize_text_field( $_POST['attachment']['image_alt'] ) : '';
 
 				$class   = 'align' . esc_attr( $align ) . ' size-' . esc_attr( $size ) . ' wp-image-' . $data['id'];
 				$img_src = $data['urls']['raw'];
-				$html    = '<img src="' . esc_attr( $img_src ) . '" alt="' . esc_attr( $alt ) . '" ' . $title . 'class="' . $class . '" />';
+				$html    = '<img src="' . esc_url( $img_src ) . '" alt="' . esc_attr( $alt ) . '" class="' . $class . '" />';
 
 			}
 		}
 		/** This filter is documented in wp-admin/includes/media.php */
-		$html = apply_filters( 'media_send_to_editor', $html, $id, $attachment );
+		$html = apply_filters( 'media_send_to_editor', $html, $id, $_POST['attachment'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 		wp_send_json_success( $html );
 	}
-
-
 }
