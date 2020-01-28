@@ -12,7 +12,7 @@ $_plugin_files = array();
 $_tests_dir = '/var/www/html/wp-content/plugins/unsplash-wp/vendor/xwp/wordpress-tests/phpunit';
 
 if ( ! file_exists( $_tests_dir . '/includes/' ) ) {
-	trigger_error( 'Unable to locate wordpress-tests', E_USER_ERROR );
+	trigger_error( 'Unable to locate wordpress-tests', E_USER_ERROR ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
 }
 require_once $_tests_dir . '/includes/functions.php';
 
@@ -38,7 +38,7 @@ foreach ( $_plugins_array as $_plugin_candidate ) {
 }
 
 if ( empty( $_plugin_files ) ) {
-	trigger_error( 'Unable to locate any files containing a plugin metadata block.', E_USER_ERROR );
+	trigger_error( 'Unable to locate any files containing a plugin metadata block.', E_USER_ERROR ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
 }
 
 unset( $_plugins, $_plugin_candidate, $_plugin_file_candidate, $_plugin_file_src );
