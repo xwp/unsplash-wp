@@ -100,7 +100,8 @@ class Router {
 	public function get_images() {
 		$path = $this->plugin->asset_dir( 'php/response.json' );
 		if ( is_readable( $path ) ) {
-			$images = json_decode( file_get_contents( $path ), true );
+			$response = wp_safe_remote_get( esc_url_raw( $path ) );
+			$images   = json_decode( wp_remote_retrieve_body( $response ), true );
 		} else {
 			$images = [];
 		}
@@ -193,7 +194,9 @@ class Router {
 	public function image_sizes() {
 		global $_wp_additional_image_sizes;
 		$sizes = array();
-		foreach ( get_intermediate_image_sizes() as $s ) {
+
+		// @todo This is not supported by WordPress VIP and will require a new solution.
+		foreach ( get_intermediate_image_sizes() as $s ) { // phpcs:ignore
 			if ( in_array( $s, array( 'thumbnail', 'medium', 'medium_large', 'large' ), true ) ) {
 				$sizes[ $s ]['width']  = get_option( $s . '_size_w' );
 				$sizes[ $s ]['height'] = get_option( $s . '_size_h' );
@@ -214,14 +217,12 @@ class Router {
 	 * Generates the HTML to send an attachment to the editor.
 	 * Backward compatible with the {@see 'media_send_to_editor'} filter
 	 * and the chain of filters that follow.
-	 *
-	 * @since 3.5.0
 	 */
 	public function wp_ajax_send_attachment_to_editor() {
 		check_ajax_referer( 'media-send-to-editor', 'nonce' );
 
-		$attachment = wp_unslash( $_POST['attachment'] );
-		$html       = stripslashes_deep( $_POST['html'] );
+		$attachment = ! empty( $_POST['attachment'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['attachment'] ) ) : [];
+		$html       = isset( $_POST['html'] ) ? wp_kses_post( wp_unslash( $_POST['html'] ) ) : '';
 		$align      = isset( $attachment['align'] ) ? $attachment['align'] : 'none';
 		if ( is_numeric( $attachment['id'] ) ) {
 			$id = intval( $attachment['id'] );
@@ -237,7 +238,7 @@ class Router {
 
 			if ( current_user_can( 'edit_post', $id ) ) {
 				// If this attachment is unattached, attach it. Primarily a back compat thing.
-				$insert_into_post_id = intval( $_POST['post_id'] );
+				$insert_into_post_id = isset( $_POST['post_id'] ) ? intval( $_POST['post_id'] ) : 0;
 
 				if ( 0 === $post->post_parent && $insert_into_post_id ) {
 					wp_update_post(
@@ -268,7 +269,7 @@ class Router {
 				$title = ''; // We no longer insert title tags into <img> tags, as they are redundant.
 				$html  = get_image_send_to_editor( $id, $caption, $title, $align, $url, $rel, $size, $alt );
 			} elseif ( wp_attachment_is( 'video', $post ) || wp_attachment_is( 'audio', $post ) ) {
-				$html = stripslashes_deep( $_POST['html'] );
+				$html = isset( $_POST['html'] ) ? wp_kses_post( wp_unslash( $_POST['html'] ) ) : '';
 			} else {
 				$html = isset( $attachment['post_title'] ) ? $attachment['post_title'] : '';
 				$rel  = $rel ? ' rel="attachment wp-att-' . $id . '"' : ''; // Hard-coded string, $id is already sanitized.
@@ -292,7 +293,7 @@ class Router {
 
 				$class   = 'align' . esc_attr( $align ) . ' size-' . esc_attr( $size ) . ' wp-image-' . $data['id'];
 				$img_src = $data['urls']['raw'];
-				$html    = '<img src="' . esc_attr( $img_src ) . '" alt="' . esc_attr( $alt ) . '" ' . $title . 'class="' . $class . '" />';
+				$html    = '<img src="' . esc_url( $img_src ) . '" alt="' . esc_attr( $alt ) . '" ' . $title . 'class="' . $class . '" />';
 
 			}
 		}
