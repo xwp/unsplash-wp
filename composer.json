@@ -74,9 +74,6 @@
     "sort-packages": true
   },
   "extra": {
-    "copy-file-dev": {
-      "tests/phpunit/wp-tests-config.php": "vendor/xwp/wordpress-tests/phpunit/wp-tests-config.php"
-    },
     "installer-paths": {
       "vendor/plugins/{$name}/": ["type:wordpress-plugin"]
     }

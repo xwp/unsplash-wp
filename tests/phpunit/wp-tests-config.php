@@ -9,11 +9,11 @@ define( 'ABSPATH', '/var/www/html/' );
 
 // Test with multisite enabled.
 // Alternatively, use the tests/phpunit/multisite.xml configuration file.
-/* define( 'WP_TESTS_MULTISITE', true ); */
+/* define( 'WP_TESTS_MULTISITE', true ); */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
 
 // Force known bugs to be run.
 // Tests with an associated Trac ticket that is still open are normally skipped.
-/* define( 'WP_TESTS_FORCE_KNOWN_BUGS', true ); */
+/* define( 'WP_TESTS_FORCE_KNOWN_BUGS', true ); */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
 
 // Test with WordPress debug mode (default).
 define( 'WP_DEBUG', true );

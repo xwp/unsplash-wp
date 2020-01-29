@@ -41,5 +41,10 @@ function unit_test_load_plugin_file() {
 }
 tests_add_filter( 'muplugins_loaded', 'unit_test_load_plugin_file' );
 
+if ( ! defined( 'WP_TESTS_CONFIG_FILE_PATH' ) && file_exists( '/.dockerenv' ) ) {
+	// Load a customized WP tests config for the Docker based developer environment.
+	define( 'WP_TESTS_CONFIG_FILE_PATH', __DIR__ . '/wp-tests-config.php' );
+}
+
 // Run Integration Tests.
 require_once $_tests_dir . '/includes/bootstrap.php';
