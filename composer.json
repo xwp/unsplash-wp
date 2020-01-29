@@ -13,10 +13,12 @@
   ],
   "require": {
     "composer/installers": "^1.7",
+    "ext-json": "*",
     "php": ">=5.6"
   },
   "require-dev": {
     "10up/wp_mock": "0.2.0",
+    "automattic/vipwpcs": "2.0.0",
     "dealerdirect/phpcodesniffer-composer-installer": "0.5.0",
     "mockery/mockery": "0.9.11",
     "php-coveralls/php-coveralls": "2.2.0",
@@ -46,9 +48,8 @@
       "@composer validate --strict",
       "phpcs . -v"
     ],
-    "fix": [
-      "@composer validate --strict",
-      "phpcbf ."
+    "format": [
+      "phpcbf . -v"
     ],
     "test": [
       "phpunit"
@@ -70,6 +71,9 @@
     ]
   },
   "config": {
+    "platform": {
+      "php": "5.6"
+    },
     "sort-packages": true
   },
   "extra": {

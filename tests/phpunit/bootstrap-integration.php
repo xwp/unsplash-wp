@@ -17,7 +17,7 @@ $_plugin_files = [
 $_tests_dir = "${_plugin_root}/vendor/xwp/wordpress-tests/phpunit";
 
 if ( ! file_exists( $_tests_dir . '/includes/' ) ) {
-	trigger_error( 'Unable to locate wordpress-tests', E_USER_ERROR );
+	trigger_error( 'Unable to locate wordpress-tests', E_USER_ERROR ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
 }
 require_once $_tests_dir . '/includes/functions.php';
 

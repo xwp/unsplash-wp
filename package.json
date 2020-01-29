@@ -16,11 +16,16 @@
     "postinstall": "composer install --ignore-platform-reqs",
     "dev": "wp-scripts start",
     "build": "wp-scripts build",
+    "env:start": "docker-compose up -d",
+    "env:stop": "docker-compose stop",
     "lint": "npm-run-all --parallel lint:*",
+    "lint:css": "wp-scripts lint-style",
     "lint:js": "eslint js/src",
-    "lint:js:fix": "eslint js/src --fix",
     "lint:php": "composer lint",
-    "lint:php:fix": "composer fix",
+    "format": "npm-run-all --parallel format:*",
+    "format:css": "npm run lint:css -- --fix",
+    "format:js": "eslint js/src --fix",
+    "format:php": "composer format",
     "test": "npm-run-all --parallel test:*",
     "test:php": "npm-run-all --parallel test:php:no-coverage:*",
     "test:php:no-coverage:unit": "composer test",
@@ -34,11 +39,12 @@
     "docker": "docker-compose run --workdir=/var/www/html/wp-content/plugins/unsplash-wp wordpress"
   },
   "devDependencies": {
-    "@wordpress/block-editor": "3.3.0",
-    "@wordpress/eslint-plugin": "3.2.0",
-    "@wordpress/scripts": "6.0.0",
-    "eslint": "6.7.2",
-    "npm-run-all": "4.1.5"
+    "@wordpress/block-editor": "3.5.0",
+    "@wordpress/eslint-plugin": "3.3.0",
+    "@wordpress/scripts": "6.2.0",
+    "eslint": "6.8.0",
+    "npm-run-all": "4.1.5",
+    "stylelint-a11y": "1.2.2"
   },
   "dependencies": {}
 }
