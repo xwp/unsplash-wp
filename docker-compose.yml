@@ -31,6 +31,9 @@ services:
       WORDPRESS_DEBUG: 1
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: password
+      WP_CORE_DIR: /var/www/html
+      WP_TESTS_DIR: /var/www/html/wp-content/plugins/unsplash-wp/vendor/xwp/wordpress-tests/phpunit
+      SKIP_DB_CREATE: true
 
   mailhog:
     image: mailhog/mailhog
