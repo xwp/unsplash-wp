@@ -193,6 +193,7 @@ class Router {
 	 */
 	public function image_sizes() {
 		global $_wp_additional_image_sizes;
+
 		$sizes = array();
 
 		// @todo This is not supported by WordPress VIP and will require a new solution.
