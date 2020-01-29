@@ -134,16 +134,20 @@ install_db() {
 
 	if [ -n "$DB_HOSTNAME" ] ; then
 		if [ $(echo "$DB_SOCK_OR_PORT" | grep -e '^[0-9]\{1,\}$') ]; then
-			EXTRA=" --host=$DB_HOSTNAME --port=$DB_SOCK_OR_PORT --protocol=tcp"
+			EXTRA="--host=$DB_HOSTNAME --port=$DB_SOCK_OR_PORT --protocol=tcp"
 		elif [ -n "$DB_SOCK_OR_PORT" ] ; then
-			EXTRA=" --socket=$DB_SOCK_OR_PORT"
+			EXTRA="--socket=$DB_SOCK_OR_PORT"
 		elif [ -n "$DB_HOSTNAME" ] ; then
-			EXTRA=" --host=$DB_HOSTNAME --protocol=tcp"
+			EXTRA="--host=$DB_HOSTNAME --protocol=tcp"
 		fi
 	fi
 
+	if [ "$DB_PASS" != '' ]; then
+		EXTRA="$EXTRA --password $DB_PASS"
+	fi
+
 	# create database
-	mysqladmin create "$DB_NAME" --user="$DB_USER" --password="$DB_PASS""$EXTRA"
+	mysqladmin create "$DB_NAME" --user="$DB_USER" "$EXTRA"
 }
 
 install_wp
