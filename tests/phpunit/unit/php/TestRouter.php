@@ -87,12 +87,14 @@ class TestRouter extends TestCase {
 	 * @covers \XWP\Unsplash\Router::register_meta()
 	 */
 	public function test_register_meta() {
-		$plugin = Mockery::mock( Plugin::class );
+		Mockery::mock( 'WP_REST_Controller' );
+		$plugin          = Mockery::mock( Plugin::class );
+		$rest_controller = Mockery::mock( RestController::class );
 
 		WP_Mock::userFunction( 'wp_parse_args' )->times( 6 );
 		WP_Mock::userFunction( 'register_meta' )->times( 6 );
 
-		$editor_mode = new Router( $plugin );
+		$editor_mode = new Router( $plugin, $rest_controller );
 		$editor_mode->register_meta();
 	}
 
@@ -102,12 +104,14 @@ class TestRouter extends TestCase {
 	 * @covers \XWP\Unsplash\Router::register_taxonomy()
 	 */
 	public function test_register_taxonomy() {
-		$plugin = Mockery::mock( Plugin::class );
+		Mockery::mock( 'WP_REST_Controller' );
+		$plugin          = Mockery::mock( Plugin::class );
+		$rest_controller = Mockery::mock( RestController::class );
 
 		WP_Mock::userFunction( 'wp_parse_args' )->times( 3 );
 		WP_Mock::userFunction( 'register_taxonomy' )->times( 3 );
 
-		$editor_mode = new Router( $plugin );
+		$editor_mode = new Router( $plugin, $rest_controller );
 		$editor_mode->register_taxonomy();
 	}
 
