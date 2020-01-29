@@ -104,19 +104,19 @@ install_test_suite() {
 	# set up testing suite if it doesn't yet exist
 	if [ ! -d "$WP_TESTS_DIR" ]; then
 		mkdir -p "$WP_TESTS_DIR"
-		svn co --quiet https://develop.svn.wordpress.org/"${WP_TESTS_TAG}"/tests/phpunit/includes/ "$WP_TESTS_DIR"/includes
-		svn co --quiet https://develop.svn.wordpress.org/"${WP_TESTS_TAG}"/tests/phpunit/data/ "$WP_TESTS_DIR"/data
+		svn co --quiet https://develop.svn.wordpress.org/"${WP_TESTS_TAG}"/tests/ "$WP_TESTS_DIR"
 	fi
 
-	if [ ! -f wp-tests-config.php ]; then
-		download https://develop.svn.wordpress.org/${WP_TESTS_TAG}/wp-tests-config-sample.php "$WP_TESTS_DIR"/wp-tests-config.php
+	local WP_TESTS_CONFIG="${WP_TESTS_DIR}/phpunit/wp-tests-config.php";
+	if [ ! -f "$WP_TESTS_CONFIG" ]; then
+		download https://develop.svn.wordpress.org/${WP_TESTS_TAG}/wp-tests-config-sample.php "$WP_TESTS_CONFIG"
 		# remove all forward slashes in the end
 		WP_CORE_DIR=$(echo $WP_CORE_DIR | sed "s:/\+$::")
-		sed $ioption "s:dirname( __FILE__ ) . '/src/':'$WP_CORE_DIR/':" "$WP_TESTS_DIR"/wp-tests-config.php
-		sed $ioption "s/youremptytestdbnamehere/$DB_NAME/" "$WP_TESTS_DIR"/wp-tests-config.php
-		sed $ioption "s/yourusernamehere/$DB_USER/" "$WP_TESTS_DIR"/wp-tests-config.php
-		sed $ioption "s/yourpasswordhere/$DB_PASS/" "$WP_TESTS_DIR"/wp-tests-config.php
-		sed $ioption "s|localhost|${DB_HOST}|" "$WP_TESTS_DIR"/wp-tests-config.php
+		sed $ioption "s:dirname( __FILE__ ) . '/src/':'$WP_CORE_DIR/':" "$WP_TESTS_CONFIG"
+		sed $ioption "s/youremptytestdbnamehere/$DB_NAME/" "$WP_TESTS_CONFIG"
+		sed $ioption "s/yourusernamehere/$DB_USER/" "$WP_TESTS_CONFIG"
+		sed $ioption "s/yourpasswordhere/$DB_PASS/" "$WP_TESTS_CONFIG"
+		sed $ioption "s|localhost|${DB_HOST}|" "$WP_TESTS_CONFIG"
 	fi
 }
 
@@ -153,3 +153,5 @@ install_db() {
 install_wp
 install_test_suite
 install_db
+
+set +ex
