@@ -25,7 +25,6 @@
     "phpcompatibility/phpcompatibility-wp": "2.1.0",
     "phpunit/phpcov": "3.1.0",
     "phpunit/phpunit": "5.7.27",
-    "slowprog/composer-copy-file": "0.3.1",
     "wp-coding-standards/wpcs": "2.2.0",
     "wpackagist-plugin/classic-editor": "@stable",
     "xwp/wordpress-tests-installer": "1.0.0"
@@ -62,12 +61,6 @@
     ],
     "build": [
       "composer install --no-dev --prefer-dist --optimize-autoloader --no-scripts"
-    ],
-    "post-install-cmd": [
-      "SlowProg\\CopyFile\\ScriptHandler::copy"
-    ],
-    "post-update-cmd": [
-      "SlowProg\\CopyFile\\ScriptHandler::copy"
     ]
   },
   "config": {
