@@ -34,7 +34,7 @@ class Router {
 	/**
 	 * Setup the plugin instance.
 	 *
-	 * @param Plugin         $plugin Instance of the plugin abstraction.
+	 * @param Plugin $plugin Instance of the plugin abstraction.
 	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
