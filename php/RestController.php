@@ -30,6 +30,8 @@ class RestController extends WP_REST_Controller {
 
 	/**
 	 * Constructor.
+	 *
+	 * @param Settings $settings Instance of the Settings class.
 	 */
 	public function __construct( $settings ) {
 		$this->namespace = 'unsplash/v1';

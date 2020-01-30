@@ -37,11 +37,11 @@ class TestSettings extends \WP_UnitTestCase {
 	/**
 	 * Forcibly set a property of an object that would otherwise not be possible.
 	 *
-	 * @param object|string $class Class instance to set the property on, or class name containing the property.
-	 * @param string $property Property name
-	 * @param mixed $value New value to assign the property
+	 * @param object|string $class     Class instance to set the property on, or class name containing the property.
+	 * @param string        $property  Property name.
+	 * @param mixed         $value New value to assign the property.
 	 *
-	 * @throws \ReflectionException
+	 * @throws \ReflectionException When the class or property are invalid.
 	 */
 	protected function force_set_property( $class, $property, $value ) {
 		$reflection_property = new \ReflectionProperty( $class, $property );
@@ -68,6 +68,11 @@ class TestSettings extends \WP_UnitTestCase {
 		$this->assertEquals( 10, has_action( 'admin_init', [ $this->settings, 'add_settings' ] ) );
 	}
 
+	/**
+	 * Test encrypt.
+	 *
+	 * @covers ::encrypt()
+	 */
 	public function test_encrypt() {
 		$this->force_set_property( $this->settings, 'key', 'test-key' );
 		$this->force_set_property( $this->settings, 'salt', 'test-salt' );
@@ -87,6 +92,11 @@ class TestSettings extends \WP_UnitTestCase {
 		$this->assertEquals( 'test-value', $value );
 	}
 
+	/**
+	 * Test decrypt.
+	 *
+	 * @covers ::decrypt()
+	 */
 	public function test_decrypt() {
 		$this->force_set_property( $this->settings, 'key', 'test-key' );
 		$this->force_set_property( $this->settings, 'salt', 'test-salt' );
