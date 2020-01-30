@@ -18,14 +18,14 @@
     "unsplash/unsplash": "^2.5"
   },
   "require-dev": {
-    "10up/wp_mock": "0.4.2",
+    "10up/wp_mock": "0.2.0",
     "automattic/vipwpcs": "2.0.0",
     "dealerdirect/phpcodesniffer-composer-installer": "0.5.0",
-    "mockery/mockery": "1.3.0",
-    "nimut/phpunit-merger": "0.3.2",
+    "mockery/mockery": "0.9.11",
     "php-coveralls/php-coveralls": "2.2.0",
     "phpcompatibility/phpcompatibility-wp": "2.1.0",
-    "phpunit/phpunit": "7.5.18",
+    "phpunit/phpcov": "3.1.0",
+    "phpunit/phpunit": "5.7.27",
     "slowprog/composer-copy-file": "0.3.1",
     "wp-coding-standards/wpcs": "2.2.0",
     "wpackagist-plugin/classic-editor": "@stable",
@@ -59,7 +59,7 @@
       "php-coveralls --verbose"
     ],
     "coverage-merge": [
-      "phpunit-merger coverage tests/reports/php --html=tests/reports/html tests/reports/clover.xml"
+      "phpcov merge --clover tests/reports/clover.xml tests/reports/php"
     ],
     "build": [
       "composer install --no-dev --prefer-dist --optimize-autoloader --no-scripts"

@@ -29,8 +29,11 @@ if ( ! defined( 'UNSPLASH_DEBUG' ) ) {
 	define( 'UNSPLASH_DEBUG', constant( 'WP_DEBUG' ) );
 }
 
-$unsplash_plugin = new Plugin( __FILE__ );
-$rest_controller = new RestController();
-$router          = new Router( $unsplash_plugin, $rest_controller );
+global $unsplash;
 
-add_action( 'plugins_loaded', [ $router, 'init' ] );
+$unsplash['plugin']          = new Plugin( __FILE__ );
+$unsplash['rest_controller'] = new RestController();
+$unsplash['router']          = new Router( $unsplash['plugin'], $unsplash['rest_controller'] );
+
+// Initialize Router.
+add_action( 'plugins_loaded', [ $unsplash['router'], 'init' ] );
