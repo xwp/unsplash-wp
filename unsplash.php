@@ -19,16 +19,6 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 	require_once __DIR__ . '/vendor/autoload.php';
 }
 
-if ( ! defined( 'UNSPLASH_APP_ID' ) ) {
-	define( 'UNSPLASH_APP_ID', getenv( 'UNSPLASH_APP_ID' ) );
-}
-if ( ! defined( 'UNSPLASH_APP_SECRET' ) ) {
-	define( 'UNSPLASH_APP_SECRET', getenv( 'UNSPLASH_APP_SECRET' ) );
-}
-if ( ! defined( 'UNSPLASH_DEBUG' ) ) {
-	define( 'UNSPLASH_DEBUG', constant( 'WP_DEBUG' ) );
-}
-
 global $unsplash;
 
 $unsplash['plugin']          = new Plugin( __FILE__ );

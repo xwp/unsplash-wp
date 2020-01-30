@@ -28,10 +28,12 @@ class RestController extends WP_REST_Controller {
 		$this->namespace = 'unsplash/v1';
 		$this->rest_base = 'photos';
 
+		$options = get_option( 'unsplash_settings' );
+
 		HttpClient::init(
 			[
-				'applicationId' => constant( 'UNSPLASH_APP_ID' ),
-				'secret'        => constant( 'UNSPLASH_APP_SECRET' ),
+				'applicationId' => ! empty( $options['access_key'] ) ? $options['access_key'] : getenv( 'UNSPLASH_ACCESS_KEY' ),
+				'secret'        => ! empty( $options['secret_key'] ) ? $options['secret_key'] : getenv( 'UNSPLASH_SECRET_KEY' ),
 				'utmSource'     => 'WordPress-XWP',
 			]
 		);
@@ -396,7 +398,7 @@ class RestController extends WP_REST_Controller {
 	 */
 	private function log_error( \Exception $e ) {
 
-		if ( ! constant( 'UNSPLASH_DEBUG' ) ) {
+		if ( ! constant( 'WP_DEBUG' ) ) {
 			return;
 		}
 

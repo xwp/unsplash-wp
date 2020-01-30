@@ -31,9 +31,8 @@ services:
       WORDPRESS_DEBUG: 1
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: password
-      UNSPLASH_APP_ID: ${UNSPLASH_APP_ID}
-      UNSPLASH_APP_SECRET: ${UNSPLASH_APP_SECRET}
-
+      UNSPLASH_ACCESS_KEY: ${UNSPLASH_ACCESS_KEY}
+      UNSPLASH_SECRET_KEY: ${UNSPLASH_SECRET_KEY}
 
   mailhog:
     image: mailhog/mailhog
