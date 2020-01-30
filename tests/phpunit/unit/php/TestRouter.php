@@ -32,8 +32,6 @@ class TestRouter extends TestCase {
 		$plugin = Mockery::mock( Plugin::class );
 		$router = new Router( $plugin );
 
-		WP_Mock::expectActionAdded( 'admin_enqueue_scripts', [ $router, 'enqueue_scripts' ], 10, 1 );
-
 		$router->init();
 	}
 
