@@ -9,6 +9,8 @@ namespace XWP\Unsplash;
 
 /**
  * Tests for the Router class.
+ *
+ * @coversDefaultClass \XWP\Unsplash\Router
  */
 class TestRouter extends \WP_UnitTestCase {
 
