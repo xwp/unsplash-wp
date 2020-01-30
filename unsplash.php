@@ -24,9 +24,13 @@ global $unsplash;
 $unsplash['plugin']          = new Plugin( __FILE__ );
 $unsplash['rest_controller'] = new RestController();
 $unsplash['router']          = new Router( $unsplash['plugin'] );
+$unsplash['settings']        = new Settings( $unsplash['plugin'] );
+
+// Initialize REST Controller.
+add_action( 'rest_api_init', [ $unsplash['rest_controller'], 'register_routes' ] );
 
 // Initialize Router.
 add_action( 'plugins_loaded', [ $unsplash['router'], 'init' ] );
 
-// Initialize REST Controller.
-add_action( 'rest_api_init', [ $unsplash['rest_controller'], 'register_routes' ] );
+// Initialize Settings.
+add_action( 'plugins_loaded', [ $unsplash['settings'], 'init' ] );
