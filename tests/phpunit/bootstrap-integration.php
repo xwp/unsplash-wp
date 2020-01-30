@@ -7,7 +7,7 @@
 
 global $_plugin_files;
 
-$_plugin_root = __DIR__ . '/../..';
+$_plugin_root = realpath( __DIR__ . '/../..' );
 
 $_plugin_files = [
 	"${_plugin_root}/unsplash.php",
