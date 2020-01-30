@@ -29,12 +29,10 @@ class TestRouter extends TestCase {
 				1
 			);
 
-		$plugin          = Mockery::mock( Plugin::class );
-		$rest_controller = Mockery::mock( RestController::class );
-		$router          = new Router( $plugin, $rest_controller );
+		$plugin = Mockery::mock( Plugin::class );
+		$router = new Router( $plugin );
 
 		WP_Mock::expectActionAdded( 'admin_enqueue_scripts', [ $router, 'enqueue_scripts' ], 10, 1 );
-		WP_Mock::expectActionAdded( 'rest_api_init', [ $router, 'rest_api_init' ], 10, 1 );
 
 		$router->init();
 	}
@@ -46,8 +44,7 @@ class TestRouter extends TestCase {
 	 */
 	public function test_enqueue_scripts() {
 		Mockery::mock( 'WP_REST_Controller' );
-		$plugin          = Mockery::mock( Plugin::class );
-		$rest_controller = Mockery::mock( RestController::class );
+		$plugin = Mockery::mock( Plugin::class );
 
 		$plugin->shouldReceive( 'asset_url' )
 			->once()
@@ -77,7 +74,7 @@ class TestRouter extends TestCase {
 				]
 			);
 
-		$editor_mode = new Router( $plugin, $rest_controller );
+		$editor_mode = new Router( $plugin );
 		$editor_mode->enqueue_scripts();
 	}
 
@@ -88,13 +85,12 @@ class TestRouter extends TestCase {
 	 */
 	public function test_register_meta() {
 		Mockery::mock( 'WP_REST_Controller' );
-		$plugin          = Mockery::mock( Plugin::class );
-		$rest_controller = Mockery::mock( RestController::class );
+		$plugin = Mockery::mock( Plugin::class );
 
 		WP_Mock::userFunction( 'wp_parse_args' )->times( 6 );
 		WP_Mock::userFunction( 'register_meta' )->times( 6 );
 
-		$editor_mode = new Router( $plugin, $rest_controller );
+		$editor_mode = new Router( $plugin );
 		$editor_mode->register_meta();
 	}
 
@@ -105,29 +101,12 @@ class TestRouter extends TestCase {
 	 */
 	public function test_register_taxonomy() {
 		Mockery::mock( 'WP_REST_Controller' );
-		$plugin          = Mockery::mock( Plugin::class );
-		$rest_controller = Mockery::mock( RestController::class );
+		$plugin = Mockery::mock( Plugin::class );
 
 		WP_Mock::userFunction( 'wp_parse_args' )->times( 3 );
 		WP_Mock::userFunction( 'register_taxonomy' )->times( 3 );
 
-		$editor_mode = new Router( $plugin, $rest_controller );
+		$editor_mode = new Router( $plugin );
 		$editor_mode->register_taxonomy();
-	}
-
-	/**
-	 * Test rest_api_init.
-	 *
-	 * @covers \XWP\Unsplash\Router::rest_api_init()
-	 */
-	public function test_rest_api_init() {
-		Mockery::mock( 'WP_REST_Controller' );
-		$plugin          = Mockery::mock( Plugin::class );
-		$rest_controller = Mockery::mock( RestController::class );
-
-		$rest_controller->shouldReceive( 'register_routes' )->once();
-
-		$router = new Router( $plugin, $rest_controller );
-		$router->rest_api_init();
 	}
 }

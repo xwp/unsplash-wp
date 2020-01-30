@@ -33,7 +33,10 @@ global $unsplash;
 
 $unsplash['plugin']          = new Plugin( __FILE__ );
 $unsplash['rest_controller'] = new RestController();
-$unsplash['router']          = new Router( $unsplash['plugin'], $unsplash['rest_controller'] );
+$unsplash['router']          = new Router( $unsplash['plugin'] );
 
 // Initialize Router.
 add_action( 'plugins_loaded', [ $unsplash['router'], 'init' ] );
+
+// Initialize REST Controller.
+add_action( 'rest_api_init', [ $unsplash['rest_controller'], 'register_routes' ] );

@@ -35,11 +35,9 @@ class Router {
 	 * Setup the plugin instance.
 	 *
 	 * @param Plugin         $plugin Instance of the plugin abstraction.
-	 * @param RestController $rest_controller Instance of the REST API controller.
 	 */
-	public function __construct( $plugin, $rest_controller ) {
-		$this->plugin          = $plugin;
-		$this->rest_controller = $rest_controller;
+	public function __construct( $plugin ) {
+		$this->plugin = $plugin;
 	}
 
 	/**
@@ -55,7 +53,6 @@ class Router {
 		add_action( 'wp_ajax_send-attachment-to-editor', [ $this, 'wp_ajax_send_attachment_to_editor' ], 0 );
 		add_action( 'init', [ $this, 'register_taxonomy' ] );
 		add_action( 'init', [ $this, 'register_meta' ] );
-		add_action( 'rest_api_init', [ $this, 'rest_api_init' ] );
 	}
 
 	/**
@@ -417,12 +414,5 @@ class Router {
 			$args = wp_parse_args( $args, $default_args );
 			register_taxonomy( $name, self::POST_TYPE, $args );
 		}
-	}
-
-	/**
-	 * Initialize the REST API.
-	 */
-	public function rest_api_init() {
-		$this->rest_controller->register_routes();
 	}
 }
