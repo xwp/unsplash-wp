@@ -28,7 +28,8 @@ class TestRouter extends \WP_UnitTestCase {
 	 */
 	public function setUp() {
 		parent::setUp();
-		$this->router = get_router_instance();
+		global $unsplash;
+		$this->router = $unsplash['router'];
 	}
 
 	/**
