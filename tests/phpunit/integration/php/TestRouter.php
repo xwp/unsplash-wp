@@ -32,7 +32,7 @@ class TestRouter extends \WP_UnitTestCase {
 	/**
 	 * Test constructor.
 	 *
-	 * @see Router::__construct()
+	 * @covers Router::__construct()
 	 */
 	public function test_construct() {
 		$this->assertEquals( true, did_action( 'plugins_loaded', [ $this->router, 'init' ] ) );
@@ -41,7 +41,7 @@ class TestRouter extends \WP_UnitTestCase {
 	/**
 	 * Test init.
 	 *
-	 * @see Router::init()
+	 * @covers Router::init()
 	 */
 	public function test_init() {
 		$this->assertEquals( 10, has_action( 'admin_enqueue_scripts', [ $this->router, 'enqueue_scripts' ] ) );
