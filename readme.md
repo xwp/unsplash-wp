@@ -69,4 +69,4 @@ All of these commands can be run inside the Docker container by prefixing the sc
 
 - `npm run docker -- npm run test:php:coverage` to run the PHPUnit tests and generate multiple `coverage-php` `.cov` reports.
 
-- `npm run docker -- npm run coverage:merge:php` to merge the `.cov` reports and generate a `clover.xml` and `html` report.
+- `npm run docker -- npm run coverage:merge:php` to merge the `.cov` reports and generate a `clover.xml` report.
