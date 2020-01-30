@@ -1,7 +1,7 @@
 # Unsplash for WordPress
 
-[![Build Status](https://travis-ci.com/xwp/unsplash-wp.svg?token=DzyA3Sey2BLS5sL6HDJq&branch=master)](https://travis-ci.com/xwp/unsplash-wp)
-[![Coverage Status](https://coveralls.io/repos/github/xwp/unsplash-wp/badge.svg?branch=master&t=mLvdmf)](https://coveralls.io/github/xwp/unsplash-wp?branch=master)
+[![Build Status](https://travis-ci.com/xwp/unsplash-wp.svg?token=DzyA3Sey2BLS5sL6HDJq&branch=develop)](https://travis-ci.com/xwp/unsplash-wp)
+[![Coverage Status](https://coveralls.io/repos/github/xwp/unsplash-wp/badge.svg?branch=develop&t=mLvdmf)](https://coveralls.io/github/xwp/unsplash-wp?branch=develop)
 
 ## Requirements
 
