@@ -33,12 +33,6 @@ after_success:
 notifications:
   email: false
 
-# Pull requests are built by default.
-branches:
-  only:
-  - master
-  - develop
-
 cache:
   npm: true
   directories:
