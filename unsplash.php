@@ -19,6 +19,10 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 	require_once __DIR__ . '/vendor/autoload.php';
 }
 
-$router = new Router( new Plugin( __FILE__ ) );
+global $unsplash;
 
-add_action( 'plugins_loaded', [ $router, 'init' ] );
+$unsplash['plugin'] = new Plugin( __FILE__ );
+$unsplash['router'] = new Router( $unsplash['plugin'] );
+
+// Initialize Router.
+add_action( 'plugins_loaded', [ $unsplash['router'], 'init' ] );
