@@ -129,7 +129,7 @@ class Settings {
 		}
 
 		// If this is reached, you're either not on a live site or have a serious security issue.
-		return 'the-is-no-secret-key';
+		return 'there-is-no-secret-key';
 	}
 
 	/**
@@ -147,7 +147,7 @@ class Settings {
 		}
 
 		// If this is reached, you're either not on a live site or have a serious security issue.
-		return 'the-is-no-secret-salt';
+		return 'there-is-no-secret-salt';
 	}
 
 	/**
