@@ -20,12 +20,30 @@ class Settings {
 	protected $plugin;
 
 	/**
+	 * Key to use for encryption.
+	 *
+	 * @since 1.0.0
+	 * @var string
+	 */
+	private $key;
+
+	/**
+	 * Salt to use for encryption.
+	 *
+	 * @since 1.0.0
+	 * @var string
+	 */
+	private $salt;
+
+	/**
 	 * Setup the plugin instance.
 	 *
 	 * @param Plugin $plugin Instance of the plugin abstraction.
 	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
+		$this->key    = $this->get_default_key();
+		$this->salt   = $this->get_default_salt();
 	}
 
 	/**
@@ -43,6 +61,96 @@ class Settings {
 	}
 
 	/**
+	 * Encrypts a value.
+	 *
+	 * If a user-based key is set, that key is used. Otherwise the default key is used.
+	 *
+	 * @param string $value Value to encrypt.
+	 * @return string|bool Encrypted value, or false on failure.
+	 */
+	public function encrypt( $value ) {
+		if ( ! extension_loaded( 'openssl' ) ) {
+			return $value;
+		}
+
+		$method = 'aes-256-ctr';
+		$ivlen  = openssl_cipher_iv_length( $method );
+		$iv     = openssl_random_pseudo_bytes( $ivlen );
+
+		$raw_value = openssl_encrypt( $value . $this->salt, $method, $this->key, 0, $iv );
+		if ( ! $raw_value ) {
+			return false;
+		}
+
+		return base64_encode( $iv . $raw_value ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+	}
+
+	/**
+	 * Decrypts a value.
+	 *
+	 * If a user-based key is set, that key is used. Otherwise the default key is used.
+	 *
+	 * @param string $raw_value Value to decrypt.
+	 * @return string|bool Decrypted value, or false on failure.
+	 */
+	public function decrypt( $raw_value ) {
+		if ( ! extension_loaded( 'openssl' ) ) {
+			return $raw_value;
+		}
+
+		$raw_value = base64_decode( $raw_value, true ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
+
+		$method = 'aes-256-ctr';
+		$ivlen  = openssl_cipher_iv_length( $method );
+		$iv     = substr( $raw_value, 0, $ivlen );
+
+		$raw_value = substr( $raw_value, $ivlen );
+
+		$value = openssl_decrypt( $raw_value, $method, $this->key, 0, $iv );
+		if ( ! $value || substr( $value, - strlen( $this->salt ) ) !== $this->salt ) {
+			return false;
+		}
+
+		return substr( $value, 0, - strlen( $this->salt ) );
+	}
+
+	/**
+	 * Gets the default encryption key to use.
+	 *
+	 * @return string Default (not user-based) encryption key.
+	 */
+	private function get_default_key() {
+		if ( defined( 'UNSPLASH_ENCRYPTION_KEY' ) && '' !== UNSPLASH_ENCRYPTION_KEY ) {
+			return UNSPLASH_ENCRYPTION_KEY;
+		}
+
+		if ( defined( 'LOGGED_IN_KEY' ) && '' !== LOGGED_IN_KEY ) {
+			return LOGGED_IN_KEY;
+		}
+
+		// If this is reached, you're either not on a live site or have a serious security issue.
+		return 'das-ist-kein-geheimer-schluessel';
+	}
+
+	/**
+	 * Gets the default encryption salt to use.
+	 *
+	 * @return string Encryption salt.
+	 */
+	private function get_default_salt() {
+		if ( defined( 'UNSPLASH_ENCRYPTION_SALT' ) && '' !== UNSPLASH_ENCRYPTION_SALT ) {
+			return UNSPLASH_ENCRYPTION_SALT;
+		}
+
+		if ( defined( 'LOGGED_IN_SALT' ) && '' !== LOGGED_IN_SALT ) {
+			return LOGGED_IN_SALT;
+		}
+
+		// If this is reached, you're either not on a live site or have a serious security issue.
+		return 'the-is-no-secret-salt';
+	}
+
+	/**
 	 * Adds the Unsplash admin menu.
 	 */
 	public function add_admin_menu() {
@@ -53,7 +161,10 @@ class Settings {
 	 * Add the Unsplash settings.
 	 */
 	public function add_settings() {
-		register_setting( 'unsplash', 'unsplash_settings' );
+		$args = [
+			'sanitize_callback' => [ $this, 'sanitize_settings' ],
+		];
+		register_setting( 'unsplash', 'unsplash_settings', $args );
 
 		add_settings_section(
 			'unsplash_section',
@@ -77,6 +188,21 @@ class Settings {
 			'unsplash',
 			'unsplash_section'
 		);
+	}
+
+	/**
+	 * Sanitize the Unsplash settings.
+	 *
+	 * @param array $settings Values being stored in the DB.
+	 * @return array Sanitized and encrypted values.
+	 */
+	public function sanitize_settings( $settings ) {
+		foreach ( $settings as $key => $value ) {
+			if ( in_array( $key, [ 'access_key', 'secret_key' ], true ) ) {
+				$settings[ $key ] = $this->encrypt( $value );
+			}
+		}
+		return $settings;
 	}
 
 	/**
@@ -108,7 +234,7 @@ class Settings {
 	public function access_key_render() {
 		$options = get_option( 'unsplash_settings' );
 		?>
-		<input type='text' class="widefat" name='unsplash_settings[access_key]' value='<?php echo esc_attr( isset( $options['access_key'] ) ? $options['access_key'] : '' ); ?>'>
+		<input type='password' class="widefat" name='unsplash_settings[access_key]' value='<?php echo esc_attr( isset( $options['access_key'] ) ? $options['access_key'] : '' ); ?>'>
 		<?php
 	}
 
@@ -118,7 +244,7 @@ class Settings {
 	public function secret_key_render() {
 		$options = get_option( 'unsplash_settings' );
 		?>
-		<input type='text' class="widefat" name='unsplash_settings[secret_key]' value='<?php echo esc_attr( isset( $options['secret_key'] ) ? $options['secret_key'] : '' ); ?>'>
+		<input type='password' class="widefat" name='unsplash_settings[secret_key]' value='<?php echo esc_attr( isset( $options['secret_key'] ) ? $options['secret_key'] : '' ); ?>'>
 		<?php
 	}
 }

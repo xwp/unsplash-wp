@@ -22,18 +22,26 @@ use WP_Error;
 class RestController extends WP_REST_Controller {
 
 	/**
+	 * Settings instance.
+	 *
+	 * @var Settings
+	 */
+	public $settings;
+
+	/**
 	 * Constructor.
 	 */
-	public function __construct() {
+	public function __construct( $settings ) {
 		$this->namespace = 'unsplash/v1';
 		$this->rest_base = 'photos';
+		$this->settings  = $settings;
 
 		$options = get_option( 'unsplash_settings' );
 
 		HttpClient::init(
 			[
-				'applicationId' => ! empty( $options['access_key'] ) ? $options['access_key'] : getenv( 'UNSPLASH_ACCESS_KEY' ),
-				'secret'        => ! empty( $options['secret_key'] ) ? $options['secret_key'] : getenv( 'UNSPLASH_SECRET_KEY' ),
+				'applicationId' => ! empty( $options['access_key'] ) ? $this->settings->decrypt( $options['access_key'] ) : getenv( 'UNSPLASH_ACCESS_KEY' ),
+				'secret'        => ! empty( $options['secret_key'] ) ? $this->settings->decrypt( $options['secret_key'] ) : getenv( 'UNSPLASH_SECRET_KEY' ),
 				'utmSource'     => 'WordPress-XWP',
 			]
 		);
