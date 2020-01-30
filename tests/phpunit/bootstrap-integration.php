@@ -13,8 +13,12 @@ $_plugin_files = [
 	"${_plugin_root}/unsplash.php",
 ];
 
-// Tests directory.
-$_tests_dir = "${_plugin_root}/vendor/xwp/wordpress-tests/phpunit";
+$_tests_dir = getenv( 'WP_TESTS_DIR' );
+
+if ( ! $_tests_dir ) {
+	$_tests_dir = "${_plugin_root}/vendor/xwp/wordpress-tests/phpunit";
+	define( 'WP_TESTS_CONFIG_FILE_PATH', __DIR__ . '/wp-tests-config.php' );
+}
 
 if ( ! file_exists( $_tests_dir . '/includes/' ) ) {
 	trigger_error( 'Unable to locate wordpress-tests', E_USER_ERROR ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
@@ -34,8 +38,6 @@ function unit_test_load_plugin_file() {
 	unset( $_plugin_files );
 }
 tests_add_filter( 'muplugins_loaded', 'unit_test_load_plugin_file' );
-
-define( 'WP_TESTS_CONFIG_FILE_PATH', __DIR__ . '/wp-tests-config.php' );
 
 // Run Integration Tests.
 require_once $_tests_dir . '/includes/bootstrap.php';
