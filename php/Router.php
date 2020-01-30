@@ -20,13 +20,6 @@ class Router {
 	protected $plugin;
 
 	/**
-	 * REST API controller.
-	 *
-	 * @var RestController
-	 */
-	protected $rest_controller;
-
-	/**
 	 * Post Type to add fields to.
 	 */
 	const POST_TYPE = 'attachment';
