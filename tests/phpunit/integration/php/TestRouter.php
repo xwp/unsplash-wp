@@ -17,7 +17,7 @@ class TestRouter extends \WP_UnitTestCase {
 	/**
 	 * Router instance.
 	 *
-	 * @var Plugin
+	 * @var Router
 	 */
 	public $router;
 
