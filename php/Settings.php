@@ -129,7 +129,7 @@ class Settings {
 		}
 
 		// If this is reached, you're either not on a live site or have a serious security issue.
-		return 'das-ist-kein-geheimer-schluessel';
+		return 'the-is-no-secret-key';
 	}
 
 	/**
