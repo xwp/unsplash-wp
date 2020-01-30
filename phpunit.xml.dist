@@ -16,7 +16,7 @@
 	</testsuites>
 
 	<filter>
-		<whitelist addUncoveredFilesFromWhitelist="true" processUncoveredFilesFromWhitelist="false">
+		<whitelist processUncoveredFilesFromWhitelist="false">
 			<directory suffix=".php">./</directory>
 			<exclude>
 				<file>./unsplash.php</file>
