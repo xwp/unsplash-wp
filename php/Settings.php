@@ -202,7 +202,11 @@ class Settings {
 		$sanitized_settings = [];
 
 		foreach ( $settings as $key => $value ) {
-			if ( ! empty( $settings[ $key ] ) && in_array( $key, [ 'access_key', 'secret_key' ], true ) && $options[ $key ] !== $settings[ $key ] ) {
+			if ( ( ! empty( $options[ $key ] ) && $options[ $key ] === $value ) ) {
+				continue;
+			}
+
+			if ( ! empty( $value ) && in_array( $key, [ 'access_key', 'secret_key' ], true ) ) {
 				$sanitized_settings[ $key ] = $this->encrypt( $value );
 			}
 		}
