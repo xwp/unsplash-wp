@@ -200,8 +200,19 @@ class Settings {
 		$options = get_option( 'unsplash_settings' );
 
 		foreach ( $settings as $key => $value ) {
-			if ( ! empty( $settings[ $key ] ) && in_array( $key, [ 'access_key', 'secret_key' ], true ) && ( ! isset( $options[ $key ] ) || $options[ $key ] !== $settings[ $key ] ) ) {
+			$should_encrypt = (
+				in_array( $key, [ 'access_key', 'secret_key' ], true )
+				&& ! empty( $settings[ $key ] )
+				&& (
+					! isset( $options[ $key ] )
+					|| $options[ $key ] !== $settings[ $key ]
+				)
+			);
+
+			if ( $should_encrypt ) {
 				$settings[ $key ] = $this->encrypt( $value );
+			} else {
+				$settings[ $key ] = sanitize_text_field( $value );
 			}
 		}
 

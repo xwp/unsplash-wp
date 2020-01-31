@@ -121,7 +121,11 @@ class TestSettings extends \WP_UnitTestCase {
 			'ignored settings'   => [
 				[
 					'foo' => 'aaa',
-					'bar' => 'bbb',
+					'bar' => '<script>bar</script>',
+				],
+				[
+					'foo' => 'aaa',
+					'bar' => '',
 				],
 			],
 			'empty settings'     => [
@@ -129,8 +133,16 @@ class TestSettings extends \WP_UnitTestCase {
 					'access_key' => '',
 					'secret_key' => '',
 				],
+				[
+					'access_key' => '',
+					'secret_key' => '',
+				],
 			],
 			'encrypted settings' => [
+				[
+					'access_key' => 'foo',
+					'secret_key' => 'bar',
+				],
 				[
 					'access_key' => 'foo',
 					'secret_key' => 'bar',
@@ -145,10 +157,11 @@ class TestSettings extends \WP_UnitTestCase {
 	 * @covers ::sanitize_settings()
 	 * @dataProvider data_test_sanitize_settings
 	 *
+	 * @param array $given Given array of raw values.
 	 * @param array $expected Expected array of decrypted values.
 	 */
-	public function test_sanitize_settings( $expected ) {
-		$sanitized_settings = $this->settings->sanitize_settings( $expected );
+	public function test_sanitize_settings( $given, $expected ) {
+		$sanitized_settings = $this->settings->sanitize_settings( $given );
 
 		// We have to test the decrypted vales because the encrypted values will never match.
 		foreach ( $sanitized_settings as $key => $value ) {
