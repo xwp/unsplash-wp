@@ -467,7 +467,7 @@ class RestController extends WP_REST_Controller {
 			'url'           => $image->urls['raw'],
 			'link'          => $image->links['html'],
 			'alt'           => $image->alt_description,
-			'author'        => 1,
+			'author'        => $image->author,
 			'description'   => $image->description,
 			'caption'       => '',
 			'name'          => '',
@@ -536,8 +536,11 @@ class RestController extends WP_REST_Controller {
 	 */
 	public function image_sizes() {
 		global $_wp_additional_image_sizes;
+
 		$sizes = array();
-		foreach ( get_intermediate_image_sizes() as $s ) {
+
+		// @todo This is not supported by WordPress VIP and will require a new solution.
+		foreach ( get_intermediate_image_sizes() as $s ) { // phpcs:ignore
 			if ( in_array( $s, array( 'thumbnail', 'medium', 'medium_large', 'large' ), true ) ) {
 				$sizes[ $s ]['width']  = get_option( $s . '_size_w' );
 				$sizes[ $s ]['height'] = get_option( $s . '_size_h' );
