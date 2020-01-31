@@ -118,26 +118,23 @@ class TestSettings extends \WP_UnitTestCase {
 	 */
 	public function data_test_sanitize_settings() {
 		return [
-			'invalid settings' => [
+			'ignored settings'   => [
 				[
 					'foo' => 'aaa',
 					'bar' => 'bbb',
 				],
-				[],
 			],
-			'empty settings'   => [
+			'empty settings'     => [
 				[
 					'access_key' => '',
 					'secret_key' => '',
-				],
-				[],
+				]
 			],
-			'valid settings'   => [
+			'encrypted settings' => [
 				[
 					'access_key' => 'foo',
 					'secret_key' => 'bar',
-				],
-				[ 'access_key', 'secret_key' ],
+				]
 			],
 		];
 	}
@@ -148,13 +145,18 @@ class TestSettings extends \WP_UnitTestCase {
 	 * @covers ::sanitize_settings()
 	 * @dataProvider data_test_sanitize_settings
 	 *
-	 * @param array $settings Settings.
-	 * @param array $expected Expected array keys in sanitized settings.
+	 * @param array $expected Expected array of decrypted values.
 	 */
-	public function test_sanitize_settings( $settings, $expected ) {
-		$sanitized_settings = $this->settings->sanitize_settings( $settings );
-		// Only keys are compared since encrypting the same value will not give the same result.
-		$this->assertEquals( $expected, array_keys( $sanitized_settings ) );
+	public function test_sanitize_settings( $expected ) {
+		$sanitized_settings = $this->settings->sanitize_settings( $expected );
+
+		// We have to test the decrypted vales because the encrypted values will never match.
+		foreach ( $sanitized_settings as $key => $value ) {
+			if ( in_array( $key, [ 'access_key', 'secret_key' ], true ) ) {
+				$sanitized_settings[ $key ] = $this->settings->decrypt( $value );
+			}
+		}
+		$this->assertEquals( $expected, $sanitized_settings );
 	}
 
 	/**

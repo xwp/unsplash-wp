@@ -199,18 +199,13 @@ class Settings {
 	public function sanitize_settings( $settings ) {
 		$options = get_option( 'unsplash_settings' );
 
-		$sanitized_settings = [];
-
 		foreach ( $settings as $key => $value ) {
-			if ( ( ! empty( $options[ $key ] ) && $options[ $key ] === $value ) ) {
-				continue;
-			}
-
-			if ( ! empty( $value ) && in_array( $key, [ 'access_key', 'secret_key' ], true ) ) {
-				$sanitized_settings[ $key ] = $this->encrypt( $value );
+			if ( ! empty( $settings[ $key ] ) && in_array( $key, [ 'access_key', 'secret_key' ], true ) && ( ! isset( $options[ $key ] ) || $options[ $key ] !== $settings[ $key ] ) ) {
+				$settings[ $key ] = $this->encrypt( $value );
 			}
 		}
-		return $sanitized_settings;
+
+		return $settings;
 	}
 
 	/**
