@@ -2,7 +2,7 @@
 /**
  * Tests for Router class.
  *
- * @package Unsplash
+ * @package XWP\Unsplash
  */
 
 namespace XWP\Unsplash;
@@ -14,13 +14,13 @@ use WP_Mock;
  * Tests for the Router class.
  */
 class TestRouter extends TestCase {
-
 	/**
 	 * Test init.
 	 *
 	 * @covers \XWP\Unsplash\Router::init()
 	 */
 	public function test_init() {
+		Mockery::mock( 'WP_REST_Controller' );
 		WP_Mock::userFunction( 'remove_action' )
 			->once()
 			->with(
@@ -29,11 +29,12 @@ class TestRouter extends TestCase {
 				1
 			);
 
-		$plugin = new Router( Mockery::mock( Plugin::class ) );
+		$plugin = Mockery::mock( Plugin::class );
+		$router = new Router( $plugin );
 
-		WP_Mock::expectActionAdded( 'admin_enqueue_scripts', [ $plugin, 'enqueue_scripts' ], 10, 1 );
+		WP_Mock::expectActionAdded( 'admin_enqueue_scripts', [ $router, 'enqueue_scripts' ], 10, 1 );
 
-		$plugin->init();
+		$router->init();
 	}
 
 	/**
@@ -42,6 +43,7 @@ class TestRouter extends TestCase {
 	 * @covers \XWP\Unsplash\Router::enqueue_scripts()
 	 */
 	public function test_enqueue_scripts() {
+		Mockery::mock( 'WP_REST_Controller' );
 		$plugin = Mockery::mock( Plugin::class );
 
 		$plugin->shouldReceive( 'asset_url' )
@@ -82,6 +84,7 @@ class TestRouter extends TestCase {
 	 * @covers \XWP\Unsplash\Router::register_meta()
 	 */
 	public function test_register_meta() {
+		Mockery::mock( 'WP_REST_Controller' );
 		$plugin = Mockery::mock( Plugin::class );
 
 		WP_Mock::userFunction( 'wp_parse_args' )->times( 6 );
@@ -97,6 +100,7 @@ class TestRouter extends TestCase {
 	 * @covers \XWP\Unsplash\Router::register_taxonomy()
 	 */
 	public function test_register_taxonomy() {
+		Mockery::mock( 'WP_REST_Controller' );
 		$plugin = Mockery::mock( Plugin::class );
 
 		WP_Mock::userFunction( 'wp_parse_args' )->times( 3 );

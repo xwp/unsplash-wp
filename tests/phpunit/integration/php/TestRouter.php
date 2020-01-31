@@ -17,7 +17,7 @@ class TestRouter extends \WP_UnitTestCase {
 	/**
 	 * Router instance.
 	 *
-	 * @var Plugin
+	 * @var Router
 	 */
 	public $router;
 
@@ -47,7 +47,6 @@ class TestRouter extends \WP_UnitTestCase {
 	 * @covers ::init()
 	 */
 	public function test_init() {
-		$this->assertEquals( 10, has_action( 'admin_enqueue_scripts', [ $this->router, 'enqueue_scripts' ] ) );
 		$this->assertEquals( 10, has_action( 'admin_enqueue_scripts', [ $this->router, 'enqueue_scripts' ] ) );
 		$this->assertEquals( 10, has_action( 'enqueue_block_editor_assets', [ $this->router, 'enqueue_editor_assets' ] ) );
 		$this->assertEquals( 10, has_action( 'wp_ajax_query-unsplash', [ $this->router, 'wp_ajax_query_unsplash' ] ) );

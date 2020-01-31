@@ -21,8 +21,16 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 
 global $unsplash;
 
-$unsplash['plugin'] = new Plugin( __FILE__ );
-$unsplash['router'] = new Router( $unsplash['plugin'] );
+$unsplash['plugin']          = new Plugin( __FILE__ );
+$unsplash['router']          = new Router( $unsplash['plugin'] );
+$unsplash['settings']        = new Settings( $unsplash['plugin'] );
+$unsplash['rest_controller'] = new RestController( $unsplash['settings'] );
 
 // Initialize Router.
 add_action( 'plugins_loaded', [ $unsplash['router'], 'init' ] );
+
+// Initialize Settings.
+add_action( 'plugins_loaded', [ $unsplash['settings'], 'init' ] );
+
+// Initialize REST Controller.
+add_action( 'rest_api_init', [ $unsplash['rest_controller'], 'register_routes' ] );

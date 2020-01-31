@@ -29,6 +29,8 @@ or [Chocolatey](https://chocolatey.org) for Windows:
 
 	_Note that both Node.js and PHP 7.4 or greater are required on your computer for running the `npm` scripts. Use `npm run docker -- npm install --unsafe-perm` to run the installer inside a Docker container if you don't have the required version of PHP installed locally._
 
+3. Update the `.env` file with the Unsplash API app ID and secret.
+
 ## Development Environment
 
 This repository includes a WordPress development environment based on [Docker](https://docs.docker.com/install/) that can be run on your computer.
