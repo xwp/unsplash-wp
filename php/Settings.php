@@ -199,12 +199,14 @@ class Settings {
 	public function sanitize_settings( $settings ) {
 		$options = get_option( 'unsplash_settings' );
 
+		$sanitized_settings = [];
+
 		foreach ( $settings as $key => $value ) {
 			if ( ! empty( $settings[ $key ] ) && in_array( $key, [ 'access_key', 'secret_key' ], true ) && $options[ $key ] !== $settings[ $key ] ) {
-				$settings[ $key ] = $this->encrypt( $value );
+				$sanitized_settings[ $key ] = $this->encrypt( $value );
 			}
 		}
-		return $settings;
+		return $sanitized_settings;
 	}
 
 	/**

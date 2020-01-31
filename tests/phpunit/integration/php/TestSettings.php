@@ -110,4 +110,92 @@ class TestSettings extends \WP_UnitTestCase {
 
 		$this->assertEquals( 'test-value', $decrypted_value );
 	}
+
+	/**
+	 * Data for test_sanitize_settings.
+	 *
+	 * @return array
+	 */
+	public function data_test_sanitize_settings() {
+		return [
+			'invalid settings' => [
+				[
+					'foo' => 'aaa',
+					'bar' => 'bbb',
+				],
+				[],
+			],
+			'empty settings'   => [
+				[
+					'access_key' => '',
+					'secret_key' => '',
+				],
+				[],
+			],
+			'valid settings'   => [
+				[
+					'access_key' => 'foo',
+					'secret_key' => 'bar',
+				],
+				[ 'access_key', 'secret_key' ],
+			],
+		];
+	}
+
+	/**
+	 * Test sanitize_settings.
+	 *
+	 * @covers ::sanitize_settings()
+	 * @dataProvider data_test_sanitize_settings
+	 *
+	 * @param array $settings Settings.
+	 * @param array $expected Expected array keys in sanitized settings.
+	 */
+	public function test_sanitize_settings( $settings, $expected ) {
+		$sanitized_settings = $this->settings->sanitize_settings( $settings );
+		// Only keys are compared since encrypting the same value will not give the same result.
+		$this->assertEquals( $expected, array_keys( $sanitized_settings ) );
+	}
+
+	/**
+	 * Test settings_section_render.
+	 *
+	 * @covers ::settings_section_render()
+	 */
+	public function test_settings_section_render() {
+		ob_start();
+		$this->settings->settings_section_render();
+		$section = ob_get_clean();
+		$this->assertEquals( 'Section Description', $section );
+	}
+
+	/**
+	 * Test access_key_render.
+	 *
+	 * @covers ::access_key_render()
+	 */
+	public function test_access_key_render() {
+		ob_start();
+		$this->settings->access_key_render();
+		$input = ob_get_clean();
+
+		$expected = "\t\t<input type='password' class=\"widefat\" name='unsplash_settings[access_key]' value=''>\n\t\t";
+
+		$this->assertEquals( $expected, $input );
+	}
+
+	/**
+	 * Test secret_key_render.
+	 *
+	 * @covers ::secret_key_render()
+	 */
+	public function test_secret_key_render() {
+		ob_start();
+		$this->settings->secret_key_render();
+		$input = ob_get_clean();
+
+		$expected = "\t\t<input type='password' class=\"widefat\" name='unsplash_settings[secret_key]' value=''>\n\t\t";
+
+		$this->assertEquals( $expected, $input );
+	}
 }
