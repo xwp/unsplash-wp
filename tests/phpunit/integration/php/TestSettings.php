@@ -128,13 +128,13 @@ class TestSettings extends \WP_UnitTestCase {
 				[
 					'access_key' => '',
 					'secret_key' => '',
-				]
+				],
 			],
 			'encrypted settings' => [
 				[
 					'access_key' => 'foo',
 					'secret_key' => 'bar',
-				]
+				],
 			],
 		];
 	}
