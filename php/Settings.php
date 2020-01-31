@@ -197,8 +197,10 @@ class Settings {
 	 * @return array Sanitized and encrypted values.
 	 */
 	public function sanitize_settings( $settings ) {
+		$options = get_option( 'unsplash_settings' );
+
 		foreach ( $settings as $key => $value ) {
-			if ( in_array( $key, [ 'access_key', 'secret_key' ], true ) ) {
+			if ( ! empty( $settings[ $key ] ) && in_array( $key, [ 'access_key', 'secret_key' ], true ) && $options[ $key ] !== $settings[ $key ] ) {
 				$settings[ $key ] = $this->encrypt( $value );
 			}
 		}
