@@ -7,6 +7,8 @@
 
 namespace XWP\Unsplash;
 
+use Crew\Unsplash\Photo;
+
 /**
  * Plugin Router.
  */
@@ -230,85 +232,20 @@ class Router {
 		check_ajax_referer( 'media-send-to-editor', 'nonce' );
 
 		$attachment = ! empty( $_POST['attachment'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['attachment'] ) ) : [];
-		$html       = isset( $_POST['html'] ) ? wp_kses_post( wp_unslash( $_POST['html'] ) ) : '';
-		$align      = isset( $attachment['align'] ) ? $attachment['align'] : 'none';
-		if ( is_numeric( $attachment['id'] ) ) {
-			$id = intval( $attachment['id'] );
-
-			$post = get_post( $id );
-			if ( ! $post ) {
-				wp_send_json_error();
+		if ( ! is_numeric( $attachment['id'] ) ) {
+			$id            = $attachment['id'];
+			$photo         = Photo::find( $id );
+			$link          = $photo->download();
+			$results       = $photo->toArray();
+			$downloader    = new Download( $id, $results, $link );
+			$attachment_id = $downloader->process();
+			if ( is_wp_error( $attachment_id ) ) {
+				return wp_ajax_send_attachment_to_editor();
 			}
-
-			if ( 'attachment' !== $post->post_type ) {
-				wp_send_json_error();
-			}
-
-			if ( current_user_can( 'edit_post', $id ) ) {
-				// If this attachment is unattached, attach it. Primarily a back compat thing.
-				$insert_into_post_id = isset( $_POST['post_id'] ) ? intval( $_POST['post_id'] ) : 0;
-
-				if ( 0 === $post->post_parent && $insert_into_post_id ) {
-					wp_update_post(
-						array(
-							'ID'          => $id,
-							'post_parent' => $insert_into_post_id,
-						)
-					);
-				}
-			}
-
-			$url = empty( $attachment['url'] ) ? '' : $attachment['url'];
-			$rel = ( strpos( $url, 'attachment_id' ) || get_attachment_link( $id ) === $url );
-
-			remove_filter( 'media_send_to_editor', 'image_media_send_to_editor' );
-
-			if ( 'image' === substr( $post->post_mime_type, 0, 5 ) ) {
-
-				$size = isset( $attachment['image-size'] ) ? $attachment['image-size'] : 'medium';
-				$alt  = isset( $attachment['image_alt'] ) ? $attachment['image_alt'] : '';
-
-				// No whitespace-only captions.
-				$caption = isset( $attachment['post_excerpt'] ) ? $attachment['post_excerpt'] : '';
-				if ( '' === trim( $caption ) ) {
-					$caption = '';
-				}
-
-				$title = ''; // We no longer insert title tags into <img> tags, as they are redundant.
-				$html  = get_image_send_to_editor( $id, $caption, $title, $align, $url, $rel, $size, $alt );
-			} elseif ( wp_attachment_is( 'video', $post ) || wp_attachment_is( 'audio', $post ) ) {
-				$html = isset( $_POST['html'] ) ? wp_kses_post( wp_unslash( $_POST['html'] ) ) : '';
-			} else {
-				$html = isset( $attachment['post_title'] ) ? $attachment['post_title'] : '';
-				$rel  = $rel ? ' rel="attachment wp-att-' . $id . '"' : ''; // Hard-coded string, $id is already sanitized.
-
-				if ( ! empty( $url ) ) {
-					$html = '<a href="' . esc_url( $url ) . '"' . $rel . '>' . $html . '</a>';
-				}
-			}
-		} else {
-			$images = $this->get_images();
-			$image  = array_filter(
-				$images,
-				static function ( $var ) use ( $attachment ) {
-					return ( $var['id'] === $attachment['id'] );
-				}
-			);
-			if ( $image ) {
-				$data = array_shift( $image );
-				$size = isset( $attachment['image-size'] ) ? $attachment['image-size'] : 'medium';
-				$alt  = isset( $attachment['image_alt'] ) ? $attachment['image_alt'] : '';
-
-				$class   = 'align' . esc_attr( $align ) . ' size-' . esc_attr( $size ) . ' wp-image-' . $data['id'];
-				$img_src = $data['urls']['raw'];
-				$html    = '<img src="' . esc_url( $img_src ) . '" alt="' . esc_attr( $alt ) . '" ' . $title . 'class="' . $class . '" />';
-
-			}
+			$_POST['attachment']['id'] = $attachment_id;
 		}
-		/** This filter is documented in wp-admin/includes/media.php */
-		$html = apply_filters( 'media_send_to_editor', $html, $id, $attachment );
 
-		wp_send_json_success( $html );
+		return wp_ajax_send_attachment_to_editor();
 	}
 
 	/**

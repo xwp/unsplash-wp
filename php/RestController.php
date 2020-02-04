@@ -93,6 +93,28 @@ class RestController extends WP_REST_Controller {
 
 		register_rest_route(
 			$this->namespace,
+			'/' . $this->rest_base . '/download/(?P<id>[\w-]+)',
+			[
+				'args'   => [
+					'id' => [
+						'description' => __( 'Unique identifier for the object.' ),
+						'type'        => 'string',
+					],
+				],
+				[
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => [ $this, 'get_download' ],
+					'permission_callback' => [ $this, 'create_item_permissions_check' ],
+					'args'                => [
+						'context' => $this->get_context_param( [ 'default' => 'view' ] ),
+					],
+				],
+				'schema' => [ $this, 'get_public_item_schema' ],
+			]
+		);
+
+		register_rest_route(
+			$this->namespace,
 			'/' . $this->rest_base . '/search/(?P<search>[\w-]+)',
 			[
 				[
@@ -165,6 +187,45 @@ class RestController extends WP_REST_Controller {
 	}
 
 	/**
+	 * Retrieve download page of photo.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 *
+	 * @return WP_REST_Response Single page of photo results.
+	 */
+	public function get_download( $request ) {
+		$id      = $request->get_param( 'id' );
+		$results = [];
+		$link    = '';
+		try {
+			$photo   = Photo::find( $id );
+			$link    = $photo->download();
+			$results = $photo->toArray();
+			$photos  = $this->prepare_item_for_response( $results, $request );
+		} catch ( \Exception $e ) {
+			$photos = new WP_Error( 'single-photo-download', __( 'An unknown error occurred while retrieving the photo', 'unsplash' ), [ 'status' => '500' ] );
+			$this->log_error( $e );
+		}
+
+		if ( is_wp_error( $photos ) ) {
+			return $photos;
+		}
+
+		$downloader    = new Download( $id, $results, $link );
+		$attachment_id = $downloader->process();
+		if ( is_wp_error( $attachment_id ) ) {
+			return $attachment_id;
+		}
+
+		$response = $this->prepare_item_for_response( $results, $request );
+		$response = rest_ensure_response( $response );
+		$response->set_status( 301 );
+		$response->header( 'Location', rest_url( sprintf( '%s/%s/%d', 'wp/v2', 'media', $attachment_id ) ) );
+
+		return $response;
+	}
+
+	/**
 	 * Retrieve a page of photos filtered by a search term.
 	 *
 	 * @param WP_REST_Request $request Request.
@@ -210,6 +271,17 @@ class RestController extends WP_REST_Controller {
 	 * @return WP_Error|bool True if the request has read access for the item, WP_Error object otherwise.
 	 */
 	public function get_items_permissions_check( $request ) {
+		// TODO Change permissions to edit_posts.
+		return true;
+	}
+
+	/**
+	 * Checks if a given request has access to create items.
+	 *
+	 * @param WP_REST_Request $request Full data about the request.
+	 * @return WP_Error|bool True if the request has access to create items, WP_Error object otherwise.
+	 */
+	public function create_item_permissions_check( $request ) {
 		// TODO Change permissions to edit_posts.
 		return true;
 	}
