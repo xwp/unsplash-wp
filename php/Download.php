@@ -55,12 +55,6 @@ class Download {
 	 */
 	protected $process_data = [];
 	/**
-	 * Processed file.
-	 *
-	 * @var array
-	 */
-	protected $file;
-	/**
 	 * Hardcoded file ext.
 	 */
 	const EXT = 'jpeg';
@@ -68,14 +62,14 @@ class Download {
 	/**
 	 * Hardcoded MINE type.
 	 */
-	const MINE = 'image/jpeg';
+	const MIME = 'image/jpeg';
 
 	/**
 	 * Download constructor.
 	 *
 	 * @param string $id Unsplash ID.
 	 * @param array  $image Unsplash image array.
-	 * @param string $link  URL of download image.
+	 * @param string $link URL of download image.
 	 * @param int    $parent Parent ID.
 	 */
 	public function __construct( $id, array $image = [], $link = '', $parent = 0 ) {
@@ -83,6 +77,7 @@ class Download {
 		$this->image  = $image;
 		$this->link   = $link;
 		$this->parent = $parent;
+		$this->process_fields();
 	}
 
 	/**
@@ -95,9 +90,8 @@ class Download {
 		if ( $existing_attachment ) {
 			return $existing_attachment;
 		}
-		$this->process_fields();
-		$this->download_image();
-		$attachment = $this->create_attachment();
+		$file       = $this->download_image();
+		$attachment = $this->create_attachment( $file );
 		if ( is_wp_error( $attachment ) ) {
 			return $attachment;
 		}
@@ -115,9 +109,9 @@ class Download {
 	 * @return bool|int
 	 */
 	public function get_attachment() {
-		$check = get_page_by_path( $this->id, OBJECT, 'page' );
-		if ( is_a( $check, 'WP_Post' ) ) {
-			return $check->ID;
+		$check = get_page_by_path( $this->id, ARRAY_A, 'page' );
+		if ( is_array( $check ) ) {
+			return $check['ID'];
 		}
 
 		return false;
@@ -126,28 +120,42 @@ class Download {
 	/**
 	 * Process image and format data in the correct format.
 	 */
-	protected function process_fields() {
-		$this->process_data['original_id']       = $this->get_field( 'id', wp_rand() );
+	public function process_fields() {
+		$this->process_data['original_id']       = $this->get_field( 'id', $this->id );
 		$this->process_data['description']       = $this->get_field( 'description', $this->get_field( 'alt_description' ) );
 		$this->process_data['alt']               = $this->get_field( 'alt_description', $this->get_field( 'description' ) );
 		$this->process_data['original_url']      = $this->get_url( 'raw' );
 		$this->process_data['color']             = $this->get_field( 'color', '' );
 		$this->process_data['unsplash_location'] = $this->get_field( 'location', [] );
 		$this->process_data['unsplash_sponsor']  = $this->get_field( 'sponsor', [] );
-		$this->process_data['unsplash_exif']     = $this->get_field( 'exif', [] );
-		$this->process_data['tags']              = wp_list_pluck( $this->image['tags'], 'title' );
-
-		$this->process_data['height']     = $this->get_field( 'height', 0 );
-		$this->process_data['width']      = $this->get_field( 'width', 0 );
-		$this->process_data['file']       = $this->get_field( 'id', wp_rand() ) . '.' . self::EXT;
-		$this->process_data['created_at'] = $this->get_field( 'created_at', current_time( 'mysql' ) );
-
-		$this->process_data['sizes'] = [
+		$this->process_data['unsplash_exif']     = $this->get_field(
+			'exif',
+			[
+				'aperture'     => '',
+				'model'        => '',
+				'focal_length' => '',
+				'iso'          => '',
+			]
+		);
+		$this->process_data['tags']              = wp_list_pluck( $this->get_field( 'tags', [] ), 'title' );
+		$this->process_data['file']              = $this->process_data['original_id'] . '.' . self::EXT;
+		$this->process_data['height']            = $this->get_field( 'height', 0 );
+		$this->process_data['width']             = $this->get_field( 'width', 0 );
+		$this->process_data['created_at']        = $this->get_field( 'created_at', current_time( 'mysql' ) );
+		$this->process_data['user']              = $this->get_field(
+			'user',
+			[
+				'name' => '',
+				'id'   => '',
+				'bio'  => '',
+			]
+		);
+		$this->process_data['sizes']             = [
 			'full' => [
 				'height'    => $this->process_data['height'],
 				'width'     => $this->process_data['width'],
 				'file'      => $this->process_data['file'],
-				'mime-type' => self::MINE,
+				'mime-type' => self::MIME,
 			],
 		];
 
@@ -158,11 +166,11 @@ class Download {
 			'sizes'      => $this->process_data['sizes'],
 			'image_meta' => [
 				'aperture'          => $this->process_data['unsplash_exif']['aperture'],
-				'credit'            => $this->image['user']['name'],
+				'credit'            => $this->process_data['user']['name'],
 				'camera'            => $this->process_data['unsplash_exif']['model'],
 				'caption'           => $this->process_data['description'],
 				'created_timestamp' => $this->process_data['created_at'],
-				'copyright'         => $this->image['user']['name'],
+				'copyright'         => $this->process_data['user']['name'],
 				'focal_length'      => $this->process_data['unsplash_exif']['focal_length'],
 				'iso'               => $this->process_data['unsplash_exif']['iso'],
 				'shutter_speed'     => '0',
@@ -202,9 +210,11 @@ class Download {
 	 * @return array|string|WP_Error
 	 */
 	public function download_image() {
-		require_once( ABSPATH . 'wp-admin/includes/media.php' );
-		require_once( ABSPATH . 'wp-admin/includes/file.php' );
-		require_once( ABSPATH . 'wp-admin/includes/image.php' );
+		if ( ! function_exists( 'download_url' ) ) {
+			require_once( ABSPATH . 'wp-admin/includes/media.php' );
+			require_once( ABSPATH . 'wp-admin/includes/file.php' );
+			require_once( ABSPATH . 'wp-admin/includes/image.php' );
+		}
 
 		$file_array = [];
 		$file       = $this->link;
@@ -212,7 +222,7 @@ class Download {
 
 		$file_array['name']     = $this->process_data['file'];
 		$file_array['tmp_name'] = $tmp;
-		$file_array['type']     = self::MINE;
+		$file_array['type']     = self::MIME;
 		$file_array['ext']      = self::EXT;
 
 		// If error storing temporarily, unlink.
@@ -235,30 +245,36 @@ class Download {
 			$overrides['action'] = 'wp_handle_mock_upload';
 		}
 
-		$this->file = wp_handle_upload( $file_array, $overrides );
-		if ( isset( $this->file['error'] ) ) {
-			$this->file = new WP_Error(
+		$file = wp_handle_upload( $file_array, $overrides );
+		if ( isset( $file['error'] ) ) {
+			$file = new WP_Error(
 				'rest_upload_unknown_error',
-				$this->file['error'],
+				$file['error'],
 				array( 'status' => 500 )
 			);
 		}
 
-		return $this->file;
+		return $file;
 	}
 
 	/**
 	 * Create attachment object.
 	 *
-	 * @return array|int|WP_Error
+	 * @param array|WP_Error $file Files array or error.
+	 *
+	 * @return int|WP_Error
 	 */
-	public function create_attachment() {
-		if ( is_wp_error( $this->file ) ) {
-			return $this->file;
+	public function create_attachment( $file ) {
+		if ( is_wp_error( $file ) ) {
+			return $file;
 		}
 
-		$url  = $this->file['url'];
-		$file = $this->file['file'];
+		if ( empty( $file ) || ! is_array( $file ) ) {
+			return new WP_Error( 'no_file_found', __( 'No file found', 'unsplash' ), [ 'status' => 500 ] );
+		}
+
+		$url  = $file['url'];
+		$file = $file['file'];
 
 		$attachment = new \stdClass();
 
@@ -266,7 +282,7 @@ class Download {
 		$attachment->post_content   = $this->process_data['description'];
 		$attachment->post_title     = $this->process_data['alt'];
 		$attachment->post_excrept   = $this->process_data['alt'];
-		$attachment->post_mime_type = self::MINE;
+		$attachment->post_mime_type = self::MIME;
 		$attachment->guid           = $url;
 
 		// do the validation and storage stuff.
@@ -327,8 +343,8 @@ class Download {
 	 *
 	 * @return array|bool|WP_Error
 	 */
-	protected function process_user() {
-		$unsplash_user = $this->get_field( 'user' );
+	public function process_user() {
+		$unsplash_user = $this->process_data['user'];
 		$user          = get_term_by( 'slug', $unsplash_user['id'], 'unsplash_user' );
 		if ( ! $user ) {
 			$args = [
