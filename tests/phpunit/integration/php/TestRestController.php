@@ -161,6 +161,40 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	}
 
 	/**
+	 * Test get_download().
+	 *
+	 * @covers \XWP\Unsplash\RestController::get_download()
+	 */
+	public function test_get_download() {
+		$request  = new WP_REST_Request( 'GET', $this->get_route( '/download/uRuPYB0P8to' ) );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		// The `updated_at` value is expected to change frequently.
+		unset( $data['updated_at'] );
+
+		$expected = [
+			'id'              => 'uRuPYB0P8to',
+			'created_at'      => '2019-05-27T14:23:58-04:00',
+			'width'           => 4002,
+			'height'          => 6000,
+			'color'           => '#D9E8EF',
+			'description'     => '',
+			'alt_description' => 'black motorcycle',
+			'urls'            => [
+				'raw'     => 'https://images.unsplash.com/photo-1558981396-5fcf84bdf14d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
+				'full'    => 'https://images.unsplash.com/photo-1558981396-5fcf84bdf14d?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
+				'regular' => 'https://images.unsplash.com/photo-1558981396-5fcf84bdf14d?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
+				'small'   => 'https://images.unsplash.com/photo-1558981396-5fcf84bdf14d?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
+				'thumb'   => 'https://images.unsplash.com/photo-1558981396-5fcf84bdf14d?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
+			],
+		];
+
+		$this->assertEquals( $expected, $data );
+		$this->assertEquals( 301, $response->get_status() );
+	}
+
+	/**
 	 * Test arguments for get_item().
 	 */
 	public function test_get_item_args() {
