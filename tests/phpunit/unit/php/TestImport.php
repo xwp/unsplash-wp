@@ -87,7 +87,7 @@ class TestImport extends TestCase {
 			]
 		);
 		$attachment = $import->create_attachment( $file );
-		$this->assertIsObject( $attachment );
+		$this->assertTrue( is_object( $attachment ) );
 		$this->assertTrue( is_a( $attachment, 'WP_Error' ) );
 
 	}
@@ -111,7 +111,7 @@ class TestImport extends TestCase {
 			]
 		);
 		$attachment = $import->create_attachment( $file );
-		$this->assertIsObject( $attachment );
+		$this->assertTrue( is_object( $attachment ) );
 		$this->assertTrue( is_a( $attachment, 'WP_Error' ) );
 	}
 
