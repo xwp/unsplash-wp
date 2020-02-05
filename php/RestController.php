@@ -211,7 +211,7 @@ class RestController extends WP_REST_Controller {
 			return $photos;
 		}
 
-		$importer    = new Import( $id, $results, $link );
+		$importer      = new Import( $id, $results, $link );
 		$attachment_id = $importer->process();
 		if ( is_wp_error( $attachment_id ) ) {
 			return $attachment_id;

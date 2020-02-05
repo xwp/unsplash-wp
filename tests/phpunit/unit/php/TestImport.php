@@ -42,7 +42,7 @@ class TestImport extends TestCase {
 		WP_Mock::passthruFunction( 'wp_insert_attachment' );
 		WP_Mock::passthruFunction( 'wp_slash' );
 		Mockery::mock( 'WP_Error' );
-		$file     = [
+		$file   = [
 			'file' => true,
 			'url'  => 'http://www.example.com/test.jpg',
 		];
@@ -77,7 +77,7 @@ class TestImport extends TestCase {
 	public function test_invalid_create_attachment() {
 		Mockery::mock( 'WP_Error' );
 		$file       = [];
-		$import   = new Import(
+		$import     = new Import(
 			'eOvv4N6yNmk',
 			[
 				'id'              => 'eOvv4N6yNmk',
@@ -101,7 +101,7 @@ class TestImport extends TestCase {
 	public function test_wp_error_create_attachment() {
 		$file = Mockery::mock( 'WP_Error' );
 		WP_Mock::userFunction( 'is_wp_error' )->once()->andReturn( false );
-		$import   = new Import(
+		$import     = new Import(
 			'eOvv4N6yNmk',
 			[
 				'id'              => 'eOvv4N6yNmk',
@@ -197,7 +197,7 @@ class TestImport extends TestCase {
 				],
 			]
 		);
-		$user     = $import->process_user();
+		$user   = $import->process_user();
 		$this->assertIsArray( $user );
 		$this->assertSame( $user, [ 1234 ] );
 	}

@@ -237,7 +237,7 @@ class Router {
 			$photo         = Photo::find( $id );
 			$link          = $photo->download();
 			$results       = $photo->toArray();
-			$importer    = new Import( $id, $results, $link );
+			$importer      = new Import( $id, $results, $link );
 			$attachment_id = $importer->process();
 			if ( is_wp_error( $attachment_id ) ) {
 				return wp_ajax_send_attachment_to_editor();
