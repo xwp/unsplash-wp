@@ -57,7 +57,7 @@ class TestImport extends TestCase {
 		);
 
 		$attachment = $import->create_attachment( $file );
-		$this->assertIsArray( $attachment );
+		$this->assertTrue( is_array( $attachment ) );
 		$this->assertArrayHasKey( 'post_name', $attachment );
 		$this->assertArrayHasKey( 'post_mime_type', $attachment );
 		$this->assertArrayHasKey( 'guid', $attachment );
@@ -140,7 +140,7 @@ class TestImport extends TestCase {
 		);
 
 		$attachment = $import->import_image();
-		$this->assertIsArray( $attachment );
+		$this->assertTrue( is_array( $attachment ) );
 		$this->assertSame( $attachment, $file );
 	}
 
@@ -170,7 +170,7 @@ class TestImport extends TestCase {
 		);
 
 		$attachment = $import->import_image();
-		$this->assertIsArray( $attachment );
+		$this->assertTrue( is_array( $attachment ) );
 		$this->assertSame( $attachment, $file );
 	}
 
@@ -198,7 +198,7 @@ class TestImport extends TestCase {
 			]
 		);
 		$user   = $import->process_user();
-		$this->assertIsArray( $user );
+		$this->assertTrue( is_array( $user ) );
 		$this->assertSame( $user, [ 1234 ] );
 	}
 }
