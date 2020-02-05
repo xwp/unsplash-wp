@@ -1,8 +1,8 @@
 <?php
 /**
- * Download image class.
+ * Import image class.
  *
- * @package XWP\Unsplash\Download.
+ * @package XWP\Unsplash\Import.
  */
 
 namespace XWP\Unsplash;
@@ -10,11 +10,11 @@ namespace XWP\Unsplash;
 use WP_Error;
 
 /**
- * Class Download
+ * Class Import
  *
  * @package XWP\Unsplash
  */
-class Download {
+class Import {
 
 	/**
 	 * Unsplash ID.
@@ -65,7 +65,7 @@ class Download {
 	const MIME = 'image/jpeg';
 
 	/**
-	 * Download constructor.
+	 * Import constructor.
 	 *
 	 * @param string $id Unsplash ID.
 	 * @param array  $image Unsplash image array.
@@ -90,7 +90,7 @@ class Download {
 		if ( $existing_attachment ) {
 			return $existing_attachment;
 		}
-		$file       = $this->download_image();
+		$file       = $this->import_image();
 		$attachment = $this->create_attachment( $file );
 		if ( is_wp_error( $attachment ) ) {
 			return $attachment;
@@ -205,11 +205,11 @@ class Download {
 	}
 
 	/**
-	 * Download image to a temp directory and move it into WP content directory.
+	 * Import image to a temp directory and move it into WP content directory.
 	 *
 	 * @return array|string|WP_Error
 	 */
-	public function download_image() {
+	public function import_image() {
 		if ( ! function_exists( 'download_url' ) ) {
 			require_once( ABSPATH . 'wp-admin/includes/media.php' );
 			require_once( ABSPATH . 'wp-admin/includes/file.php' );

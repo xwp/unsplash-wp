@@ -1,6 +1,6 @@
 <?php
 /**
- * Tests for Download class.
+ * Tests for Import class.
  *
  * @package Unsplash
  */
@@ -11,29 +11,29 @@ use Mockery;
 use WP_Mock;
 
 /**
- * Test the WordPress download abstraction.
+ * Test the WordPress import abstraction.
  */
-class TestDownload extends TestCase {
+class TestImport extends TestCase {
 	/**
 	 * Test get attachment.
 	 *
-	 * @covers \XWP\Unsplash\Download::__construct()
-	 * @covers \XWP\Unsplash\Download::test_get_attachment()
+	 * @covers \XWP\Unsplash\Import::__construct()
+	 * @covers \XWP\Unsplash\Import::test_get_attachment()
 	 */
 	public function test_get_attachment() {
 		WP_Mock::userFunction( 'wp_list_pluck' )->once()->andReturn( [] );
 		WP_Mock::passthruFunction( 'current_time' );
 		WP_Mock::userFunction( 'get_page_by_path' )->once()->andReturn( [ 'ID' => 123 ] );
-		$download = new Download( 'eOvv4N6yNmk' );
-		$this->assertEquals( $download->get_attachment(), 123 );
+		$import = new Import( 'eOvv4N6yNmk' );
+		$this->assertEquals( $import->get_attachment(), 123 );
 
 	}
 
 	/**
 	 * Test get attachment.
 	 *
-	 * @covers \XWP\Unsplash\Download::__construct()
-	 * @covers \XWP\Unsplash\Download::create_attachment()
+	 * @covers \XWP\Unsplash\Import::__construct()
+	 * @covers \XWP\Unsplash\Import::create_attachment()
 	 */
 	public function test_create_attachment() {
 		WP_Mock::userFunction( 'wp_list_pluck' )->once()->andReturn( [] );
@@ -46,7 +46,7 @@ class TestDownload extends TestCase {
 			'file' => true,
 			'url'  => 'http://www.example.com/test.jpg',
 		];
-		$download = new Download(
+		$import = new Import(
 			'eOvv4N6yNmk',
 			[
 				'id'              => 'eOvv4N6yNmk',
@@ -56,14 +56,14 @@ class TestDownload extends TestCase {
 			]
 		);
 
-		$attachment = $download->create_attachment( $file );
+		$attachment = $import->create_attachment( $file );
 		$this->assertIsArray( $attachment );
 		$this->assertArrayHasKey( 'post_name', $attachment );
 		$this->assertArrayHasKey( 'post_mime_type', $attachment );
 		$this->assertArrayHasKey( 'guid', $attachment );
 		$this->assertSame( $attachment['post_name'], 'eOvv4N6yNmk' );
 		$this->assertSame( $attachment['guid'], 'http://www.example.com/test.jpg' );
-		$this->assertSame( $attachment['post_mime_type'], $download::MIME );
+		$this->assertSame( $attachment['post_mime_type'], $import::MIME );
 		$this->assertSame( $attachment['post_content'], 'test description' );
 		$this->assertSame( $attachment['post_title'], 'test alt description' );
 	}
@@ -71,13 +71,13 @@ class TestDownload extends TestCase {
 	/**
 	 * Test pass empty array to create_attachment.
 	 *
-	 * @covers \XWP\Unsplash\Download::__construct()
-	 * @covers \XWP\Unsplash\Download::create_attachment()
+	 * @covers \XWP\Unsplash\Import::__construct()
+	 * @covers \XWP\Unsplash\Import::create_attachment()
 	 */
 	public function test_invalid_create_attachment() {
 		Mockery::mock( 'WP_Error' );
 		$file       = [];
-		$download   = new Download(
+		$import   = new Import(
 			'eOvv4N6yNmk',
 			[
 				'id'              => 'eOvv4N6yNmk',
@@ -86,7 +86,7 @@ class TestDownload extends TestCase {
 				'alt_description' => 'test alt description',
 			]
 		);
-		$attachment = $download->create_attachment( $file );
+		$attachment = $import->create_attachment( $file );
 		$this->assertIsObject( $attachment );
 		$this->assertTrue( is_a( $attachment, 'WP_Error' ) );
 
@@ -95,13 +95,13 @@ class TestDownload extends TestCase {
 	/**
 	 * Test pass WP_error to create_attachment.
 	 *
-	 * @covers \XWP\Unsplash\Download::__construct()
-	 * @covers \XWP\Unsplash\Download::create_attachment()
+	 * @covers \XWP\Unsplash\Import::__construct()
+	 * @covers \XWP\Unsplash\Import::create_attachment()
 	 */
 	public function test_wp_error_create_attachment() {
 		$file = Mockery::mock( 'WP_Error' );
 		WP_Mock::userFunction( 'is_wp_error' )->once()->andReturn( false );
-		$download   = new Download(
+		$import   = new Import(
 			'eOvv4N6yNmk',
 			[
 				'id'              => 'eOvv4N6yNmk',
@@ -110,7 +110,7 @@ class TestDownload extends TestCase {
 				'alt_description' => 'test alt description',
 			]
 		);
-		$attachment = $download->create_attachment( $file );
+		$attachment = $import->create_attachment( $file );
 		$this->assertIsObject( $attachment );
 		$this->assertTrue( is_a( $attachment, 'WP_Error' ) );
 	}
@@ -118,17 +118,17 @@ class TestDownload extends TestCase {
 	/**
 	 * Test get attachment.
 	 *
-	 * @covers \XWP\Unsplash\Download::__construct()
-	 * @covers \XWP\Unsplash\Download::download_image()
+	 * @covers \XWP\Unsplash\Import::__construct()
+	 * @covers \XWP\Unsplash\Import::import_image()
 	 */
-	public function test_download_image() {
+	public function test_import_image() {
 		$file = [
 			'file' => true,
 			'url'  => 'http://www.example.com/test.jpg',
 		];
-		WP_Mock::userFunction( 'download_url' )->once()->with( 'http://www.example.com/test.jpg' )->andReturn( '' );
+		WP_Mock::userFunction( 'import_url' )->once()->with( 'http://www.example.com/test.jpg' )->andReturn( '' );
 		WP_Mock::userFunction( 'wp_handle_upload' )->once()->andReturn( $file );
-		$download = new Download(
+		$import = new Import(
 			'eOvv4N6yNmk',
 			[
 				'id'              => 'eOvv4N6yNmk',
@@ -139,7 +139,7 @@ class TestDownload extends TestCase {
 			'http://www.example.com/test.jpg'
 		);
 
-		$attachment = $download->download_image();
+		$attachment = $import->import_image();
 		$this->assertIsArray( $attachment );
 		$this->assertSame( $attachment, $file );
 	}
@@ -147,18 +147,18 @@ class TestDownload extends TestCase {
 	/**
 	 * Test get attachment.
 	 *
-	 * @covers \XWP\Unsplash\Download::__construct()
-	 * @covers \XWP\Unsplash\Download::download_image()
+	 * @covers \XWP\Unsplash\Import::__construct()
+	 * @covers \XWP\Unsplash\Import::import_image()
 	 */
-	public function test_invalid_download_image() {
+	public function test_invalid_import_image() {
 		$file  = [
 			'file' => true,
 			'url'  => 'http://www.example.com/test.jpg',
 		];
 		$error = Mockery::mock( 'WP_Error' );
-		WP_Mock::userFunction( 'download_url' )->once()->with( 'http://www.example.com/test.jpg' )->andReturn( $error );
+		WP_Mock::userFunction( 'import_url' )->once()->with( 'http://www.example.com/test.jpg' )->andReturn( $error );
 		WP_Mock::userFunction( 'wp_handle_upload' )->once()->andReturn( $file );
-		$download = new Download(
+		$import = new Import(
 			'eOvv4N6yNmk',
 			[
 				'id'              => 'eOvv4N6yNmk',
@@ -169,7 +169,7 @@ class TestDownload extends TestCase {
 			'http://www.example.com/test.jpg'
 		);
 
-		$attachment = $download->download_image();
+		$attachment = $import->import_image();
 		$this->assertIsArray( $attachment );
 		$this->assertSame( $attachment, $file );
 	}
@@ -177,8 +177,8 @@ class TestDownload extends TestCase {
 	/**
 	 * Test process user
 	 *
-	 * @covers \XWP\Unsplash\Download::__construct()
-	 * @covers \XWP\Unsplash\Download::process_user()
+	 * @covers \XWP\Unsplash\Import::__construct()
+	 * @covers \XWP\Unsplash\Import::process_user()
 	 */
 	public function test_process_user() {
 		WP_Mock::userFunction( 'get_term_by' )->once()->andReturn( false );
@@ -187,7 +187,7 @@ class TestDownload extends TestCase {
 		WP_Mock::userFunction( 'add_term_meta' )->once();
 		WP_Mock::userFunction( 'wp_set_object_terms' )->once()->andReturn( [ 1234 ] );
 
-		$download = new Download(
+		$import = new Import(
 			'eOvv4N6yNmk',
 			[
 				'user' => [
@@ -197,7 +197,7 @@ class TestDownload extends TestCase {
 				],
 			]
 		);
-		$user     = $download->process_user();
+		$user     = $import->process_user();
 		$this->assertIsArray( $user );
 		$this->assertSame( $user, [ 1234 ] );
 	}

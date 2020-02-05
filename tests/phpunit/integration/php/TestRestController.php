@@ -163,7 +163,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	/**
 	 * Test get_download().
 	 *
-	 * @covers \XWP\Unsplash\RestController::get_download()
+	 * @covers \XWP\Unsplash\RestController::get_import()
 	 */
 	public function test_get_download() {
 		$request  = new WP_REST_Request( 'GET', $this->get_route( '/download/uRuPYB0P8to' ) );

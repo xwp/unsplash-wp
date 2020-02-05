@@ -93,7 +93,7 @@ class RestController extends WP_REST_Controller {
 
 		register_rest_route(
 			$this->namespace,
-			'/' . $this->rest_base . '/download/(?P<id>[\w-]+)',
+			'/' . $this->rest_base . '/import/(?P<id>[\w-]+)',
 			[
 				'args'   => [
 					'id' => [
@@ -103,7 +103,7 @@ class RestController extends WP_REST_Controller {
 				],
 				[
 					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => [ $this, 'get_download' ],
+					'callback'            => [ $this, 'get_import' ],
 					'permission_callback' => [ $this, 'create_item_permissions_check' ],
 					'args'                => [
 						'context' => $this->get_context_param( [ 'default' => 'view' ] ),
@@ -187,13 +187,13 @@ class RestController extends WP_REST_Controller {
 	}
 
 	/**
-	 * Retrieve download page of photo.
+	 * Import image into WP.
 	 *
 	 * @param WP_REST_Request $request Request.
 	 *
 	 * @return WP_REST_Response Single page of photo results.
 	 */
-	public function get_download( $request ) {
+	public function get_import( $request ) {
 		$id      = $request->get_param( 'id' );
 		$results = [];
 		$link    = '';
@@ -211,8 +211,8 @@ class RestController extends WP_REST_Controller {
 			return $photos;
 		}
 
-		$downloader    = new Download( $id, $results, $link );
-		$attachment_id = $downloader->process();
+		$importer    = new Import( $id, $results, $link );
+		$attachment_id = $importer->process();
 		if ( is_wp_error( $attachment_id ) ) {
 			return $attachment_id;
 		}
