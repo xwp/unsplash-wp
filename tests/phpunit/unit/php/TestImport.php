@@ -18,7 +18,7 @@ class TestImport extends TestCase {
 	 * Test get attachment.
 	 *
 	 * @covers \XWP\Unsplash\Import::__construct()
-	 * @covers \XWP\Unsplash\Import::test_get_attachment()
+	 * @covers \XWP\Unsplash\Import::get_attachment()
 	 */
 	public function test_get_attachment() {
 		WP_Mock::userFunction( 'wp_list_pluck' )->once()->andReturn( [] );

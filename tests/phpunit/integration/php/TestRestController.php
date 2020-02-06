@@ -165,8 +165,8 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	 *
 	 * @covers \XWP\Unsplash\RestController::get_import()
 	 */
-	public function test_get_download() {
-		$request  = new WP_REST_Request( 'GET', $this->get_route( '/download/uRuPYB0P8to' ) );
+	public function test_get_import() {
+		$request  = new WP_REST_Request( 'GET', $this->get_route( '/import/uRuPYB0P8to' ) );
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
 
