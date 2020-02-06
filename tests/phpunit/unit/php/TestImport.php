@@ -126,7 +126,7 @@ class TestImport extends TestCase {
 			'file' => true,
 			'url'  => 'http://www.example.com/test.jpg',
 		];
-		WP_Mock::userFunction( 'import_url' )->once()->with( 'http://www.example.com/test.jpg' )->andReturn( '' );
+		WP_Mock::userFunction( 'download_url' )->once()->with( 'http://www.example.com/test.jpg' )->andReturn( '' );
 		WP_Mock::userFunction( 'wp_handle_upload' )->once()->andReturn( $file );
 		$import = new Import(
 			'eOvv4N6yNmk',
@@ -156,7 +156,7 @@ class TestImport extends TestCase {
 			'url'  => 'http://www.example.com/test.jpg',
 		];
 		$error = Mockery::mock( 'WP_Error' );
-		WP_Mock::userFunction( 'import_url' )->once()->with( 'http://www.example.com/test.jpg' )->andReturn( $error );
+		WP_Mock::userFunction( 'download_url' )->once()->with( 'http://www.example.com/test.jpg' )->andReturn( $error );
 		WP_Mock::userFunction( 'wp_handle_upload' )->once()->andReturn( $file );
 		$import = new Import(
 			'eOvv4N6yNmk',
