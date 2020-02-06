@@ -21,7 +21,6 @@ install:
   - npm install
   - svn co -q https://core.svn.wordpress.org/${WP_VERSION}/ ./data/wordpress/html
   - mkdir data/wordpress/html/wp-content/uploads
-  - chmod 777 data/wordpress/html/wp-content/uploads
 
 script:
   - npm run lint
