@@ -13,7 +13,7 @@
     "url": "git+https://github.com/xwp/unsplash-wp.git"
   },
   "scripts": {
-    "postinstall": "composer install",
+    "postinstall": "composer install --ignore-platform-reqs",
     "dev": "wp-scripts start",
     "build": "wp-scripts build",
     "env:start": "docker-compose up -d",
