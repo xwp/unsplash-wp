@@ -6,6 +6,7 @@
  */
 
 define( 'ABSPATH', __DIR__ . '/../../data/wordpress/html/' );
+define( 'DIR_TESTDATA', __DIR__ . '/../../data/' );
 
 // Test with WordPress debug mode (default).
 define( 'WP_DEBUG', true );
