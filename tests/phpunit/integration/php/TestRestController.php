@@ -419,7 +419,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	/**
 	 * Callback to patch "basedir" when used in `wp_unique_filename()
 	 *
-	 * @param $upload_dir
+	 * @param array $upload_dir Array of upload dir values.
 	 *
 	 * @return mixed
 	 */
