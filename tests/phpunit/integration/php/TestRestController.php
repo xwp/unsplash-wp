@@ -166,7 +166,6 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	 * @covers \XWP\Unsplash\RestController::get_import()
 	 */
 	public function test_get_import() {
-		add_filter( 'upload_dir', array( $this, 'upload_dir_patch' ) );
 		$request  = new WP_REST_Request( 'GET', $this->get_route( '/import/uRuPYB0P8to' ) );
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
@@ -193,7 +192,6 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 
 		$this->assertEquals( $expected, $data );
 		$this->assertEquals( 301, $response->get_status() );
-		remove_filter( 'upload_dir', array( $this, 'upload_dir_patch' ) );
 	}
 
 	/**
@@ -414,17 +412,5 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	 */
 	private function get_route( $path = '' ) {
 		return '/' . self::$namespace . '/' . self::$rest_base . "$path";
-	}
-
-	/**
-	 * Callback to patch "basedir" when used in `wp_unique_filename()
-	 *
-	 * @param $upload_dir
-	 *
-	 * @return mixed
-	 */
-	function upload_dir_patch( $upload_dir ) {
-		var_dump($upload_dir);
-		return $upload_dir;
 	}
 }

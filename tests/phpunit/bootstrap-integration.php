@@ -20,8 +20,6 @@ if ( ! $_tests_dir ) {
 	define( 'WP_TESTS_CONFIG_FILE_PATH', __DIR__ . '/wp-tests-config.php' );
 }
 
-define( 'DIR_TESTDATA', dirname( __FILE__ ) . '/../../data' );
-
 if ( ! file_exists( $_tests_dir . '/includes/' ) ) {
 	trigger_error( 'Unable to locate wordpress-tests', E_USER_ERROR ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
 }
