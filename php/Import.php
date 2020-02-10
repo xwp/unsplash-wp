@@ -86,7 +86,7 @@ class Import {
 	 * @return array|bool|int|WP_Error
 	 */
 	public function process() {
-		$existing_attachment = $this->get_attachment();
+		$existing_attachment = $this->get_attachment_id();
 		if ( $existing_attachment ) {
 			return $existing_attachment;
 		}
@@ -108,7 +108,7 @@ class Import {
 	 *
 	 * @return bool|int
 	 */
-	public function get_attachment() {
+	public function get_attachment_id() {
 		$check = get_page_by_path( $this->id, ARRAY_A, 'page' );
 		if ( is_array( $check ) ) {
 			return $check['ID'];

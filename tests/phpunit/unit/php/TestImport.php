@@ -18,14 +18,14 @@ class TestImport extends TestCase {
 	 * Test get attachment.
 	 *
 	 * @covers \XWP\Unsplash\Import::__construct()
-	 * @covers \XWP\Unsplash\Import::get_attachment()
+	 * @covers \XWP\Unsplash\Import::get_attachment_id()
 	 */
 	public function test_get_attachment() {
 		WP_Mock::userFunction( 'wp_list_pluck' )->once()->andReturn( [] );
 		WP_Mock::passthruFunction( 'current_time' );
 		WP_Mock::userFunction( 'get_page_by_path' )->once()->andReturn( [ 'ID' => 123 ] );
 		$import = new Import( 'eOvv4N6yNmk' );
-		$this->assertEquals( $import->get_attachment(), 123 );
+		$this->assertEquals( $import->get_attachment_id(), 123 );
 
 	}
 
