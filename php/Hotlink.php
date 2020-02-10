@@ -164,7 +164,6 @@ class Hotlink {
 
 		// Bail early if an image has been inserted and later edited.
 		if ( preg_match( '/-e[0-9]{13}/', $image_meta['file'], $img_edit_hash ) && false === strpos( wp_basename( $image_src ), $img_edit_hash[0] ) ) {
-
 			return $image;
 		}
 
