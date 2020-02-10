@@ -106,7 +106,7 @@ class Import {
 	/**
 	 * Get the ID for the attachment.
 	 *
-	 * @return bool|int
+	 * @return false|int
 	 */
 	public function get_attachment_id() {
 		$check = get_page_by_path( $this->id, ARRAY_A, 'page' );
