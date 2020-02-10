@@ -8,7 +8,6 @@
 namespace XWP\Unsplash;
 
 use Crew\Unsplash\Photo;
-use XWP\Unsplash\Utils\Image;
 
 /**
  * Plugin Router.

@@ -2,10 +2,10 @@
 /**
  * Process image class.
  *
- * @package XWP\Unsplash\Utils.
+ * @package XWP\Unsplash.
  */
 
-namespace XWP\Unsplash\Utils;
+namespace XWP\Unsplash;
 
 /**
  * Class Image

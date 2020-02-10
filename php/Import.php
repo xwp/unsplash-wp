@@ -26,7 +26,7 @@ class Import {
 	/**
 	 * Unsplash image object.
 	 *
-	 * @var XWP\Unsplash\Utils\Image
+	 * @var Image
 	 */
 	protected $image;
 	/**
@@ -73,7 +73,7 @@ class Import {
 	 * @param string $link URL of download image.
 	 * @param int    $parent Parent ID.
 	 */
-	public function __construct( $id, Image $image = null, $link = '', $parent = 0 ) {
+	public function __construct( $id, $image = null, $link = '', $parent = 0 ) {
 		$this->id     = $id;
 		$this->image  = $image;
 		$this->link   = $link;
