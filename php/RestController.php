@@ -15,6 +15,7 @@ use WP_REST_Request;
 use WP_REST_Server;
 use WP_REST_Response;
 use WP_Error;
+use XWP\Unsplash\Utils\Image;
 
 /**
  * REST API Controller.
@@ -210,8 +211,8 @@ class RestController extends WP_REST_Controller {
 		if ( is_wp_error( $photos ) ) {
 			return $photos;
 		}
-
-		$importer      = new Import( $id, $results, $link );
+		$image         = new Image( $results );
+		$importer      = new Import( $id, $image, $link );
 		$attachment_id = $importer->process();
 		if ( is_wp_error( $attachment_id ) ) {
 			return $attachment_id;

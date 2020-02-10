@@ -8,6 +8,7 @@
 namespace XWP\Unsplash;
 
 use WP_Error;
+use XWP\Unsplash\Utils\Image;
 
 /**
  * Class Import
@@ -23,11 +24,11 @@ class Import {
 	 */
 	protected $id = 0;
 	/**
-	 * Unsplash image array
+	 * Unsplash image object.
 	 *
-	 * @var array
+	 * @var XWP\Unsplash\Utils\Image
 	 */
-	protected $image = [];
+	protected $image;
 	/**
 	 * URL for download.
 	 *
@@ -68,16 +69,15 @@ class Import {
 	 * Import constructor.
 	 *
 	 * @param string $id Unsplash ID.
-	 * @param array  $image Unsplash image array.
+	 * @param Image  $image Unsplash image object.
 	 * @param string $link URL of download image.
 	 * @param int    $parent Parent ID.
 	 */
-	public function __construct( $id, array $image = [], $link = '', $parent = 0 ) {
+	public function __construct( $id, Image $image = null, $link = '', $parent = 0 ) {
 		$this->id     = $id;
 		$this->image  = $image;
 		$this->link   = $link;
 		$this->parent = $parent;
-		$this->process_fields();
 	}
 
 	/**
@@ -118,93 +118,6 @@ class Import {
 	}
 
 	/**
-	 * Process image and format data in the correct format.
-	 */
-	public function process_fields() {
-		$this->process_data['original_id']       = $this->get_field( 'id', $this->id );
-		$this->process_data['description']       = $this->get_field( 'description', $this->get_field( 'alt_description' ) );
-		$this->process_data['alt']               = $this->get_field( 'alt_description', $this->get_field( 'description' ) );
-		$this->process_data['original_url']      = $this->get_url( 'raw' );
-		$this->process_data['color']             = $this->get_field( 'color', '' );
-		$this->process_data['unsplash_location'] = $this->get_field( 'location', [] );
-		$this->process_data['unsplash_sponsor']  = $this->get_field( 'sponsor', [] );
-		$this->process_data['unsplash_exif']     = $this->get_field(
-			'exif',
-			[
-				'aperture'     => '',
-				'model'        => '',
-				'focal_length' => '',
-				'iso'          => '',
-			]
-		);
-		$this->process_data['tags']              = wp_list_pluck( $this->get_field( 'tags', [] ), 'title' );
-		$this->process_data['file']              = $this->process_data['original_id'] . '.' . self::EXT;
-		$this->process_data['height']            = $this->get_field( 'height', 0 );
-		$this->process_data['width']             = $this->get_field( 'width', 0 );
-		$this->process_data['created_at']        = $this->get_field( 'created_at', current_time( 'mysql' ) );
-		$this->process_data['user']              = $this->get_field(
-			'user',
-			[
-				'name' => '',
-				'id'   => '',
-				'bio'  => '',
-			]
-		);
-		$this->process_data['sizes']             = [
-			'full' => [
-				'height'    => $this->process_data['height'],
-				'width'     => $this->process_data['width'],
-				'file'      => $this->process_data['file'],
-				'mime-type' => self::MIME,
-			],
-		];
-
-		$this->process_data['meta'] = [
-			'height'     => $this->process_data['height'],
-			'width'      => $this->process_data['width'],
-			'file'       => $this->process_data['file'],
-			'sizes'      => $this->process_data['sizes'],
-			'image_meta' => [
-				'aperture'          => $this->process_data['unsplash_exif']['aperture'],
-				'credit'            => $this->process_data['user']['name'],
-				'camera'            => $this->process_data['unsplash_exif']['model'],
-				'caption'           => $this->process_data['description'],
-				'created_timestamp' => $this->process_data['created_at'],
-				'copyright'         => $this->process_data['user']['name'],
-				'focal_length'      => $this->process_data['unsplash_exif']['focal_length'],
-				'iso'               => $this->process_data['unsplash_exif']['iso'],
-				'shutter_speed'     => '0',
-				'title'             => $this->process_data['alt'],
-				'orientation'       => '1',
-				'keywords'          => $this->process_data['tags'],
-			],
-		];
-	}
-
-	/**
-	 * Get field from image.
-	 *
-	 * @param string $field Field in $image array.
-	 * @param string $default Defaults to ''.
-	 *
-	 * @return mixed|string
-	 */
-	protected function get_field( $field, $default = '' ) {
-		return isset( $this->image[ $field ] ) ? $this->image[ $field ] : $default;
-	}
-
-	/**
-	 * Get url from image.
-	 *
-	 * @param string $size Size of image.
-	 *
-	 * @return string
-	 */
-	protected function get_url( $size ) {
-		return isset( $this->image['urls'], $this->image['urls'][ $size ] ) ? $this->image['urls'][ $size ] : '';
-	}
-
-	/**
 	 * Import image to a temp directory and move it into WP content directory.
 	 *
 	 * @return array|string|WP_Error
@@ -220,7 +133,7 @@ class Import {
 		$file       = $this->link;
 		$tmp        = download_url( $file );
 
-		$file_array['name']     = $this->process_data['file'];
+		$file_array['name']     = $this->image->get_field( 'file' );
 		$file_array['tmp_name'] = $tmp;
 		$file_array['type']     = self::MIME;
 		$file_array['ext']      = self::EXT;
@@ -278,10 +191,10 @@ class Import {
 
 		$attachment = new \stdClass();
 
-		$attachment->post_name      = $this->process_data['original_id'];
-		$attachment->post_content   = $this->process_data['description'];
-		$attachment->post_title     = $this->process_data['alt'];
-		$attachment->post_excerpt   = $this->process_data['alt'];
+		$attachment->post_name      = $this->image->get_field( 'original_id' );
+		$attachment->post_content   = $this->image->get_field( 'description' );
+		$attachment->post_title     = $this->image->get_field( 'alt' );
+		$attachment->post_excerpt   = $this->image->get_field( 'alt' );
 		$attachment->post_mime_type = self::MIME;
 		$attachment->guid           = $url;
 
@@ -314,7 +227,7 @@ class Import {
 			'_wp_attachment_image_alt' => 'alt',
 		];
 		foreach ( $map as $key => $value ) {
-			update_post_meta( $this->attachment_id, $key, $this->process_data[ $value ], true );
+			update_post_meta( $this->attachment_id, $key, $this->image->get_field( $value ), true );
 		}
 
 		return;
@@ -326,7 +239,7 @@ class Import {
 	 * @return array|false|WP_Error
 	 */
 	protected function process_tags() {
-		return wp_set_post_terms( $this->attachment_id, $this->process_data['tags'], 'media_tag' );
+		return wp_set_post_terms( $this->attachment_id, $this->image->get_field( 'tags' ), 'media_tag' );
 	}
 
 	/**
@@ -344,7 +257,7 @@ class Import {
 	 * @return array|bool|WP_Error
 	 */
 	public function process_user() {
-		$unsplash_user = $this->process_data['user'];
+		$unsplash_user = $this->image->get_field( 'user' );
 		$user          = get_term_by( 'slug', $unsplash_user['id'], 'unsplash_user' );
 		if ( ! $user ) {
 			$args = [

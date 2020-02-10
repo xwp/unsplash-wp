@@ -9,6 +9,7 @@ namespace XWP\Unsplash;
 
 use Mockery;
 use WP_Mock;
+use XWP\Unsplash\Utils\Image;
 
 /**
  * Test the WordPress import abstraction.
@@ -24,7 +25,18 @@ class TestImport extends TestCase {
 		WP_Mock::userFunction( 'wp_list_pluck' )->once()->andReturn( [] );
 		WP_Mock::passthruFunction( 'current_time' );
 		WP_Mock::userFunction( 'get_page_by_path' )->once()->andReturn( [ 'ID' => 123 ] );
-		$import = new Import( 'eOvv4N6yNmk' );
+		$image  = new Image(
+			[
+				'id'              => 'eOvv4N6yNmk',
+				'tags'            => [],
+				'description'     => 'test description',
+				'alt_description' => 'test alt description',
+			]
+		);
+		$import = new Import(
+			'eOvv4N6yNmk',
+			$image
+		);
 		$this->assertEquals( $import->get_attachment_id(), 123 );
 
 	}
@@ -46,14 +58,17 @@ class TestImport extends TestCase {
 			'file' => true,
 			'url'  => 'http://www.example.com/test.jpg',
 		];
-		$import = new Import(
-			'eOvv4N6yNmk',
+		$image  = new Image(
 			[
 				'id'              => 'eOvv4N6yNmk',
 				'tags'            => [],
 				'description'     => 'test description',
 				'alt_description' => 'test alt description',
 			]
+		);
+		$import = new Import(
+			'eOvv4N6yNmk',
+			$image
 		);
 
 		$attachment = $import->create_attachment( $file );
@@ -77,14 +92,17 @@ class TestImport extends TestCase {
 	public function test_invalid_create_attachment() {
 		Mockery::mock( 'WP_Error' );
 		$file       = [];
-		$import     = new Import(
-			'eOvv4N6yNmk',
+		$image      = new Image(
 			[
 				'id'              => 'eOvv4N6yNmk',
 				'tags'            => [],
 				'description'     => 'test description',
 				'alt_description' => 'test alt description',
 			]
+		);
+		$import     = new Import(
+			'eOvv4N6yNmk',
+			$image
 		);
 		$attachment = $import->create_attachment( $file );
 		$this->assertTrue( is_object( $attachment ) );
@@ -101,14 +119,17 @@ class TestImport extends TestCase {
 	public function test_wp_error_create_attachment() {
 		$file = Mockery::mock( 'WP_Error' );
 		WP_Mock::userFunction( 'is_wp_error' )->once()->andReturn( false );
-		$import     = new Import(
-			'eOvv4N6yNmk',
+		$image      = new Image(
 			[
 				'id'              => 'eOvv4N6yNmk',
 				'tags'            => [],
 				'description'     => 'test description',
 				'alt_description' => 'test alt description',
 			]
+		);
+		$import     = new Import(
+			'eOvv4N6yNmk',
+			$image
 		);
 		$attachment = $import->create_attachment( $file );
 		$this->assertTrue( is_object( $attachment ) );
@@ -128,14 +149,17 @@ class TestImport extends TestCase {
 		];
 		WP_Mock::userFunction( 'download_url' )->once()->with( 'http://www.example.com/test.jpg' )->andReturn( '' );
 		WP_Mock::userFunction( 'wp_handle_upload' )->once()->andReturn( $file );
-		$import = new Import(
-			'eOvv4N6yNmk',
+		$image  = new Image(
 			[
 				'id'              => 'eOvv4N6yNmk',
 				'tags'            => [],
 				'description'     => 'test description',
 				'alt_description' => 'test alt description',
-			],
+			]
+		);
+		$import = new Import(
+			'eOvv4N6yNmk',
+			$image,
 			'http://www.example.com/test.jpg'
 		);
 
@@ -158,14 +182,17 @@ class TestImport extends TestCase {
 		$error = Mockery::mock( 'WP_Error' );
 		WP_Mock::userFunction( 'download_url' )->once()->with( 'http://www.example.com/test.jpg' )->andReturn( $error );
 		WP_Mock::userFunction( 'wp_handle_upload' )->once()->andReturn( $file );
-		$import = new Import(
-			'eOvv4N6yNmk',
+		$image  = new Image(
 			[
 				'id'              => 'eOvv4N6yNmk',
 				'tags'            => [],
 				'description'     => 'test description',
 				'alt_description' => 'test alt description',
-			],
+			]
+		);
+		$import = new Import(
+			'eOvv4N6yNmk',
+			$image,
 			'http://www.example.com/test.jpg'
 		);
 
@@ -186,9 +213,7 @@ class TestImport extends TestCase {
 		WP_Mock::userFunction( 'get_term' )->once()->with( 1234, 'unsplash_user' )->andReturn( (object) [ 'term_id' => 1234 ] );
 		WP_Mock::userFunction( 'add_term_meta' )->once();
 		WP_Mock::userFunction( 'wp_set_object_terms' )->once()->andReturn( [ 1234 ] );
-
-		$import = new Import(
-			'eOvv4N6yNmk',
+		$image  = new Image(
 			[
 				'user' => [
 					'id'   => 'eOvv4N6yNmk',
@@ -196,6 +221,10 @@ class TestImport extends TestCase {
 					'bio'  => 'I am a photographer.',
 				],
 			]
+		);
+		$import = new Import(
+			'eOvv4N6yNmk',
+			$image
 		);
 		$user   = $import->process_user();
 		$this->assertTrue( is_array( $user ) );
