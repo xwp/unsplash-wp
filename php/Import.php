@@ -8,7 +8,6 @@
 namespace XWP\Unsplash;
 
 use WP_Error;
-use XWP\Unsplash\Utils\Image;
 
 /**
  * Class Import
