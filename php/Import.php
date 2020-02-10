@@ -104,7 +104,7 @@ class Import {
 	}
 
 	/**
-	 * Check if image already exists.
+	 * Get the ID for the attachment.
 	 *
 	 * @return bool|int
 	 */
