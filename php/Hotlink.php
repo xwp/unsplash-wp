@@ -22,7 +22,7 @@ class Hotlink {
 	/**
 	 * Setup the router instance.
 	 *
-	 * @param Plugin $router Instance of the router abstraction.
+	 * @param Router $router Instance of the router abstraction.
 	 */
 	public function __construct( $router ) {
 		$this->router = $router;
