@@ -281,7 +281,7 @@ class Import {
 		$attachment->post_name      = $this->process_data['original_id'];
 		$attachment->post_content   = $this->process_data['description'];
 		$attachment->post_title     = $this->process_data['alt'];
-		$attachment->post_excrept   = $this->process_data['alt'];
+		$attachment->post_excerpt   = $this->process_data['alt'];
 		$attachment->post_mime_type = self::MIME;
 		$attachment->guid           = $url;
 
