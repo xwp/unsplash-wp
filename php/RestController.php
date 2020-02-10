@@ -75,7 +75,7 @@ class RestController extends WP_REST_Controller {
 			[
 				'args'   => [
 					'id' => [
-						'description' => __( 'Unique identifier for the object.' ),
+						'description' => __( 'Unsplash image ID.', 'unsplash' ),
 						'type'        => 'string',
 					],
 				],
@@ -97,7 +97,7 @@ class RestController extends WP_REST_Controller {
 			[
 				'args'   => [
 					'id' => [
-						'description' => __( 'Unique identifier for the object.' ),
+						'description' => __( 'Unsplash image ID.', 'unsplash' ),
 						'type'        => 'string',
 					],
 				],
