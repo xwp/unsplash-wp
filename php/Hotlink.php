@@ -15,7 +15,7 @@ class Hotlink {
 	/**
 	 * Router interface.
 	 *
-	 * @var Plugin
+	 * @var Router
 	 */
 	protected $router;
 
