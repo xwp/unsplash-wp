@@ -139,6 +139,8 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 
 		// The `updated_at` value is expected to change frequently.
 		unset( $data['updated_at'] );
+		// URL values can change.
+		unset( $data['urls'] );
 
 		$expected = [
 			'id'              => 'uRuPYB0P8to',
@@ -148,13 +150,6 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 			'color'           => '#D9E8EF',
 			'description'     => '',
 			'alt_description' => 'black motorcycle',
-			'urls'            => [
-				'raw'     => 'https://images.unsplash.com/photo-1558981396-5fcf84bdf14d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
-				'full'    => 'https://images.unsplash.com/photo-1558981396-5fcf84bdf14d?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
-				'regular' => 'https://images.unsplash.com/photo-1558981396-5fcf84bdf14d?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
-				'small'   => 'https://images.unsplash.com/photo-1558981396-5fcf84bdf14d?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
-				'thumb'   => 'https://images.unsplash.com/photo-1558981396-5fcf84bdf14d?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
-			],
 		];
 
 		$this->assertEquals( $expected, $data );
@@ -173,6 +168,8 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 
 		// The `updated_at` value is expected to change frequently.
 		unset( $data['updated_at'] );
+		// URL values can change.
+		unset( $data['urls'] );
 
 		$expected = [
 			'id'              => 'uRuPYB0P8to',
@@ -182,13 +179,6 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 			'color'           => '#D9E8EF',
 			'description'     => '',
 			'alt_description' => 'black motorcycle',
-			'urls'            => [
-				'raw'     => 'https://images.unsplash.com/photo-1558981396-5fcf84bdf14d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
-				'full'    => 'https://images.unsplash.com/photo-1558981396-5fcf84bdf14d?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
-				'regular' => 'https://images.unsplash.com/photo-1558981396-5fcf84bdf14d?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
-				'small'   => 'https://images.unsplash.com/photo-1558981396-5fcf84bdf14d?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
-				'thumb'   => 'https://images.unsplash.com/photo-1558981396-5fcf84bdf14d?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
-			],
 		];
 
 		$this->assertEquals( $expected, $data );
@@ -202,7 +192,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	public function test_get_item_args() {
 		$expected = [
 			'id'      => [
-				'description' => 'Unique identifier for the object.',
+				'description' => 'Unsplash image ID.',
 				'type'        => 'string',
 			],
 			'context' => [
