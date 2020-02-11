@@ -149,6 +149,7 @@ class TestImport extends TestCase {
 		];
 		WP_Mock::userFunction( 'download_url' )->once()->with( 'http://www.example.com/test.jpg' )->andReturn( '' );
 		WP_Mock::userFunction( 'wp_handle_upload' )->once()->andReturn( $file );
+		WP_Mock::userFunction( 'is_multisite' )->once()->andReturn( false );
 		$image  = new Image(
 			[
 				'id'              => 'eOvv4N6yNmk',
@@ -182,6 +183,7 @@ class TestImport extends TestCase {
 		$error = Mockery::mock( 'WP_Error' );
 		WP_Mock::userFunction( 'download_url' )->once()->with( 'http://www.example.com/test.jpg' )->andReturn( $error );
 		WP_Mock::userFunction( 'wp_handle_upload' )->once()->andReturn( $file );
+		WP_Mock::userFunction( 'is_multisite' )->once()->andReturn( false );
 		$image  = new Image(
 			[
 				'id'              => 'eOvv4N6yNmk',
