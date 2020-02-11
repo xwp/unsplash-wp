@@ -435,53 +435,50 @@ class RestController extends WP_REST_Controller {
 	 * @return array
 	 */
 	public function wp_prepare_attachment_for_js( array $image ) {
-		$image = (object) $image;
-
-		$response = array(
-			'id'            => $image->id,
+		$response = [
+			'id'            => isset( $image['id'] ) ? $image['id'] : null,
 			'title'         => '',
-			'filename'      => $image->id . '.jpg',
-			'url'           => $image->urls['raw'],
-			'link'          => $image->links['html'],
-			'alt'           => $image->alt_description,
-			'author'        => $image->author,
-			'description'   => $image->description,
+			'filename'      => isset( $image['id'] ) ? $image['id'] . '.jpg' : null,
+			'url'           => isset( $image['urls']['raw'] ) ? $image['urls']['raw'] : null,
+			'link'          => isset( $image['links']['html'] ) ? $image['links']['html'] : null,
+			'alt'           => isset( $image['alt_description'] ) ? $image['alt_description'] : null,
+			'author'        => isset( $image['author'] ) ? $image['author'] : null,
+			'description'   => isset( $image['description'] ) ? $image['description'] : null,
 			'caption'       => '',
 			'name'          => '',
-			'height'        => $image->height,
-			'width'         => $image->width,
+			'height'        => isset( $image['height'] ) ? $image['height'] : null,
+			'width'         => isset( $image['width'] ) ? $image['width'] : null,
 			'status'        => 'inherit',
 			'uploadedTo'    => 0,
-			'date'          => strtotime( $image->created_at ) * 1000,
-			'modified'      => strtotime( $image->updated_at ) * 1000,
+			'date'          => isset( $image['created_at'] ) ? strtotime( $image['created_at'] ) * 1000 : null,
+			'modified'      => isset( $image['updated_at'] ) ? strtotime( $image['updated_at'] ) * 1000 : null,
 			'menuOrder'     => 0,
 			'mime'          => 'image/jpeg',
 			'type'          => 'image',
 			'subtype'       => 'jpeg',
-			'icon'          => add_query_arg(
+			'icon'          => isset( $image['urls']['thumb'] ) ? add_query_arg(
 				[
-					'w'   => 150,
-					'h'   => 150,
-					'q'   => 85,
-					'fit' => 'crop',
+					'w' => 150,
+					'h' => 150,
+					'q' => 80,
 				],
-				$image->urls['raw']
-			),
-			'dateFormatted' => mysql2date( __( 'F j, Y' ), $image->created_at ),
-			'nonces'        => array(
+				$image['urls']['thumb']
+			) : null,
+			'dateFormatted' => isset( $image['created_at'] ) ? mysql2date( __( 'F j, Y' ), $image['created_at'] ) : null,
+			'nonces'        => [
 				'update' => false,
 				'delete' => false,
 				'edit'   => false,
-			),
+			],
 			'editLink'      => false,
 			'meta'          => false,
-		);
+		];
 
 		$sizes = [
 			'full' => [
-				'url'    => $image->urls['raw'],
-				'height' => $image->height,
-				'width'  => $image->width,
+				'url'    => $image['urls']['raw'],
+				'height' => $image['height'],
+				'width'  => $image['width'],
 			],
 		];
 
@@ -493,7 +490,7 @@ class RestController extends WP_REST_Controller {
 					'q'   => 85,
 					'fit' => 'crop',
 				],
-				$image->urls['raw']
+				$image['urls']['full']
 			);
 			$sizes[ $name ] = [
 				'url'    => $url,

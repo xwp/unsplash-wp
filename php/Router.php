@@ -53,22 +53,26 @@ class Router {
 	 * @return void
 	 */
 	public function enqueue_scripts() {
+		$asset_file = $this->plugin->asset_dir( 'js/dist/unsplash_browser.asset.php' );
+		$asset      = require $asset_file;
+		$version    = $asset['version'];
+
+		$dependencies   = $asset['dependencies'];
+		$dependencies[] = 'media-views';
+
 		wp_enqueue_script(
-			'unsplash-js',
-			$this->plugin->asset_url( 'js/dist/editor.js' ),
-			[
-				'jquery',
-				'media-views',
-				'lodash',
-			],
-			$this->plugin->asset_version()
+			'unsplash_browser',
+			$this->plugin->asset_url( 'js/dist/unsplash_browser.js' ),
+			$dependencies,
+			$version
 		);
 
 		wp_localize_script(
-			'unsplash-js',
+			'unsplash_browser',
 			'unsplashSettings',
 			[
 				'tabTitle' => __( 'Unsplash', 'unsplash' ),
+				'route'    => RestController::get_route(),
 			]
 		);
 	}
