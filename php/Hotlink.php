@@ -7,6 +7,8 @@
 
 namespace XWP\Unsplash;
 
+use WP_Query;
+
 /**
  * WordPress hotlink interface.
  */
@@ -123,11 +125,7 @@ class Hotlink {
 		}
 
 		if ( count( $attachment_ids ) > 1 ) {
-			/*
-			 * Warm the object cache with post and meta information for all found
-			 * images to avoid making individual database calls.
-			 */
-			_prime_post_caches( array_keys( $attachment_ids ), false, true );
+			$this->prime_post_caches( array_keys( $attachment_ids ) );
 		}
 
 		foreach ( $selected_images as $image => $attachment_id ) {
@@ -191,7 +189,6 @@ class Hotlink {
 			}
 		}
 
-
 		if ( ! $width || ! $height ) {
 			return $image;
 		}
@@ -237,5 +234,33 @@ class Hotlink {
 		);
 
 		return $url;
+	}
+
+	/**
+	 * Warm the object cache with post and meta information for all found
+	 * images to avoid making individual database calls.
+	 *
+	 * @see https://core.trac.wordpress.org/ticket/40490
+	 *
+	 * @param array $attachment_ids Array of attachment ids.
+	 *
+	 * @return mixed
+	 */
+	protected function prime_post_caches( array $attachment_ids ) {
+		$parsed_args = [
+			'post__in'               => $attachment_ids,
+			'ignore_sticky_posts'    => true,
+			'no_found_rows'          => true,
+			'post_status'            => 'any',
+			'post_type'              => 'attachment',
+			'suppress_filters'       => false,
+			'update_post_term_cache' => false,
+			'update_post_meta_cache' => true,
+			'nopaging'               => true, // phpcs:ignore WordPressVIPMinimum.Performance.NoPaging.nopaging_nopaging
+			'orderby'                => 'post__in',
+		];
+
+		$get_attachments = new WP_Query;
+		return $get_attachments->query( $parsed_args );
 	}
 }
