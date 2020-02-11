@@ -151,7 +151,7 @@ class Plugin {
 	 *
 	 * @return bool
 	 */
-	public function is_wpcom_vip_prod() {
+	public static function is_wpcom_vip_prod() {
 		return ( defined( '\WPCOM_IS_VIP_ENV' ) && \WPCOM_IS_VIP_ENV );
 	}
 

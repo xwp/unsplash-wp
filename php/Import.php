@@ -82,7 +82,7 @@ class Import {
 	/**
 	 * Process all methods in the correct order.
 	 *
-	 * @return array|bool|int|WP_Error
+	 * @return false|int|WP_Error
 	 */
 	public function process() {
 		$existing_attachment = $this->get_attachment_id();
@@ -139,7 +139,7 @@ class Import {
 
 		// If error storing temporarily, unlink.
 		if ( is_wp_error( $tmp ) ) {
-			if ( ( defined( '\WPCOM_IS_VIP_ENV' ) && \WPCOM_IS_VIP_ENV ) ) {
+			if ( Plugin::is_wpcom_vip_prod() ) {
 				@unlink( $file_array['tmp_name'] ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_unlink
 			}
 			$file_array['tmp_name'] = '';
