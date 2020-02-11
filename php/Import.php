@@ -82,7 +82,7 @@ class Import {
 	/**
 	 * Process all methods in the correct order.
 	 *
-	 * @return array|bool|int|WP_Error
+	 * @return false|int|WP_Error
 	 */
 	public function process() {
 		$existing_attachment = $this->get_attachment_id();
