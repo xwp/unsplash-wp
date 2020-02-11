@@ -16,20 +16,6 @@ use WP_Test_REST_Controller_Testcase;
 class TestRestController extends WP_Test_REST_Controller_Testcase {
 
 	/**
-	 * API namespace.
-	 *
-	 * @var string
-	 */
-	private static $namespace = 'unsplash/v1';
-
-	/**
-	 * Base of controller route.
-	 *
-	 * @var string
-	 */
-	private static $rest_base = 'photos';
-
-	/**
 	 * List of registered routes.
 	 *
 	 * @var array[]
@@ -49,14 +35,14 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	 * @covers \XWP\Unsplash\RestController::register_routes()
 	 */
 	public function test_register_routes() {
-		$this->assertArrayHasKey( $this->get_route(), static::$routes );
-		$this->assertCount( 1, static::$routes[ $this->get_route() ] );
+		$this->assertArrayHasKey( RestController::get_route(), static::$routes );
+		$this->assertCount( 1, static::$routes[ RestController::get_route() ] );
 
-		$this->assertArrayHasKey( $this->get_route( '/(?P<id>[\w-]+)' ), static::$routes );
-		$this->assertCount( 1, static::$routes[ $this->get_route( '/(?P<id>[\w-]+)' ) ] );
+		$this->assertArrayHasKey( RestController::get_route( '/(?P<id>[\w-]+)' ), static::$routes );
+		$this->assertCount( 1, static::$routes[ RestController::get_route( '/(?P<id>[\w-]+)' ) ] );
 
-		$this->assertArrayHasKey( $this->get_route( '/search/(?P<search>[\w-]+)' ), static::$routes );
-		$this->assertCount( 1, static::$routes[ $this->get_route( '/search/(?P<search>[\w-]+)' ) ] );
+		$this->assertArrayHasKey( RestController::get_route( '/search/(?P<search>[\w-]+)' ), static::$routes );
+		$this->assertCount( 1, static::$routes[ RestController::get_route( '/search/(?P<search>[\w-]+)' ) ] );
 	}
 
 	/**
@@ -72,7 +58,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	 * @covers \XWP\Unsplash\RestController::get_items()
 	 */
 	public function test_get_items() {
-		$request  = new WP_REST_Request( 'GET', $this->get_route() );
+		$request  = new WP_REST_Request( 'GET', RestController::get_route() );
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
 
@@ -124,7 +110,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 			],
 		];
 
-		$this->assertEquals( $expected, static::$routes[ $this->get_route() ][0]['args'] );
+		$this->assertEquals( $expected, static::$routes[ RestController::get_route() ][0]['args'] );
 	}
 
 	/**
@@ -133,7 +119,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	 * @covers \XWP\Unsplash\RestController::get_item()
 	 */
 	public function test_get_item() {
-		$request  = new WP_REST_Request( 'GET', $this->get_route( '/uRuPYB0P8to' ) );
+		$request  = new WP_REST_Request( 'GET', RestController::get_route( '/uRuPYB0P8to' ) );
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
 
@@ -179,7 +165,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 			],
 		];
 
-		$this->assertEquals( $expected, static::$routes[ $this->get_route( '/(?P<id>[\w-]+)' ) ][0]['args'] );
+		$this->assertEquals( $expected, static::$routes[ RestController::get_route( '/(?P<id>[\w-]+)' ) ][0]['args'] );
 	}
 
 	/**
@@ -188,7 +174,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	 * @covers \XWP\Unsplash\RestController::get_search()
 	 */
 	public function test_get_search() {
-		$request  = new WP_REST_Request( 'GET', $this->get_route( '/search/motorcycle' ) );
+		$request  = new WP_REST_Request( 'GET', RestController::get_route( '/search/motorcycle' ) );
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
 
@@ -258,7 +244,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	 * @param int    $status_code Expected status code.
 	 */
 	public function test_get_search_collections_param( $query_param, $status_code ) {
-		$request = new WP_REST_Request( 'GET', $this->get_route( '/search/motorcycle' ) );
+		$request = new WP_REST_Request( 'GET', RestController::get_route( '/search/motorcycle' ) );
 		$request->set_query_params( [ 'collections' => $query_param ] );
 		$response = rest_get_server()->dispatch( $request );
 
@@ -312,11 +298,11 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 				'description'       => 'Collection ID(‘s) to narrow search. If multiple, comma-separated.',
 				'type'              => 'string',
 				'default'           => null,
-				'validate_callback' => [ 'XWP\\Unsplash\\RestController', 'validate_get_search_param' ],
+				'validate_callback' => [ RestController::class, 'validate_get_search_param' ],
 			],
 		];
 
-		$this->assertEquals( $expected, static::$routes[ $this->get_route( '/search/(?P<search>[\w-]+)' ) ][0]['args'] );
+		$this->assertEquals( $expected, static::$routes[ RestController::get_route( '/search/(?P<search>[\w-]+)' ) ][0]['args'] );
 	}
 
 	/**
@@ -353,7 +339,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	 * @covers \XWP\Unsplash\RestController::get_item_schema()
 	 */
 	public function test_get_item_schema() {
-		$request    = new WP_REST_Request( 'OPTIONS', $this->get_route() );
+		$request    = new WP_REST_Request( 'OPTIONS', RestController::get_route() );
 		$response   = rest_get_server()->dispatch( $request );
 		$data       = $response->get_data();
 		$properties = $data['schema']['properties'];
@@ -368,15 +354,5 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 		$this->assertArrayHasKey( 'height', $properties );
 		$this->assertArrayHasKey( 'width', $properties );
 		$this->assertArrayHasKey( 'urls', $properties );
-	}
-
-	/**
-	 * Generate a prefixed route path.
-	 *
-	 * @param string $path URL path.
-	 * @return string Route path.
-	 */
-	private function get_route( $path = '' ) {
-		return '/' . self::$namespace . '/' . self::$rest_base . "$path";
 	}
 }

@@ -21,6 +21,9 @@ use WP_Error;
  */
 class RestController extends WP_REST_Controller {
 
+	const REST_NAMESPACE = 'unsplash/v1';
+	const REST_BASE      = 'photos';
+
 	/**
 	 * Settings instance.
 	 *
@@ -34,8 +37,8 @@ class RestController extends WP_REST_Controller {
 	 * @param Settings $settings Instance of the Settings class.
 	 */
 	public function __construct( $settings ) {
-		$this->namespace = 'unsplash/v1';
-		$this->rest_base = 'photos';
+		$this->namespace = self::REST_NAMESPACE;
+		$this->rest_base = self::REST_BASE;
 		$this->settings  = $settings;
 
 		$options = get_option( 'unsplash_settings' );
@@ -422,33 +425,6 @@ class RestController extends WP_REST_Controller {
 		return $this->add_additional_fields_schema( $this->schema );
 	}
 
-	/**
-	 * Log an exception.
-	 *
-	 * @param \Exception $e Exception.
-	 */
-	private function log_error( \Exception $e ) {
-
-		if ( ! constant( 'WP_DEBUG' ) ) {
-			return;
-		}
-
-		$message = sprintf(
-			"%1\$s: %2\$s\n%3\$s:\n%4\$s",
-			__( 'Error', 'unsplash' ),
-			$e->getMessage(),
-			__( 'Stack Trace', 'unsplash' ),
-			$e->getTraceAsString()
-		);
-
-		/**
-		 * Stop IDE from complaining.
-		 *
-		 * @noinspection ForgottenDebugOutputInspection
-		 */
-		error_log( $message, $e->getCode() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-	}
-
 
 	/**
 	 * Custom wp_prepare_attachment_for_js copied from core.
@@ -553,5 +529,42 @@ class RestController extends WP_REST_Controller {
 		}
 
 		return $sizes;
+	}
+
+	/**
+	 * Generate a prefixed route path.
+	 *
+	 * @param string $path URL path.
+	 * @return string Route path.
+	 */
+	public static function get_route( $path = '' ) {
+		return '/' . self::REST_NAMESPACE . '/' . self::REST_BASE . "$path";
+	}
+
+	/**
+	 * Log an exception.
+	 *
+	 * @param \Exception $e Exception.
+	 */
+	private function log_error( \Exception $e ) {
+
+		if ( ! constant( 'WP_DEBUG' ) ) {
+			return;
+		}
+
+		$message = sprintf(
+			"%1\$s: %2\$s\n%3\$s:\n%4\$s",
+			__( 'Error', 'unsplash' ),
+			$e->getMessage(),
+			__( 'Stack Trace', 'unsplash' ),
+			$e->getTraceAsString()
+		);
+
+		/**
+		 * Stop IDE from complaining.
+		 *
+		 * @noinspection ForgottenDebugOutputInspection
+		 */
+		error_log( $message, $e->getCode() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 	}
 }
