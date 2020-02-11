@@ -120,7 +120,6 @@ class RestController extends WP_REST_Controller {
 		$page      = $request->get_param( 'page' );
 		$per_page  = $request->get_param( 'per_page' );
 		$order_by  = $request->get_param( 'order_by' );
-		$format    = $request->get_param( 'format' );
 		$photos    = [];
 		$total     = 0;
 		$max_pages = 0;
@@ -140,7 +139,7 @@ class RestController extends WP_REST_Controller {
 		}
 
 		$data = $photos;
-		if ( 'ajax' === $format && ! is_wp_error( $photos ) ) {
+		if ( $this->is_ajax_request( $request ) ) {
 			$data = [
 				'success' => true,
 				'data'    => $photos,
@@ -207,7 +206,15 @@ class RestController extends WP_REST_Controller {
 			$this->log_error( $e );
 		}
 
-		$response = rest_ensure_response( $photos );
+		$data = $photos;
+		if ( $this->is_ajax_request( $request ) ) {
+			$data = [
+				'success' => true,
+				'data'    => $photos,
+			];
+		}
+
+		$response = rest_ensure_response( $data );
 
 		$response->header( 'X-WP-Total', (int) $total );
 		$response->header( 'X-WP-TotalPages', (int) $max_pages );
@@ -237,7 +244,7 @@ class RestController extends WP_REST_Controller {
 	 */
 	public function prepare_item_for_response( $photo, $request ) {
 
-		if ( 'ajax' === $request['format'] ) {
+		if ( $this->is_ajax_request( $request ) ) {
 			return $this->wp_prepare_attachment_for_js( $photo );
 		}
 
@@ -314,12 +321,6 @@ class RestController extends WP_REST_Controller {
 			'type'              => 'string',
 			'description'       => __( 'Collection ID(‘s) to narrow search. If multiple, comma-separated.', 'unsplash' ),
 			'validate_callback' => [ static::class, 'validate_get_search_param' ],
-		];
-
-		$query_params['format'] = [
-			'default' => 'rest',
-			'type'    => 'string',
-			'enum'    => [ 'rest', 'ajax' ],
 		];
 
 		$query_params['per_page']['maximum'] = 30;
@@ -513,11 +514,11 @@ class RestController extends WP_REST_Controller {
 	public function image_sizes() {
 		global $_wp_additional_image_sizes;
 
-		$sizes = array();
+		$sizes = [];
 
 		// @todo This is not supported by WordPress VIP and will require a new solution.
 		foreach ( get_intermediate_image_sizes() as $s ) { // phpcs:ignore
-			if ( in_array( $s, array( 'thumbnail', 'medium', 'medium_large', 'large' ), true ) ) {
+			if ( in_array( $s, [ 'thumbnail', 'medium', 'medium_large', 'large' ], true ) ) {
 				$sizes[ $s ]['width']  = get_option( $s . '_size_w' );
 				$sizes[ $s ]['height'] = get_option( $s . '_size_h' );
 			} else {
@@ -539,6 +540,16 @@ class RestController extends WP_REST_Controller {
 	 */
 	public static function get_route( $path = '' ) {
 		return '/' . self::REST_NAMESPACE . '/' . self::REST_BASE . "$path";
+	}
+
+	/**
+	 * Determine if a request is an AJAX one.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return bool
+	 */
+	protected function is_ajax_request( $request ) {
+		return 'XMLHttpRequest' === $request->get_header( 'X-Requested-With' );
 	}
 
 	/**
