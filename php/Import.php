@@ -157,6 +157,12 @@ class Import {
 			$overrides['action'] = 'wp_handle_mock_upload';
 		}
 
+		// See https://github.com/WordPress/WordPress/blob/12709269c19d435de019b54d2bda7e4bd1ad664e/wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php#L747-L750 .
+		$size_check = self::check_upload_size( $file_array );
+		if ( is_wp_error( $size_check ) ) {
+			return $size_check;
+		}
+
 		$file = wp_handle_upload( $file_array, $overrides );
 		if ( isset( $file['error'] ) ) {
 			$file = new WP_Error(
@@ -274,5 +280,60 @@ class Import {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Determine if uploaded file exceeds space quota on multisite.
+	 *
+	 * Replicates check_upload_size().
+	 *
+	 * @see https://github.com/WordPress/WordPress/blob/12709269c19d435de019b54d2bda7e4bd1ad664e/wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php#L959-L1012
+	 *
+	 * @param array $file $_FILES array for a given file.
+	 * @return true|WP_Error True if can upload, error for errors.
+	 */
+	protected function check_upload_size( $file ) {
+		if ( ! is_multisite() ) {
+			return true;
+		}
+
+		if ( get_site_option( 'upload_space_check_disabled' ) ) {
+			return true;
+		}
+
+		$space_left = get_upload_space_available();
+
+		$file_size = filesize( $file['tmp_name'] );
+
+		if ( $space_left < $file_size ) {
+			return new WP_Error(
+				'rest_upload_limited_space',
+				/* translators: %s: Required disk space in kilobytes. */
+				sprintf( __( 'Not enough space to upload. %s KB needed.' ), number_format( ( $file_size - $space_left ) / KB_IN_BYTES ) ),
+				array( 'status' => 400 )
+			);
+		}
+
+		if ( $file_size > ( KB_IN_BYTES * get_site_option( 'fileupload_maxk', 1500 ) ) ) {
+			return new WP_Error(
+				'rest_upload_file_too_big',
+				/* translators: %s: Maximum allowed file size in kilobytes. */
+				sprintf( __( 'This file is too big. Files must be less than %s KB in size.' ), get_site_option( 'fileupload_maxk', 1500 ) ),
+				array( 'status' => 400 )
+			);
+		}
+
+		// Include admin function to get access to upload_is_user_over_quota().
+		require_once ABSPATH . 'wp-admin/includes/ms.php';
+
+		if ( upload_is_user_over_quota( false ) ) {
+			return new WP_Error(
+				'rest_upload_user_quota_exceeded',
+				__( 'You have used your space quota. Please delete files before uploading.' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		return true;
 	}
 }
