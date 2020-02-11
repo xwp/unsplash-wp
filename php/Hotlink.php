@@ -100,7 +100,7 @@ class Hotlink {
 	 * @param string $content The raw post content to be filtered.
 	 * @return string Converted content with hotlinked images.
 	 */
-	function hotlink_images_in_content( $content ) {
+	public function hotlink_images_in_content( $content ) {
 		if ( ! preg_match_all( '/<img [^>]+>/', $content, $matches ) ) {
 			return $content;
 		}
