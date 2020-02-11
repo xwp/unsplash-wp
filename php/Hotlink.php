@@ -73,12 +73,14 @@ class Hotlink {
 		if ( ! $original_url ) {
 			return $array;
 		}
-		$sizes = $this->router->image_sizes();
+		$width  = 0;
+		$height = 0;
+		$sizes  = $this->router->image_sizes();
 		if ( is_array( $size ) ) {
 			list( $width, $height ) = $size;
 		} elseif ( isset( $sizes[ $size ] ) ) {
 			list( $width, $height ) = array_values( $sizes[ $size ] );
-		} else {
+		} elseif ( isset( $sizes['thumbnail'] ) ) {
 			list( $width, $height ) = array_values( $sizes['thumbnail'] );
 		}
 
@@ -161,7 +163,7 @@ class Hotlink {
 		}
 
 		// Bail early if an image has been inserted and later edited.
-		if ( preg_match( '/-e[0-9]{13}/', $image_meta['file'], $img_edit_hash ) && false === strpos( wp_basename( $image_src ), $img_edit_hash[0] ) ) {
+		if ( $image_meta && preg_match( '/-e[0-9]{13}/', $image_meta['file'], $img_edit_hash ) && false === strpos( wp_basename( $image_src ), $img_edit_hash[0] ) ) {
 			return $image;
 		}
 
@@ -220,12 +222,12 @@ class Hotlink {
 	 *
 	 * @return string Format image url.
 	 */
-	protected function get_original_url_with_size( $url, $width, $height, $attr = [] ) {
+	public function get_original_url_with_size( $url, $width, $height, $attr = [] ) {
 		$attr = wp_parse_args(
 			$attr,
 			[
-				'w' => $width,
-				'h' => $height,
+				'w' => absint( $width ),
+				'h' => absint( $height ),
 			]
 		);
 		$url  = add_query_arg(
@@ -246,7 +248,7 @@ class Hotlink {
 	 *
 	 * @return mixed
 	 */
-	protected function prime_post_caches( array $attachment_ids ) {
+	public function prime_post_caches( array $attachment_ids ) {
 		$parsed_args = [
 			'post__in'               => $attachment_ids,
 			'ignore_sticky_posts'    => true,
