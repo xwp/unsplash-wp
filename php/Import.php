@@ -228,8 +228,6 @@ class Import {
 		foreach ( $map as $key => $value ) {
 			update_post_meta( $this->attachment_id, $key, $this->image->get_field( $value ), true );
 		}
-
-		return;
 	}
 
 	/**
