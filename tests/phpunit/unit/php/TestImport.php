@@ -79,7 +79,7 @@ class TestImport extends TestCase {
 		$this->assertArrayHasKey( 'guid', $attachment );
 		$this->assertSame( $attachment['post_name'], 'eOvv4N6yNmk' );
 		$this->assertSame( $attachment['guid'], 'http://www.example.com/test.jpg' );
-		$this->assertSame( $attachment['post_mime_type'], $import::MIME );
+		$this->assertSame( $attachment['post_mime_type'], $image->mime );
 		$this->assertSame( $attachment['post_content'], 'test description' );
 		$this->assertSame( $attachment['post_title'], 'test alt description' );
 	}

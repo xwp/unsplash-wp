@@ -47,17 +47,6 @@ class Import {
 	 * @var int
 	 */
 	protected $attachment_id = 0;
-
-	/**
-	 * Hardcoded file ext.
-	 */
-	const EXT = 'jpeg';
-
-	/**
-	 * Hardcoded MINE type.
-	 */
-	const MIME = 'image/jpeg';
-
 	/**
 	 * Import constructor.
 	 *
@@ -128,8 +117,8 @@ class Import {
 
 		$file_array['name']     = $this->image->get_field( 'file' );
 		$file_array['tmp_name'] = $tmp;
-		$file_array['type']     = self::MIME;
-		$file_array['ext']      = self::EXT;
+		$file_array['type']     = $this->image->mime;
+		$file_array['ext']      = $this->image->ext;
 
 		// If error storing temporarily, unlink.
 		if ( is_wp_error( $tmp ) ) {
@@ -193,7 +182,7 @@ class Import {
 			'post_content'   => $this->image->get_field( 'description' ),
 			'post_title'     => $this->image->get_field( 'alt' ),
 			'post_excerpt'   => $this->image->get_field( 'alt' ),
-			'post_mime_type' => self::MIME,
+			'post_mime_type' => $this->image->mime,
 			'guid'           => $url,
 		];
 

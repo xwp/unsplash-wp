@@ -23,12 +23,12 @@ class Image {
 	/**
 	 * Hardcoded file ext.
 	 */
-	const EXT = 'jpeg';
+	public $ext= 'jpeg';
 
 	/**
 	 * Hardcoded MINE type.
 	 */
-	const MIME = 'image/jpeg';
+	public $mime = 'image/jpeg';
 
 	/**
 	 * Image constructor.
@@ -62,7 +62,7 @@ class Image {
 			]
 		);
 		$this->process_data['tags']              = wp_list_pluck( $this->get_image_field( 'tags', [] ), 'title' );
-		$this->process_data['file']              = $this->process_data['original_id'] . '.' . self::EXT;
+		$this->process_data['file']              = $this->process_data['original_id'] . '.' . $this->ext;
 		$this->process_data['height']            = $this->get_image_field( 'height', 0 );
 		$this->process_data['width']             = $this->get_image_field( 'width', 0 );
 		$this->process_data['created_at']        = $this->get_image_field( 'created_at', current_time( 'mysql' ) );
@@ -79,7 +79,7 @@ class Image {
 				'height'    => $this->process_data['height'],
 				'width'     => $this->process_data['width'],
 				'file'      => $this->process_data['file'],
-				'mime-type' => self::MIME,
+				'mime-type' => $this->mime,
 			],
 		];
 
