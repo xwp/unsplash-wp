@@ -188,17 +188,17 @@ class Import {
 		$url  = $file['url'];
 		$file = $file['file'];
 
-		$attachment = new \stdClass();
-
-		$attachment->post_name      = $this->image->get_field( 'original_id' );
-		$attachment->post_content   = $this->image->get_field( 'description' );
-		$attachment->post_title     = $this->image->get_field( 'alt' );
-		$attachment->post_excerpt   = $this->image->get_field( 'alt' );
-		$attachment->post_mime_type = self::MIME;
-		$attachment->guid           = $url;
+		$attachment = [
+			'post_name'      => $this->image->get_field( 'original_id' ),
+			'post_content'   => $this->image->get_field( 'description' ),
+			'post_title'     => $this->image->get_field( 'alt' ),
+			'post_excerpt'   => $this->image->get_field( 'alt' ),
+			'post_mime_type' => self::MIME,
+			'guid'           => $url,
+		];
 
 		// do the validation and storage stuff.
-		$this->attachment_id = wp_insert_attachment( wp_slash( (array) $attachment ), $file, $this->parent, true );
+		$this->attachment_id = wp_insert_attachment( wp_slash( $attachment ), $file, $this->parent, true );
 
 		if ( is_wp_error( $this->attachment_id ) ) {
 			if ( 'db_update_error' === $this->attachment_id->get_error_code() ) {
