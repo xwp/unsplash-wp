@@ -142,6 +142,12 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 		// URL values can change.
 		unset( $data['urls'] );
 
+		// The URL paths for each image type can change frequently, so instead test that the the expected image types are returned.
+		$expected_url_types = [ 'raw', 'full', 'regular', 'small', 'thumb' ];
+		$this->assertEquals( $expected_url_types, array_keys( $data['urls'] ) );
+		unset( $data['urls'] );
+
+		// Test the rest of the response data.
 		$expected = [
 			'id'              => 'uRuPYB0P8to',
 			'created_at'      => '2019-05-27T14:23:58-04:00',
