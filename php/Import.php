@@ -282,7 +282,7 @@ class Import {
 			);
 		}
 
-		if ( $file_size > ( KB_IN_BYTES * get_site_option( 'fileupload_maxk', 1500 ) ) ) {
+		if ( $file_size > ( 1024 * get_site_option( 'fileupload_maxk', 1500 ) ) ) {
 			return new WP_Error(
 				'rest_upload_file_too_big',
 				/* translators: %s: Maximum allowed file size in kilobytes. */
@@ -291,8 +291,10 @@ class Import {
 			);
 		}
 
-		// Include admin function to get access to upload_is_user_over_quota().
-		require_once ABSPATH . 'wp-admin/includes/ms.php';
+		if ( ! function_exists( 'upload_is_user_over_quota' ) ) {
+			// Include admin function to get access to upload_is_user_over_quota().
+			require_once ABSPATH . 'wp-admin/includes/ms.php';
+		}
 
 		if ( upload_is_user_over_quota( false ) ) {
 			return new WP_Error(

@@ -25,7 +25,7 @@ class TestImport extends TestCase {
 		WP_Mock::userFunction( 'wp_list_pluck' )->once()->andReturn( [] );
 		WP_Mock::passthruFunction( 'current_time' );
 		WP_Mock::userFunction( 'get_page_by_path' )->once()->andReturn( [ 'ID' => 123 ] );
-		$image  = new Image(
+		$image = new Image(
 			[
 				'id'              => 'eOvv4N6yNmk',
 				'tags'            => [],
@@ -118,7 +118,7 @@ class TestImport extends TestCase {
 	 * @covers \XWP\Unsplash\Import::create_attachment()
 	 */
 	public function test_wp_error_create_attachment() {
-		$file   = Mockery::mock( 'WP_Error' );
+		$file = Mockery::mock( 'WP_Error' );
 		WP_Mock::userFunction( 'is_wp_error' )->once()->andReturn( false );
 		$image      = new Image(
 			[
@@ -151,6 +151,45 @@ class TestImport extends TestCase {
 		WP_Mock::userFunction( 'download_url' )->once()->with( 'http://www.example.com/test.jpg' )->andReturn( '' );
 		WP_Mock::userFunction( 'wp_handle_upload' )->once()->andReturn( $file );
 		WP_Mock::userFunction( 'is_multisite' )->once()->andReturn( false );
+		$image  = new Image(
+			[
+				'id'              => 'eOvv4N6yNmk',
+				'tags'            => [],
+				'description'     => 'test description',
+				'alt_description' => 'test alt description',
+				'urls'            => [
+					'full' => 'http://www.example.com/test.jpg',
+				],
+			]
+		);
+		$import = new Import(
+			'eOvv4N6yNmk',
+			$image
+		);
+
+		$attachment = $import->import_image();
+		$this->assertTrue( is_array( $attachment ) );
+		$this->assertSame( $attachment, $file );
+	}
+
+	/**
+	 * Test get attachment.
+	 *
+	 * @covers \XWP\Unsplash\Import::__construct()
+	 * @covers \XWP\Unsplash\Import::import_image()
+	 */
+	public function test_import_image_multisite() {
+		$file = [
+			'file' => true,
+			'url'  => 'http://www.example.com/test.jpg',
+		];
+		WP_Mock::userFunction( 'download_url' )->once()->with( 'http://www.example.com/test.jpg' )->andReturn( '' );
+		WP_Mock::userFunction( 'wp_handle_upload' )->once()->andReturn( $file );
+		WP_Mock::userFunction( 'is_multisite' )->once()->andReturn( true );
+		WP_Mock::userFunction( 'get_site_option' )->once()->with( 'upload_space_check_disabled' )->andReturn( false );
+		WP_Mock::userFunction( 'get_site_option' )->once()->with( 'fileupload_maxk', 1500 )->andReturn( 1500 );
+		WP_Mock::userFunction( 'get_upload_space_available' )->once()->andReturn( 100 );
+		WP_Mock::userFunction( 'upload_is_user_over_quota' )->once()->andReturn( false );
 		$image  = new Image(
 			[
 				'id'              => 'eOvv4N6yNmk',
@@ -264,7 +303,7 @@ class TestImport extends TestCase {
 		);
 		$import = new Import(
 			'eOvv4N6yNmk',
-			$image,
+			$image
 		);
 		$user   = $import->process_user();
 		$this->assertTrue( is_array( $user ) );
