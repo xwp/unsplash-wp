@@ -133,7 +133,7 @@ class Image {
 	 * @return mixed|string
 	 */
 	protected function get_image_field( $field, $default = '' ) {
-		return isset( $this->image[ $field ] ) ? $this->image[ $field ] : $default;
+		return ( isset( $this->image[ $field ] ) && ! empty( $this->image[ $field ] ) ) ? $this->image[ $field ] : $default;
 	}
 
 	/**
