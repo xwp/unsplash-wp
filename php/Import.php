@@ -49,12 +49,6 @@ class Import {
 	protected $attachment_id = 0;
 
 	/**
-	 * Processed fields.
-	 *
-	 * @var array
-	 */
-	protected $process_data = [];
-	/**
 	 * Hardcoded file ext.
 	 */
 	const EXT = 'jpeg';
