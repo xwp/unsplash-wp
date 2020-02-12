@@ -73,15 +73,24 @@ class Hotlink {
 		if ( ! $original_url ) {
 			return $should_resize;
 		}
-		$width  = 0;
-		$height = 0;
-		$sizes  = $this->router->image_sizes();
+		$image_meta = wp_get_attachment_metadata( $id );
+		$image_size = ( isset( $image_meta['sizes'] ) ) ? $image_meta['sizes'] : [];
+		$sizes      = $this->router->image_sizes();
 		if ( is_array( $size ) ) {
+			// If array is passed, just use height and width.
 			list( $width, $height ) = $size;
+		} elseif ( isset( $image_size[ $size ] ) ) {
+			// Get generated size from post meta.
+			$height = isset( $image_size[ $size ]['height'] ) ? $image_size[ $size ]['height'] : 0;
+			$width  = isset( $image_size[ $size ]['width'] ) ? $image_size[ $size ]['width'] : 0;
 		} elseif ( isset( $sizes[ $size ] ) ) {
+			// Get defined size.
 			list( $width, $height ) = array_values( $sizes[ $size ] );
-		} elseif ( isset( $sizes['thumbnail'] ) ) {
-			list( $width, $height ) = array_values( $sizes['thumbnail'] );
+		} else {
+			// If can't find image size, then use full size.
+			$height = isset( $image_meta['height'] ) ? $image_meta['height'] : 0;
+			$width  = isset( $image_meta['width'] ) ? $image_meta['width'] : 0;
+
 		}
 
 		if ( ! $width || ! $height ) {
@@ -89,9 +98,8 @@ class Hotlink {
 		}
 
 		$original_url = $this->get_original_url_with_size( $original_url, $width, $height );
-		$downsize     = [ $original_url, $width, $height, false ];
 
-		return $downsize;
+		return [ $original_url, $width, $height, false ];
 	}
 
 	/**
@@ -131,8 +139,7 @@ class Hotlink {
 		}
 
 		foreach ( $selected_images as $image => $attachment_id ) {
-			$image_meta = wp_get_attachment_metadata( $attachment_id );
-			$content    = str_replace( $image, $this->replace_image( $image, $image_meta, $attachment_id ), $content );
+			$content = str_replace( $image, $this->replace_image( $image, $attachment_id ), $content );
 		}
 
 		return $content;
@@ -144,11 +151,10 @@ class Hotlink {
 	 * @see wp_image_add_srcset_and_sizes()
 	 *
 	 * @param string $image         An HTML 'img' element to be filtered.
-	 * @param array  $image_meta    The image meta data as returned by 'wp_get_attachment_metadata()'.
 	 * @param int    $attachment_id Image attachment ID.
 	 * @return string Converted 'img' element with 'srcset' and 'sizes' attributes added.
 	 */
-	public function replace_image( $image, $image_meta, $attachment_id ) {
+	public function replace_image( $image, $attachment_id ) {
 		$original_url = $this->get_original_url( $attachment_id );
 		if ( ! $original_url ) {
 			return $image;
@@ -162,6 +168,7 @@ class Hotlink {
 			return $image;
 		}
 
+		$image_meta = wp_get_attachment_metadata( $attachment_id );
 		// Bail early if an image has been inserted and later edited.
 		if ( $image_meta && preg_match( '/-e[0-9]{13}/', $image_meta['file'], $img_edit_hash ) && false === strpos( wp_basename( $image_src ), $img_edit_hash[0] ) ) {
 			return $image;
