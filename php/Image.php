@@ -13,7 +13,12 @@ namespace XWP\Unsplash;
  * @package XWP\Unsplash
  */
 class Image {
-
+	/**
+	 * Unsplash image array.
+	 *
+	 * @var Image
+	 */
+	protected $image;
 	/**
 	 * Processed fields.
 	 *
