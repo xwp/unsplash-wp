@@ -21,13 +21,6 @@ class TestRouter extends TestCase {
 	 */
 	public function test_init() {
 		Mockery::mock( 'WP_REST_Controller' );
-		WP_Mock::userFunction( 'remove_action' )
-			->once()
-			->with(
-				'wp_ajax_send-attachment-to-editor',
-				'wp_ajax_send_attachment_to_editor',
-				1
-			);
 
 		$plugin = Mockery::mock( Plugin::class );
 		$router = new Router( $plugin );
