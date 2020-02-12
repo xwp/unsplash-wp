@@ -62,16 +62,16 @@ class Hotlink {
 	/**
 	 * Filter image downsize.
 	 *
-	 * @param array        $array Array.
+	 * @param array        $should_resize Array.
 	 * @param int          $id Attachment ID.
 	 * @param array|string $size Size.
 	 *
 	 * @return mixed
 	 */
-	public function image_downsize( $array, $id, $size ) {
+	public function image_downsize( $should_resize, $id, $size ) {
 		$original_url = $this->get_original_url( $id );
 		if ( ! $original_url ) {
-			return $array;
+			return $should_resize;
 		}
 		$width  = 0;
 		$height = 0;
@@ -85,13 +85,13 @@ class Hotlink {
 		}
 
 		if ( ! $width || ! $height ) {
-			return $array;
+			return $should_resize;
 		}
 
 		$original_url = $this->get_original_url_with_size( $original_url, $width, $height );
-		$array        = [ $original_url, $width, $height, false ];
+		$downsize     = [ $original_url, $width, $height, false ];
 
-		return $array;
+		return $downsize;
 	}
 
 	/**
