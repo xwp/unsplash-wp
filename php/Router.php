@@ -7,8 +7,6 @@
 
 namespace XWP\Unsplash;
 
-use Crew\Unsplash\Photo;
-
 /**
  * Plugin Router.
  */
@@ -44,8 +42,6 @@ class Router {
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 		add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_editor_assets' ] );
 		add_action( 'wp_ajax_query-unsplash', [ $this, 'wp_ajax_query_unsplash' ] );
-		remove_action( 'wp_ajax_send-attachment-to-editor', 'wp_ajax_send_attachment_to_editor', 1 );
-		add_action( 'wp_ajax_send-attachment-to-editor', [ $this, 'wp_ajax_send_attachment_to_editor' ], 0 );
 		add_action( 'init', [ $this, 'register_taxonomy' ] );
 		add_action( 'init', [ $this, 'register_meta' ] );
 	}
@@ -219,34 +215,6 @@ class Router {
 		}
 
 		return $sizes;
-	}
-
-	/**
-	 * Ajax handler for sending an attachment to the editor.
-	 *
-	 * Generates the HTML to send an attachment to the editor.
-	 * Backward compatible with the {@see 'media_send_to_editor'} filter
-	 * and the chain of filters that follow.
-	 */
-	public function wp_ajax_send_attachment_to_editor() {
-		check_ajax_referer( 'media-send-to-editor', 'nonce' );
-
-		$attachment = ! empty( $_POST['attachment'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['attachment'] ) ) : [];
-		if ( ! is_numeric( $attachment['id'] ) ) {
-			$id            = $attachment['id'];
-			$photo         = Photo::find( $id );
-			$link          = $photo->download();
-			$results       = $photo->toArray();
-			$image         = new Image( $results );
-			$importer      = new Import( $id, $image, $link );
-			$attachment_id = $importer->process();
-			if ( is_wp_error( $attachment_id ) ) {
-				return wp_ajax_send_attachment_to_editor();
-			}
-			$_POST['attachment']['id'] = $attachment_id;
-		}
-
-		return wp_ajax_send_attachment_to_editor();
 	}
 
 	/**
