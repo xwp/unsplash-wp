@@ -159,7 +159,7 @@ class TestHotlink extends \WP_UnitTestCase {
 	 * @param array  $attr Other attributes to be passed to the URL.
 	 * @param string $expected Expected value.
 	 */
-	public function test_get_original_url_with_size( $url, $width, $height, $attr = [], $expected ) {
+	public function test_get_original_url_with_size( $url, $width, $height, $attr, $expected ) {
 		$this->assertSame( $this->hotlink->get_original_url_with_size( $url, $width, $height, $attr ), $expected );
 	}
 
