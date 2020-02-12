@@ -114,4 +114,17 @@ class TestImage extends TestCase {
 		$this->assertSame( '', $image->get_field( 'invalid' ) );
 	}
 
+	/**
+	 * Test image field.
+	 *
+	 * @covers \XWP\Unsplash\Image::__construct()
+	 * @covers \XWP\Unsplash\Image::get_image_field()
+	 */
+	public function test_get_image_field() {
+		WP_Mock::userFunction( 'wp_list_pluck' )->once()->andReturn( [] );
+		WP_Mock::userFunction( 'current_time' )->once()->andReturn( '123456' );
+		$image = new Image( $this->get_data() );
+		$this->assertSame( '', $image->get_image_field( 'invalid' ) );
+	}
+
 }

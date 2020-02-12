@@ -44,7 +44,7 @@ class TestImport extends TestCase {
 	}
 
 	/**
-	 * Test get attachment.
+	 * Test create attachment.
 	 *
 	 * @covers \XWP\Unsplash\Import::__construct()
 	 * @covers \XWP\Unsplash\Import::create_attachment()
@@ -178,7 +178,7 @@ class TestImport extends TestCase {
 	}
 
 	/**
-	 * Test get attachment.
+	 * Test import image.
 	 *
 	 * @covers \XWP\Unsplash\Import::__construct()
 	 * @covers \XWP\Unsplash\Import::import_image()
@@ -213,7 +213,7 @@ class TestImport extends TestCase {
 	}
 
 	/**
-	 * Test get attachment.
+	 * Test import image on multisite.
 	 *
 	 * @covers \XWP\Unsplash\Import::import_image()
 	 * @covers \XWP\Unsplash\Import::check_upload_size()
@@ -252,7 +252,7 @@ class TestImport extends TestCase {
 	}
 
 	/**
-	 * Test get attachment.
+	 * Test invalid import image.
 	 *
 	 * @covers \XWP\Unsplash\Import::__construct()
 	 * @covers \XWP\Unsplash\Import::import_image()
@@ -283,7 +283,7 @@ class TestImport extends TestCase {
 	}
 
 	/**
-	 * Test get attachment.
+	 * Test invalid handle upload.
 	 *
 	 * @covers \XWP\Unsplash\Import::__construct()
 	 * @covers \XWP\Unsplash\Import::import_image()
@@ -317,7 +317,7 @@ class TestImport extends TestCase {
 	}
 
 	/**
-	 * Test process user
+	 * Test process user.
 	 *
 	 * @covers \XWP\Unsplash\Import::__construct()
 	 * @covers \XWP\Unsplash\Import::process_user()
@@ -347,10 +347,11 @@ class TestImport extends TestCase {
 	}
 
 	/**
-	 * Test process user
+	 * Test process.
 	 *
 	 * @covers \XWP\Unsplash\Import::__construct()
 	 * @covers \XWP\Unsplash\Import::process()
+	 * @covers \XWP\Unsplash\Import::process_meta()
 	 * @covers \XWP\Unsplash\Import::process_user()
 	 * @covers \XWP\Unsplash\Import::process_source()
 	 * @covers \XWP\Unsplash\Import::process_tags()
