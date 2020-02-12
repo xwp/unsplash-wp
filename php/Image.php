@@ -27,11 +27,15 @@ class Image {
 	protected $process_data = [];
 	/**
 	 * Hardcoded file ext.
+	 *
+	 * @var string
 	 */
-	public $ext= 'jpeg';
+	public $ext = 'jpeg';
 
 	/**
 	 * Hardcoded MINE type.
+	 *
+	 * @var string
 	 */
 	public $mime = 'image/jpeg';
 
