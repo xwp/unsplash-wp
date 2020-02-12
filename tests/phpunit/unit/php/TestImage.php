@@ -13,6 +13,11 @@ use WP_Mock;
  * Test the WordPress plugin abstraction.
  */
 class TestImage extends TestCase {
+	/**
+	 * Get example data.
+	 *
+	 * @return array
+	 */
 	protected function get_data() {
 		$test_data = [
 			'id'              => 'xAHtaYIHlPI',
