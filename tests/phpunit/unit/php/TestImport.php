@@ -24,6 +24,7 @@ class TestImport extends TestCase {
 	public function test_get_attachment() {
 		WP_Mock::userFunction( 'wp_list_pluck' )->once()->andReturn( [] );
 		WP_Mock::passthruFunction( 'current_time' );
+		WP_Mock::passthruFunction( 'wp_slash' );
 		WP_Mock::userFunction( 'get_page_by_path' )->once()->andReturn( [ 'ID' => 123 ] );
 		$image = new Image(
 			[
@@ -49,17 +50,17 @@ class TestImport extends TestCase {
 	 * @covers \XWP\Unsplash\Import::create_attachment()
 	 */
 	public function test_create_attachment() {
+
 		WP_Mock::userFunction( 'wp_list_pluck' )->once()->andReturn( [] );
 		WP_Mock::userFunction( 'is_wp_error' )->twice()->andReturn( false );
+
 		WP_Mock::passthruFunction( 'current_time' );
-		WP_Mock::passthruFunction( 'wp_insert_attachment' );
-		WP_Mock::passthruFunction( 'wp_slash' );
 		Mockery::mock( 'WP_Error' );
-		$file   = [
+		$file            = [
 			'file' => true,
 			'url'  => 'http://www.example.com/test.jpg',
 		];
-		$image  = new Image(
+		$image           = new Image(
 			[
 				'id'              => 'eOvv4N6yNmk',
 				'tags'            => [],
@@ -67,6 +68,14 @@ class TestImport extends TestCase {
 				'alt_description' => 'test alt description',
 			]
 		);
+		$test_attachment = [
+			'post_name'      => 'eOvv4N6yNmk',
+			'guid'           => 'http://www.example.com/test.jpg',
+			'post_mime_type' => $image::MIME,
+			'post_content'   => 'test description',
+			'post_title'     => 'test alt description',
+		];
+		WP_Mock::userFunction( 'wp_insert_attachment' )->once()->andReturn( $test_attachment );
 		$import = new Import(
 			'eOvv4N6yNmk',
 			$image
@@ -118,8 +127,38 @@ class TestImport extends TestCase {
 	 * @covers \XWP\Unsplash\Import::create_attachment()
 	 */
 	public function test_wp_error_create_attachment() {
-		$file = Mockery::mock( 'WP_Error' );
+		$file = new WP_Error( 'testing' );
 		WP_Mock::userFunction( 'is_wp_error' )->once()->andReturn( false );
+		$image      = new Image(
+			[
+				'id'              => 'eOvv4N6yNmk',
+				'tags'            => [],
+				'description'     => 'test description',
+				'alt_description' => 'test alt description',
+			]
+		);
+		$import     = new Import(
+			'eOvv4N6yNmk',
+			$image
+		);
+		$attachment = $import->create_attachment( $file );
+		$this->assertTrue( is_object( $attachment ) );
+		$this->assertInstanceOf( WP_Error::class, $attachment );
+	}
+	/**
+	 * Test pass WP_error to create_attachment.
+	 *
+	 * @covers \XWP\Unsplash\Import::__construct()
+	 * @covers \XWP\Unsplash\Import::create_attachment()
+	 */
+	public function test_wp_error_wp_insert_attachment() {
+		$file  = [
+			'file' => true,
+			'url'  => 'http://www.example.com/test.jpg',
+		];
+		$error = new WP_Error( 'testing' );
+		WP_Mock::userFunction( 'is_wp_error' );
+		WP_Mock::userFunction( 'wp_insert_attachment' )->once()->andReturn( $error );
 		$image      = new Image(
 			[
 				'id'              => 'eOvv4N6yNmk',
@@ -175,8 +214,8 @@ class TestImport extends TestCase {
 	/**
 	 * Test get attachment.
 	 *
-	 * @covers \XWP\Unsplash\Import::__construct()
 	 * @covers \XWP\Unsplash\Import::import_image()
+	 * @covers \XWP\Unsplash\Import::check_upload_size()
 	 */
 	public function test_import_image_multisite() {
 		$file = [

@@ -173,9 +173,9 @@ class Import {
 			'guid'           => $url,
 		];
 
+
 		// do the validation and storage stuff.
 		$this->attachment_id = wp_insert_attachment( wp_slash( $attachment ), $file, $this->parent, true );
-
 		if ( is_wp_error( $this->attachment_id ) ) {
 			if ( 'db_update_error' === $this->attachment_id->get_error_code() ) {
 				$this->attachment_id->add_data( array( 'status' => 500 ) );
