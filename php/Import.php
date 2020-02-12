@@ -152,7 +152,7 @@ class Import {
 		}
 
 		// See https://github.com/WordPress/WordPress/blob/12709269c19d435de019b54d2bda7e4bd1ad664e/wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php#L747-L750 .
-		$size_check = self::check_upload_size( $file_array );
+		$size_check = $this->check_upload_size( $file_array );
 		if ( is_wp_error( $size_check ) ) {
 			return $size_check;
 		}
