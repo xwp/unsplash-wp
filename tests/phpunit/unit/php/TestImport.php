@@ -25,7 +25,8 @@ class TestImport extends TestCase {
 		WP_Mock::userFunction( 'wp_list_pluck' )->once()->andReturn( [] );
 		WP_Mock::passthruFunction( 'current_time' );
 		WP_Mock::userFunction( 'get_page_by_path' )->once()->andReturn( [ 'ID' => 123 ] );
-		$image = new Image(
+		$plugin = Mockery::mock( Plugin::class );
+		$image  = new Image(
 			[
 				'id'              => 'eOvv4N6yNmk',
 				'tags'            => [],
@@ -36,7 +37,8 @@ class TestImport extends TestCase {
 
 		$import = new Import(
 			'eOvv4N6yNmk',
-			$image
+			$image,
+			$plugin
 		);
 		$this->assertEquals( $import->get_attachment_id(), 123 );
 
@@ -55,6 +57,7 @@ class TestImport extends TestCase {
 		WP_Mock::passthruFunction( 'wp_insert_attachment' );
 		WP_Mock::passthruFunction( 'wp_slash' );
 		Mockery::mock( 'WP_Error' );
+		$plugin = Mockery::mock( Plugin::class );
 		$file   = [
 			'file' => true,
 			'url'  => 'http://www.example.com/test.jpg',
@@ -69,7 +72,8 @@ class TestImport extends TestCase {
 		);
 		$import = new Import(
 			'eOvv4N6yNmk',
-			$image
+			$image,
+			$plugin
 		);
 
 		$attachment = $import->create_attachment( $file );
@@ -79,7 +83,7 @@ class TestImport extends TestCase {
 		$this->assertArrayHasKey( 'guid', $attachment );
 		$this->assertSame( $attachment['post_name'], 'eOvv4N6yNmk' );
 		$this->assertSame( $attachment['guid'], 'http://www.example.com/test.jpg' );
-		$this->assertSame( $attachment['post_mime_type'], $image->mime );
+		$this->assertSame( $attachment['post_mime_type'], $image::MIME );
 		$this->assertSame( $attachment['post_content'], 'test description' );
 		$this->assertSame( $attachment['post_title'], 'test alt description' );
 	}
@@ -92,6 +96,7 @@ class TestImport extends TestCase {
 	 */
 	public function test_invalid_create_attachment() {
 		Mockery::mock( 'WP_Error' );
+		$plugin     = Mockery::mock( Plugin::class );
 		$file       = [];
 		$image      = new Image(
 			[
@@ -103,7 +108,8 @@ class TestImport extends TestCase {
 		);
 		$import     = new Import(
 			'eOvv4N6yNmk',
-			$image
+			$image,
+			$plugin
 		);
 		$attachment = $import->create_attachment( $file );
 		$this->assertTrue( is_object( $attachment ) );
@@ -118,7 +124,8 @@ class TestImport extends TestCase {
 	 * @covers \XWP\Unsplash\Import::create_attachment()
 	 */
 	public function test_wp_error_create_attachment() {
-		$file = Mockery::mock( 'WP_Error' );
+		$file   = Mockery::mock( 'WP_Error' );
+		$plugin = Mockery::mock( Plugin::class );
 		WP_Mock::userFunction( 'is_wp_error' )->once()->andReturn( false );
 		$image      = new Image(
 			[
@@ -130,7 +137,8 @@ class TestImport extends TestCase {
 		);
 		$import     = new Import(
 			'eOvv4N6yNmk',
-			$image
+			$image,
+			$plugin
 		);
 		$attachment = $import->create_attachment( $file );
 		$this->assertTrue( is_object( $attachment ) );
@@ -151,18 +159,22 @@ class TestImport extends TestCase {
 		WP_Mock::userFunction( 'download_url' )->once()->with( 'http://www.example.com/test.jpg' )->andReturn( '' );
 		WP_Mock::userFunction( 'wp_handle_upload' )->once()->andReturn( $file );
 		WP_Mock::userFunction( 'is_multisite' )->once()->andReturn( false );
+		$plugin = Mockery::mock( Plugin::class );
 		$image  = new Image(
 			[
 				'id'              => 'eOvv4N6yNmk',
 				'tags'            => [],
 				'description'     => 'test description',
 				'alt_description' => 'test alt description',
+				'urls'            => [
+					'full' => 'http://www.example.com/test.jpg',
+				],
 			]
 		);
 		$import = new Import(
 			'eOvv4N6yNmk',
 			$image,
-			'http://www.example.com/test.jpg'
+			$plugin
 		);
 
 		$attachment = $import->import_image();
@@ -185,18 +197,22 @@ class TestImport extends TestCase {
 		WP_Mock::userFunction( 'download_url' )->once()->with( 'http://www.example.com/test.jpg' )->andReturn( $error );
 		WP_Mock::userFunction( 'wp_handle_upload' )->once()->andReturn( $file );
 		WP_Mock::userFunction( 'is_multisite' )->once()->andReturn( false );
+		$plugin = Mockery::mock( Plugin::class );
 		$image  = new Image(
 			[
 				'id'              => 'eOvv4N6yNmk',
 				'tags'            => [],
 				'description'     => 'test description',
 				'alt_description' => 'test alt description',
+				'urls'            => [
+					'full' => 'http://www.example.com/test.jpg',
+				],
 			]
 		);
 		$import = new Import(
 			'eOvv4N6yNmk',
 			$image,
-			'http://www.example.com/test.jpg'
+			$plugin
 		);
 
 		$attachment = $import->import_image();
@@ -216,6 +232,7 @@ class TestImport extends TestCase {
 		WP_Mock::userFunction( 'get_term' )->once()->with( 1234, 'unsplash_user' )->andReturn( (object) [ 'term_id' => 1234 ] );
 		WP_Mock::userFunction( 'add_term_meta' )->once();
 		WP_Mock::userFunction( 'wp_set_object_terms' )->once()->andReturn( [ 1234 ] );
+		$plugin = Mockery::mock( Plugin::class );
 		$image  = new Image(
 			[
 				'user' => [
@@ -227,7 +244,8 @@ class TestImport extends TestCase {
 		);
 		$import = new Import(
 			'eOvv4N6yNmk',
-			$image
+			$image,
+			$plugin
 		);
 		$user   = $import->process_user();
 		$this->assertTrue( is_array( $user ) );

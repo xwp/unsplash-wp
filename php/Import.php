@@ -29,13 +29,6 @@ class Import {
 	 */
 	protected $image;
 	/**
-	 * URL for download.
-	 *
-	 * @var string
-	 */
-	protected $link = '';
-
-	/**
 	 * Post ID.
 	 *
 	 * @var int
@@ -48,17 +41,23 @@ class Import {
 	 */
 	protected $attachment_id = 0;
 	/**
+	 * Plugin instance.
+	 *
+	 * @var Plugin
+	 */
+	public $plugin;
+	/**
 	 * Import constructor.
 	 *
 	 * @param string $id Unsplash ID.
 	 * @param Image  $image Unsplash image object.
-	 * @param string $link URL of download image.
+	 * @param Plugin $plugin Instance of the plugin abstraction.
 	 * @param int    $parent Parent ID.
 	 */
-	public function __construct( $id, $image = null, $link = '', $parent = 0 ) {
+	public function __construct( $id, $image = null, $plugin = null, $parent = 0 ) {
 		$this->id     = $id;
 		$this->image  = $image;
-		$this->link   = $link;
+		$this->plugin = $plugin;
 		$this->parent = $parent;
 	}
 
@@ -112,17 +111,17 @@ class Import {
 		}
 
 		$file_array = [];
-		$file       = $this->link;
+		$file       = $this->image->get_image_url( 'full' );
 		$tmp        = download_url( $file );
 
 		$file_array['name']     = $this->image->get_field( 'file' );
 		$file_array['tmp_name'] = $tmp;
-		$file_array['type']     = $this->image->mime;
-		$file_array['ext']      = $this->image->ext;
+		$file_array['type']     = $this->image->get_field( 'mime_type' );
+		$file_array['ext']      = $this->image->get_field( 'ext' );
 
 		// If error storing temporarily, unlink.
 		if ( is_wp_error( $tmp ) ) {
-			if ( Plugin::is_wpcom_vip_prod() ) {
+			if ( $this->plugin->is_wpcom_vip_prod() ) {
 				@unlink( $file_array['tmp_name'] ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_unlink
 			}
 			$file_array['tmp_name'] = '';
@@ -182,7 +181,7 @@ class Import {
 			'post_content'   => $this->image->get_field( 'description' ),
 			'post_title'     => $this->image->get_field( 'alt' ),
 			'post_excerpt'   => $this->image->get_field( 'alt' ),
-			'post_mime_type' => $this->image->mime,
+			'post_mime_type' => $this->image->get_field( 'mime_type' ),
 			'guid'           => $url,
 		];
 

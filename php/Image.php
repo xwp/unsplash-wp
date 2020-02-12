@@ -27,17 +27,13 @@ class Image {
 	protected $process_data = [];
 	/**
 	 * Hardcoded file ext.
-	 *
-	 * @var string
 	 */
-	public $ext = 'jpeg';
+	const EXT = 'jpeg';
 
 	/**
 	 * Hardcoded MINE type.
-	 *
-	 * @var string
 	 */
-	public $mime = 'image/jpeg';
+	const MIME = 'image/jpeg';
 
 	/**
 	 * Image constructor.
@@ -71,7 +67,9 @@ class Image {
 			]
 		);
 		$this->process_data['tags']              = wp_list_pluck( $this->get_image_field( 'tags', [] ), 'title' );
-		$this->process_data['file']              = $this->process_data['original_id'] . '.' . $this->ext;
+		$this->process_data['mime_type']         = self::MIME;
+		$this->process_data['ext']               = self::EXT;
+		$this->process_data['file']              = $this->process_data['original_id'] . '.' . $this->process_data['ext'];
 		$this->process_data['height']            = $this->get_image_field( 'height', 0 );
 		$this->process_data['width']             = $this->get_image_field( 'width', 0 );
 		$this->process_data['created_at']        = $this->get_image_field( 'created_at', current_time( 'mysql' ) );
@@ -88,7 +86,7 @@ class Image {
 				'height'    => $this->process_data['height'],
 				'width'     => $this->process_data['width'],
 				'file'      => $this->process_data['file'],
-				'mime-type' => $this->mime,
+				'mime-type' => $this->process_data['mime_type'],
 			],
 		];
 
@@ -145,7 +143,7 @@ class Image {
 	 *
 	 * @return string
 	 */
-	protected function get_image_url( $size ) {
+	public function get_image_url( $size ) {
 		return isset( $this->image['urls'], $this->image['urls'][ $size ] ) ? $this->image['urls'][ $size ] : '';
 	}
 }
