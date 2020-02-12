@@ -371,7 +371,7 @@ class TestImport extends TestCase {
 		WP_Mock::userFunction( 'download_url' )->once()->andReturn( $file );
 		WP_Mock::userFunction( 'wp_handle_upload' )->once()->andReturn( $file );
 
-		$image           = new Image(
+		$image = new Image(
 			[
 				'user' => [
 					'id'   => 'eOvv4N6yNmk',
