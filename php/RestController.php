@@ -21,12 +21,6 @@ use WP_Error;
  */
 class RestController extends WP_REST_Controller {
 	/**
-	 * Plugin instance.
-	 *
-	 * @var Plugin
-	 */
-	public $plugin;
-	/**
 	 * Settings instance.
 	 *
 	 * @var Settings
@@ -37,13 +31,11 @@ class RestController extends WP_REST_Controller {
 	 * Constructor.
 	 *
 	 * @param Settings $settings Instance of the Settings class.
-	 * @param Plugin   $plugin Instance of the plugin abstraction.
 	 */
-	public function __construct( $settings, $plugin ) {
+	public function __construct( $settings ) {
 		$this->namespace = 'unsplash/v1';
 		$this->rest_base = 'photos';
 		$this->settings  = $settings;
-		$this->plugin    = $plugin;
 
 		$options = get_option( 'unsplash_settings' );
 
@@ -218,7 +210,7 @@ class RestController extends WP_REST_Controller {
 			return $photos;
 		}
 		$image         = new Image( $results );
-		$importer      = new Import( $id, $image, $this->plugin, $link, 0 );
+		$importer      = new Import( $id, $image );
 		$attachment_id = $importer->process();
 		if ( is_wp_error( $attachment_id ) ) {
 			return $attachment_id;

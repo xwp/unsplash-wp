@@ -41,23 +41,15 @@ class Import {
 	 */
 	protected $attachment_id = 0;
 	/**
-	 * Plugin instance.
-	 *
-	 * @var Plugin
-	 */
-	public $plugin;
-	/**
 	 * Import constructor.
 	 *
 	 * @param string $id Unsplash ID.
 	 * @param Image  $image Unsplash image object.
-	 * @param Plugin $plugin Instance of the plugin abstraction.
 	 * @param int    $parent Parent ID.
 	 */
-	public function __construct( $id, $image = null, $plugin = null, $parent = 0 ) {
+	public function __construct( $id, $image = null, $parent = 0 ) {
 		$this->id     = $id;
 		$this->image  = $image;
-		$this->plugin = $plugin;
 		$this->parent = $parent;
 	}
 
@@ -114,20 +106,16 @@ class Import {
 		$file       = $this->image->get_image_url( 'full' );
 		$tmp        = download_url( $file );
 
+		// If error downloading, the output error.
+		if ( is_wp_error( $tmp ) ) {
+			return $tmp;
+		}
+
 		$file_array['name']     = $this->image->get_field( 'file' );
 		$file_array['tmp_name'] = $tmp;
 		$file_array['type']     = $this->image->get_field( 'mime_type' );
 		$file_array['ext']      = $this->image->get_field( 'ext' );
 
-		// If error storing temporarily, unlink.
-		if ( is_wp_error( $tmp ) ) {
-			if ( $this->plugin->is_wpcom_vip_prod() ) {
-				@unlink( $file_array['tmp_name'] ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_unlink
-			}
-			$file_array['tmp_name'] = '';
-
-			return $tmp;
-		}
 		// Pass off to WP to handle the actual upload.
 		$overrides = array(
 			'test_form' => false,
