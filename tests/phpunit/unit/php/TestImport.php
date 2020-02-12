@@ -9,6 +9,7 @@ namespace XWP\Unsplash;
 
 use Mockery;
 use WP_Mock;
+use WP_Error;
 
 /**
  * Test the WordPress import abstraction.
@@ -106,7 +107,7 @@ class TestImport extends TestCase {
 		);
 		$attachment = $import->create_attachment( $file );
 		$this->assertTrue( is_object( $attachment ) );
-		$this->assertTrue( is_a( $attachment, 'WP_Error' ) );
+		$this->assertInstanceOf( WP_Error::class, $attachment );
 
 	}
 
@@ -133,7 +134,7 @@ class TestImport extends TestCase {
 		);
 		$attachment = $import->create_attachment( $file );
 		$this->assertTrue( is_object( $attachment ) );
-		$this->assertTrue( is_a( $attachment, 'WP_Error' ) );
+		$this->assertInstanceOf( WP_Error::class, $attachment );
 	}
 
 	/**
