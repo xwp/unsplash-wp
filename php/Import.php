@@ -63,11 +63,13 @@ class Import {
 		if ( $existing_attachment ) {
 			return $existing_attachment;
 		}
+
 		$file       = $this->import_image();
 		$attachment = $this->create_attachment( $file );
 		if ( is_wp_error( $attachment ) ) {
 			return $attachment;
 		}
+
 		$this->process_meta();
 		$this->process_tags();
 		$this->process_source();
@@ -105,7 +107,6 @@ class Import {
 		$file_array = [];
 		$file       = $this->image->get_image_url( 'full' );
 		$tmp        = download_url( $file );
-
 		// If error downloading, the output error.
 		if ( is_wp_error( $tmp ) ) {
 			return $tmp;
@@ -232,6 +233,7 @@ class Import {
 	public function process_user() {
 		$unsplash_user = $this->image->get_field( 'user' );
 		$user          = get_term_by( 'slug', $unsplash_user['id'], 'unsplash_user' );
+
 		if ( ! $user ) {
 			$args = [
 				'slug'        => $unsplash_user['id'],
@@ -239,12 +241,13 @@ class Import {
 			];
 			$term = wp_insert_term( $unsplash_user['name'], 'unsplash_user', $args );
 			$user = get_term( $term['term_id'], 'unsplash_user' );
+
 			if ( $user && ! is_wp_error( $user ) ) {
 				add_term_meta( $term['term_id'], 'unsplash_meta', $unsplash_user );
 			}
 		}
 		if ( $user && ! is_wp_error( $user ) ) {
-			return wp_set_object_terms( $this->attachment_id, [ $user->term_id ], 'unsplash_user' );
+			return wp_set_post_terms( $this->attachment_id, [ $user->term_id ], 'unsplash_user' );
 		}
 
 		return false;
