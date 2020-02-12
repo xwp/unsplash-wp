@@ -363,9 +363,9 @@ class TestImport extends TestCase {
 		WP_Mock::userFunction( 'get_page_by_path' )->once()->andReturn( false );
 		WP_Mock::userFunction( 'update_post_meta' )->times( 8 );
 		WP_Mock::userFunction( 'wp_set_post_terms' )->times( 3 );
-		WP_Mock::userFunction( 'wp_insert_term' )->once();
 		WP_Mock::userFunction( 'get_term_by' )->once()->andReturn( false );
-		WP_Mock::userFunction( 'get_term' )->once()->andReturn( true );
+		WP_Mock::userFunction( 'wp_insert_term' )->once()->andReturn( [ 'term_id' => 1234 ] );
+		WP_Mock::userFunction( 'get_term' )->once()->with( 1234, 'unsplash_user' )->andReturn( (object) [ 'term_id' => 1234 ] );
 		WP_Mock::userFunction( 'add_term_meta' )->once();
 		WP_Mock::userFunction( 'is_wp_error' )->andReturn( false );
 		WP_Mock::userFunction( 'download_url' )->once()->andReturn( $file );
@@ -380,19 +380,13 @@ class TestImport extends TestCase {
 				],
 			]
 		);
-		$test_attachment = [
-			'post_name'      => 'eOvv4N6yNmk',
-			'guid'           => 'http://www.example.com/test.jpg',
-			'post_mime_type' => $image::MIME,
-			'post_content'   => 'test description',
-			'post_title'     => 'test alt description',
-		];
-		WP_Mock::userFunction( 'wp_insert_attachment' )->once()->andReturn( $test_attachment );
+
+		WP_Mock::userFunction( 'wp_insert_attachment' )->once()->andReturn( 543 );
 		$import       = new Import(
 			'eOvv4N6yNmk',
 			$image
 		);
 		$return_value = $import->process();
-		$this->assertSame( $return_value, $test_attachment );
+		$this->assertSame( $return_value, 543 );
 	}
 }

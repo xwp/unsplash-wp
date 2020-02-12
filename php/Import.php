@@ -240,8 +240,10 @@ class Import {
 				'description' => $unsplash_user['bio'],
 			];
 			$term = wp_insert_term( $unsplash_user['name'], 'unsplash_user', $args );
+			if ( ! is_array( $term ) ) {
+				return false;
+			}
 			$user = get_term( $term['term_id'], 'unsplash_user' );
-
 			if ( $user && ! is_wp_error( $user ) ) {
 				add_term_meta( $term['term_id'], 'unsplash_meta', $unsplash_user );
 			}
