@@ -99,7 +99,7 @@ class TestHotlink extends \WP_UnitTestCase {
 	 */
 	public function test_wp_get_attachment_image_src() {
 		$image = image_downsize( self::$attachment_id );
-		$this->assertTrue( is_array( $image ) );
+		$this->assertInternalType( 'array', $image );
 		$this->assertEquals( $image[0], 'http://www.example.com/test.jpg?w=300&h=300' );
 	}
 
