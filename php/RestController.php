@@ -20,7 +20,6 @@ use WP_Error;
  * REST API Controller.
  */
 class RestController extends WP_REST_Controller {
-
 	/**
 	 * Settings instance.
 	 *
@@ -75,7 +74,7 @@ class RestController extends WP_REST_Controller {
 			[
 				'args'   => [
 					'id' => [
-						'description' => __( 'Unique identifier for the object.', 'unsplash' ),
+						'description' => __( 'Unsplash image ID.', 'unsplash' ),
 						'type'        => 'string',
 					],
 				],
@@ -83,6 +82,28 @@ class RestController extends WP_REST_Controller {
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => [ $this, 'get_item' ],
 					'permission_callback' => [ $this, 'get_items_permissions_check' ],
+					'args'                => [
+						'context' => $this->get_context_param( [ 'default' => 'view' ] ),
+					],
+				],
+				'schema' => [ $this, 'get_public_item_schema' ],
+			]
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/import/(?P<id>[\w-]+)',
+			[
+				'args'   => [
+					'id' => [
+						'description' => __( 'Unsplash image ID.', 'unsplash' ),
+						'type'        => 'string',
+					],
+				],
+				[
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => [ $this, 'get_import' ],
+					'permission_callback' => [ $this, 'create_item_permissions_check' ],
 					'args'                => [
 						'context' => $this->get_context_param( [ 'default' => 'view' ] ),
 					],
@@ -165,6 +186,45 @@ class RestController extends WP_REST_Controller {
 	}
 
 	/**
+	 * Import image into WP.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 *
+	 * @return WP_REST_Response Single page of photo results.
+	 */
+	public function get_import( $request ) {
+		$id      = $request->get_param( 'id' );
+		$results = [];
+		$link    = '';
+		try {
+			$photo   = Photo::find( $id );
+			$link    = $photo->download();
+			$results = $photo->toArray();
+			$photos  = $this->prepare_item_for_response( $results, $request );
+		} catch ( \Exception $e ) {
+			$photos = new WP_Error( 'single-photo-download', __( 'An unknown error occurred while retrieving the photo', 'unsplash' ), [ 'status' => '500' ] );
+			$this->log_error( $e );
+		}
+
+		if ( is_wp_error( $photos ) ) {
+			return $photos;
+		}
+		$image         = new Image( $results );
+		$importer      = new Import( $id, $image );
+		$attachment_id = $importer->process();
+		if ( is_wp_error( $attachment_id ) ) {
+			return $attachment_id;
+		}
+
+		$response = $this->prepare_item_for_response( $results, $request );
+		$response = rest_ensure_response( $response );
+		$response->set_status( 301 );
+		$response->header( 'Location', rest_url( sprintf( '%s/%s/%d', 'wp/v2', 'media', $attachment_id ) ) );
+
+		return $response;
+	}
+
+	/**
 	 * Retrieve a page of photos filtered by a search term.
 	 *
 	 * @param WP_REST_Request $request Request.
@@ -209,7 +269,18 @@ class RestController extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return WP_Error|bool True if the request has read access for the item, WP_Error object otherwise.
 	 */
-	public function get_items_permissions_check( $request ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+	public function get_items_permissions_check( $request ) {
+		// TODO Change permissions to edit_posts.
+		return true;
+	}
+
+	/**
+	 * Checks if a given request has access to create items.
+	 *
+	 * @param WP_REST_Request $request Full data about the request.
+	 * @return WP_Error|bool True if the request has access to create items, WP_Error object otherwise.
+	 */
+	public function create_item_permissions_check( $request ) {
 		// TODO Change permissions to edit_posts.
 		return true;
 	}
@@ -363,31 +434,31 @@ class RestController extends WP_REST_Controller {
 					'readonly'    => true,
 				],
 				'description'     => [
-					'description' => __( 'Description for the object, as it exists in the database.', 'unsplash' ),
+					'description' => __( 'Description for the object, as it exists in the database.' ),
 					'type'        => 'string',
 					'context'     => [ 'view', 'edit', 'embed' ],
 					'readonly'    => true,
 				],
 				'color'           => [
-					'description' => __( 'Color for the object, as it exists in the database.', 'unsplash' ),
+					'description' => __( 'Color for the object, as it exists in the database.' ),
 					'type'        => 'string',
 					'context'     => [ 'view', 'edit', 'embed' ],
 					'readonly'    => true,
 				],
 				'height'          => [
-					'description' => __( 'Height for the object.', 'unsplash' ),
+					'description' => __( 'Height for the object.' ),
 					'type'        => 'integer',
 					'context'     => [ 'view', 'edit', 'embed' ],
 					'readonly'    => true,
 				],
 				'width'           => [
-					'description' => __( 'Width for the object.', 'unsplash' ),
+					'description' => __( 'Width for the object.' ),
 					'type'        => 'integer',
 					'context'     => [ 'view', 'edit', 'embed' ],
 					'readonly'    => true,
 				],
 				'urls'            => [
-					'description' => __( 'List of url for default image sizes for the object.', 'unsplash' ),
+					'description' => __( 'List of url for default image sizes for the object.' ),
 					'type'        => 'object',
 					'properties'  => [],
 					'context'     => [ 'view', 'edit', 'embed' ],

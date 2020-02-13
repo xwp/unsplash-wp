@@ -160,12 +160,45 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	}
 
 	/**
+	 * Test get_download().
+	 *
+	 * @covers \XWP\Unsplash\RestController::get_import()
+	 */
+	public function test_get_import() {
+		add_filter( 'upload_dir', array( $this, 'upload_dir_patch' ) );
+		$request  = new WP_REST_Request( 'GET', $this->get_route( '/import/uRuPYB0P8to' ) );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		// The `updated_at` value is expected to change frequently.
+		unset( $data['updated_at'] );
+		// The URL paths for each image type can change frequently, so instead test that the the expected image types are returned.
+		$expected_url_types = [ 'raw', 'full', 'regular', 'small', 'thumb' ];
+		$this->assertEquals( $expected_url_types, array_keys( $data['urls'] ) );
+		unset( $data['urls'] );
+
+		$expected = [
+			'id'              => 'uRuPYB0P8to',
+			'created_at'      => '2019-05-27T14:23:58-04:00',
+			'width'           => 4002,
+			'height'          => 6000,
+			'color'           => '#D9E8EF',
+			'description'     => '',
+			'alt_description' => 'black motorcycle',
+		];
+
+		$this->assertEquals( $expected, $data );
+		$this->assertEquals( 301, $response->get_status() );
+		remove_filter( 'upload_dir', array( $this, 'upload_dir_patch' ) );
+	}
+
+	/**
 	 * Test arguments for get_item().
 	 */
 	public function test_get_item_args() {
 		$expected = [
 			'id'      => [
-				'description' => 'Unique identifier for the object.',
+				'description' => 'Unsplash image ID.',
 				'type'        => 'string',
 			],
 			'context' => [
@@ -377,5 +410,18 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	 */
 	private function get_route( $path = '' ) {
 		return '/' . self::$namespace . '/' . self::$rest_base . "$path";
+	}
+
+	/**
+	 * Callback to patch "basedir" when used in `wp_unique_filename()
+	 *
+	 * @param array $upload_dir Array of upload dir values.
+	 *
+	 * @return mixed
+	 */
+	function upload_dir_patch( $upload_dir ) {
+		$upload_dir['path'] = $upload_dir['basedir'];
+		$upload_dir['url']  = $upload_dir['baseurl'];
+		return $upload_dir;
 	}
 }
