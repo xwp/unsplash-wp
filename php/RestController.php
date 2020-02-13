@@ -190,15 +190,14 @@ class RestController extends WP_REST_Controller {
 	 *
 	 * @param WP_REST_Request $request Request.
 	 *
-	 * @return WP_REST_Response Single page of photo results.
+	 * @return WP_REST_Response|WP_Error Single page of photo results.
 	 */
 	public function get_import( $request ) {
 		$id      = $request->get_param( 'id' );
 		$results = [];
-		$link    = '';
 		try {
-			$photo   = Photo::find( $id );
-			$link    = $photo->download();
+			$photo = Photo::find( $id );
+			$photo->download();
 			$results = $photo->toArray();
 			$photos  = $this->prepare_item_for_response( $results, $request );
 		} catch ( \Exception $e ) {
@@ -269,7 +268,7 @@ class RestController extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return WP_Error|bool True if the request has read access for the item, WP_Error object otherwise.
 	 */
-	public function get_items_permissions_check( $request ) {
+	public function get_items_permissions_check( $request ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 		// TODO Change permissions to edit_posts.
 		return true;
 	}
@@ -280,7 +279,7 @@ class RestController extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return WP_Error|bool True if the request has access to create items, WP_Error object otherwise.
 	 */
-	public function create_item_permissions_check( $request ) {
+	public function create_item_permissions_check( $request ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 		// TODO Change permissions to edit_posts.
 		return true;
 	}
@@ -434,31 +433,31 @@ class RestController extends WP_REST_Controller {
 					'readonly'    => true,
 				],
 				'description'     => [
-					'description' => __( 'Description for the object, as it exists in the database.' ),
+					'description' => __( 'Description for the object, as it exists in the database.', 'unsplash' ),
 					'type'        => 'string',
 					'context'     => [ 'view', 'edit', 'embed' ],
 					'readonly'    => true,
 				],
 				'color'           => [
-					'description' => __( 'Color for the object, as it exists in the database.' ),
+					'description' => __( 'Color for the object, as it exists in the database.', 'unsplash' ),
 					'type'        => 'string',
 					'context'     => [ 'view', 'edit', 'embed' ],
 					'readonly'    => true,
 				],
 				'height'          => [
-					'description' => __( 'Height for the object.' ),
+					'description' => __( 'Height for the object.', 'unsplash' ),
 					'type'        => 'integer',
 					'context'     => [ 'view', 'edit', 'embed' ],
 					'readonly'    => true,
 				],
 				'width'           => [
-					'description' => __( 'Width for the object.' ),
+					'description' => __( 'Width for the object.', 'unsplash' ),
 					'type'        => 'integer',
 					'context'     => [ 'view', 'edit', 'embed' ],
 					'readonly'    => true,
 				],
 				'urls'            => [
-					'description' => __( 'List of url for default image sizes for the object.' ),
+					'description' => __( 'List of url for default image sizes for the object.', 'unsplash' ),
 					'type'        => 'object',
 					'properties'  => [],
 					'context'     => [ 'view', 'edit', 'embed' ],
