@@ -19,7 +19,7 @@ class TestImage extends TestCase {
 	 * @return array
 	 */
 	protected function get_data() {
-		$test_data = [
+		return [
 			'id'              => 'xAHtaYIHlPI',
 			'created_at'      => '2019-05-27T14:11:35-04:00',
 			'updated_at'      => '2020-02-07T00:02:32-05:00',
@@ -65,8 +65,6 @@ class TestImage extends TestCase {
 					'title' => 'motorcycle',
 				],
 		];
-
-		return $test_data;
 	}
 
 	/**
