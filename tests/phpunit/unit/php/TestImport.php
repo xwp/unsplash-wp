@@ -82,7 +82,7 @@ class TestImport extends TestCase {
 		);
 
 		$attachment = $import->create_attachment( $file );
-		$this->assertTrue( is_array( $attachment ) );
+		$this->assertInternalType( 'array', $attachment );
 		$this->assertArrayHasKey( 'post_name', $attachment );
 		$this->assertArrayHasKey( 'post_mime_type', $attachment );
 		$this->assertArrayHasKey( 'guid', $attachment );
@@ -115,7 +115,7 @@ class TestImport extends TestCase {
 			$image
 		);
 		$attachment = $import->create_attachment( $file );
-		$this->assertTrue( is_object( $attachment ) );
+		$this->assertInternalType( 'object', $attachment );
 		$this->assertInstanceOf( WP_Error::class, $attachment );
 
 	}
@@ -142,7 +142,7 @@ class TestImport extends TestCase {
 			$image
 		);
 		$attachment = $import->create_attachment( $file );
-		$this->assertTrue( is_object( $attachment ) );
+		$this->assertInternalType( 'object', $attachment );
 		$this->assertEquals( $attachment, $file );
 		$this->assertInstanceOf( WP_Error::class, $attachment );
 	}
@@ -173,7 +173,7 @@ class TestImport extends TestCase {
 			$image
 		);
 		$attachment = $import->create_attachment( $file );
-		$this->assertTrue( is_object( $attachment ) );
+		$this->assertInternalType( 'object', $attachment );
 		$this->assertInstanceOf( WP_Error::class, $attachment );
 	}
 
@@ -208,7 +208,7 @@ class TestImport extends TestCase {
 		);
 
 		$attachment = $import->import_image();
-		$this->assertTrue( is_array( $attachment ) );
+		$this->assertInternalType( 'array', $attachment );
 		$this->assertSame( $attachment, $file );
 	}
 
@@ -247,7 +247,7 @@ class TestImport extends TestCase {
 		);
 
 		$attachment = $import->import_image();
-		$this->assertTrue( is_array( $attachment ) );
+		$this->assertInternalType( 'array', $attachment );
 		$this->assertSame( $attachment, $file );
 	}
 
@@ -278,7 +278,7 @@ class TestImport extends TestCase {
 		);
 
 		$attachment = $import->import_image();
-		$this->assertTrue( is_object( $attachment ) );
+		$this->assertInternalType( 'object', $attachment );
 		$this->assertInstanceOf( WP_Error::class, $attachment );
 	}
 
@@ -312,7 +312,7 @@ class TestImport extends TestCase {
 		);
 
 		$attachment = $import->import_image();
-		$this->assertTrue( is_object( $attachment ) );
+		$this->assertInternalType( 'object', $attachment );
 		$this->assertInstanceOf( WP_Error::class, $attachment );
 	}
 
@@ -342,7 +342,7 @@ class TestImport extends TestCase {
 			$image
 		);
 		$user   = $import->process_user();
-		$this->assertTrue( is_array( $user ) );
+		$this->assertInternalType( 'array', $user );
 		$this->assertSame( $user, [ 1234 ] );
 	}
 
