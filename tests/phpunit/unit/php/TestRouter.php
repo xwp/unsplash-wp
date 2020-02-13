@@ -54,7 +54,8 @@ class TestRouter extends TestCase {
 				'unsplash-js',
 				'http://example.com/js/dist/editor.js',
 				Mockery::type( 'array' ),
-				'1.2.3'
+				'1.2.3',
+				false
 			);
 
 		WP_Mock::userFunction( 'wp_localize_script' )
