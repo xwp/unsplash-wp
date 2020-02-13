@@ -60,7 +60,8 @@ class Router {
 				'media-views',
 				'lodash',
 			],
-			$this->plugin->asset_version()
+			$this->plugin->asset_version(),
+			false
 		);
 
 		wp_localize_script(
@@ -123,7 +124,7 @@ class Router {
 	public function wp_prepare_attachment_for_js( array $image ) {
 		$image = (object) $image;
 
-		$response = array(
+		$response = [
 			'id'            => $image->id,
 			'title'         => '',
 			'filename'      => $image->id . '.jpg',
@@ -153,15 +154,15 @@ class Router {
 				],
 				$image->urls['raw']
 			),
-			'dateFormatted' => mysql2date( __( 'F j, Y' ), $image->created_at ),
-			'nonces'        => array(
+			'dateFormatted' => mysql2date( __( 'F j, Y', 'unsplash' ), $image->created_at ),
+			'nonces'        => [
 				'update' => false,
 				'delete' => false,
 				'edit'   => false,
-			),
+			],
 			'editLink'      => false,
 			'meta'          => false,
-		);
+		];
 
 		$sizes = [
 			'full' => [
@@ -199,11 +200,11 @@ class Router {
 	public function image_sizes() {
 		global $_wp_additional_image_sizes;
 
-		$sizes = array();
+		$sizes = [];
 
 		// @todo This is not supported by WordPress VIP and will require a new solution.
 		foreach ( get_intermediate_image_sizes() as $s ) { // phpcs:ignore
-			if ( in_array( $s, array( 'thumbnail', 'medium', 'medium_large', 'large' ), true ) ) {
+			if ( in_array( $s, [ 'thumbnail', 'medium', 'medium_large', 'large' ], true ) ) {
 				$sizes[ $s ]['width']  = get_option( $s . '_size_w' );
 				$sizes[ $s ]['height'] = get_option( $s . '_size_h' );
 			} else {

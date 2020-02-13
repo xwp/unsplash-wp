@@ -49,10 +49,10 @@ class TestHotlink extends \WP_UnitTestCase {
 		self::$attachment_id = $factory->attachment->create_object(
 			self::$test_file,
 			0,
-			array(
+			[
 				'post_mime_type' => 'image/jpeg',
 				'post_excerpt'   => 'A sample caption',
-			)
+			]
 		);
 
 		update_post_meta( self::$attachment_id, 'original_url', 'http://www.example.com/test.jpg' );
@@ -113,20 +113,20 @@ class TestHotlink extends \WP_UnitTestCase {
 		$second_id  = $this->factory->attachment->create_object(
 			'/tmp/melon.jpg',
 			0,
-			array(
+			[
 				'post_mime_type' => 'image/jpeg',
 				'post_excerpt'   => 'A sample caption 2',
-			)
+			]
 		);
 		$normal_img = get_image_tag( $second_id, 'alt', 'title', 'left' );
 
 		$test_page = self::factory()->post->create(
-			array(
+			[
 				'post_type'    => 'page',
 				'post_title'   => 'About',
 				'post_status'  => 'publish',
 				'post_content' => sprintf( 'This is a %s image %s', self::$image_tag, $normal_img ),
-			)
+			]
 		);
 
 		$post    = get_post( $test_page );
@@ -169,14 +169,14 @@ class TestHotlink extends \WP_UnitTestCase {
 	 * @return array
 	 */
 	public function data_various_params() {
-		return array(
-			array( 'http://www.example.com/test.jpg', 222, 444, [], 'http://www.example.com/test.jpg?w=222&h=444' ),
-			array( 'http://www.example.com/test.jpg', 100, 100, [], 'http://www.example.com/test.jpg?w=100&h=100' ),
-			array( 'http://www.example.com/test.jpg', -1, -1, [], 'http://www.example.com/test.jpg?w=1&h=1' ),
-			array( 'http://www.example.com/test.jpg', 'invalid', 'invalid', [], 'http://www.example.com/test.jpg?w=0&h=0' ),
-			array( 'http://www.example.com/test.jpg', 100, 100, [ 'crop' => true ], 'http://www.example.com/test.jpg?w=100&h=100&crop=1' ),
-			array( 'http://www.example.com/test.jpg?crop=1', 100, 100, [], 'http://www.example.com/test.jpg?crop=1&w=100&h=100' ),
-		);
+		return [
+			[ 'http://www.example.com/test.jpg', 222, 444, [], 'http://www.example.com/test.jpg?w=222&h=444' ],
+			[ 'http://www.example.com/test.jpg', 100, 100, [], 'http://www.example.com/test.jpg?w=100&h=100' ],
+			[ 'http://www.example.com/test.jpg', -1, -1, [], 'http://www.example.com/test.jpg?w=1&h=1' ],
+			[ 'http://www.example.com/test.jpg', 'invalid', 'invalid', [], 'http://www.example.com/test.jpg?w=0&h=0' ],
+			[ 'http://www.example.com/test.jpg', 100, 100, [ 'crop' => true ], 'http://www.example.com/test.jpg?w=100&h=100&crop=1' ],
+			[ 'http://www.example.com/test.jpg?crop=1', 100, 100, [], 'http://www.example.com/test.jpg?crop=1&w=100&h=100' ],
+		];
 	}
 
 }

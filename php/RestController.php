@@ -75,7 +75,7 @@ class RestController extends WP_REST_Controller {
 			[
 				'args'   => [
 					'id' => [
-						'description' => __( 'Unique identifier for the object.' ),
+						'description' => __( 'Unique identifier for the object.', 'unsplash' ),
 						'type'        => 'string',
 					],
 				],
@@ -209,7 +209,7 @@ class RestController extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return WP_Error|bool True if the request has read access for the item, WP_Error object otherwise.
 	 */
-	public function get_items_permissions_check( $request ) {
+	public function get_items_permissions_check( $request ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 		// TODO Change permissions to edit_posts.
 		return true;
 	}
@@ -363,31 +363,31 @@ class RestController extends WP_REST_Controller {
 					'readonly'    => true,
 				],
 				'description'     => [
-					'description' => __( 'Description for the object, as it exists in the database.' ),
+					'description' => __( 'Description for the object, as it exists in the database.', 'unsplash' ),
 					'type'        => 'string',
 					'context'     => [ 'view', 'edit', 'embed' ],
 					'readonly'    => true,
 				],
 				'color'           => [
-					'description' => __( 'Color for the object, as it exists in the database.' ),
+					'description' => __( 'Color for the object, as it exists in the database.', 'unsplash' ),
 					'type'        => 'string',
 					'context'     => [ 'view', 'edit', 'embed' ],
 					'readonly'    => true,
 				],
 				'height'          => [
-					'description' => __( 'Height for the object.' ),
+					'description' => __( 'Height for the object.', 'unsplash' ),
 					'type'        => 'integer',
 					'context'     => [ 'view', 'edit', 'embed' ],
 					'readonly'    => true,
 				],
 				'width'           => [
-					'description' => __( 'Width for the object.' ),
+					'description' => __( 'Width for the object.', 'unsplash' ),
 					'type'        => 'integer',
 					'context'     => [ 'view', 'edit', 'embed' ],
 					'readonly'    => true,
 				],
 				'urls'            => [
-					'description' => __( 'List of url for default image sizes for the object.' ),
+					'description' => __( 'List of url for default image sizes for the object.', 'unsplash' ),
 					'type'        => 'object',
 					'properties'  => [],
 					'context'     => [ 'view', 'edit', 'embed' ],

@@ -115,8 +115,8 @@ class Hotlink {
 			return $content;
 		}
 
-		$selected_images = array();
-		$attachment_ids  = array();
+		$selected_images = [];
+		$attachment_ids  = [];
 
 		foreach ( $matches[0] as $image ) {
 			if ( preg_match( '/wp-image-([0-9]+)/i', $image, $class_id ) ) {
@@ -269,7 +269,7 @@ class Hotlink {
 			'orderby'                => 'post__in',
 		];
 
-		$get_attachments = new WP_Query;
+		$get_attachments = new WP_Query();
 		return $get_attachments->query( $parsed_args );
 	}
 }
