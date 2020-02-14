@@ -5,7 +5,7 @@
 
 ## Requirements
 
-- WordPress 5.0+ or the [Gutenberg Plugin](https://wordpress.org/plugins/gutenberg/).
+- WordPress 4.9+ or the [Gutenberg Plugin](https://wordpress.org/plugins/gutenberg/).
 - PHP 7.4 or greater for development and 5.6 or greater for production, [Composer](https://getcomposer.org) and [Node.js](https://nodejs.org) for dependency management.
 - [Docker](https://docs.docker.com/install/) for a local development environment.
 
