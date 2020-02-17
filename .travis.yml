@@ -24,6 +24,7 @@ install:
 
 script:
   - npm run lint
+  - npm run env:start
   - npm run e2e
   - npm run test:php:coverage
 
