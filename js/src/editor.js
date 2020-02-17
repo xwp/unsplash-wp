@@ -9,8 +9,7 @@ import domReady from '@wordpress/dom-ready';
 import { isEqual } from 'lodash';
 
 const SelectUnsplash = ( View ) => {
-	const { unsplashSettings } =
-		window;
+	const { unsplashSettings } = window;
 
 	return View.extend( {
 

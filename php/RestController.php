@@ -182,9 +182,7 @@ class RestController extends WP_REST_Controller {
 			$this->log_error( $e );
 		}
 
-		return rest_ensure_response(
-			$photos
-		);
+		return rest_ensure_response( $photos );
 	}
 
 	/**
