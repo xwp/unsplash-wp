@@ -57,6 +57,6 @@
   "lint-staged": {
     "*.js": "npm run format:js",
     "*.css": "npm run format:css",
-    "*.php": "npm run format:php"
+    "*.php": "vendor/bin/phpcbf"
   }
 }
