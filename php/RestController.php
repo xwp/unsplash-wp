@@ -149,7 +149,8 @@ class RestController extends WP_REST_Controller {
 			$total        = $api_response->totalObjects();
 			foreach ( $results as $photo ) {
 				$data     = $this->prepare_item_for_response( $photo, $request );
-				$photos[] = $this->prepare_response_for_collection( $data );
+				$photos[] = $this->prepare_response_for_collection( $data
+				);
 			}
 		} catch ( \Exception $e ) {
 			$photos = new WP_Error( 'all-photos', __( 'An unknown error occurred while retrieving the photos', 'unsplash' ), [ 'status' => '500' ] );
