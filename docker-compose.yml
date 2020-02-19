@@ -21,7 +21,7 @@ services:
     depends_on:
       - mysql
     ports:
-      - 80:80
+      - '127.0.0.1:8999:80'
     volumes:
       - ./data/wordpress/html:/var/www/html
       - ./vendor/plugins/classic-editor:/var/www/html/wp-content/plugins/classic-editor
@@ -33,6 +33,18 @@ services:
       WORDPRESS_DB_PASSWORD: password
       UNSPLASH_ACCESS_KEY: ${UNSPLASH_ACCESS_KEY}
       UNSPLASH_SECRET_KEY: ${UNSPLASH_SECRET_KEY}
+
+  cli:
+    image: wordpress:cli
+    user: xfs
+    volumes:
+      - ./data/wordpress/html:/var/www/html
+      - ./vendor/plugins/classic-editor:/var/www/html/wp-content/plugins/classic-editor
+      - .:/var/www/html/wp-content/plugins/unsplash-wp
+    depends_on:
+      - mysql
+      - wordpress
+    command: tail -f /dev/null
 
   mailhog:
     image: mailhog/mailhog

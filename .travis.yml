@@ -47,6 +47,12 @@ script:
         npm run test:php
       fi
     fi
+  - |
+    if [ "$E2E" = "1" ]; then
+      npm run env:start
+      npm run env:setup
+      npm run e2e
+    fi
 
 after_success:
   - |
@@ -75,4 +81,8 @@ jobs:
     - name: PHP unit tests (5.6, WordPress latest)
       php: 5.6
       env: PHP=1 WP_VERSION=latest
+    - stage: e2e
+      name: E2E (7.4, WordPress latest)
+      php: 7.4
+      env: E2E=1 WP_VERSION=latest
 
