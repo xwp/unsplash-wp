@@ -27,7 +27,10 @@ cache:
     - $HOME/.nvm/.cache
 
 before_install:
-  - mysql < tests/phpunit/wptests.sql
+  - |
+    if [ "{PHP}" = "1" ]; then
+      mysql < tests/phpunit/wptests.sql
+    fi
 
 install:
   - npm install
