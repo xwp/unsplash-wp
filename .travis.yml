@@ -5,13 +5,9 @@ language: php
 services:
   - mysql
 
-php:
-  - 5.6
-  - 7.4
-
 env:
-  - WP_VERSION=trunk
-  - PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+  global:
+    - PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 addons:
   hosts:
@@ -67,7 +63,7 @@ jobs:
       php: 7.4
       env: LINT=1
     - stage: unit-tests
-      name: PHP unit tests (7.4, WordPress latest)
+      name: PHP unit tests (7.4, COVERAGE, WordPress latest)
       php: 7.4
       env: PHP=1 COVERAGE=1 WP_VERSION=latest
     - name: PHP unit tests (7.3, WordPress latest)
