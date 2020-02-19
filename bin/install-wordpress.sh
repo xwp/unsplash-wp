@@ -4,8 +4,8 @@
 set -e
 
 # Common variables.
-WP_DEBUG=${WP_DEBUG-false}
-SCRIPT_DEBUG=${SCRIPT_DEBUG-false}
+WP_DEBUG=${WP_DEBUG-true}
+SCRIPT_DEBUG=${SCRIPT_DEBUG-true}
 WP_VERSION=${WP_VERSION-"trunk"}
 
 # Include useful functions

@@ -54,6 +54,7 @@ jobs:
       name: E2E (7.4, WordPress trunk)
       php: 7.4
       script:
+        - npm run build
         - sudo service mysql stop
         - npm run env:start && sleep 10
         - npm run env:setup

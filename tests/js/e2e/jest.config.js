@@ -15,4 +15,5 @@ module.exports = {
 		'<rootDir>/node_modules',
 		'<rootDir>/dist',
 	],
+	reporters: [['jest-silent-reporter', { useDots: true }]],
 };
