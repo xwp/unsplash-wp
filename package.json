@@ -17,6 +17,8 @@
     "dev": "wp-scripts start",
     "build": "wp-scripts build",
     "e2e": "WP_BASE_URL=http://localhost:8999 wp-scripts test-e2e --config=tests/js/e2e/jest.config.js",
+    "e2e:interactive": "npm run e2e -- --puppeteer-interactive",
+    "e2e:ci": "npm run e2e -- --runInBand",
     "env:setup": "./bin/setup.sh",
     "env:start": "docker-compose up -d",
     "env:stop": "docker-compose stop",

@@ -55,7 +55,8 @@ script:
       sudo service mysql stop
       npm run env:start && sleep 10
       npm run env:setup
-      npm run e2e
+      npm run e2e:ci
+      npm run env:stop
     fi
 
 after_success:
