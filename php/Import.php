@@ -272,6 +272,8 @@ class Import {
 
 		if ( get_site_option( 'upload_space_check_disabled' ) ) {
 			return true;
+
+			
 		}
 
 		$space_left = get_upload_space_available();
