@@ -13,6 +13,7 @@ describe( 'Image Block', () => {
 	it( 'should the tab exist', async () => {
 		await insertBlock( 'Image' );
 		await clickButton('Library');
+		await page.waitForSelector( '#menu-item-unsplash' );
 		// Wait unsplash tab.
 		await expect( page ).toMatchElement( '#menu-item-unsplash' );
 	} );
