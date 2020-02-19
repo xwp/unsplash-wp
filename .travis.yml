@@ -1,3 +1,5 @@
+dist: xenial
+
 language: php
 
 services:
@@ -9,10 +11,24 @@ php:
 
 env:
   - WP_VERSION=trunk
+  - PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 addons:
   hosts:
     - mysql
+
+notifications:
+  email:
+    on_success: never
+    on_failure: change
+
+cache:
+  npm: true
+  directories:
+    - $HOME/.cache/composer
+    - $HOME/.jest-cache
+    - $HOME/.npm
+    - $HOME/.nvm/.cache
 
 before_install:
   - mysql < tests/phpunit/wptests.sql
@@ -23,19 +39,44 @@ install:
   - mkdir data/wordpress/html/wp-content/uploads
 
 script:
-  - npm run lint
-  - npm run env:start
-  - npm run e2e
-  - npm run test:php:coverage
+  - |
+    if [ "$LINT" = "1" ]; then
+      npm run lint
+    fi
+  - |
+    if [ "{PHP}" = "1" ]; then
+      if [ "$COVERAGE" = "1" ]; then
+        npm run test:php:coverage
+      else
+        npm run test:php
+      fi
+    fi
 
 after_success:
-  - npm run coverage:merge:php
-  - npm run coverage:php
+  - |
+    if [ "COVERAGE" = "1" ]; then
+      npm run coverage:merge:php
+      npm run coverage:php
+    fi
 
-notifications:
-  email: false
+jobs:
+  fast_finish: true
+  include:
+    - stage: lint
+      name: Lint (PHP, JavaScript and CSS files)
+      php: 7.4
+      env: LINT=1
+    - stage: unit-tests
+      name: PHP unit tests (7.4, WordPress latest)
+      php: 7.4
+      env: PHP=1 COVERAGE=1 WP_VERSION=latest
+    - name: PHP unit tests (7.3, WordPress latest)
+      php: 7.3
+      env: PHP=1 WP_VERSION=latest
+    - name: PHP unit tests (7.0, WordPress latest)
+      php: 7.0
+      env: PHP=1 WP_VERSION=latest
+    - name: PHP unit tests (5.6, WordPress latest)
+      php: 5.6
+      env: PHP=1 WP_VERSION=latest
 
-cache:
-  npm: true
-  directories:
-    - $HOME/.composer/cache
