@@ -32,7 +32,7 @@ before_install:
 install:
   - npm install
   - |
-    if [ "$E2E" != "1" ]; then;
+    if [ "$E2E" != "1" ]; then
       svn co -q https://core.svn.wordpress.org/${WP_VERSION}/ ./data/wordpress/html
       mkdir data/wordpress/html/wp-content/uploads
     fi
