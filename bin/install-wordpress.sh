@@ -6,7 +6,7 @@ set -e
 # Common variables.
 WP_DEBUG=${WP_DEBUG-true}
 SCRIPT_DEBUG=${SCRIPT_DEBUG-true}
-WP_VERSION=${WP_VERSION-"latest"}
+WP_VERSION=${WP_VERSION-"trunk"}
 
 # Include useful functions
 . "$(dirname "$0")/includes.sh"
@@ -23,7 +23,7 @@ if [ "$1" == '--reset-site' ]; then
 	wp db reset --yes --quiet
 fi
 
-if [ ! -z "$WP_VERSION" ] && [ "$WP_VERSION" != "latest" ]; then
+if [ ! -z "$WP_VERSION" ] && [ "$WP_VERSION" != "trunk" ]; then
 	# Potentially downgrade WordPress
 	echo -e $(status_message "Downloading WordPress version $WP_VERSION...")
 	wp core download --version=${WP_VERSION} --force --quiet
