@@ -50,17 +50,6 @@ script:
 jobs:
   fast_finish: true
   include:
-    - stage: E2E
-      name: E2E (7.4, WordPress trunk)
-      php: 7.4
-      script:
-        - npm run build
-        - sudo service mysql stop
-        - npm run env:start && sleep 10
-        - npm run env:setup
-        - npm run e2e:ci
-        - npm run env:stop
-      env: E2E=1 WP_VERSION=trunk PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=
     - stage: lint
       name: Lint (PHP, JavaScript and CSS files)
       php: 7.4
@@ -83,3 +72,14 @@ jobs:
     - name: PHP unit tests (5.6, WordPress trunk)
       php: 5.6
       env: PHP=1 WP_VERSION=trunk
+    - stage: E2E
+      name: E2E (7.4, WordPress trunk)
+      php: 7.4
+      script:
+        - npm run build
+        - sudo service mysql stop
+        - npm run env:start && sleep 10
+        - npm run env:setup
+        - npm run e2e:ci
+        - npm run env:stop
+      env: E2E=1 WP_VERSION=trunk PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=

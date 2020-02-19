@@ -1,19 +1,3 @@
-/*
- * Copyright 2020 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 /**
  * External dependencies
  */
@@ -122,31 +106,39 @@ function observeConsoleLogging() {
 }
 
 /**
- * Runs Axe tests when the story editor is found on the current page.
+ * Runs Axe tests when the block editor is found on the current page.
  *
  * @return {?Promise} Promise resolving once Axe texts are finished.
  */
-async function runAxeTestsForUnsplash() {
-	if (!(await page.$('body.edit-story'))) {
+async function runAxeTestsForBlockEditor() {
+	if ( ! ( await page.$( '.block-editor' ) ) ) {
 		return;
 	}
 
-	await expect(page).toPassAxeTests({
+	await expect( page ).toPassAxeTests( {
 		// Temporary disabled rules to enable initial integration.
+		// See: https://github.com/WordPress/gutenberg/pull/15018.
 		disabledRules: [
 			'aria-allowed-role',
+			'aria-hidden-focus',
 			'aria-input-field-name',
-			'aria-required-parent',
+			'aria-valid-attr-value',
 			'button-name',
 			'color-contrast',
+			'dlitem',
+			'duplicate-id',
 			'label',
-			'landmark-banner-is-top-level',
-			'landmark-no-duplicate-banner',
-			'landmark-unique',
-			'page-has-heading-one',
+			'link-name',
+			'listitem',
 			'region',
 		],
-	});
+		exclude: [
+			// Ignores elements created by metaboxes.
+			'.edit-post-layout__metaboxes',
+			// Ignores elements created by TinyMCE.
+			'.mce-container',
+		],
+	} );
 }
 
 /**
@@ -170,7 +162,7 @@ beforeAll(async () => {
 
 // eslint-disable-next-line jest/require-top-level-describe
 afterEach(async () => {
-	await runAxeTestsForUnsplash();
+	await runAxeTestsForBlockEditor();
 	// 15inch screen.
 	await setBrowserViewport({
 		width: 1680,
