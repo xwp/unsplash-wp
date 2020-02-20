@@ -53,7 +53,7 @@ class Router {
 	 * @return void
 	 */
 	public function enqueue_scripts() {
-		$asset_file = $this->plugin->asset_dir( 'js/dist/unsplash_browser.asset.php' );
+		$asset_file = $this->plugin->asset_dir( 'js/dist/browser.asset.php' );
 		$asset      = require $asset_file;
 		$version    = $asset['version'];
 
@@ -62,17 +62,29 @@ class Router {
 
 		wp_enqueue_script(
 			'unsplash_browser',
-			$this->plugin->asset_url( 'js/dist/unsplash_browser.js' ),
+			$this->plugin->asset_url( 'js/dist/browser.js' ),
 			$dependencies,
 			$version
 		);
 
 		wp_localize_script(
 			'unsplash_browser',
-			'unsplashSettings',
+			'unsplash',
 			[
 				'tabTitle' => __( 'Unsplash', 'unsplash' ),
-				'route'    => RestController::get_route(),
+				'route'    => '/wp-json' . RestController::get_route(),
+				'toolbar'  => [
+					'heading' => __( 'Sort images', 'unsplash' ),
+					'filters' => [
+						'orderBy' => [
+							'label' => __( 'Sort by type', 'unsplash' ),
+							'types' => Photo::order_types(),
+						],
+						'search'  => [
+							'label' => __( 'Search', 'unsplash' ),
+						],
+					],
+				],
 			]
 		);
 	}

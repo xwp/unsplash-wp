@@ -7,6 +7,7 @@
 
 namespace XWP\Unsplash;
 
+use XWP\Unsplash\Photo as UnsplashPhoto;
 use Crew\Unsplash\HttpClient;
 use Crew\Unsplash\Photo;
 use Crew\Unsplash\Search;
@@ -288,7 +289,7 @@ class RestController extends WP_REST_Controller {
 			'description' => __( 'How to sort the photos.', 'unsplash' ),
 			'type'        => 'string',
 			'default'     => 'latest',
-			'enum'        => [ 'latest', 'oldest', 'popular' ],
+			'enum'        => array_keys( UnsplashPhoto::order_types() ),
 		];
 
 		return $query_params;

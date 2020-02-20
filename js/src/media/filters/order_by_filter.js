@@ -1,28 +1,19 @@
 
-const ImageFilters = wp.media.view.AttachmentFilters.extend( {
+const OrderByFilter = wp.media.view.AttachmentFilters.extend( {
 	createFilters() {
-		this.filters = {
-			latest: {
-				text: 'Latest',
-				props: {
-					order_by: 'latest',
-				},
-			},
+		const { types } = window.unsplash.toolbar.filters.orderBy;
+		const filters = { ...types };
 
-			oldest: {
-				text: 'Oldest',
+		Object.keys( filters ).forEach( ( type ) => {
+			filters[ type ] = {
+				text: filters[ type ],
 				props: {
-					order_by: 'oldest',
+					order_by: type,
 				},
-			},
+			};
+		} );
 
-			popular: {
-				text: 'Popular',
-				props: {
-					order_by: 'popular',
-				},
-			},
-		};
+		this.filters = filters;
 	},
 
 	select() {
@@ -44,4 +35,4 @@ const ImageFilters = wp.media.view.AttachmentFilters.extend( {
 	},
 } );
 
-export default ImageFilters;
+export default OrderByFilter;
