@@ -15,6 +15,8 @@ use WP_Test_REST_Controller_Testcase;
  */
 class TestRestController extends WP_Test_REST_Controller_Testcase {
 
+	use PrivateAccess;
+
 	/**
 	 * List of registered routes.
 	 *
@@ -401,4 +403,35 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 		return $upload_dir;
 	}
 
+	/**
+	 * Data provider for test_is_ajax_request.
+	 *
+	 * @return array
+	 */
+	public function data_test_is_ajax_request() {
+		$normal_request = new WP_REST_Request();
+
+		$ajax_request = new WP_REST_Request();
+		$ajax_request->set_header( 'X-Requested-With', 'XMLHttpRequest' );
+
+		return [
+			[ $normal_request, false ],
+			[ $ajax_request, true ],
+		];
+	}
+
+	/**
+	 * Test is_ajax_request().
+	 *
+	 * @dataProvider data_test_is_ajax_request
+	 * @covers       \XWP\Unsplash\RestController::is_ajax_request()
+	 *
+	 * @param WP_REST_Request $request  Request.
+	 * @param bool            $expected Expected.
+	 * @throws \ReflectionException If the class could not be reflected upon.
+	 */
+	public function test_is_ajax_request( $request, $expected ) {
+		$actual = $this->call_private_method( new RestController( null ), 'is_ajax_request', [ $request ] );
+		$this->assertEquals( $expected, $actual );
+	}
 }
