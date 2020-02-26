@@ -126,6 +126,12 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 		// The `updated_at` value is expected to change frequently.
 		unset( $data['updated_at'] );
 
+		// The URL paths for each image type can change frequently, so instead test that the the expected image types are returned.
+		$expected_url_types = [ 'raw', 'full', 'regular', 'small', 'thumb' ];
+		$this->assertEquals( $expected_url_types, array_keys( $data['urls'] ) );
+		unset( $data['urls'] );
+
+		// Test the rest of the response data.
 		$expected = [
 			'id'              => 'uRuPYB0P8to',
 			'created_at'      => '2019-05-27T14:23:58-04:00',
@@ -134,16 +140,42 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 			'color'           => '#D9E8EF',
 			'description'     => '',
 			'alt_description' => 'black motorcycle',
-			'urls'            => [
-				'raw'     => 'https://images.unsplash.com/photo-1558981396-5fcf84bdf14d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
-				'full'    => 'https://images.unsplash.com/photo-1558981396-5fcf84bdf14d?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
-				'regular' => 'https://images.unsplash.com/photo-1558981396-5fcf84bdf14d?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
-				'small'   => 'https://images.unsplash.com/photo-1558981396-5fcf84bdf14d?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
-				'thumb'   => 'https://images.unsplash.com/photo-1558981396-5fcf84bdf14d?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
-			],
 		];
 
 		$this->assertEquals( $expected, $data );
+	}
+
+	/**
+	 * Test get_download().
+	 *
+	 * @covers \XWP\Unsplash\RestController::get_import()
+	 */
+	public function test_get_import() {
+		add_filter( 'upload_dir', [ $this, 'upload_dir_patch' ] );
+		$request  = new WP_REST_Request( 'GET', $this->get_route( '/import/uRuPYB0P8to' ) );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		// The `updated_at` value is expected to change frequently.
+		unset( $data['updated_at'] );
+		// The URL paths for each image type can change frequently, so instead test that the the expected image types are returned.
+		$expected_url_types = [ 'raw', 'full', 'regular', 'small', 'thumb' ];
+		$this->assertEquals( $expected_url_types, array_keys( $data['urls'] ) );
+		unset( $data['urls'] );
+
+		$expected = [
+			'id'              => 'uRuPYB0P8to',
+			'created_at'      => '2019-05-27T14:23:58-04:00',
+			'width'           => 4002,
+			'height'          => 6000,
+			'color'           => '#D9E8EF',
+			'description'     => '',
+			'alt_description' => 'black motorcycle',
+		];
+
+		$this->assertEquals( $expected, $data );
+		$this->assertEquals( 301, $response->get_status() );
+		remove_filter( 'upload_dir', [ $this, 'upload_dir_patch' ] );
 	}
 
 	/**
@@ -152,7 +184,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	public function test_get_item_args() {
 		$expected = [
 			'id'      => [
-				'description' => 'Unique identifier for the object.',
+				'description' => 'Unsplash image ID.',
 				'type'        => 'string',
 			],
 			'context' => [
@@ -355,4 +387,28 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 		$this->assertArrayHasKey( 'width', $properties );
 		$this->assertArrayHasKey( 'urls', $properties );
 	}
+
+	/**
+	 * Generate a prefixed route path.
+	 *
+	 * @param string $path URL path.
+	 * @return string Route path.
+	 */
+	private function get_route( $path = '' ) {
+		return '/' . self::$namespace . '/' . self::$rest_base . "$path";
+	}
+
+	/**
+	 * Callback to patch "basedir" when used in `wp_unique_filename()
+	 *
+	 * @param array $upload_dir Array of upload dir values.
+	 *
+	 * @return mixed
+	 */
+	public function upload_dir_patch( $upload_dir ) {
+		$upload_dir['path'] = $upload_dir['basedir'];
+		$upload_dir['url']  = $upload_dir['baseurl'];
+		return $upload_dir;
+	}
+
 }
