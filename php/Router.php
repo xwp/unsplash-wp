@@ -74,13 +74,8 @@ class Router {
 				'tabTitle' => __( 'Unsplash', 'unsplash' ),
 				'route'    => '/wp-json' . RestController::get_route(),
 				'toolbar'  => [
-					'heading' => __( 'Sort images', 'unsplash' ),
 					'filters' => [
-						'orderBy' => [
-							'label' => __( 'Sort by type', 'unsplash' ),
-							'types' => Photo::order_types(),
-						],
-						'search'  => [
+						'search' => [
 							'label' => __( 'Search', 'unsplash' ),
 						],
 					],

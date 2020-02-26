@@ -1,7 +1,6 @@
 /**
  * Internal dependencies
  */
-import OrderByFilter from './filters/order_by_filter';
 import SearchFilter from './filters/search_filter';
 
 const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
@@ -19,30 +18,6 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 		this.toolbar.set( 'spinner', new wp.media.view.Spinner( {
 			priority: -20,
 		} ) );
-
-		// Create a heading before the select elements that filters the images.
-		this.toolbar.set( 'filtersHeading', new wp.media.view.Heading( {
-			priority: -100,
-			text: toolbar.heading,
-			level: 'h2',
-			className: 'media-attachments-filter-heading',
-		} ).render() );
-
-		// Label for the 'order by' filter. This is a visually hidden element and needs to be rendered before.
-		this.toolbar.set( 'orderByFilterLabel', new wp.media.view.Label( {
-			value: toolbar.filters.orderBy.label,
-			attributes: {
-				for: 'media-attachment-filters',
-			},
-			priority: -80,
-		} ).render() );
-
-		// Create 'order by' filter.
-		this.toolbar.set( 'orderByFilter', new OrderByFilter( {
-			controller: this.controller,
-			model: this.collection.props,
-			priority: -80,
-		} ).render() );
 
 		// Label for the 'search' filter. This is a visually hidden element and needs to be rendered before.
 		this.toolbar.set( 'searchLabel', new wp.media.view.Label( {
