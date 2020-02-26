@@ -51,22 +51,35 @@ class Router {
 	 * @return void
 	 */
 	public function enqueue_scripts() {
+		$asset_file = $this->plugin->asset_dir( 'js/dist/browser.asset.php' );
+		$asset      = require $asset_file;
+		$version    = $asset['version'];
+
+		$dependencies   = $asset['dependencies'];
+		$dependencies[] = 'media-views';
+		$dependencies[] = 'wp-api-request';
+
 		wp_enqueue_script(
-			'unsplash-js',
-			$this->plugin->asset_url( 'js/dist/editor.js' ),
-			[
-				'jquery',
-				'media-views',
-				'lodash',
-			],
-			$this->plugin->asset_version()
+			'unsplash_browser',
+			$this->plugin->asset_url( 'js/dist/browser.js' ),
+			$dependencies,
+			$version,
+			true
 		);
 
 		wp_localize_script(
-			'unsplash-js',
-			'unsplashSettings',
+			'unsplash_browser',
+			'unsplash',
 			[
 				'tabTitle' => __( 'Unsplash', 'unsplash' ),
+				'route'    => '/wp-json' . RestController::get_route(),
+				'toolbar'  => [
+					'filters' => [
+						'search' => [
+							'label' => __( 'Search', 'unsplash' ),
+						],
+					],
+				],
 			]
 		);
 	}
@@ -78,22 +91,6 @@ class Router {
 	 */
 	public function enqueue_editor_assets() {
 		// Placeholder for gutenberg script.
-	}
-
-	/**
-	 * Placeholder to get images
-	 *
-	 * @return mixed
-	 */
-	public function get_images() {
-		$path = $this->plugin->asset_dir( 'php/response.json' );
-		if ( is_readable( $path ) ) {
-			$response = wp_safe_remote_get( esc_url_raw( $path ) );
-			$images   = json_decode( wp_remote_retrieve_body( $response ), true );
-		} else {
-			$images = [];
-		}
-		return $images;
 	}
 
 	/**
@@ -192,5 +189,31 @@ class Router {
 			$args = wp_parse_args( $args, $default_args );
 			register_taxonomy( $name, self::POST_TYPE, $args );
 		}
+	}
+
+	/**
+	 * Get a list of image sizes.
+	 *
+	 * @return array
+	 */
+	public static function image_sizes() {
+		global $_wp_additional_image_sizes;
+
+		$sizes = [];
+
+		// @todo This is not supported by WordPress VIP and will require a new solution.
+		foreach ( get_intermediate_image_sizes() as $s ) { // phpcs:ignore
+			if ( in_array( $s, [ 'thumbnail', 'medium', 'medium_large', 'large' ], true ) ) {
+				$sizes[ $s ]['width']  = get_option( $s . '_size_w' );
+				$sizes[ $s ]['height'] = get_option( $s . '_size_h' );
+			} else {
+				if ( isset( $_wp_additional_image_sizes, $_wp_additional_image_sizes[ $s ] ) ) {
+					$sizes[ $s ]['height'] = $_wp_additional_image_sizes[ $s ]['height'];
+				}
+				$sizes[ $s ]['width'] = $_wp_additional_image_sizes[ $s ]['width'];
+			}
+		}
+
+		return $sizes;
 	}
 }
