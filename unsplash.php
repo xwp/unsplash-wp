@@ -25,7 +25,7 @@ $unsplash['plugin']          = new Plugin( __FILE__ );
 $unsplash['router']          = new Router( $unsplash['plugin'] );
 $unsplash['hotlink']         = new Hotlink( $unsplash['router'] );
 $unsplash['settings']        = new Settings( $unsplash['plugin'] );
-$unsplash['rest_controller'] = new RestController( $unsplash['settings'] );
+$unsplash['rest_controller'] = new RestController( $unsplash['settings'], Router::POST_TYPE );
 
 // Initialize Router.
 add_action( 'plugins_loaded', [ $unsplash['router'], 'init' ] );

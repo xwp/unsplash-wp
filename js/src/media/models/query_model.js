@@ -27,7 +27,7 @@ const QueryModel = wp.media.model.Query.extend( {
 			options.type = 'GET';
 			options.url = !! this.args.s ? `${ route }/search/${ this.args.s }` : route;
 
-			return wp.media.ajax( options );
+			return wp.apiRequest( options );
 		}
 
 		/**

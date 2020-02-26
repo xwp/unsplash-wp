@@ -51,38 +51,22 @@ class Router {
 	 * @return void
 	 */
 	public function enqueue_scripts() {
-		$asset_file = $this->plugin->asset_dir( 'js/dist/browser.asset.php' );
-		$asset      = require $asset_file;
-		$version    = $asset['version'];
-
-		$dependencies   = $asset['dependencies'];
-		$dependencies[] = 'media-views';
-
 		wp_enqueue_script(
-			'unsplash_browser',
-			$this->plugin->asset_url( 'js/dist/browser.js' ),
-			$dependencies,
-			$version
+			'unsplash-js',
+			$this->plugin->asset_url( 'js/dist/editor.js' ),
+			[
+				'jquery',
+				'media-views',
+				'lodash',
+			],
+			$this->plugin->asset_version()
 		);
 
 		wp_localize_script(
-			'unsplash_browser',
-			'unsplash',
+			'unsplash-js',
+			'unsplashSettings',
 			[
 				'tabTitle' => __( 'Unsplash', 'unsplash' ),
-				'route'    => '/wp-json' . RestController::get_route(),
-				'toolbar'  => [
-					'heading' => __( 'Sort images', 'unsplash' ),
-					'filters' => [
-						'orderBy' => [
-							'label' => __( 'Sort by type', 'unsplash' ),
-							'types' => Photo::order_types(),
-						],
-						'search'  => [
-							'label' => __( 'Search', 'unsplash' ),
-						],
-					],
-				],
 			]
 		);
 	}
@@ -94,6 +78,22 @@ class Router {
 	 */
 	public function enqueue_editor_assets() {
 		// Placeholder for gutenberg script.
+	}
+
+	/**
+	 * Placeholder to get images
+	 *
+	 * @return mixed
+	 */
+	public function get_images() {
+		$path = $this->plugin->asset_dir( 'php/response.json' );
+		if ( is_readable( $path ) ) {
+			$response = wp_safe_remote_get( esc_url_raw( $path ) );
+			$images   = json_decode( wp_remote_retrieve_body( $response ), true );
+		} else {
+			$images = [];
+		}
+		return $images;
 	}
 
 	/**
