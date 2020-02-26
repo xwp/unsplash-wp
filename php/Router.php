@@ -62,7 +62,8 @@ class Router {
 			'unsplash_browser',
 			$this->plugin->asset_url( 'js/dist/browser.js' ),
 			$dependencies,
-			$version
+			$version,
+			true
 		);
 
 		wp_localize_script(
@@ -187,5 +188,31 @@ class Router {
 			$args = wp_parse_args( $args, $default_args );
 			register_taxonomy( $name, self::POST_TYPE, $args );
 		}
+	}
+
+	/**
+	 * Get a list of image sizes.
+	 *
+	 * @return array
+	 */
+	public static function image_sizes() {
+		global $_wp_additional_image_sizes;
+
+		$sizes = [];
+
+		// @todo This is not supported by WordPress VIP and will require a new solution.
+		foreach ( get_intermediate_image_sizes() as $s ) { // phpcs:ignore
+			if ( in_array( $s, [ 'thumbnail', 'medium', 'medium_large', 'large' ], true ) ) {
+				$sizes[ $s ]['width']  = get_option( $s . '_size_w' );
+				$sizes[ $s ]['height'] = get_option( $s . '_size_h' );
+			} else {
+				if ( isset( $_wp_additional_image_sizes, $_wp_additional_image_sizes[ $s ] ) ) {
+					$sizes[ $s ]['height'] = $_wp_additional_image_sizes[ $s ]['height'];
+				}
+				$sizes[ $s ]['width'] = $_wp_additional_image_sizes[ $s ]['width'];
+			}
+		}
+
+		return $sizes;
 	}
 }

@@ -15,22 +15,6 @@ use WP_Query;
 class Hotlink {
 
 	/**
-	 * Router interface.
-	 *
-	 * @var Router
-	 */
-	protected $router;
-
-	/**
-	 * Setup the router instance.
-	 *
-	 * @param Router $router Instance of the router abstraction.
-	 */
-	public function __construct( $router ) {
-		$this->router = $router;
-	}
-
-	/**
 	 * Hook into WP.
 	 *
 	 * @return void
@@ -75,7 +59,7 @@ class Hotlink {
 		}
 		$image_meta = wp_get_attachment_metadata( $id );
 		$image_size = ( isset( $image_meta['sizes'] ) ) ? $image_meta['sizes'] : [];
-		$sizes      = $this->router->image_sizes();
+		$sizes      = Router::image_sizes();
 		if ( is_array( $size ) ) {
 			// If array is passed, just use height and width.
 			list( $width, $height ) = $size;

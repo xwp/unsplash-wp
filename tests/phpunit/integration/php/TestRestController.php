@@ -152,7 +152,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	 */
 	public function test_get_import() {
 		add_filter( 'upload_dir', [ $this, 'upload_dir_patch' ] );
-		$request  = new WP_REST_Request( 'GET', $this->get_route( '/import/uRuPYB0P8to' ) );
+		$request  = new WP_REST_Request( 'GET', RestController::get_route( '/import/uRuPYB0P8to' ) );
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
 
@@ -386,16 +386,6 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 		$this->assertArrayHasKey( 'height', $properties );
 		$this->assertArrayHasKey( 'width', $properties );
 		$this->assertArrayHasKey( 'urls', $properties );
-	}
-
-	/**
-	 * Generate a prefixed route path.
-	 *
-	 * @param string $path URL path.
-	 * @return string Route path.
-	 */
-	private function get_route( $path = '' ) {
-		return '/' . self::$namespace . '/' . self::$rest_base . "$path";
 	}
 
 	/**

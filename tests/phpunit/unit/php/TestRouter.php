@@ -39,32 +39,40 @@ class TestRouter extends TestCase {
 		Mockery::mock( 'WP_REST_Controller' );
 		$plugin = Mockery::mock( Plugin::class );
 
+		$plugin->shouldReceive( 'asset_dir' )
+			->once()
+			->andReturn( __DIR__ . '/../../../../js/dist/browser.asset.php' );
+
 		$plugin->shouldReceive( 'asset_url' )
 			->once()
-			->with( 'js/dist/editor.js' )
-			->andReturn( 'http://example.com/js/dist/editor.js' );
-
-		$plugin->shouldReceive( 'asset_version' )
-			->once()
-			->andReturn( '1.2.3' );
+			->with( 'js/dist/browser.js' )
+			->andReturn( 'http://example.com/js/dist/browser.js' );
 
 		WP_Mock::userFunction( 'wp_enqueue_script' )
 			->once()
 			->with(
-				'unsplash-js',
-				'http://example.com/js/dist/editor.js',
+				'unsplash_browser',
+				'http://example.com/js/dist/browser.js',
 				Mockery::type( 'array' ),
-				'1.2.3',
-				false
+				Mockery::type( 'string' ),
+				true
 			);
 
 		WP_Mock::userFunction( 'wp_localize_script' )
 			->once()
 			->with(
-				'unsplash-js',
-				'unsplashSettings',
+				'unsplash_browser',
+				'unsplash',
 				[
 					'tabTitle' => __( 'Unsplash', 'unsplash' ),
+					'route'    => '/wp-json' . RestController::get_route(),
+					'toolbar'  => [
+						'filters' => [
+							'search' => [
+								'label' => __( 'Search', 'unsplash' ),
+							],
+						],
+					],
 				]
 			);
 
