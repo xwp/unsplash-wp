@@ -534,7 +534,7 @@ class RestController extends WP_REST_Controller {
 				],
 				$image['urls']['thumb']
 			) : null,
-			'dateFormatted' => isset( $image['created_at'] ) ? mysql2date( __( 'F j, Y' ), $image['created_at'] ) : null,
+			'dateFormatted' => isset( $image['created_at'] ) ? mysql2date( __( 'F j, Y', 'unsplash' ), $image['created_at'] ) : null,
 			'nonces'        => [
 				'update' => false,
 				'delete' => false,
