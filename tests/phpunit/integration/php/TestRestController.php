@@ -64,7 +64,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	/**
 	 * Remove fake data.
 	 */
-	public static function setUpBeforeClass() {
+	public static function wpTearDownAfterClass() {
 		self::delete_user( self::$admin_id );
 		self::delete_user( self::$subscriber_id );
 	}
