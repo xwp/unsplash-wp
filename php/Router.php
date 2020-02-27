@@ -71,7 +71,7 @@ class Router {
 			'unsplash',
 			[
 				'tabTitle' => __( 'Unsplash', 'unsplash' ),
-				'route'    => '/wp-json' . RestController::get_route(),
+				'route'    => rest_url( RestController::REST_NAMESPACE . '/' . RestController::REST_BASE ),
 				'toolbar'  => [
 					'filters' => [
 						'search' => [
