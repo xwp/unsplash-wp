@@ -71,7 +71,7 @@ class Router {
 			'unsplash',
 			[
 				'tabTitle' => __( 'Unsplash', 'unsplash' ),
-				'route'    => rest_url( RestController::REST_NAMESPACE . '/' . RestController::REST_BASE ),
+				'route'    => rest_url( 'unsplash/v1/photos' ),
 				'toolbar'  => [
 					'filters' => [
 						'search' => [

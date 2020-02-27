@@ -21,8 +21,19 @@ use WP_Error;
  */
 class RestController extends WP_REST_Controller {
 
-	const REST_NAMESPACE = 'unsplash/v1';
-	const REST_BASE      = 'photos';
+	/**
+	 * The namespace of this controller's route.
+	 *
+	 * @var string
+	 */
+	protected $namespace;
+
+	/**
+	 * The base of this controller's route.
+	 *
+	 * @var string
+	 */
+	protected $rest_base;
 
 	/**
 	 * Settings instance.
@@ -45,8 +56,8 @@ class RestController extends WP_REST_Controller {
 	 * @param Settings $settings Instance of the Settings class.
 	 */
 	public function __construct( $router, $settings ) {
-		$this->namespace = self::REST_NAMESPACE;
-		$this->rest_base = self::REST_BASE;
+		$this->namespace = 'unsplash/v1';
+		$this->rest_base = 'photos';
 		$this->router    = $router;
 		$this->settings  = $settings;
 

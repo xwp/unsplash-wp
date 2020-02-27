@@ -15,8 +15,6 @@ use WP_Test_REST_Controller_Testcase;
  */
 class TestRestController extends WP_Test_REST_Controller_Testcase {
 
-	use PrivateAccess;
-
 	/**
 	 * List of registered routes.
 	 *
@@ -452,6 +450,6 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	 * @return string Route path.
 	 */
 	private static function get_route( $path = '' ) {
-		return '/' . RestController::REST_NAMESPACE . '/' . RestController::REST_BASE . "$path";
+		return '/unsplash/v1/photos' . "$path";
 	}
 }

@@ -60,8 +60,8 @@ class TestRouter extends TestCase {
 
 		WP_Mock::userFunction( 'rest_url' )
 			->once()
-			->with( RestController::REST_NAMESPACE . '/' . RestController::REST_BASE )
-			->andReturn( 'http://example.com/wp-json/' . RestController::REST_NAMESPACE . '/' . RestController::REST_BASE );
+			->with( 'unsplash/v1/photos' )
+			->andReturn( 'http://example.com/wp-json/unsplash/v1/photos' );
 
 		WP_Mock::userFunction( 'wp_localize_script' )
 			->once()
@@ -70,7 +70,7 @@ class TestRouter extends TestCase {
 				'unsplash',
 				[
 					'tabTitle' => __( 'Unsplash', 'unsplash' ),
-					'route'    => 'http://example.com/wp-json/' . RestController::REST_NAMESPACE . '/' . RestController::REST_BASE,
+					'route'    => 'http://example.com/wp-json/unsplash/v1/photos',
 					'toolbar'  => [
 						'filters' => [
 							'search' => [
