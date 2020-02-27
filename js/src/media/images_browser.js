@@ -15,6 +15,7 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 
 		this.views.add( this.toolbar );
 
+		// TODO: replace with better spinner.
 		this.toolbar.set( 'spinner', new wp.media.view.Spinner( {
 			priority: -20,
 		} ) );

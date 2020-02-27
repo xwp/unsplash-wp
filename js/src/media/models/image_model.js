@@ -1,6 +1,6 @@
 
-const ImageModel = wp.media.model.Attachment.extend( [
+const Image = wp.media.model.Attachment.extend( [
 	// @todo
 ] );
 
-export default ImageModel;
+export default Image;
