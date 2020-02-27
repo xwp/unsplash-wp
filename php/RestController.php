@@ -33,7 +33,7 @@ class RestController extends WP_REST_Controller {
 	/**
 	 * Post type.
 	 *
-	 * @var Settings
+	 * @var string
 	 */
 	public $post_type;
 
