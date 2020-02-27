@@ -53,7 +53,7 @@ class TestRouter extends TestCase {
 			->with(
 				'unsplash_selector',
 				'http://example.com/js/dist/selector.js',
-				[ 'wp-polyfill', 'media-views' ],
+				[ 'wp-polyfill', 'media-views', 'wp-api-request' ],
 				'44fc4d3ff739a64e2a7c5596a43c0b75',
 				true
 			);

@@ -42,7 +42,7 @@ const ImagesQuery = wp.media.model.Query.extend( {
 				per_page: args.posts_per_page,
 			};
 
-			return wp.media.ajax( options );
+			return wp.apiRequest( options );
 		}
 
 		/**
