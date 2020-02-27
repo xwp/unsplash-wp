@@ -200,8 +200,11 @@ class Router {
 
 		$sizes = [];
 
-		// @todo This is not supported by WordPress VIP and will require a new solution.
-		foreach ( get_intermediate_image_sizes() as $s ) { // phpcs:ignore
+		if ( $this->plugin->is_wpcom_vip_prod() ) {
+			return $sizes;
+		}
+
+		foreach ( get_intermediate_image_sizes() as $s ) { // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_intermediate_image_sizes_get_intermediate_image_sizes
 			if ( in_array( $s, [ 'thumbnail', 'medium', 'medium_large', 'large' ], true ) ) {
 				$sizes[ $s ]['width']  = get_option( $s . '_size_w' );
 				$sizes[ $s ]['height'] = get_option( $s . '_size_h' );
