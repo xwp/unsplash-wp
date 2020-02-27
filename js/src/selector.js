@@ -20,7 +20,9 @@ wp.media.view.MediaFrame.Select = withUnsplashTab( wp.media.view.MediaFrame.Sele
 /**
  * Add the Unsplash tab to the media frame for image related widgets.
  */
-wp.mediaWidgets.MediaFrameSelect = withUnsplashTab( wp.mediaWidgets.MediaFrameSelect );
+if ( wp.mediaWidgets && wp.mediaWidgets.MediaFrameSelect ) {
+	wp.mediaWidgets.MediaFrameSelect = withUnsplashTab( wp.mediaWidgets.MediaFrameSelect );
+}
 
 /**
  * Work around that defaults the current media library to the 'Upload files' tab. This resolves the issue of the

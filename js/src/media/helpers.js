@@ -18,13 +18,18 @@ export const withUnsplashTab = ( View ) => {
 			}
 
 			const { library, mimeType } = this.options;
+			const isImageIncluded = ( type ) => {
+				type = Array.isArray( type ) ? type : [ type ];
+				return type.includes( 'image' );
+			};
+
 			// For Gutenberg, hide the Unsplash tab if the library does not handle images.
-			if ( library && library.type && ! library.type.includes( 'image' ) ) {
+			if ( library && library.type && ! isImageIncluded( library.type ) ) {
 				return;
 			}
 
 			// For media widgets, hide the Unsplash tab if the library does not handle images.
-			if ( 'image' !== mimeType ) {
+			if ( mimeType && ! isImageIncluded( mimeType ) ) {
 				return;
 			}
 
@@ -50,6 +55,7 @@ export const withUnsplashTab = ( View ) => {
 		unsplashContent( contentRegion ) {
 			const state = this.state();
 
+			// TODO: is it better to create the state via `createStates()`?
 			if ( undefined === state.get( 'unsplash-collection' ) ) {
 				state.set(
 					'unsplash-collection',
