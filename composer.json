@@ -29,6 +29,7 @@
     "phpunit/phpunit": "5.7.27",
     "sirbrillig/phpcs-variable-analysis": "^2.8",
     "slowprog/composer-copy-file": "0.3.1",
+    "wp-api/basic-auth": "dev-master",
     "wp-coding-standards/wpcs": "2.2.0",
     "wpackagist-plugin/classic-editor": "@stable",
     "xwp/wordpress-tests-installer": "1.0.0"

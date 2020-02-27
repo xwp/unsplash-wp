@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0e4741bbb7588c81920cb5075b24eeac",
+    "content-hash": "9a682e539a5eb11f3618bb236d5f38a2",
     "packages": [
         {
             "name": "composer/installers",
@@ -3288,6 +3288,25 @@
             "time": "2019-11-24T13:36:37+00:00"
         },
         {
+            "name": "wp-api/basic-auth",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/WP-API/Basic-Auth.git",
+                "reference": "9e9d5267c7805c024f141d115b224cdee5a10008"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/WP-API/Basic-Auth/zipball/9e9d5267c7805c024f141d115b224cdee5a10008",
+                "reference": "9e9d5267c7805c024f141d115b224cdee5a10008",
+                "shasum": ""
+            },
+            "type": "wordpress-plugin",
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "Basic Authentication handler for the JSON API, used for development and debugging purposes",
+            "time": "2017-12-03T21:39:01+00:00"
+        },
+        {
             "name": "wp-coding-standards/wpcs",
             "version": "2.2.0",
             "source": {
@@ -3399,6 +3418,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
+        "wp-api/basic-auth": 20,
         "wpackagist-plugin/classic-editor": 0
     },
     "prefer-stable": true,
