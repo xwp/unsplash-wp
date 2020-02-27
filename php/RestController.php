@@ -35,19 +35,18 @@ class RestController extends WP_REST_Controller {
 	 *
 	 * @var string
 	 */
-	public $post_type;
+	protected $post_type;
 
 	/**
 	 * Constructor.
 	 *
 	 * @param Settings $settings Instance of the Settings class.
-	 * @param string   $post_type Post type to map capabilities.
 	 */
-	public function __construct( $settings, $post_type ) {
+	public function __construct( $settings ) {
 		$this->namespace = self::REST_NAMESPACE;
 		$this->rest_base = self::REST_BASE;
 		$this->settings  = $settings;
-		$this->post_type = $post_type;
+		$this->post_type = 'attachment';
 
 		$options = get_option( 'unsplash_settings' );
 
