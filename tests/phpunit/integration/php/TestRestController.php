@@ -14,6 +14,19 @@ use WP_Test_REST_Controller_Testcase;
  * Tests for the RestController class.
  */
 class TestRestController extends WP_Test_REST_Controller_Testcase {
+	/**
+	 * Admin user for test.
+	 *
+	 * @var int
+	 */
+	protected static $admin_id;
+
+	/**
+	 * Subscriber user for test.
+	 *
+	 * @var int
+	 */
+	protected static $subscriber_id;
 
 	/**
 	 * List of registered routes.
@@ -30,13 +43,30 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	private static $rest_controller;
 
 	/**
-	 * Setup before any tests are to be run for this class.
+	 * Create fake data before our tests run.
+	 *
+	 * @param WP_UnitTest_Factory $factory Helper that lets us create fake data.
 	 */
-	public static function setUpBeforeClass() {
+	public static function wpSetUpBeforeClass( $factory ) {
 		global $unsplash;
+
+		self::$admin_id      = $factory->user->create(
+			[ 'role' => 'administrator' ]
+		);
+		self::$subscriber_id = $factory->user->create(
+			[ 'role' => 'subscriber' ]
+		);
 
 		self::$rest_controller = $unsplash['rest_controller'];
 		static::$routes        = rest_get_server()->get_routes();
+	}
+
+	/**
+	 * Remove fake data.
+	 */
+	public static function setUpBeforeClass() {
+		self::delete_user( self::$admin_id );
+		self::delete_user( self::$subscriber_id );
 	}
 
 	/**
@@ -68,6 +98,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	 * @covers \XWP\Unsplash\RestController::get_items()
 	 */
 	public function test_get_items() {
+		wp_set_current_user( self::$admin_id );
 		$request  = new WP_REST_Request( 'GET', self::get_route() );
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
@@ -129,6 +160,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	 * @covers \XWP\Unsplash\RestController::get_item()
 	 */
 	public function test_get_item() {
+		wp_set_current_user( self::$admin_id );
 		$request  = new WP_REST_Request( 'GET', self::get_route( '/uRuPYB0P8to' ) );
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
@@ -161,6 +193,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	 * @covers \XWP\Unsplash\RestController::get_import()
 	 */
 	public function test_get_import() {
+		wp_set_current_user( self::$admin_id );
 		add_filter( 'upload_dir', [ $this, 'upload_dir_patch' ] );
 		$request  = new WP_REST_Request( 'GET', self::get_route( '/import/uRuPYB0P8to' ) );
 		$response = rest_get_server()->dispatch( $request );
@@ -186,6 +219,45 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 		$this->assertEquals( $expected, $data );
 		$this->assertEquals( 301, $response->get_status() );
 		remove_filter( 'upload_dir', [ $this, 'upload_dir_patch' ] );
+	}
+
+	/**
+	 * Test get_item() auth.
+	 *
+	 * @covers \XWP\Unsplash\RestController::get_item()
+	 * @covers \XWP\Unsplash\RestController::get_item_permissions_check()
+	 */
+	public function test_get_item_auth() {
+		wp_set_current_user( self::$subscriber_id );
+		$request  = new WP_REST_Request( 'GET', RestController::get_route( '/uRuPYB0P8to' ) );
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertErrorResponse( 'rest_forbidden', $response, 403 );
+	}
+
+	/**
+	 * Test get_items() auth.
+	 *
+	 * @covers \XWP\Unsplash\RestController::get_items()
+	 * @covers \XWP\Unsplash\RestController::get_items_permissions_check()
+	 */
+	public function test_get_items_auth() {
+		wp_set_current_user( self::$subscriber_id );
+		$request  = new WP_REST_Request( 'GET', RestController::get_route() );
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertErrorResponse( 'rest_forbidden', $response, 403 );
+	}
+
+	/**
+	 * Test get_import() auth.
+	 *
+	 * @covers \XWP\Unsplash\RestController::get_import()
+	 * @covers \XWP\Unsplash\RestController::create_item_permissions_check()
+	 */
+	public function test_get_import_auth() {
+		wp_set_current_user( self::$subscriber_id );
+		$request  = new WP_REST_Request( 'GET', RestController::get_route( '/import/uRuPYB0P8to' ) );
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertErrorResponse( 'rest_cannot_create', $response, 403 );
 	}
 
 	/**
@@ -216,6 +288,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	 * @covers \XWP\Unsplash\RestController::get_search()
 	 */
 	public function test_get_search() {
+		wp_set_current_user( self::$admin_id );
 		$request  = new WP_REST_Request( 'GET', self::get_route( '/search/motorcycle' ) );
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
@@ -286,6 +359,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	 * @param int    $status_code Expected status code.
 	 */
 	public function test_get_search_collections_param( $query_param, $status_code ) {
+		wp_set_current_user( self::$admin_id );
 		$request = new WP_REST_Request( 'GET', self::get_route( '/search/motorcycle' ) );
 		$request->set_query_params( [ 'collections' => $query_param ] );
 		$response = rest_get_server()->dispatch( $request );

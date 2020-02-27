@@ -50,6 +50,13 @@ class RestController extends WP_REST_Controller {
 	protected $router;
 
 	/**
+	 * Post type.
+	 *
+	 * @var string
+	 */
+	protected $post_type;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Router   $router   Instance of the Router class.
@@ -58,6 +65,7 @@ class RestController extends WP_REST_Controller {
 	public function __construct( $router, $settings ) {
 		$this->namespace = 'unsplash/v1';
 		$this->rest_base = 'photos';
+		$this->post_type = 'attachment';
 		$this->router    = $router;
 		$this->settings  = $settings;
 
@@ -105,7 +113,7 @@ class RestController extends WP_REST_Controller {
 				[
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => [ $this, 'get_item' ],
-					'permission_callback' => [ $this, 'get_items_permissions_check' ],
+					'permission_callback' => [ $this, 'get_item_permissions_check' ],
 					'args'                => [
 						'context' => $this->get_context_param( [ 'default' => 'view' ] ),
 					],
@@ -180,15 +188,7 @@ class RestController extends WP_REST_Controller {
 			$this->log_error( $e );
 		}
 
-		$data = $photos;
-		if ( $this->is_ajax_request( $request ) ) {
-			$data = [
-				'success' => true,
-				'data'    => $photos,
-			];
-		}
-
-		$response = rest_ensure_response( $data );
+		$response = rest_ensure_response( $photos );
 
 		$response->header( 'X-WP-Total', (int) $total );
 		$response->header( 'X-WP-TotalPages', (int) $max_pages );
@@ -286,15 +286,7 @@ class RestController extends WP_REST_Controller {
 			$this->log_error( $e );
 		}
 
-		$data = $photos;
-		if ( $this->is_ajax_request( $request ) ) {
-			$data = [
-				'success' => true,
-				'data'    => $photos,
-			];
-		}
-
-		$response = rest_ensure_response( $data );
+		$response = rest_ensure_response( $photos );
 
 		$response->header( 'X-WP-Total', (int) $total );
 		$response->header( 'X-WP-TotalPages', (int) $max_pages );
@@ -305,23 +297,64 @@ class RestController extends WP_REST_Controller {
 	/**
 	 * Checks if a given request has access to get a specific item.
 	 *
+	 * @see   https://github.com/WordPress/WordPress/blob/c85c8f5235356cbf65680a3201e9ee4161803c0b/wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php#L128-L149
+	 *
 	 * @param WP_REST_Request $request Full data about the request.
 	 *
 	 * @return WP_Error|bool True if the request has read access for the item, WP_Error object otherwise.
 	 */
-	public function get_items_permissions_check( $request ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
-		// TODO Change permissions to edit_posts.
-		return true;
+	public function get_items_permissions_check( $request ) {
+		$post_type = get_post_type_object( $this->post_type );
+
+		if ( 'edit' === $request['context'] && ! current_user_can( $post_type->cap->edit_posts ) ) {
+			return new WP_Error(
+				'rest_forbidden_context',
+				__( 'Sorry, you are not allowed to edit posts in this post type.', 'unsplash' ),
+				[ 'status' => rest_authorization_required_code() ]
+			);
+		}
+
+		return current_user_can( 'edit_posts' );
+	}
+
+	/**
+	 * Checks if a given request has access to get a specific item.
+	 *
+	 * @param WP_REST_Request $request Full data about the request.
+	 * @return bool|WP_Error True if the request has read access for the item, WP_Error object otherwise.
+	 */
+	public function get_item_permissions_check( $request ) {
+		return $this->get_items_permissions_check( $request );
 	}
 
 	/**
 	 * Checks if a given request has access to create items.
 	 *
+	 * @see   https://github.com/WordPress/WordPress/blob/c85c8f5235356cbf65680a3201e9ee4161803c0b/wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php#L515-L567
+	 *
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return WP_Error|bool True if the request has access to create items, WP_Error object otherwise.
 	 */
-	public function create_item_permissions_check( $request ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
-		// TODO Change permissions to edit_posts.
+	public function create_item_permissions_check( $request ) {
+
+		$post_type = get_post_type_object( $this->post_type );
+
+		if ( ! current_user_can( $post_type->cap->create_posts ) ) {
+			return new WP_Error(
+				'rest_cannot_create',
+				__( 'Sorry, you are not allowed to create posts as this user.', 'unsplash' ),
+				[ 'status' => rest_authorization_required_code() ]
+			);
+		}
+
+		if ( ! current_user_can( 'upload_files' ) ) {
+			return new WP_Error(
+				'rest_cannot_create',
+				__( 'Sorry, you are not allowed to upload media on this site.', 'unsplash' ),
+				[ 'status' => 400 ]
+			);
+		}
+
 		return true;
 	}
 

@@ -57,6 +57,7 @@ class Router {
 
 		$dependencies   = $asset['dependencies'];
 		$dependencies[] = 'media-views';
+		$dependencies[] = 'wp-api-request';
 
 		wp_enqueue_script(
 			'unsplash_selector',
