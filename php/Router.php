@@ -200,11 +200,12 @@ class Router {
 
 		$sizes = [];
 
-		if ( $this->plugin->is_wpcom_vip_prod() ) {
+		$image_sizes = get_intermediate_image_sizes(); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_intermediate_image_sizes_get_intermediate_image_sizes
+		if ( 0 === count( $image_sizes ) ) {
 			return $sizes;
 		}
 
-		foreach ( get_intermediate_image_sizes() as $s ) { // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_intermediate_image_sizes_get_intermediate_image_sizes
+		foreach ( $image_sizes as $s ) {
 			if ( in_array( $s, [ 'thumbnail', 'medium', 'medium_large', 'large' ], true ) ) {
 				$sizes[ $s ]['width']  = get_option( $s . '_size_w' );
 				$sizes[ $s ]['height'] = get_option( $s . '_size_h' );
