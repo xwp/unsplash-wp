@@ -229,7 +229,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	 */
 	public function test_get_item_auth() {
 		wp_set_current_user( self::$subscriber_id );
-		$request  = new WP_REST_Request( 'GET', RestController::get_route( '/uRuPYB0P8to' ) );
+		$request  = new WP_REST_Request( 'GET', self::get_route( '/uRuPYB0P8to' ) );
 		$response = rest_get_server()->dispatch( $request );
 		$this->assertErrorResponse( 'rest_forbidden', $response, 403 );
 	}
@@ -242,7 +242,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	 */
 	public function test_get_items_auth() {
 		wp_set_current_user( self::$subscriber_id );
-		$request  = new WP_REST_Request( 'GET', RestController::get_route() );
+		$request  = new WP_REST_Request( 'GET', self::get_route() );
 		$response = rest_get_server()->dispatch( $request );
 		$this->assertErrorResponse( 'rest_forbidden', $response, 403 );
 	}
@@ -255,7 +255,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	 */
 	public function test_get_import_auth() {
 		wp_set_current_user( self::$subscriber_id );
-		$request  = new WP_REST_Request( 'GET', RestController::get_route( '/import/uRuPYB0P8to' ) );
+		$request  = new WP_REST_Request( 'GET', self::get_route( '/import/uRuPYB0P8to' ) );
 		$response = rest_get_server()->dispatch( $request );
 		$this->assertErrorResponse( 'rest_cannot_create', $response, 403 );
 	}
