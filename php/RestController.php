@@ -41,7 +41,7 @@ class RestController extends WP_REST_Controller {
 	 * Constructor.
 	 *
 	 * @param Settings $settings Instance of the Settings class.
-	 * @param String   $post_type Post type to map capabilities.
+	 * @param string   $post_type Post type to map capabilities.
 	 */
 	public function __construct( $settings, $post_type ) {
 		$this->namespace = self::REST_NAMESPACE;
