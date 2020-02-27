@@ -43,13 +43,6 @@ class RestController extends WP_REST_Controller {
 	protected $settings;
 
 	/**
-	 * Router instance.
-	 *
-	 * @var Router
-	 */
-	protected $router;
-
-	/**
 	 * Post type.
 	 *
 	 * @var string
@@ -59,14 +52,12 @@ class RestController extends WP_REST_Controller {
 	/**
 	 * Constructor.
 	 *
-	 * @param Router   $router   Instance of the Router class.
 	 * @param Settings $settings Instance of the Settings class.
 	 */
-	public function __construct( $router, $settings ) {
+	public function __construct( $settings ) {
 		$this->namespace = 'unsplash/v1';
 		$this->rest_base = 'photos';
 		$this->post_type = 'attachment';
-		$this->router    = $router;
 		$this->settings  = $settings;
 
 		$options = get_option( 'unsplash_settings' );
@@ -185,7 +176,7 @@ class RestController extends WP_REST_Controller {
 			}
 		} catch ( \Exception $e ) {
 			$photos = new WP_Error( 'all-photos', __( 'An unknown error occurred while retrieving the photos', 'unsplash' ), [ 'status' => '500' ] );
-			$this->log_error( $e );
+			Utils::log_error( $e );
 		}
 
 		$response = rest_ensure_response( $photos );
@@ -211,7 +202,7 @@ class RestController extends WP_REST_Controller {
 			$photos  = $this->prepare_item_for_response( $results, $request );
 		} catch ( \Exception $e ) {
 			$photos = new WP_Error( 'single-photo', __( 'An unknown error occurred while retrieving the photo', 'unsplash' ), [ 'status' => '500' ] );
-			$this->log_error( $e );
+			Utils::log_error( $e );
 		}
 
 		return rest_ensure_response( $photos );
@@ -234,7 +225,7 @@ class RestController extends WP_REST_Controller {
 			$photos  = $this->prepare_item_for_response( $results, $request );
 		} catch ( \Exception $e ) {
 			$photos = new WP_Error( 'single-photo-download', __( 'An unknown error occurred while retrieving the photo', 'unsplash' ), [ 'status' => '500' ] );
-			$this->log_error( $e );
+			Utils::log_error( $e );
 		}
 
 		if ( is_wp_error( $photos ) ) {
@@ -283,7 +274,7 @@ class RestController extends WP_REST_Controller {
 			}
 		} catch ( \Exception $e ) {
 			$photos = new WP_Error( 'search-photos', __( 'An unknown error occurred while searching for a photo', 'unsplash' ), [ 'status' => '500' ] );
-			$this->log_error( $e );
+			Utils::log_error( $e );
 		}
 
 		$response = rest_ensure_response( $photos );
@@ -606,7 +597,7 @@ class RestController extends WP_REST_Controller {
 			],
 		];
 
-		foreach ( $this->router->image_sizes() as $name => $size ) {
+		foreach ( Utils::image_sizes() as $name => $size ) {
 			$url            = add_query_arg(
 				[
 					'w'   => $size['height'],
@@ -635,32 +626,5 @@ class RestController extends WP_REST_Controller {
 	 */
 	public function is_ajax_request( $request ) {
 		return 'XMLHttpRequest' === $request->get_header( 'X-Requested-With' );
-	}
-
-	/**
-	 * Log an exception.
-	 *
-	 * @param \Exception $e Exception.
-	 */
-	private function log_error( \Exception $e ) {
-
-		if ( ! constant( 'WP_DEBUG' ) ) {
-			return;
-		}
-
-		$message = sprintf(
-			"%1\$s: %2\$s\n%3\$s:\n%4\$s",
-			__( 'Error', 'unsplash' ),
-			$e->getMessage(),
-			__( 'Stack Trace', 'unsplash' ),
-			$e->getTraceAsString()
-		);
-
-		/**
-		 * Stop IDE from complaining.
-		 *
-		 * @noinspection ForgottenDebugOutputInspection
-		 */
-		error_log( $message, $e->getCode() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 	}
 }

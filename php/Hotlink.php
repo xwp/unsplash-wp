@@ -75,7 +75,7 @@ class Hotlink {
 		}
 		$image_meta = wp_get_attachment_metadata( $id );
 		$image_size = ( isset( $image_meta['sizes'] ) ) ? $image_meta['sizes'] : [];
-		$sizes      = $this->router->image_sizes();
+		$sizes      = Utils::image_sizes();
 		if ( is_array( $size ) ) {
 			// If array is passed, just use height and width.
 			list( $width, $height ) = $size;
