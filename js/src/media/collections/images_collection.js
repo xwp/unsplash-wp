@@ -1,12 +1,9 @@
 /**
  * Internal dependencies
  */
-import Image from '../models/image_model';
 import ImagesQuery from '../models/images_query_model';
 
 const ImagesCollection = wp.media.model.Attachments.extend( {
-	model: Image,
-
 	/**
 	 * Create and mirror a Query collection.
 	 *

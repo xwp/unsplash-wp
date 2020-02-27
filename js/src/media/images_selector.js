@@ -1,7 +1,3 @@
-/**
- * Internal dependencies
- */
-import SearchFilter from './filters/search_filter';
 
 const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 	className: 'unsplash-browser attachments-browser',
@@ -31,7 +27,7 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 		} ).render() );
 
 		// Create search filter.
-		this.toolbar.set( 'searchFilter', new SearchFilter( {
+		this.toolbar.set( 'searchFilter', new wp.media.view.Search( {
 			controller: this.controller,
 			model: this.collection.props,
 			priority: 60,
