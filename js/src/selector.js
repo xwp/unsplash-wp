@@ -13,9 +13,14 @@ wp.media.view.MediaFrame.Post = withUnsplashTab( wp.media.view.MediaFrame.Post )
 
 /**
  * The 'Select' media frame contains only one media library, and is used in Gutenberg and in other parts of WordPress
- * where selecting media is relevant (eg. image widgets, setting background image via Customizer).
+ * where selecting media is relevant (eg. setting background image via Customizer).
  */
 wp.media.view.MediaFrame.Select = withUnsplashTab( wp.media.view.MediaFrame.Select );
+
+/**
+ * Add the Unsplash tab to the media frame for image related widgets.
+ */
+wp.mediaWidgets.MediaFrameSelect = withUnsplashTab( wp.mediaWidgets.MediaFrameSelect );
 
 /**
  * Work around that defaults the current media library to the 'Upload files' tab. This resolves the issue of the

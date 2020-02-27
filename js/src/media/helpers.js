@@ -11,15 +11,23 @@ export const withUnsplashTab = ( View ) => {
 
 			const state = this.state();
 
+			console.log( state );
+			console.log( this.options );
+
 			// For the Classic Editor, only add the Unsplash tab to libraries that support images.
 			const applicableLibraries = [ 'insert', 'gallery', 'featured-image', 'library' ];
 			if ( state.id && ! applicableLibraries.includes( state.id ) ) {
 				return;
 			}
 
+			const { library, mimeType } = this.options;
 			// For Gutenberg, hide the Unsplash tab if the library does not handle images.
-			const { library } = this.options;
 			if ( library && library.type && ! library.type.includes( 'image' ) ) {
+				return;
+			}
+
+			// For media widgets, hide the Unsplash tab if the library does not handle images.
+			if ( 'image' !== mimeType ) {
 				return;
 			}
 
