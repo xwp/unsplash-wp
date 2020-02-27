@@ -7,7 +7,6 @@
 
 namespace XWP\Unsplash;
 
-use XWP\Unsplash\Photo as UnsplashPhoto;
 use Crew\Unsplash\HttpClient;
 use Crew\Unsplash\Photo;
 use Crew\Unsplash\Search;
@@ -22,31 +21,45 @@ use WP_Error;
  */
 class RestController extends WP_REST_Controller {
 
-	const REST_NAMESPACE = 'unsplash/v1';
-	const REST_BASE      = 'photos';
+	/**
+	 * The namespace of this controller's route.
+	 *
+	 * @var string
+	 */
+	protected $namespace;
+
+	/**
+	 * The base of this controller's route.
+	 *
+	 * @var string
+	 */
+	protected $rest_base;
+
 	/**
 	 * Settings instance.
 	 *
 	 * @var Settings
 	 */
-	public $settings;
+	protected $settings;
+
 	/**
-	 * Post type.
+	 * Router instance.
 	 *
-	 * @var string
+	 * @var Router
 	 */
-	protected $post_type;
+	protected $router;
 
 	/**
 	 * Constructor.
 	 *
+	 * @param Router   $router   Instance of the Router class.
 	 * @param Settings $settings Instance of the Settings class.
 	 */
-	public function __construct( $settings ) {
-		$this->namespace = self::REST_NAMESPACE;
-		$this->rest_base = self::REST_BASE;
+	public function __construct( $router, $settings ) {
+		$this->namespace = 'unsplash/v1';
+		$this->rest_base = 'photos';
+		$this->router    = $router;
 		$this->settings  = $settings;
-		$this->post_type = 'attachment';
 
 		$options = get_option( 'unsplash_settings' );
 
@@ -130,7 +143,7 @@ class RestController extends WP_REST_Controller {
 				[
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => [ $this, 'get_search' ],
-					'permission_callback' => [ $this, 'get_item_permissions_check' ],
+					'permission_callback' => [ $this, 'get_items_permissions_check' ],
 					'args'                => $this->get_search_params(),
 				],
 				'schema' => [ $this, 'get_item_schema' ],
@@ -167,7 +180,15 @@ class RestController extends WP_REST_Controller {
 			$this->log_error( $e );
 		}
 
-		$response = rest_ensure_response( $photos );
+		$data = $photos;
+		if ( $this->is_ajax_request( $request ) ) {
+			$data = [
+				'success' => true,
+				'data'    => $photos,
+			];
+		}
+
+		$response = rest_ensure_response( $data );
 
 		$response->header( 'X-WP-Total', (int) $total );
 		$response->header( 'X-WP-TotalPages', (int) $max_pages );
@@ -265,7 +286,15 @@ class RestController extends WP_REST_Controller {
 			$this->log_error( $e );
 		}
 
-		$response = rest_ensure_response( $photos );
+		$data = $photos;
+		if ( $this->is_ajax_request( $request ) ) {
+			$data = [
+				'success' => true,
+				'data'    => $photos,
+			];
+		}
+
+		$response = rest_ensure_response( $data );
 
 		$response->header( 'X-WP-Total', (int) $total );
 		$response->header( 'X-WP-TotalPages', (int) $max_pages );
@@ -276,64 +305,23 @@ class RestController extends WP_REST_Controller {
 	/**
 	 * Checks if a given request has access to get a specific item.
 	 *
-	 * @see   https://github.com/WordPress/WordPress/blob/c85c8f5235356cbf65680a3201e9ee4161803c0b/wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php#L128-L149
 	 * @param WP_REST_Request $request Full data about the request.
 	 *
 	 * @return WP_Error|bool True if the request has read access for the item, WP_Error object otherwise.
 	 */
-	public function get_items_permissions_check( $request ) {
-		$post_type = get_post_type_object( $this->post_type );
-
-		if ( 'edit' === $request['context'] && ! current_user_can( $post_type->cap->edit_posts ) ) {
-			return new WP_Error(
-				'rest_forbidden_context',
-				__( 'Sorry, you are not allowed to edit posts in this post type.', 'unsplash' ),
-				[ 'status' => rest_authorization_required_code() ]
-			);
-		}
-
-		return current_user_can( 'edit_posts' );
-	}
-
-	/**
-	 * Checks if a given request has access to get a specific item.
-	 *
-	 * @param WP_REST_Request $request Full data about the request.
-	 * @return bool|WP_Error True if the request has read access for the item, WP_Error object otherwise.
-	 */
-	public function get_item_permissions_check( $request ) {
-		return $this->get_items_permissions_check( $request );
+	public function get_items_permissions_check( $request ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+		// TODO Change permissions to edit_posts.
+		return true;
 	}
 
 	/**
 	 * Checks if a given request has access to create items.
 	 *
-	 * @see   https://github.com/WordPress/WordPress/blob/c85c8f5235356cbf65680a3201e9ee4161803c0b/wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php#L515-L567
-	 *
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return WP_Error|bool True if the request has access to create items, WP_Error object otherwise.
 	 */
-	public function create_item_permissions_check( $request ) {
-
-		$post_type = get_post_type_object( $this->post_type );
-
-		if ( ! current_user_can( $post_type->cap->create_posts ) ) {
-			return new WP_Error(
-				'rest_cannot_create',
-				__( 'Sorry, you are not allowed to create posts as this user.', 'unsplash' ),
-				[ 'status' => rest_authorization_required_code() ]
-			);
-		}
-
-		if ( ! current_user_can( 'upload_files' ) ) {
-			return new WP_Error(
-				'rest_cannot_create',
-				__( 'Sorry, you are not allowed to upload media on this site.', 'unsplash' ),
-				[ 'status' => 400 ]
-			);
-		}
-
-
+	public function create_item_permissions_check( $request ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+		// TODO Change permissions to edit_posts.
 		return true;
 	}
 
@@ -391,7 +379,7 @@ class RestController extends WP_REST_Controller {
 			'description' => __( 'How to sort the photos.', 'unsplash' ),
 			'type'        => 'string',
 			'default'     => 'latest',
-			'enum'        => array_keys( UnsplashPhoto::order_types() ),
+			'enum'        => [ 'latest', 'oldest', 'popular' ],
 		];
 
 		return $query_params;
@@ -585,7 +573,7 @@ class RestController extends WP_REST_Controller {
 			],
 		];
 
-		foreach ( $this->image_sizes() as $name => $size ) {
+		foreach ( $this->router->image_sizes() as $name => $size ) {
 			$url            = add_query_arg(
 				[
 					'w'   => $size['height'],
@@ -607,48 +595,12 @@ class RestController extends WP_REST_Controller {
 	}
 
 	/**
-	 * Get a list of image sizes.
-	 *
-	 * @return array
-	 */
-	public function image_sizes() {
-		global $_wp_additional_image_sizes;
-
-		$sizes = [];
-
-		// @todo This is not supported by WordPress VIP and will require a new solution.
-		foreach ( get_intermediate_image_sizes() as $s ) { // phpcs:ignore
-			if ( in_array( $s, [ 'thumbnail', 'medium', 'medium_large', 'large' ], true ) ) {
-				$sizes[ $s ]['width']  = get_option( $s . '_size_w' );
-				$sizes[ $s ]['height'] = get_option( $s . '_size_h' );
-			} else {
-				if ( isset( $_wp_additional_image_sizes, $_wp_additional_image_sizes[ $s ] ) ) {
-					$sizes[ $s ]['height'] = $_wp_additional_image_sizes[ $s ]['height'];
-				}
-				$sizes[ $s ]['width'] = $_wp_additional_image_sizes[ $s ]['width'];
-			}
-		}
-
-		return $sizes;
-	}
-
-	/**
-	 * Generate a prefixed route path.
-	 *
-	 * @param string $path URL path.
-	 * @return string Route path.
-	 */
-	public static function get_route( $path = '' ) {
-		return '/' . self::REST_NAMESPACE . '/' . self::REST_BASE . "$path";
-	}
-
-	/**
 	 * Determine if a request is an AJAX one.
 	 *
 	 * @param WP_REST_Request $request Request.
 	 * @return bool
 	 */
-	protected function is_ajax_request( $request ) {
+	public function is_ajax_request( $request ) {
 		return 'XMLHttpRequest' === $request->get_header( 'X-Requested-With' );
 	}
 

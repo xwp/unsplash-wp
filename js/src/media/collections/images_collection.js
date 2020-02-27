@@ -1,17 +1,21 @@
 /**
  * Internal dependencies
  */
-import ImageModel from '../models/image_model';
-import QueryModel from '../models/query_model';
+import ImagesQuery from '../models/images_query_model';
 
 const ImagesCollection = wp.media.model.Attachments.extend( {
-	model: ImageModel,
-
+	/**
+	 * Create and mirror a Query collection.
+	 *
+	 * @access private
+	 *
+	 * @param {boolean} refresh
+	 */
 	_requery( refresh ) {
 		if ( this.props.get( 'query' ) ) {
 			const props = this.props.toJSON();
 			props.cache = ( true !== refresh );
-			this.mirror( QueryModel.get( props ) );
+			this.mirror( ImagesQuery.get( props ) );
 		}
 	},
 } );

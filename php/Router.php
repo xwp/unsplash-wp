@@ -51,28 +51,27 @@ class Router {
 	 * @return void
 	 */
 	public function enqueue_scripts() {
-		$asset_file = $this->plugin->asset_dir( 'js/dist/browser.asset.php' );
+		$asset_file = $this->plugin->asset_dir( 'js/dist/selector.asset.php' );
 		$asset      = require $asset_file;
 		$version    = $asset['version'];
 
 		$dependencies   = $asset['dependencies'];
 		$dependencies[] = 'media-views';
-		$dependencies[] = 'wp-api-request';
 
 		wp_enqueue_script(
-			'unsplash_browser',
-			$this->plugin->asset_url( 'js/dist/browser.js' ),
+			'unsplash_selector',
+			$this->plugin->asset_url( 'js/dist/selector.js' ),
 			$dependencies,
 			$version,
 			true
 		);
 
 		wp_localize_script(
-			'unsplash_browser',
+			'unsplash_selector',
 			'unsplash',
 			[
 				'tabTitle' => __( 'Unsplash', 'unsplash' ),
-				'route'    => '/wp-json' . RestController::get_route(),
+				'route'    => rest_url( 'unsplash/v1/photos' ),
 				'toolbar'  => [
 					'filters' => [
 						'search' => [
@@ -196,13 +195,17 @@ class Router {
 	 *
 	 * @return array
 	 */
-	public static function image_sizes() {
+	public function image_sizes() {
 		global $_wp_additional_image_sizes;
 
 		$sizes = [];
 
-		// @todo This is not supported by WordPress VIP and will require a new solution.
-		foreach ( get_intermediate_image_sizes() as $s ) { // phpcs:ignore
+		$image_sizes = get_intermediate_image_sizes(); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_intermediate_image_sizes_get_intermediate_image_sizes
+		if ( 0 === count( $image_sizes ) ) {
+			return $sizes;
+		}
+
+		foreach ( $image_sizes as $s ) {
 			if ( in_array( $s, [ 'thumbnail', 'medium', 'medium_large', 'large' ], true ) ) {
 				$sizes[ $s ]['width']  = get_option( $s . '_size_w' );
 				$sizes[ $s ]['height'] = get_option( $s . '_size_h' );

@@ -39,32 +39,45 @@ class TestRouter extends TestCase {
 		Mockery::mock( 'WP_REST_Controller' );
 		$plugin = Mockery::mock( Plugin::class );
 
+		$plugin->shouldReceive( 'asset_dir' )
+			->once()
+			->andReturn( __DIR__ . '/assets/js/dist/selector.asset.php' );
+
 		$plugin->shouldReceive( 'asset_url' )
 			->once()
-			->with( 'js/dist/editor.js' )
-			->andReturn( 'http://example.com/js/dist/editor.js' );
-
-		$plugin->shouldReceive( 'asset_version' )
-			->once()
-			->andReturn( '1.2.3' );
+			->with( 'js/dist/selector.js' )
+			->andReturn( 'http://example.com/js/dist/selector.js' );
 
 		WP_Mock::userFunction( 'wp_enqueue_script' )
 			->once()
 			->with(
-				'unsplash-js',
-				'http://example.com/js/dist/editor.js',
-				Mockery::type( 'array' ),
-				'1.2.3',
-				false
+				'unsplash_selector',
+				'http://example.com/js/dist/selector.js',
+				[ 'wp-polyfill', 'media-views' ],
+				'44fc4d3ff739a64e2a7c5596a43c0b75',
+				true
 			);
+
+		WP_Mock::userFunction( 'rest_url' )
+			->once()
+			->with( 'unsplash/v1/photos' )
+			->andReturn( 'http://example.com/wp-json/unsplash/v1/photos' );
 
 		WP_Mock::userFunction( 'wp_localize_script' )
 			->once()
 			->with(
-				'unsplash-js',
-				'unsplashSettings',
+				'unsplash_selector',
+				'unsplash',
 				[
 					'tabTitle' => __( 'Unsplash', 'unsplash' ),
+					'route'    => 'http://example.com/wp-json/unsplash/v1/photos',
+					'toolbar'  => [
+						'filters' => [
+							'search' => [
+								'label' => __( 'Search', 'unsplash' ),
+							],
+						],
+					],
 				]
 			);
 
