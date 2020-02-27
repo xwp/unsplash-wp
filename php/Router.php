@@ -51,7 +51,7 @@ class Router {
 	 * @return void
 	 */
 	public function enqueue_scripts() {
-		$asset_file = $this->plugin->asset_dir( 'js/dist/browser.asset.php' );
+		$asset_file = $this->plugin->asset_dir( 'js/dist/selector.asset.php' );
 		$asset      = require $asset_file;
 		$version    = $asset['version'];
 
@@ -59,15 +59,15 @@ class Router {
 		$dependencies[] = 'media-views';
 
 		wp_enqueue_script(
-			'unsplash_browser',
-			$this->plugin->asset_url( 'js/dist/browser.js' ),
+			'unsplash_selector',
+			$this->plugin->asset_url( 'js/dist/selector.js' ),
 			$dependencies,
 			$version,
 			true
 		);
 
 		wp_localize_script(
-			'unsplash_browser',
+			'unsplash_selector',
 			'unsplash',
 			[
 				'tabTitle' => __( 'Unsplash', 'unsplash' ),

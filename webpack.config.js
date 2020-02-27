@@ -11,7 +11,7 @@ const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
 module.exports = {
 	...defaultConfig,
 	entry: {
-		browser: './js/src/browser.js',
+		selector: './js/src/selector.js',
 	},
 	output: {
 		path: path.resolve( __dirname, 'js/dist' ),

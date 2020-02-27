@@ -41,18 +41,18 @@ class TestRouter extends TestCase {
 
 		$plugin->shouldReceive( 'asset_dir' )
 			->once()
-			->andReturn( __DIR__ . '/assets/js/dist/browser.asset.php' );
+			->andReturn( __DIR__ . '/assets/js/dist/selector.asset.php' );
 
 		$plugin->shouldReceive( 'asset_url' )
 			->once()
-			->with( 'js/dist/browser.js' )
-			->andReturn( 'http://example.com/js/dist/browser.js' );
+			->with( 'js/dist/selector.js' )
+			->andReturn( 'http://example.com/js/dist/selector.js' );
 
 		WP_Mock::userFunction( 'wp_enqueue_script' )
 			->once()
 			->with(
-				'unsplash_browser',
-				'http://example.com/js/dist/browser.js',
+				'unsplash_selector',
+				'http://example.com/js/dist/selector.js',
 				[ 'wp-polyfill', 'media-views' ],
 				'44fc4d3ff739a64e2a7c5596a43c0b75',
 				true
@@ -61,7 +61,7 @@ class TestRouter extends TestCase {
 		WP_Mock::userFunction( 'wp_localize_script' )
 			->once()
 			->with(
-				'unsplash_browser',
+				'unsplash_selector',
 				'unsplash',
 				[
 					'tabTitle' => __( 'Unsplash', 'unsplash' ),

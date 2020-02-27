@@ -2,7 +2,7 @@
  * Internal dependencies
  */
 import ImagesCollection from './collections/images_collection';
-import ImagesBrowser from './images_browser';
+import ImagesSelector from './images_selector';
 
 export const withUnsplashTab = ( View ) => {
 	return View.extend( {
@@ -54,7 +54,7 @@ export const withUnsplashTab = ( View ) => {
 				);
 			}
 
-			contentRegion.view = new ImagesBrowser( {
+			contentRegion.view = new ImagesSelector( {
 				controller: this,
 				collection: state.get( 'unsplash-collection' ),
 				selection: state.get( 'selection' ),
