@@ -23,21 +23,31 @@ class RestController extends WP_REST_Controller {
 
 	const REST_NAMESPACE = 'unsplash/v1';
 	const REST_BASE      = 'photos';
+
 	/**
 	 * Settings instance.
 	 *
 	 * @var Settings
 	 */
-	public $settings;
+	protected $settings;
+
+	/**
+	 * Router instance.
+	 *
+	 * @var Router
+	 */
+	protected $router;
 
 	/**
 	 * Constructor.
 	 *
+	 * @param Router   $router   Instance of the Router class.
 	 * @param Settings $settings Instance of the Settings class.
 	 */
-	public function __construct( $settings ) {
+	public function __construct( $router, $settings ) {
 		$this->namespace = self::REST_NAMESPACE;
 		$this->rest_base = self::REST_BASE;
+		$this->router    = $router;
 		$this->settings  = $settings;
 
 		$options = get_option( 'unsplash_settings' );
@@ -552,7 +562,7 @@ class RestController extends WP_REST_Controller {
 			],
 		];
 
-		foreach ( Router::image_sizes() as $name => $size ) {
+		foreach ( $this->router->image_sizes() as $name => $size ) {
 			$url            = add_query_arg(
 				[
 					'w'   => $size['height'],

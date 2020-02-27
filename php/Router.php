@@ -195,7 +195,7 @@ class Router {
 	 *
 	 * @return array
 	 */
-	public static function image_sizes() {
+	public function image_sizes() {
 		global $_wp_additional_image_sizes;
 
 		$sizes = [];
