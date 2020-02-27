@@ -584,22 +584,12 @@ class RestController extends WP_REST_Controller {
 	}
 
 	/**
-	 * Generate a prefixed route path.
-	 *
-	 * @param string $path URL path.
-	 * @return string Route path.
-	 */
-	public static function get_route( $path = '' ) {
-		return '/' . self::REST_NAMESPACE . '/' . self::REST_BASE . "$path";
-	}
-
-	/**
 	 * Determine if a request is an AJAX one.
 	 *
 	 * @param WP_REST_Request $request Request.
 	 * @return bool
 	 */
-	protected function is_ajax_request( $request ) {
+	public function is_ajax_request( $request ) {
 		return 'XMLHttpRequest' === $request->get_header( 'X-Requested-With' );
 	}
 

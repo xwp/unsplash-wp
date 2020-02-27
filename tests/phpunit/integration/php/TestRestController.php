@@ -25,10 +25,20 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	private static $routes;
 
 	/**
+	 * Instance of REST Controller.
+	 *
+	 * @var RestController
+	 */
+	private static $rest_controller;
+
+	/**
 	 * Setup before any tests are to be run for this class.
 	 */
 	public static function setUpBeforeClass() {
-		static::$routes = rest_get_server()->get_routes();
+		global $unsplash;
+
+		self::$rest_controller = $unsplash['rest_controller'];
+		static::$routes        = rest_get_server()->get_routes();
 	}
 
 	/**
@@ -37,14 +47,14 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	 * @covers \XWP\Unsplash\RestController::register_routes()
 	 */
 	public function test_register_routes() {
-		$this->assertArrayHasKey( RestController::get_route(), static::$routes );
-		$this->assertCount( 1, static::$routes[ RestController::get_route() ] );
+		$this->assertArrayHasKey( self::get_route(), static::$routes );
+		$this->assertCount( 1, static::$routes[ self::get_route() ] );
 
-		$this->assertArrayHasKey( RestController::get_route( '/(?P<id>[\w-]+)' ), static::$routes );
-		$this->assertCount( 1, static::$routes[ RestController::get_route( '/(?P<id>[\w-]+)' ) ] );
+		$this->assertArrayHasKey( self::get_route( '/(?P<id>[\w-]+)' ), static::$routes );
+		$this->assertCount( 1, static::$routes[ self::get_route( '/(?P<id>[\w-]+)' ) ] );
 
-		$this->assertArrayHasKey( RestController::get_route( '/search/(?P<search>[\w-]+)' ), static::$routes );
-		$this->assertCount( 1, static::$routes[ RestController::get_route( '/search/(?P<search>[\w-]+)' ) ] );
+		$this->assertArrayHasKey( self::get_route( '/search/(?P<search>[\w-]+)' ), static::$routes );
+		$this->assertCount( 1, static::$routes[ self::get_route( '/search/(?P<search>[\w-]+)' ) ] );
 	}
 
 	/**
@@ -60,7 +70,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	 * @covers \XWP\Unsplash\RestController::get_items()
 	 */
 	public function test_get_items() {
-		$request  = new WP_REST_Request( 'GET', RestController::get_route() );
+		$request  = new WP_REST_Request( 'GET', self::get_route() );
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
 
@@ -112,7 +122,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 			],
 		];
 
-		$this->assertEquals( $expected, static::$routes[ RestController::get_route() ][0]['args'] );
+		$this->assertEquals( $expected, static::$routes[ self::get_route() ][0]['args'] );
 	}
 
 	/**
@@ -121,7 +131,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	 * @covers \XWP\Unsplash\RestController::get_item()
 	 */
 	public function test_get_item() {
-		$request  = new WP_REST_Request( 'GET', RestController::get_route( '/uRuPYB0P8to' ) );
+		$request  = new WP_REST_Request( 'GET', self::get_route( '/uRuPYB0P8to' ) );
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
 
@@ -154,7 +164,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	 */
 	public function test_get_import() {
 		add_filter( 'upload_dir', [ $this, 'upload_dir_patch' ] );
-		$request  = new WP_REST_Request( 'GET', RestController::get_route( '/import/uRuPYB0P8to' ) );
+		$request  = new WP_REST_Request( 'GET', self::get_route( '/import/uRuPYB0P8to' ) );
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
 
@@ -199,7 +209,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 			],
 		];
 
-		$this->assertEquals( $expected, static::$routes[ RestController::get_route( '/(?P<id>[\w-]+)' ) ][0]['args'] );
+		$this->assertEquals( $expected, static::$routes[ self::get_route( '/(?P<id>[\w-]+)' ) ][0]['args'] );
 	}
 
 	/**
@@ -208,7 +218,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	 * @covers \XWP\Unsplash\RestController::get_search()
 	 */
 	public function test_get_search() {
-		$request  = new WP_REST_Request( 'GET', RestController::get_route( '/search/motorcycle' ) );
+		$request  = new WP_REST_Request( 'GET', self::get_route( '/search/motorcycle' ) );
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
 
@@ -278,7 +288,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	 * @param int    $status_code Expected status code.
 	 */
 	public function test_get_search_collections_param( $query_param, $status_code ) {
-		$request = new WP_REST_Request( 'GET', RestController::get_route( '/search/motorcycle' ) );
+		$request = new WP_REST_Request( 'GET', self::get_route( '/search/motorcycle' ) );
 		$request->set_query_params( [ 'collections' => $query_param ] );
 		$response = rest_get_server()->dispatch( $request );
 
@@ -336,7 +346,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 			],
 		];
 
-		$this->assertEquals( $expected, static::$routes[ RestController::get_route( '/search/(?P<search>[\w-]+)' ) ][0]['args'] );
+		$this->assertEquals( $expected, static::$routes[ self::get_route( '/search/(?P<search>[\w-]+)' ) ][0]['args'] );
 	}
 
 	/**
@@ -373,7 +383,7 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	 * @covers \XWP\Unsplash\RestController::get_item_schema()
 	 */
 	public function test_get_item_schema() {
-		$request    = new WP_REST_Request( 'OPTIONS', RestController::get_route() );
+		$request    = new WP_REST_Request( 'OPTIONS', self::get_route() );
 		$response   = rest_get_server()->dispatch( $request );
 		$data       = $response->get_data();
 		$properties = $data['schema']['properties'];
@@ -431,7 +441,17 @@ class TestRestController extends WP_Test_REST_Controller_Testcase {
 	 * @throws \ReflectionException If the class could not be reflected upon.
 	 */
 	public function test_is_ajax_request( $request, $expected ) {
-		$actual = $this->call_private_method( new RestController( null ), 'is_ajax_request', [ $request ] );
+		$actual = self::$rest_controller->is_ajax_request( $request );
 		$this->assertEquals( $expected, $actual );
+	}
+
+	/**
+	 * Generate a prefixed route path.
+	 *
+	 * @param string $path URL path.
+	 * @return string Route path.
+	 */
+	private static function get_route( $path = '' ) {
+		return '/' . RestController::REST_NAMESPACE . '/' . RestController::REST_BASE . "$path";
 	}
 }

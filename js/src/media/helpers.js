@@ -11,9 +11,6 @@ export const withUnsplashTab = ( View ) => {
 
 			const state = this.state();
 
-			console.log( state );
-			console.log( this.options );
-
 			// For the Classic Editor, only add the Unsplash tab to libraries that support images.
 			const applicableLibraries = [ 'insert', 'gallery', 'featured-image', 'library' ];
 			if ( state.id && ! applicableLibraries.includes( state.id ) ) {
