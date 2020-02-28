@@ -34,7 +34,7 @@ class Selector {
 	 * @return void
 	 */
 	public function init() {
-		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
+		add_action( 'wp_enqueue_media', [ $this, 'enqueue_scripts' ] );
 		add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_editor_assets' ] );
 	}
 
