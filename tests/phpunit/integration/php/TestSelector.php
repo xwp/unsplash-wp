@@ -47,7 +47,7 @@ class TestSelector extends \WP_UnitTestCase {
 	 * @covers ::init()
 	 */
 	public function test_init() {
-		$this->assertEquals( 10, has_action( 'admin_enqueue_scripts', [ $this->selector, 'enqueue_scripts' ] ) );
+		$this->assertEquals( 10, has_action( 'wp_enqueue_media', [ $this->selector, 'enqueue_scripts' ] ) );
 		$this->assertEquals( 10, has_action( 'enqueue_block_editor_assets', [ $this->selector, 'enqueue_editor_assets' ] ) );
 	}
 }

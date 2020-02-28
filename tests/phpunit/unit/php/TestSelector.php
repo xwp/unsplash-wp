@@ -25,7 +25,7 @@ class TestSelector extends TestCase {
 		$plugin   = Mockery::mock( Plugin::class );
 		$selector = new Selector( $plugin );
 
-		WP_Mock::expectActionAdded( 'admin_enqueue_scripts', [ $selector, 'enqueue_scripts' ], 10, 1 );
+		WP_Mock::expectActionAdded( 'wp_enqueue_media', [ $selector, 'enqueue_scripts' ], 10, 1 );
 
 		$selector->init();
 	}
