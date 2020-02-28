@@ -45,10 +45,10 @@ class Selector {
 	 */
 	public function enqueue_scripts() {
 		$asset_file = $this->plugin->asset_dir( 'js/dist/selector.asset.php' );
-		$asset      = require $asset_file;
-		$version    = $asset['version'];
+		$asset      = is_readable( $asset_file ) ? require $asset_file : [];
+		$version    = isset( $asset['version'] ) ? $asset['version'] : $this->plugin->version();
 
-		$dependencies   = $asset['dependencies'];
+		$dependencies   = isset( $asset['dependencies'] ) ? $asset['dependencies'] : [];
 		$dependencies[] = 'media-views';
 		$dependencies[] = 'wp-api-request';
 
