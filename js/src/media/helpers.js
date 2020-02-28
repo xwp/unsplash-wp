@@ -60,7 +60,7 @@ export const withUnsplashTab = ( View ) => {
 		 */
 		unsplashContent( contentRegion ) {
 			const state = this.state( 'unsplash' );
-			
+
 			// TODO - Load selection from the correct state.
 			const ogState = this.state();
 
