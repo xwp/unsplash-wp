@@ -202,7 +202,7 @@ class Hotlink {
 			return $image;
 		}
 
-		$image = str_replace( $image_src, $this->get_original_url_with_size( $original_url, $width, $height ), $image );
+		$image = str_replace( $image_src, $this->utils->get_original_url_with_size( $original_url, $width, $height ), $image );
 
 		return $image;
 	}
