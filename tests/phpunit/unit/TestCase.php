@@ -11,7 +11,7 @@ use Mockery;
 use WP_Mock;
 
 /**
- * Tests for the Router class.
+ * Tests for the Selector class.
  */
 class TestCase extends WP_Mock\Tools\TestCase {
 

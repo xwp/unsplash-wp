@@ -1,6 +1,6 @@
 <?php
 /**
- * Tests for Router class.
+ * Tests for Selector class.
  *
  * @package XWP\Unsplash
  */
@@ -11,29 +11,29 @@ use Mockery;
 use WP_Mock;
 
 /**
- * Tests for the Router class.
+ * Tests for the Selector class.
  */
-class TestRouter extends TestCase {
+class TestSelector extends TestCase {
 	/**
 	 * Test init.
 	 *
-	 * @covers \XWP\Unsplash\Router::init()
+	 * @covers \XWP\Unsplash\Selector::init()
 	 */
 	public function test_init() {
 		Mockery::mock( 'WP_REST_Controller' );
 
-		$plugin = Mockery::mock( Plugin::class );
-		$router = new Router( $plugin );
+		$plugin   = Mockery::mock( Plugin::class );
+		$selector = new Selector( $plugin );
 
-		WP_Mock::expectActionAdded( 'admin_enqueue_scripts', [ $router, 'enqueue_scripts' ], 10, 1 );
+		WP_Mock::expectActionAdded( 'admin_enqueue_scripts', [ $selector, 'enqueue_scripts' ], 10, 1 );
 
-		$router->init();
+		$selector->init();
 	}
 
 	/**
 	 * Test enqueue_scripts.
 	 *
-	 * @covers \XWP\Unsplash\Router::enqueue_scripts()
+	 * @covers \XWP\Unsplash\Selector::enqueue_scripts()
 	 */
 	public function test_enqueue_scripts() {
 		Mockery::mock( 'WP_REST_Controller' );
@@ -81,7 +81,7 @@ class TestRouter extends TestCase {
 				]
 			);
 
-		$editor_mode = new Router( $plugin );
+		$editor_mode = new Selector( $plugin );
 		$editor_mode->enqueue_scripts();
 	}
 }

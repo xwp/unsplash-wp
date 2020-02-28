@@ -22,7 +22,7 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 global $unsplash;
 
 $unsplash['plugin']          = new Plugin( __FILE__ );
-$unsplash['router']          = new Router( $unsplash['plugin'] );
+$unsplash['selector']        = new Selector( $unsplash['plugin'] );
 $unsplash['types']           = new Types();
 $unsplash['utils']           = new Utils();
 $unsplash['hotlink']         = new Hotlink( $unsplash['utils'] );
@@ -32,8 +32,8 @@ $unsplash['rest_controller'] = new RestController( $unsplash['settings'], $unspl
 // Initialize Types.
 add_action( 'plugins_loaded', [ $unsplash['types'], 'init' ] );
 
-// Initialize Router.
-add_action( 'plugins_loaded', [ $unsplash['router'], 'init' ] );
+// Initialize Selector.
+add_action( 'plugins_loaded', [ $unsplash['selector'], 'init' ] );
 
 // Initialize Hotlink.
 add_action( 'template_redirect', [ $unsplash['hotlink'], 'init' ] );

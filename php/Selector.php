@@ -1,6 +1,6 @@
 <?php
 /**
- * Router class.
+ * Selector class.
  *
  * @package Unsplash
  */
@@ -8,9 +8,9 @@
 namespace XWP\Unsplash;
 
 /**
- * Plugin Router.
+ * Plugin Selector.
  */
-class Router {
+class Selector {
 
 	/**
 	 * Plugin interface.
