@@ -158,31 +158,29 @@ class RestController extends WP_REST_Controller {
 	 * @return WP_REST_Response Single page of photo results.
 	 */
 	public function get_items( $request ) {
-		$page      = $request->get_param( 'page' );
-		$per_page  = $request->get_param( 'per_page' );
-		$order_by  = $request->get_param( 'order_by' );
-		$photos    = [];
-		$total     = 0;
-		$max_pages = 0;
+		$page     = $request->get_param( 'page' );
+		$per_page = $request->get_param( 'per_page' );
+		$order_by = $request->get_param( 'order_by' );
+		$photos   = [];
 
 		try {
 			$api_response = Photo::all( $page, $per_page, $order_by );
 			$results      = $api_response->toArray();
 			$max_pages    = $api_response->totalPages();
 			$total        = $api_response->totalObjects();
+
 			foreach ( $results as $photo ) {
 				$data     = $this->prepare_item_for_response( $photo, $request );
 				$photos[] = $this->prepare_response_for_collection( $data );
 			}
+
+			$response = rest_ensure_response( $photos );
+			$response->header( 'X-WP-Total', (int) $total );
+			$response->header( 'X-WP-TotalPages', (int) $max_pages );
 		} catch ( \Exception $e ) {
-			$photos = new WP_Error( 'all-photos', __( 'An unknown error occurred while retrieving the photos', 'unsplash' ), [ 'status' => '500' ] );
+			$response = new WP_Error( 'all-photos', __( 'An unknown error occurred while retrieving the photos', 'unsplash' ), [ 'status' => '500' ] );
 			Utils::log_error( $e );
 		}
-
-		$response = rest_ensure_response( $photos );
-
-		$response->header( 'X-WP-Total', (int) $total );
-		$response->header( 'X-WP-TotalPages', (int) $max_pages );
 
 		return $response;
 	}
@@ -222,26 +220,22 @@ class RestController extends WP_REST_Controller {
 			$photo = Photo::find( $id );
 			$photo->download();
 			$results = $photo->toArray();
-			$photos  = $this->prepare_item_for_response( $results, $request );
+
+			$image         = new Image( $results );
+			$importer      = new Import( $id, $image );
+			$attachment_id = $importer->process();
+			if ( is_wp_error( $attachment_id ) ) {
+				return $attachment_id;
+			}
+
+			$response = $this->prepare_item_for_response( $results, $request );
+			$response = rest_ensure_response( $response );
+			$response->set_status( 301 );
+			$response->header( 'Location', rest_url( sprintf( '%s/%s/%d', 'wp/v2', 'media', $attachment_id ) ) );
 		} catch ( \Exception $e ) {
-			$photos = new WP_Error( 'single-photo-download', __( 'An unknown error occurred while retrieving the photo', 'unsplash' ), [ 'status' => '500' ] );
+			$response = new WP_Error( 'single-photo-download', __( 'An unknown error occurred while retrieving the photo', 'unsplash' ), [ 'status' => '500' ] );
 			Utils::log_error( $e );
 		}
-
-		if ( is_wp_error( $photos ) ) {
-			return $photos;
-		}
-		$image         = new Image( $results );
-		$importer      = new Import( $id, $image );
-		$attachment_id = $importer->process();
-		if ( is_wp_error( $attachment_id ) ) {
-			return $attachment_id;
-		}
-
-		$response = $this->prepare_item_for_response( $results, $request );
-		$response = rest_ensure_response( $response );
-		$response->set_status( 301 );
-		$response->header( 'Location', rest_url( sprintf( '%s/%s/%d', 'wp/v2', 'media', $attachment_id ) ) );
 
 		return $response;
 	}
@@ -260,27 +254,25 @@ class RestController extends WP_REST_Controller {
 		$orientation = $request->get_param( 'orientation' );
 		$collections = $request->get_param( 'collections' );
 		$photos      = [];
-		$total       = 0;
-		$max_pages   = 0;
 
 		try {
 			$api_response = Search::photos( $search, $page, $per_page, $orientation, $collections )->getArrayObject();
 			$results      = $api_response->toArray();
 			$max_pages    = $api_response->totalPages();
 			$total        = $api_response->totalObjects();
+
 			foreach ( $results as $photo ) {
 				$data     = $this->prepare_item_for_response( $photo, $request );
 				$photos[] = $this->prepare_response_for_collection( $data );
 			}
+
+			$response = rest_ensure_response( $photos );
+			$response->header( 'X-WP-Total', (int) $total );
+			$response->header( 'X-WP-TotalPages', (int) $max_pages );
 		} catch ( \Exception $e ) {
-			$photos = new WP_Error( 'search-photos', __( 'An unknown error occurred while searching for a photo', 'unsplash' ), [ 'status' => '500' ] );
+			$response = new WP_Error( 'search-photos', __( 'An unknown error occurred while searching for a photo', 'unsplash' ), [ 'status' => '500' ] );
 			Utils::log_error( $e );
 		}
-
-		$response = rest_ensure_response( $photos );
-
-		$response->header( 'X-WP-Total', (int) $total );
-		$response->header( 'X-WP-TotalPages', (int) $max_pages );
 
 		return $response;
 	}
