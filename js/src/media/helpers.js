@@ -1,11 +1,17 @@
 /**
  * Internal dependencies
  */
-import ImagesCollection from './collections/images_collection';
 import ImagesSelector from './images_selector';
+import unsplashState from './store/unsplash';
 
 export const withUnsplashTab = ( View ) => {
 	return View.extend( {
+		createStates() {
+			View.prototype.createStates.apply( this, arguments );
+			this.states.add( [
+				new unsplashState(),
+			] );
+		},
 		browseRouter( routerView ) {
 			View.prototype.browseRouter.apply( this, arguments );
 
@@ -53,21 +59,11 @@ export const withUnsplashTab = ( View ) => {
 		 * @param {wp.media.controller.Region} contentRegion
 		 */
 		unsplashContent( contentRegion ) {
-			const state = this.state();
-
-			// TODO: is it better to create the state via `createStates()`?
-			if ( undefined === state.get( 'unsplash-collection' ) ) {
-				state.set(
-					'unsplash-collection',
-					new ImagesCollection( null, {
-						props: { orderby: 'date', query: true },
-					} )
-				);
-			}
+			const state = this.state( 'unsplash' );
 
 			contentRegion.view = new ImagesSelector( {
 				controller: this,
-				collection: state.get( 'unsplash-collection' ),
+				collection: state.get( 'library' ),
 				selection: state.get( 'selection' ),
 				model: state,
 				sortable: state.get( 'sortable' ),
