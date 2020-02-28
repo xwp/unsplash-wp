@@ -23,9 +23,13 @@ global $unsplash;
 
 $unsplash['plugin']          = new Plugin( __FILE__ );
 $unsplash['router']          = new Router( $unsplash['plugin'] );
+$unsplash['types']           = new Types();
 $unsplash['hotlink']         = new Hotlink( $unsplash['router'] );
 $unsplash['settings']        = new Settings( $unsplash['plugin'] );
 $unsplash['rest_controller'] = new RestController( $unsplash['settings'] );
+
+// Initialize Types.
+add_action( 'plugins_loaded', [ $unsplash['types'], 'init' ] );
 
 // Initialize Router.
 add_action( 'plugins_loaded', [ $unsplash['router'], 'init' ] );
