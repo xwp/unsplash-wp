@@ -5,7 +5,7 @@ import ImagesCollection from '../collections/images_collection';
 
 const State = wp.media.controller.State;
 
-const unsplashState = State.extend( {
+const UnsplashState = State.extend( {
 	defaults: {
 		id: 'unsplash',
 		toolbar: 'unsplash',
@@ -25,7 +25,7 @@ const unsplashState = State.extend( {
 
 		if ( ! this.get( 'library' ) ) {
 			this.set( 'library', new ImagesCollection( null, {
-				props: { orderby: 'date', query: true },
+				props: { orderby: 'id', order: 'ASC', query: true },
 			} ) );
 		}
 
@@ -46,4 +46,4 @@ const unsplashState = State.extend( {
 	},
 } );
 
-export default unsplashState;
+export default UnsplashState;

@@ -2,14 +2,14 @@
  * Internal dependencies
  */
 import ImagesSelector from './images_selector';
-import unsplashState from './store/unsplash';
+import UnsplashState from './store/unsplash';
 
 export const withUnsplashTab = ( View ) => {
 	return View.extend( {
 		createStates() {
 			View.prototype.createStates.apply( this, arguments );
 			this.states.add( [
-				new unsplashState(),
+				new UnsplashState(),
 			] );
 		},
 		browseRouter( routerView ) {

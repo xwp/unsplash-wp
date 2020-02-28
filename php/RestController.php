@@ -169,7 +169,11 @@ class RestController extends WP_REST_Controller {
 			$max_pages    = $api_response->totalPages();
 			$total        = $api_response->totalObjects();
 
-			foreach ( $results as $photo ) {
+			foreach ( $results as $index => $photo ) {
+				$photo['unsplash_id'] = $photo['id'];
+				// Set an incremental ID so that the media selector can order the images correctly.
+				$photo['id'] = $index + ( ( $page - 1 ) * $per_page );
+
 				$data     = $this->prepare_item_for_response( $photo, $request );
 				$photos[] = $this->prepare_response_for_collection( $data );
 			}
@@ -347,10 +351,9 @@ class RestController extends WP_REST_Controller {
 	 * @param array|Object    $photo Photo object.
 	 * @param WP_REST_Request $request Request object.
 	 *
-	 * @return WP_REST_Response|WP_Error Response object.
+	 * @return array|WP_Error|WP_REST_Response Array if its an AJAX request, WP_Error if an error occurs, otherwise a REST response object.
 	 */
 	public function prepare_item_for_response( $photo, $request ) {
-
 		if ( $this->is_ajax_request( $request ) ) {
 			return $this->wp_prepare_attachment_for_js( $photo );
 		}
@@ -537,41 +540,41 @@ class RestController extends WP_REST_Controller {
 	/**
 	 * Custom wp_prepare_attachment_for_js copied from core.
 	 *
-	 * @param array $image Image object.
+	 * @param array $photo Photo object.
 	 *
 	 * @return array
 	 */
-	public function wp_prepare_attachment_for_js( array $image ) {
+	public function wp_prepare_attachment_for_js( array $photo ) {
 		$response = [
-			'id'            => isset( $image['id'] ) ? $image['id'] : null,
+			'id'            => isset( $photo['id'] ) ? $photo['id'] : null,
 			'title'         => '',
-			'filename'      => isset( $image['id'] ) ? $image['id'] . '.jpg' : null,
-			'url'           => isset( $image['urls']['raw'] ) ? $image['urls']['raw'] : null,
-			'link'          => isset( $image['links']['html'] ) ? $image['links']['html'] : null,
-			'alt'           => isset( $image['alt_description'] ) ? $image['alt_description'] : null,
-			'author'        => isset( $image['author'] ) ? $image['author'] : null,
-			'description'   => isset( $image['description'] ) ? $image['description'] : null,
+			'filename'      => isset( $photo['unsplash_id'] ) ? $photo['unsplash_id'] . '.jpg' : null,
+			'url'           => isset( $photo['urls']['raw'] ) ? $photo['urls']['raw'] : null,
+			'link'          => isset( $photo['links']['html'] ) ? $photo['links']['html'] : null,
+			'alt'           => isset( $photo['alt_description'] ) ? $photo['alt_description'] : null,
+			'author'        => isset( $photo['author'] ) ? $photo['author'] : null,
+			'description'   => isset( $photo['description'] ) ? $photo['description'] : null,
 			'caption'       => '',
 			'name'          => '',
-			'height'        => isset( $image['height'] ) ? $image['height'] : null,
-			'width'         => isset( $image['width'] ) ? $image['width'] : null,
+			'height'        => isset( $photo['height'] ) ? $photo['height'] : null,
+			'width'         => isset( $photo['width'] ) ? $photo['width'] : null,
 			'status'        => 'inherit',
 			'uploadedTo'    => 0,
-			'date'          => isset( $image['created_at'] ) ? strtotime( $image['created_at'] ) * 1000 : null,
-			'modified'      => isset( $image['updated_at'] ) ? strtotime( $image['updated_at'] ) * 1000 : null,
+			'date'          => isset( $photo['created_at'] ) ? strtotime( $photo['created_at'] ) * 1000 : null,
+			'modified'      => isset( $photo['updated_at'] ) ? strtotime( $photo['updated_at'] ) * 1000 : null,
 			'menuOrder'     => 0,
 			'mime'          => 'image/jpeg',
 			'type'          => 'image',
 			'subtype'       => 'jpeg',
-			'icon'          => isset( $image['urls']['thumb'] ) ? add_query_arg(
+			'icon'          => isset( $photo['urls']['thumb'] ) ? add_query_arg(
 				[
 					'w' => 150,
 					'h' => 150,
 					'q' => 80,
 				],
-				$image['urls']['thumb']
+				$photo['urls']['thumb']
 			) : null,
-			'dateFormatted' => isset( $image['created_at'] ) ? mysql2date( __( 'F j, Y', 'unsplash' ), $image['created_at'] ) : null,
+			'dateFormatted' => isset( $photo['created_at'] ) ? mysql2date( __( 'F j, Y', 'unsplash' ), $photo['created_at'] ) : null,
 			'nonces'        => [
 				'update' => false,
 				'delete' => false,
@@ -583,9 +586,9 @@ class RestController extends WP_REST_Controller {
 
 		$sizes = [
 			'full' => [
-				'url'    => $image['urls']['raw'],
-				'height' => $image['height'],
-				'width'  => $image['width'],
+				'url'    => $photo['urls']['raw'],
+				'height' => $photo['height'],
+				'width'  => $photo['width'],
 			],
 		];
 
@@ -597,7 +600,7 @@ class RestController extends WP_REST_Controller {
 					'q'   => 85,
 					'fit' => 'crop',
 				],
-				$image['urls']['full']
+				$photo['urls']['full']
 			);
 			$sizes[ $name ] = [
 				'url'    => $url,

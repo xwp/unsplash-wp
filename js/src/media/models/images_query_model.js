@@ -4,14 +4,6 @@
 import ImagesCollection from '../collections/images_collection';
 
 const ImagesQuery = wp.media.model.Query.extend( {
-	initialize( models, options = {} ) {
-		ImagesCollection.prototype.initialize.apply( this, arguments );
-
-		this.args = options.args;
-		this._hasMore = true;
-		this.created = new Date();
-		this.filters.order = () => true;
-	},
 
 	/**
 	 * Overrides Backbone.Collection.sync
@@ -53,9 +45,11 @@ const ImagesQuery = wp.media.model.Query.extend( {
 		return fallback.sync.apply( this, arguments );
 	},
 }, {
-	/**
-	 * @readonly
-	 */
+	defaultProps: {
+		orderby: 'id',
+		order: 'ASC',
+	},
+
 	defaultArgs: {
 		posts_per_page: 30,
 	},

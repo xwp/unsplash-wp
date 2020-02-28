@@ -1,5 +1,5 @@
 
-const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
+const ImagesSelector = wp.media.view.AttachmentsBrowser.extend( {
 	className: 'unsplash-browser attachments-browser',
 
 	createToolbar() {
@@ -35,4 +35,4 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 	},
 } );
 
-export default ImagesBrowser;
+export default ImagesSelector;
