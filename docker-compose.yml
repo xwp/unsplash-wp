@@ -24,6 +24,7 @@ services:
       - 80:80
     volumes:
       - ./data/wordpress/html:/var/www/html
+      - ./vendor/plugins/basic-auth:/var/www/html/wp-content/plugins/basic-auth
       - ./vendor/plugins/classic-editor:/var/www/html/wp-content/plugins/classic-editor
       - .:/var/www/html/wp-content/plugins/unsplash-wp
     restart: always
