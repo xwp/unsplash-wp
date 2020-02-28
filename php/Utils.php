@@ -1,7 +1,15 @@
 <?php
+/**
+ * Utils class.
+ *
+ * @package Unsplash
+ */
 
 namespace XWP\Unsplash;
 
+/**
+ * Plugin Utils.
+ */
 class Utils {
 	/**
 	 * Helper function to get sized URL.
