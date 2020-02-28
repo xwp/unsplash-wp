@@ -3,13 +3,38 @@
 namespace XWP\Unsplash;
 
 class Utils {
+	/**
+	 * Helper function to get sized URL.
+	 *
+	 * @param string $url Original URL of unsplash asset.
+	 * @param int    $width Width of image.
+	 * @param int    $height Height of image.
+	 * @param array  $attr Other attributes to be passed to the URL.
+	 *
+	 * @return string Format image url.
+	 */
+	public function get_original_url_with_size( $url, $width, $height, $attr = [] ) {
+		$attr = wp_parse_args(
+			$attr,
+			[
+				'w' => absint( $width ),
+				'h' => absint( $height ),
+			]
+		);
+		$url  = add_query_arg(
+			$attr,
+			$url
+		);
+
+		return $url;
+	}
 
 	/**
 	 * Get a list of image sizes.
 	 *
 	 * @return array
 	 */
-	public static function image_sizes() {
+	public function image_sizes() {
 		global $_wp_additional_image_sizes;
 
 		$sizes = [];
@@ -39,7 +64,7 @@ class Utils {
 	 *
 	 * @param \Exception $e Exception.
 	 */
-	public static function log_error( \Exception $e ) {
+	public function log_error( \Exception $e ) {
 
 		if ( ! constant( 'WP_DEBUG' ) ) {
 			return;

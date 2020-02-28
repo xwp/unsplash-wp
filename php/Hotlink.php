@@ -15,19 +15,19 @@ use WP_Query;
 class Hotlink {
 
 	/**
-	 * Router interface.
+	 * Utils interface.
 	 *
-	 * @var Router
+	 * @var Utils
 	 */
-	protected $router;
+	protected $utils;
 
 	/**
-	 * Setup the router instance.
+	 * Setup the utils instance.
 	 *
-	 * @param Router $router Instance of the router abstraction.
+	 * @param Utils $utils   Instance of the Utils class.
 	 */
-	public function __construct( $router ) {
-		$this->router = $router;
+	public function __construct( $utils ) {
+		$this->utils = $utils;
 	}
 
 	/**
@@ -75,7 +75,7 @@ class Hotlink {
 		}
 		$image_meta = wp_get_attachment_metadata( $id );
 		$image_size = ( isset( $image_meta['sizes'] ) ) ? $image_meta['sizes'] : [];
-		$sizes      = Utils::image_sizes();
+		$sizes      = $this->utils->image_sizes();
 		if ( is_array( $size ) ) {
 			// If array is passed, just use height and width.
 			list( $width, $height ) = $size;
@@ -97,7 +97,7 @@ class Hotlink {
 			return $should_resize;
 		}
 
-		$original_url = $this->get_original_url_with_size( $original_url, $width, $height );
+		$original_url = $this->utils->get_original_url_with_size( $original_url, $width, $height );
 
 		return [ $original_url, $width, $height, false ];
 	}
@@ -217,32 +217,6 @@ class Hotlink {
 	 */
 	protected function get_original_url( $id ) {
 		return get_post_meta( $id, 'original_url', true );
-	}
-
-	/**
-	 * Helper function to get sized URL.
-	 *
-	 * @param string $url Original URL of unsplash asset.
-	 * @param int    $width Width of image.
-	 * @param int    $height Height of image.
-	 * @param array  $attr Other attributes to be passed to the URL.
-	 *
-	 * @return string Format image url.
-	 */
-	public function get_original_url_with_size( $url, $width, $height, $attr = [] ) {
-		$attr = wp_parse_args(
-			$attr,
-			[
-				'w' => absint( $width ),
-				'h' => absint( $height ),
-			]
-		);
-		$url  = add_query_arg(
-			$attr,
-			$url
-		);
-
-		return $url;
 	}
 
 	/**

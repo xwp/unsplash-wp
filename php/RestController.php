@@ -43,6 +43,13 @@ class RestController extends WP_REST_Controller {
 	protected $settings;
 
 	/**
+	 * Utils instance.
+	 *
+	 * @var Utils
+	 */
+	protected $utils;
+
+	/**
 	 * Post type.
 	 *
 	 * @var string
@@ -53,12 +60,14 @@ class RestController extends WP_REST_Controller {
 	 * Constructor.
 	 *
 	 * @param Settings $settings Instance of the Settings class.
+	 * @param Utils    $utils   Instance of the Utils class.
 	 */
-	public function __construct( $settings ) {
+	public function __construct( $settings, $utils ) {
 		$this->namespace = 'unsplash/v1';
 		$this->rest_base = 'photos';
 		$this->post_type = 'attachment';
 		$this->settings  = $settings;
+		$this->utils     = $utils;
 
 		$options = get_option( 'unsplash_settings' );
 
@@ -183,7 +192,7 @@ class RestController extends WP_REST_Controller {
 			$response->header( 'X-WP-TotalPages', (int) $max_pages );
 		} catch ( \Exception $e ) {
 			$response = new WP_Error( 'all-photos', __( 'An unknown error occurred while retrieving the photos', 'unsplash' ), [ 'status' => '500' ] );
-			Utils::log_error( $e );
+			$this->utils->log_error( $e );
 		}
 
 		return $response;
@@ -204,7 +213,7 @@ class RestController extends WP_REST_Controller {
 			$photos  = $this->prepare_item_for_response( $results, $request );
 		} catch ( \Exception $e ) {
 			$photos = new WP_Error( 'single-photo', __( 'An unknown error occurred while retrieving the photo', 'unsplash' ), [ 'status' => '500' ] );
-			Utils::log_error( $e );
+			$this->utils->log_error( $e );
 		}
 
 		return rest_ensure_response( $photos );
@@ -238,7 +247,7 @@ class RestController extends WP_REST_Controller {
 			$response->header( 'Location', rest_url( sprintf( '%s/%s/%d', 'wp/v2', 'media', $attachment_id ) ) );
 		} catch ( \Exception $e ) {
 			$response = new WP_Error( 'single-photo-download', __( 'An unknown error occurred while retrieving the photo', 'unsplash' ), [ 'status' => '500' ] );
-			Utils::log_error( $e );
+			$this->utils->log_error( $e );
 		}
 
 		return $response;
@@ -275,7 +284,7 @@ class RestController extends WP_REST_Controller {
 			$response->header( 'X-WP-TotalPages', (int) $max_pages );
 		} catch ( \Exception $e ) {
 			$response = new WP_Error( 'search-photos', __( 'An unknown error occurred while searching for a photo', 'unsplash' ), [ 'status' => '500' ] );
-			Utils::log_error( $e );
+			$this->utils->log_error( $e );
 		}
 
 		return $response;
@@ -592,7 +601,7 @@ class RestController extends WP_REST_Controller {
 			],
 		];
 
-		foreach ( Utils::image_sizes() as $name => $size ) {
+		foreach ( $this->utils->image_sizes() as $name => $size ) {
 			$url            = add_query_arg(
 				[
 					'w'   => $size['height'],
