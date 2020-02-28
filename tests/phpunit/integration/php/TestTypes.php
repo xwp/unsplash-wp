@@ -33,11 +33,9 @@ class TestTypes extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Test constructor.
-	 *
-	 * @covers ::__construct()
+	 * Verify initialization.
 	 */
-	public function test_construct() {
+	public function test_initialize() {
 		$this->assertEquals( true, did_action( 'plugins_loaded', [ $this->types, 'init' ] ) );
 	}
 
