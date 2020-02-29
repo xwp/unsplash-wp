@@ -1,39 +1,116 @@
+cache:
+  directories:
+    - $HOME/.composer/cache
+    - $HOME/.jest-cache
+    - $HOME/.npm
+    - $HOME/.nvm/.cache
+    - $HOME/phpunit-bin
+
+notifications:
+  email:
+    on_success: never
+    on_failure: change
+
 language: php
+
+dist: trusty
 
 services:
   - mysql
-
-php:
-  - 5.6
-  - 7.4
-
-env:
-  - WP_VERSION=trunk
+  - docker
 
 addons:
-  hosts:
-    - mysql
+  apt:
+    packages:
+      - libxml2-utils
+
+branches:
+  only:
+    - master
+    - develop
+    - /^\d+\.\d+$/
+
+env:
+  global:
+    - PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 before_install:
-  - mysql < tests/phpunit/wptests.sql
+  - nvm install
+  - nvm use
 
 install:
   - npm install
-  - svn co -q https://core.svn.wordpress.org/${WP_VERSION}/ ./data/wordpress/html
-  - mkdir data/wordpress/html/wp-content/uploads
+  - export DEV_LIB_PATH=vendor/xwp/wp-dev-lib/scripts
+  - source "$DEV_LIB_PATH/travis.install.sh"
+
+before_script:
+  - phpenv config-rm xdebug.ini || echo "xdebug.ini does not exist."
 
 script:
-  - npm run lint
-  - npm run test:php:coverage
+  - source "$DEV_LIB_PATH/travis.script.sh"
 
-after_success:
-  - npm run coverage:merge:php
-  - npm run coverage:php
+after_script:
+  - source "$DEV_LIB_PATH/travis.after_script.sh"
 
-notifications:
-  email: false
+jobs:
+  fast_finish: true
+  include:
+    - stage: lint
+      name: Lint (PHP, JavaScript, and configuration files)
+      php: "7.4"
+      env: WP_VERSION=latest DEV_LIB_ONLY=xmllint,phpsyntax
+      script:
+        - source "$DEV_LIB_PATH/travis.script.sh"
+        - npm run lint
 
-cache:
-  npm: true
-  directories:
-    - $HOME/.composer/cache
+    - stage: test
+      name: E2E tests with Docker (7.4, WordPress latest)
+      php: "7.4"
+      env: PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=
+      before_script:
+        - sudo service mysql stop
+        - echo "Running E2E tests with code coverage ..."
+      script:
+        - npm run env:start
+        - npm run wp -- wp core install --title=WordPress --admin_user=admin --admin_password=password --admin_email=admin@example.com --skip-email --url=http://localhost:8088 --quiet
+        - npm run wp -- wp plugin activate unsplash
+        - npm run build:js
+        - npm run test:e2e:ci
+
+    - name: PHP & JS unit tests (7.4, WordPress latest, with code coverage)
+      php: "7.4"
+      env: WP_VERSION=latest DEV_LIB_ONLY=phpunit,coverage
+      before_script:
+        - echo "Running PHP & JS unit tests with code coverage ..."
+      script:
+        - source "$DEV_LIB_PATH/travis.script.sh"
+        - npm run build:js
+        - npm run test:js:coveralls
+
+    - name: PHP unit tests (7.3, WordPress latest)
+      php: "7.3"
+      env: WP_VERSION=latest DEV_LIB_ONLY=phpunit
+
+    - name: PHP unit tests (7.2, WordPress latest)
+      php: "7.2"
+      env: WP_VERSION=latest DEV_LIB_ONLY=phpunit
+
+    - name: PHP unit tests (7.1, WordPress latest)
+      php: "7.1"
+      env: WP_VERSION=latest DEV_LIB_ONLY=phpunit
+
+    - name: PHP unit tests (7.0, WordPress 5.1)
+      php: "7.0"
+      env: WP_VERSION=5.1 DEV_LIB_ONLY=phpunit
+
+    - name: PHP unit tests (5.6, WordPress 5.0)
+      php: "5.6"
+      env: WP_VERSION=5.0 DEV_LIB_ONLY=phpunit
+
+    - name: PHP unit tests (7.4, WordPress trunk)
+      php: "7.4"
+      env: WP_VERSION=trunk DEV_LIB_ONLY=phpunit
+
+    - name: PHP unit tests (5.6, WordPress trunk)
+      php: "5.6"
+      env: WP_VERSION=trunk DEV_LIB_ONLY=phpunit

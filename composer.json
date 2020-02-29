@@ -1,10 +1,14 @@
 {
   "name": "xwp/unsplash-wp",
-  "description": "Unsplash for WordPress.",
   "type": "wordpress-plugin",
+  "description": "Unsplash for WordPress.",
+  "homepage": "https://github.com/xwp/unsplash-wp",
   "license": "GPL-2.0-or-later",
   "minimum-stability": "dev",
   "prefer-stable": true,
+  "config": {
+    "sort-packages": true
+  },
   "repositories": [
     {
       "type": "composer",
@@ -12,79 +16,62 @@
     }
   ],
   "require": {
-    "composer/installers": "^1.7",
     "ext-json": "*",
     "ext-openssl": "*",
-    "php": ">=5.6",
-    "unsplash/unsplash": "^2.5"
+    "php": ">=5.6.20",
+    "unsplash/unsplash": "2.5"
   },
   "require-dev": {
-    "10up/wp_mock": "0.2.0",
-    "automattic/vipwpcs": "2.0.0",
-    "dealerdirect/phpcodesniffer-composer-installer": "0.5.0",
-    "mockery/mockery": "0.9.11",
+    "automattic/vipwpcs": "*",
+    "dealerdirect/phpcodesniffer-composer-installer": "*",
     "php-coveralls/php-coveralls": "2.2.0",
-    "phpcompatibility/phpcompatibility-wp": "2.1.0",
-    "phpunit/phpcov": "3.1.0",
-    "phpunit/phpunit": "5.7.27",
-    "sirbrillig/phpcs-variable-analysis": "^2.8",
-    "slowprog/composer-copy-file": "0.3.1",
+    "phpcompatibility/phpcompatibility-wp": "*",
+    "phpunit/phpcov": "^3.1 || ^6.0",
+    "phpunit/phpunit": "^5.7 || ^7",
+    "sirbrillig/phpcs-variable-analysis": "2.8.1",
+    "slowprog/composer-copy-file": "*",
     "wp-api/basic-auth": "dev-master",
-    "wp-coding-standards/wpcs": "2.2.0",
+    "wp-coding-standards/wpcs": "*",
     "wpackagist-plugin/classic-editor": "@stable",
-    "xwp/wordpress-tests-installer": "1.0.0"
-  },
-  "autoload": {
-    "psr-4": {
-      "XWP\\Unsplash\\": "php/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "XWP\\Unsplash\\": [
-        "tests/phpunit/unit/",
-        "tests/phpunit/integration/"
-      ]
-    }
+    "xwp/wordpress-tests-installer": "*",
+    "xwp/wp-dev-lib": "*"
   },
   "scripts": {
-    "lint": [
-      "@composer validate --strict",
-      "phpcs . -v"
+    "build": [
+      "composer install --no-dev --prefer-dist --optimize-autoloader --no-scripts"
     ],
     "format": [
-      "phpcbf . -v"
+      "phpcbf ."
+    ],
+    "lint": [
+      "@composer validate --strict",
+      "phpcs ."
+    ],
+    "post-install-cmd": [
+      "@setup"
+    ],
+    "post-update-cmd": [
+      "@setup"
+    ],
+    "readme": [
+      "vendor/xwp/wp-dev-lib/scripts/generate-markdown-readme"
+    ],
+    "setup": [
+      "SlowProg\\CopyFile\\ScriptHandler::copy",
+      "if [ ! -f .git/hooks/pre-commit ]; then vendor/xwp/wp-dev-lib/scripts/install-pre-commit-hook.sh; fi",
+      "if [ ! -f .env ]; then cp .env.dist .env; fi"
     ],
     "test": [
       "phpunit"
     ],
-    "coverage": [
-      "php-coveralls --verbose"
-    ],
-    "coverage-merge": [
-      "phpcov merge --clover tests/reports/clover.xml tests/reports/php"
-    ],
-    "build": [
-      "composer install --no-dev --prefer-dist --optimize-autoloader --no-scripts"
-    ],
-    "post-install-cmd": [
-      "SlowProg\\CopyFile\\ScriptHandler::copy",
-      "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
-    ],
-    "post-update-cmd": [
-      "SlowProg\\CopyFile\\ScriptHandler::copy",
-      "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+    "test-coverage": [
+      "phpunit --coverage-html tests/coverage/html"
     ]
   },
-  "config": {
-    "sort-packages": true,
-    "platform": {
-      "php": "5.6"
-    }
-  },
   "extra": {
+    "installer-name": "unsplash",
     "copy-file-dev": {
-      "tests/phpunit/wp-tests-config.php": "vendor/xwp/wordpress-tests/phpunit/wp-tests-config.php"
+      "tests/wp-tests-config.php": "vendor/xwp/wordpress-tests/phpunit/wp-tests-config.php"
     },
     "installer-paths": {
       "vendor/plugins/{$name}/": ["type:wordpress-plugin"]

@@ -1,5 +1,6 @@
-/data
-/js
+/assets/css/*.css
+/bin
+/build
 /node_modules
 /tests
 /vendor
