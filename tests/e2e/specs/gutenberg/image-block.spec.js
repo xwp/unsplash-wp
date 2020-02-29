@@ -7,7 +7,6 @@ import { clickButton } from '../../utils';
 const MEDIA_LIBRARY_BUTTON = '.editor-media-placeholder__media-library-button';
 
 describe( 'Image Block', () => {
-
 	beforeEach( async () => {
 		await createNewPost( {} );
 	} );
@@ -17,7 +16,7 @@ describe( 'Image Block', () => {
 		// Click the media library button.
 		await page.waitForSelector( MEDIA_LIBRARY_BUTTON );
 		await page.click( MEDIA_LIBRARY_BUTTON );
-		await clickButton('Library');
+		await clickButton( 'Library' );
 		await page.waitForSelector( '.media-modal' );
 		await page.waitForSelector( '#menu-item-unsplash' );
 		// Wait unsplash tab.

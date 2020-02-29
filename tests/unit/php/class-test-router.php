@@ -5,7 +5,7 @@
  * @package XWP\Unsplash
  */
 
-namespace XWP\Unsplash;
+namespace Unsplash;
 
 use Mockery;
 use WP_Mock;
@@ -13,11 +13,11 @@ use WP_Mock;
 /**
  * Tests for the Router class.
  */
-class TestRouter extends TestCase {
+class Test_Router extends Test_Case {
 	/**
 	 * Test init.
 	 *
-	 * @covers \XWP\Unsplash\Router::init()
+	 * @covers \Unsplash\Router::init()
 	 */
 	public function test_init() {
 		Mockery::mock( 'WP_REST_Controller' );
@@ -33,7 +33,7 @@ class TestRouter extends TestCase {
 	/**
 	 * Test enqueue_scripts.
 	 *
-	 * @covers \XWP\Unsplash\Router::enqueue_scripts()
+	 * @covers \Unsplash\Router::enqueue_scripts()
 	 */
 	public function test_enqueue_scripts() {
 		Mockery::mock( 'WP_REST_Controller' );
@@ -75,7 +75,7 @@ class TestRouter extends TestCase {
 	/**
 	 * Test register_meta.
 	 *
-	 * @covers \XWP\Unsplash\Router::register_meta()
+	 * @covers \Unsplash\Router::register_meta()
 	 */
 	public function test_register_meta() {
 		Mockery::mock( 'WP_REST_Controller' );
@@ -91,7 +91,7 @@ class TestRouter extends TestCase {
 	/**
 	 * Test register_taxonomy.
 	 *
-	 * @covers \XWP\Unsplash\Router::register_taxonomy()
+	 * @covers \Unsplash\Router::register_taxonomy()
 	 */
 	public function test_register_taxonomy() {
 		Mockery::mock( 'WP_REST_Controller' );

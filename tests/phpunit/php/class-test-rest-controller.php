@@ -13,7 +13,7 @@ use WP_Test_REST_Controller_Testcase;
 /**
  * Tests for the RestController class.
  */
-class TestRestController extends WP_Test_REST_Controller_Testcase {
+class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 
 	/**
 	 * API namespace.

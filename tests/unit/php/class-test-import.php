@@ -5,7 +5,7 @@
  * @package Unsplash
  */
 
-namespace XWP\Unsplash;
+namespace Unsplash;
 
 use Mockery;
 use WP_Mock;
@@ -14,12 +14,12 @@ use WP_Error;
 /**
  * Test the WordPress import abstraction.
  */
-class TestImport extends TestCase {
+class Test_Import extends Test_Case {
 	/**
 	 * Test get attachment.
 	 *
-	 * @covers \XWP\Unsplash\Import::__construct()
-	 * @covers \XWP\Unsplash\Import::get_attachment_id()
+	 * @covers \Unsplash\Import::__construct()
+	 * @covers \Unsplash\Import::get_attachment_id()
 	 */
 	public function test_get_attachment() {
 		WP_Mock::userFunction( 'wp_list_pluck' )->once()->andReturn( [] );
@@ -46,8 +46,8 @@ class TestImport extends TestCase {
 	/**
 	 * Test create attachment.
 	 *
-	 * @covers \XWP\Unsplash\Import::__construct()
-	 * @covers \XWP\Unsplash\Import::create_attachment()
+	 * @covers \Unsplash\Import::__construct()
+	 * @covers \Unsplash\Import::create_attachment()
 	 */
 	public function test_create_attachment() {
 
@@ -96,8 +96,8 @@ class TestImport extends TestCase {
 	/**
 	 * Test pass empty array to create_attachment.
 	 *
-	 * @covers \XWP\Unsplash\Import::__construct()
-	 * @covers \XWP\Unsplash\Import::create_attachment()
+	 * @covers \Unsplash\Import::__construct()
+	 * @covers \Unsplash\Import::create_attachment()
 	 */
 	public function test_invalid_create_attachment() {
 		Mockery::mock( 'WP_Error' );
@@ -123,8 +123,8 @@ class TestImport extends TestCase {
 	/**
 	 * Test pass WP_error to create_attachment.
 	 *
-	 * @covers \XWP\Unsplash\Import::__construct()
-	 * @covers \XWP\Unsplash\Import::create_attachment()
+	 * @covers \Unsplash\Import::__construct()
+	 * @covers \Unsplash\Import::create_attachment()
 	 */
 	public function test_wp_error_create_attachment() {
 		$file = new WP_Error( 'testing' );
@@ -149,8 +149,8 @@ class TestImport extends TestCase {
 	/**
 	 * Test pass WP_error to create_attachment.
 	 *
-	 * @covers \XWP\Unsplash\Import::__construct()
-	 * @covers \XWP\Unsplash\Import::create_attachment()
+	 * @covers \Unsplash\Import::__construct()
+	 * @covers \Unsplash\Import::create_attachment()
 	 */
 	public function test_wp_error_wp_insert_attachment() {
 		$file  = [
@@ -180,8 +180,8 @@ class TestImport extends TestCase {
 	/**
 	 * Test import image.
 	 *
-	 * @covers \XWP\Unsplash\Import::__construct()
-	 * @covers \XWP\Unsplash\Import::import_image()
+	 * @covers \Unsplash\Import::__construct()
+	 * @covers \Unsplash\Import::import_image()
 	 */
 	public function test_import_image() {
 		$file = [
@@ -215,8 +215,8 @@ class TestImport extends TestCase {
 	/**
 	 * Test import image on multisite.
 	 *
-	 * @covers \XWP\Unsplash\Import::import_image()
-	 * @covers \XWP\Unsplash\Import::check_upload_size()
+	 * @covers \Unsplash\Import::import_image()
+	 * @covers \Unsplash\Import::check_upload_size()
 	 */
 	public function test_import_image_multisite() {
 		$file = [
@@ -254,8 +254,8 @@ class TestImport extends TestCase {
 	/**
 	 * Test invalid import image.
 	 *
-	 * @covers \XWP\Unsplash\Import::__construct()
-	 * @covers \XWP\Unsplash\Import::import_image()
+	 * @covers \Unsplash\Import::__construct()
+	 * @covers \Unsplash\Import::import_image()
 	 */
 	public function test_invalid_import_image() {
 		$error = new WP_Error( 'invalid_file' );
@@ -285,8 +285,8 @@ class TestImport extends TestCase {
 	/**
 	 * Test invalid handle upload.
 	 *
-	 * @covers \XWP\Unsplash\Import::__construct()
-	 * @covers \XWP\Unsplash\Import::import_image()
+	 * @covers \Unsplash\Import::__construct()
+	 * @covers \Unsplash\Import::import_image()
 	 */
 	public function test_invalid_handle_upload_import_image() {
 		$file = [
@@ -319,8 +319,8 @@ class TestImport extends TestCase {
 	/**
 	 * Test process user.
 	 *
-	 * @covers \XWP\Unsplash\Import::__construct()
-	 * @covers \XWP\Unsplash\Import::process_user()
+	 * @covers \Unsplash\Import::__construct()
+	 * @covers \Unsplash\Import::process_user()
 	 */
 	public function test_process_user() {
 		WP_Mock::userFunction( 'get_term_by' )->once()->andReturn( false );
@@ -349,12 +349,12 @@ class TestImport extends TestCase {
 	/**
 	 * Test process.
 	 *
-	 * @covers \XWP\Unsplash\Import::__construct()
-	 * @covers \XWP\Unsplash\Import::process()
-	 * @covers \XWP\Unsplash\Import::process_meta()
-	 * @covers \XWP\Unsplash\Import::process_user()
-	 * @covers \XWP\Unsplash\Import::process_source()
-	 * @covers \XWP\Unsplash\Import::process_tags()
+	 * @covers \Unsplash\Import::__construct()
+	 * @covers \Unsplash\Import::process()
+	 * @covers \Unsplash\Import::process_meta()
+	 * @covers \Unsplash\Import::process_user()
+	 * @covers \Unsplash\Import::process_source()
+	 * @covers \Unsplash\Import::process_tags()
 	 */
 	public function test_process() {
 		$file = [

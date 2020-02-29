@@ -5,21 +5,21 @@
  * @package Unsplash
  */
 
-namespace XWP\Unsplash;
+namespace Unsplash;
 
 use WP_Mock;
 
 /**
  * Test the WordPress plugin abstraction.
  */
-class TestPlugin extends TestCase {
+class Test_Plugin extends Test_Case {
 
 	/**
 	 * Test the plugin setup.
 	 *
-	 * @covers \XWP\Unsplash\Plugin::__construct()
-	 * @covers \XWP\Unsplash\Plugin::file()
-	 * @covers \XWP\Unsplash\Plugin::dir()
+	 * @covers \Unsplash\Plugin::__construct()
+	 * @covers \Unsplash\Plugin::file()
+	 * @covers \Unsplash\Plugin::dir()
 	 */
 	public function test_plugin_init() {
 		WP_Mock::userFunction( 'wp_upload_dir' )
@@ -35,7 +35,7 @@ class TestPlugin extends TestCase {
 	/**
 	 * Test the plugin setup.
 	 *
-	 * @covers \XWP\Unsplash\Plugin::basename()
+	 * @covers \Unsplash\Plugin::basename()
 	 */
 	public function test_basename() {
 		// Is there a way to do this using withArgs() and andReturnValues()?

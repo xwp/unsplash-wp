@@ -5,14 +5,14 @@
  * @package Unsplash
  */
 
-namespace XWP\Unsplash;
+namespace Unsplash;
 
 use WP_Mock;
 
 /**
  * Test the WordPress plugin abstraction.
  */
-class TestImage extends TestCase {
+class Test_Image extends Test_Case {
 	/**
 	 * Get example data.
 	 *
@@ -70,10 +70,10 @@ class TestImage extends TestCase {
 	/**
 	 * Test process data.
 	 *
-	 * @covers \XWP\Unsplash\Image::__construct()
-	 * @covers \XWP\Unsplash\Image::process_fields()
-	 * @covers \XWP\Unsplash\Image::get_field()
-	 * @covers \XWP\Unsplash\Image::get_image_url()
+	 * @covers \Unsplash\Image::__construct()
+	 * @covers \Unsplash\Image::process_fields()
+	 * @covers \Unsplash\Image::get_field()
+	 * @covers \Unsplash\Image::get_image_url()
 	 */
 	public function test_process_data() {
 		WP_Mock::userFunction( 'wp_list_pluck' )->once()->andReturn( [] );
@@ -89,8 +89,8 @@ class TestImage extends TestCase {
 	/**
 	 * Test image url.
 	 *
-	 * @covers \XWP\Unsplash\Image::__construct()
-	 * @covers \XWP\Unsplash\Image::get_image_url()
+	 * @covers \Unsplash\Image::__construct()
+	 * @covers \Unsplash\Image::get_image_url()
 	 */
 	public function test_get_image_url() {
 		WP_Mock::userFunction( 'wp_list_pluck' )->once()->andReturn( [] );
@@ -102,8 +102,8 @@ class TestImage extends TestCase {
 	/**
 	 * Test field.
 	 *
-	 * @covers \XWP\Unsplash\Image::__construct()
-	 * @covers \XWP\Unsplash\Image::get_field()
+	 * @covers \Unsplash\Image::__construct()
+	 * @covers \Unsplash\Image::get_field()
 	 */
 	public function test_get_field() {
 		WP_Mock::userFunction( 'wp_list_pluck' )->once()->andReturn( [] );
@@ -115,8 +115,8 @@ class TestImage extends TestCase {
 	/**
 	 * Test image field.
 	 *
-	 * @covers \XWP\Unsplash\Image::__construct()
-	 * @covers \XWP\Unsplash\Image::get_image_field()
+	 * @covers \Unsplash\Image::__construct()
+	 * @covers \Unsplash\Image::get_image_field()
 	 */
 	public function test_get_image_field() {
 		WP_Mock::userFunction( 'wp_list_pluck' )->once()->andReturn( [] );

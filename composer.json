@@ -19,7 +19,7 @@
     "ext-json": "*",
     "ext-openssl": "*",
     "php": ">=5.6.20",
-    "unsplash/unsplash": "2.5"
+    "unsplash/unsplash": "^2.5"
   },
   "require-dev": {
     "automattic/vipwpcs": "*",
