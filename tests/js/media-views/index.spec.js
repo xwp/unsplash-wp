@@ -1,3 +1,10 @@
+jest.mock( '@wordpress/dom-ready', () => {
+	return () => {};
+} );
+
+/**
+ * Internal dependencies
+ */
 import { checkType } from '../../../assets/src/media-views';
 
 describe( 'media-views', () => {
@@ -15,11 +22,11 @@ describe( 'media-views', () => {
 
 	describe( 'checkType', () => {
 		it( 'should not return true', () => {
-			expect( checkType( [] ) ).toStrictEqual( false );
+			expect( checkType( [] ) ).toBe( false );
 		} );
 
 		it( 'should return true', () => {
-			expect( checkType( [ 'image' ] ) ).toStrictEqual( true );
+			expect( checkType( [ 'image' ] ) ).toBe( true );
 		} );
 	} );
 } );

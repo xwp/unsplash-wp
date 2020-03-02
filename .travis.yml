@@ -10,6 +10,7 @@ notifications:
   email:
     on_success: never
     on_failure: change
+  webhooks: "https://coveralls.io/webhook?repo_token=$COVERALLS_REPO_TOKEN"
 
 language: php
 
@@ -33,6 +34,7 @@ branches:
 env:
   global:
     - PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+    - COVERALLS_PARALLEL=true
 
 before_install:
   - nvm install

@@ -10,7 +10,7 @@ import domReady from '@wordpress/dom-ready';
  */
 import { isEqual } from 'lodash';
 
-const SelectUnsplash = View => {
+export const SelectUnsplash = View => {
 	const { unsplashSettings } = window;
 
 	return View.extend( {
@@ -67,7 +67,7 @@ const SelectUnsplash = View => {
 	} );
 };
 
-const QueryUnsplash = () => {
+export const QueryUnsplash = () => {
 	const Attachments = wp.media.model.Attachments,
 		Query = wp.media.model.Query;
 
@@ -209,7 +209,7 @@ const QueryUnsplash = () => {
 	return unsplashQuery;
 };
 
-const checkType = type => {
+export const checkType = type => {
 	const arr = type instanceof Array ? type : [ type ];
 	return isEqual( arr, [ 'image' ] );
 };
