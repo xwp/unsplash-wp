@@ -1,18 +1,16 @@
 <?php
 /**
- * Tests for Plugin class.
+ * Tests for Image class.
  *
  * @package Unsplash
  */
 
 namespace Unsplash;
 
-use WP_Mock;
-
 /**
- * Test the WordPress plugin abstraction.
+ * Test the Image class.
  */
-class Test_Image extends Test_Case {
+class Test_Image extends \WP_UnitTestCase {
 	/**
 	 * Get example data.
 	 *
@@ -37,33 +35,31 @@ class Test_Image extends Test_Case {
 				'thumb'   => 'https://images.unsplash.com/photo-1558980664-3a031cf67ea8?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&ixid=eyJhcHBfaWQiOjEyMDd9',
 			],
 			'sponsorship'     => [
-				'sponsor' =>
-					[
-						'id' => 'XnhDFu3Jr-A',
-					],
+				'sponsor' => [
+					'id' => 'XnhDFu3Jr-A',
+				],
 			],
-			'user'            =>
-				[
-					'id'         => 'XnhDFu3Jr-A',
-					'updated_at' => '2020-02-12T14:11:09-05:00',
-					'username'   => 'harleydavidson',
-					'name'       => 'Harley-Davidson',
-					'first_name' => 'Harley-Davidson',
-				],
-			'exif'            =>
-				[
-					'make'          => 'Canon',
-					'model'         => 'Canon EOS 5D Mark IV',
-					'exposure_time' => '1/500',
-					'aperture'      => '4.5',
-					'focal_length'  => '23.0',
-					'iso'           => 100,
-				],
-			'tags'            =>
+			'user'            => [
+				'id'         => 'XnhDFu3Jr-A',
+				'updated_at' => '2020-02-12T14:11:09-05:00',
+				'username'   => 'harleydavidson',
+				'name'       => 'Harley-Davidson',
+				'first_name' => 'Harley-Davidson',
+			],
+			'exif'            => [
+				'make'          => 'Canon',
+				'model'         => 'Canon EOS 5D Mark IV',
+				'exposure_time' => '1/500',
+				'aperture'      => '4.5',
+				'focal_length'  => '23.0',
+				'iso'           => 100,
+			],
+			'tags'            => [
 				[
 					'type'  => 'landing_page',
 					'title' => 'motorcycle',
 				],
+			],
 		];
 	}
 
@@ -76,8 +72,6 @@ class Test_Image extends Test_Case {
 	 * @covers \Unsplash\Image::get_image_url()
 	 */
 	public function test_process_data() {
-		WP_Mock::userFunction( 'wp_list_pluck' )->once()->andReturn( [] );
-		WP_Mock::userFunction( 'current_time' )->once()->andReturn( '123456' );
 		$test_data = $this->get_data();
 		$image     = new Image( $test_data );
 		$this->assertSame( $image->get_field( 'original_id' ), $test_data['id'] );
@@ -93,8 +87,6 @@ class Test_Image extends Test_Case {
 	 * @covers \Unsplash\Image::get_image_url()
 	 */
 	public function test_get_image_url() {
-		WP_Mock::userFunction( 'wp_list_pluck' )->once()->andReturn( [] );
-		WP_Mock::userFunction( 'current_time' )->once()->andReturn( '123456' );
 		$image = new Image( $this->get_data() );
 		$this->assertSame( '', $image->get_image_url( 'invalid' ) );
 	}
@@ -106,8 +98,6 @@ class Test_Image extends Test_Case {
 	 * @covers \Unsplash\Image::get_field()
 	 */
 	public function test_get_field() {
-		WP_Mock::userFunction( 'wp_list_pluck' )->once()->andReturn( [] );
-		WP_Mock::userFunction( 'current_time' )->once()->andReturn( '123456' );
 		$image = new Image( $this->get_data() );
 		$this->assertSame( '', $image->get_field( 'invalid' ) );
 	}
@@ -119,8 +109,6 @@ class Test_Image extends Test_Case {
 	 * @covers \Unsplash\Image::get_image_field()
 	 */
 	public function test_get_image_field() {
-		WP_Mock::userFunction( 'wp_list_pluck' )->once()->andReturn( [] );
-		WP_Mock::userFunction( 'current_time' )->once()->andReturn( '123456' );
 		$image = new Image( $this->get_data() );
 		$this->assertSame( '', $image->get_image_field( 'invalid' ) );
 	}
