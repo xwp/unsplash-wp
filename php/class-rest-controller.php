@@ -22,11 +22,11 @@ use WP_Error;
 class Rest_Controller extends WP_REST_Controller {
 
 	/**
-	 * Settings instance.
+	 * Plugin instance.
 	 *
-	 * @var Settings
+	 * @var Plugin
 	 */
-	public $settings;
+	public $plugin;
 
 	/**
 	 * Constructor.
