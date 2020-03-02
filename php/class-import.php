@@ -84,12 +84,14 @@ class Import {
 	 * @return false|int
 	 */
 	public function get_attachment_id() {
-		$check = get_page_by_path( $this->id, ARRAY_A, 'page' );
-		if ( is_array( $check ) ) {
-			return $check['ID'];
+		if ( 0 !== $this->attachment_id ) {
+			return $this->attachment_id;
 		}
 
-		return false;
+		// TODO: make more robust.
+		$attachment = get_page_by_path( $this->id, ARRAY_A, 'attachment' );
+
+		return isset( $attachment['ID'] ) ? $attachment['ID'] : false;
 	}
 
 	/**
@@ -107,7 +109,7 @@ class Import {
 		$file_array = [];
 		$file       = $this->image->get_image_url( 'full' );
 		$tmp        = download_url( $file );
-		// If error downloading, the output error.
+		// If there was an error downloading, return the error.
 		if ( is_wp_error( $tmp ) ) {
 			return $tmp;
 		}
@@ -248,6 +250,7 @@ class Import {
 				add_term_meta( $term['term_id'], 'unsplash_meta', $unsplash_user );
 			}
 		}
+
 		if ( $user && ! is_wp_error( $user ) ) {
 			return wp_set_post_terms( $this->attachment_id, [ $user->term_id ], 'unsplash_user' );
 		}

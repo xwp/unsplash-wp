@@ -11,7 +11,7 @@ use WP_REST_Request;
 use WP_Test_REST_Controller_Testcase;
 
 /**
- * Tests for the RestController class.
+ * Tests for the Rest_Controller class.
  */
 class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 
@@ -46,7 +46,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	/**
 	 * Test register_routes().
 	 *
-	 * @covers \Unsplash\RestController::register_routes()
+	 * @covers \Unsplash\Rest_Controller::register_routes()
 	 */
 	public function test_register_routes() {
 		$this->assertArrayHasKey( $this->get_route(), static::$routes );
@@ -69,7 +69,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	/**
 	 * Test get_items().
 	 *
-	 * @covers \Unsplash\RestController::get_items()
+	 * @covers \Unsplash\Rest_Controller::get_items()
 	 */
 	public function test_get_items() {
 		$request  = new WP_REST_Request( 'GET', $this->get_route() );
@@ -130,7 +130,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	/**
 	 * Test get_item().
 	 *
-	 * @covers \Unsplash\RestController::get_item()
+	 * @covers \Unsplash\Rest_Controller::get_item()
 	 */
 	public function test_get_item() {
 		$request  = new WP_REST_Request( 'GET', $this->get_route( '/uRuPYB0P8to' ) );
@@ -162,7 +162,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	/**
 	 * Test get_download().
 	 *
-	 * @covers \Unsplash\RestController::get_import()
+	 * @covers \Unsplash\Rest_Controller::get_import()
 	 */
 	public function test_get_import() {
 		add_filter( 'upload_dir', [ $this, 'upload_dir_patch' ] );
@@ -217,7 +217,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	/**
 	 * Test get_search().
 	 *
-	 * @covers \Unsplash\RestController::get_search()
+	 * @covers \Unsplash\Rest_Controller::get_search()
 	 */
 	public function test_get_search() {
 		$request  = new WP_REST_Request( 'GET', $this->get_route( '/search/motorcycle' ) );
@@ -382,7 +382,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	/**
 	 * Test get_item_schema().
 	 *
-	 * @covers \Unsplash\RestController::get_item_schema()
+	 * @covers \Unsplash\Rest_Controller::get_item_schema()
 	 */
 	public function test_get_item_schema() {
 		$request    = new WP_REST_Request( 'OPTIONS', $this->get_route() );
