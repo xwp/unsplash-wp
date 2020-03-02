@@ -70,11 +70,11 @@ class Test_Import extends \WP_UnitTestCase {
 			$image
 		);
 
-		$attachment_id = $import->create_attachment( $file );
-		$actual_id     = get_page_by_path( 'eOvv4N6yNmk', ARRAY_A, 'attachment' )['ID'];
+		$attachment_id = $import->create_attachment( $file ); // phpcs:ignore
+		$actual_id     = get_page_by_path( 'eOvv4N6yNmk', ARRAY_A, 'attachment' )['ID']; // phpcs:ignore
 
 		// TODO: uncomment once $actual_id can be retrieved.
-		// $this->assertEquals( $attachment_id, $actual_id );
+		// phpcs:ignore $this->assertEquals( $attachment_id, $actual_id );
 	}
 
 	/**
@@ -343,10 +343,10 @@ class Test_Import extends \WP_UnitTestCase {
 			$image
 		);
 
-		$attachment_id = $import->process();
-		$actual_id     = get_page_by_path( 'eOvv4N6yNmk', ARRAY_A, 'attachment' )['ID'];
+		$attachment_id = $import->process(); // phpcs:ignore
+		$actual_id     = get_page_by_path( 'eOvv4N6yNmk', ARRAY_A, 'attachment' )['ID']; // phpcs:ignore
 
 		// TODO: uncomment once Import::get_attachment_id() is made more robust.
-		// $this->assertEquals( $attachment_id, $actual_id );
+		// phpcs:ignore $this->assertEquals( $attachment_id, $actual_id );
 	}
 }
