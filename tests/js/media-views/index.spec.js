@@ -1,11 +1,14 @@
-jest.mock( '@wordpress/dom-ready', () => {
-	return () => {};
-} );
-
 /**
  * Internal dependencies
  */
 import { checkType } from '../../../assets/src/media-views';
+
+/**
+ * Mock domReady
+ */
+jest.mock( '@wordpress/dom-ready', () => () => ( {
+	domReady: () => {},
+} ) );
 
 describe( 'media-views', () => {
 	describe( 'SelectUnsplash', () => {
