@@ -77,12 +77,12 @@ If everything was successful, you'll see this on your screen:
 Starting up containers ... done
 
 Welcome to:
-  _____             ____             
- |  ___|__   ___   | __ )  __ _ _ __ 
- | |_ / _ \ / _ \  |  _ \ / _` | '__|
- |  _| (_) | (_) | | |_) | (_| | |   
- |_|  \___/ \___/  |____/ \__,_|_|   
-                                     
+  _   _                 _           _     
+ | | | |_ __  ___ _ __ | | __ _ ___| |__  
+ | | | | '_ \/ __| '_ \| |/ _` / __| '_ \ 
+ | |_| | | | \__ \ |_) | | (_| \__ \ | | |
+  \___/|_| |_|___/ .__/|_|\__,_|___/_| |_|
+                 |_|                      
 Run npm run dev to build the latest version of the Unsplash plugin,
 then open http://localhost:8088/ to get started!
 ```
