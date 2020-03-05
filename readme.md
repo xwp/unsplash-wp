@@ -29,7 +29,7 @@ An answer to that question.
 
 ## Getting Started ##
 
-If you are a developer, we encourage you to [follow along](https://github.com/xwp/unsplash-wp) or [contribute](https://github.com/xwp/unsplash-wp/contributing.md) to the development of this plugin on GitHub.
+If you are a developer, we encourage you to [follow along](https://github.com/xwp/unsplash-wp) or [contribute](https://github.com/xwp/unsplash-wp/blob/develop/contributing.md) to the development of this plugin on GitHub.
 
 ## Screenshots ##
 
