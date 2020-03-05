@@ -93,47 +93,45 @@ class Plugin extends Plugin_Base {
 		);
 	}
 
+
 	/**
 	 * Custom wp_prepare_attachment_for_js copied from core.
 	 *
-	 * @param array $image Image object.
+	 * @param array $photo Photo object.
 	 *
 	 * @return array
 	 */
-	public function wp_prepare_attachment_for_js( array $image ) {
-		$image = (object) $image;
-
+	public function wp_prepare_attachment_for_js( array $photo ) {
 		$response = [
-			'id'            => $image->id,
+			'id'            => isset( $photo['id'] ) ? $photo['id'] : null,
 			'title'         => '',
-			'filename'      => $image->id . '.jpg',
-			'url'           => $image->urls['raw'],
-			'link'          => $image->links['html'],
-			'alt'           => $image->alt_description,
-			'author'        => $image->author,
-			'description'   => $image->description,
+			'filename'      => isset( $photo['unsplash_id'] ) ? $photo['unsplash_id'] . '.jpg' : null,
+			'url'           => isset( $photo['urls']['raw'] ) ? $photo['urls']['raw'] : null,
+			'link'          => isset( $photo['links']['html'] ) ? $photo['links']['html'] : null,
+			'alt'           => isset( $photo['alt_description'] ) ? $photo['alt_description'] : null,
+			'author'        => isset( $photo['author'] ) ? $photo['author'] : null,
+			'description'   => isset( $photo['description'] ) ? $photo['description'] : null,
 			'caption'       => '',
 			'name'          => '',
-			'height'        => $image->height,
-			'width'         => $image->width,
+			'height'        => isset( $photo['height'] ) ? $photo['height'] : null,
+			'width'         => isset( $photo['width'] ) ? $photo['width'] : null,
 			'status'        => 'inherit',
 			'uploadedTo'    => 0,
-			'date'          => strtotime( $image->created_at ) * 1000,
-			'modified'      => strtotime( $image->updated_at ) * 1000,
+			'date'          => isset( $photo['created_at'] ) ? strtotime( $photo['created_at'] ) * 1000 : null,
+			'modified'      => isset( $photo['updated_at'] ) ? strtotime( $photo['updated_at'] ) * 1000 : null,
 			'menuOrder'     => 0,
 			'mime'          => 'image/jpeg',
 			'type'          => 'image',
 			'subtype'       => 'jpeg',
-			'icon'          => add_query_arg(
+			'icon'          => isset( $photo['urls']['thumb'] ) ? add_query_arg(
 				[
-					'w'   => 150,
-					'h'   => 150,
-					'q'   => 85,
-					'fit' => 'crop',
+					'w' => 150,
+					'h' => 150,
+					'q' => 80,
 				],
-				$image->urls['raw']
-			),
-			'dateFormatted' => mysql2date( __( 'F j, Y', 'unsplash' ), $image->created_at ),
+				$photo['urls']['thumb']
+			) : null,
+			'dateFormatted' => isset( $photo['created_at'] ) ? mysql2date( __( 'F j, Y', 'unsplash' ), $photo['created_at'] ) : null,
 			'nonces'        => [
 				'update' => false,
 				'delete' => false,
@@ -145,9 +143,9 @@ class Plugin extends Plugin_Base {
 
 		$sizes = [
 			'full' => [
-				'url'    => $image->urls['raw'],
-				'height' => $image->height,
-				'width'  => $image->width,
+				'url'    => $photo['urls']['raw'],
+				'height' => $photo['height'],
+				'width'  => $photo['width'],
 			],
 		];
 
@@ -159,7 +157,7 @@ class Plugin extends Plugin_Base {
 					'q'   => 85,
 					'fit' => 'crop',
 				],
-				$image->urls['raw']
+				$photo['urls']['full']
 			);
 			$sizes[ $name ] = [
 				'url'    => $url,
@@ -168,6 +166,7 @@ class Plugin extends Plugin_Base {
 			];
 		}
 		$response['sizes'] = $sizes;
+
 		return $response;
 	}
 

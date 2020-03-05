@@ -350,7 +350,7 @@ class Rest_Controller extends WP_REST_Controller {
 	 */
 	public function prepare_item_for_response( $photo, $request ) {
 		if ( $this->is_ajax_request( $request ) ) {
-			return $this->wp_prepare_attachment_for_js( $photo );
+			return $this->plugin->wp_prepare_attachment_for_js( $photo );
 		}
 
 		$fields     = $this->get_fields_for_response( $request );
@@ -529,83 +529,6 @@ class Rest_Controller extends WP_REST_Controller {
 		$this->schema = $schema;
 
 		return $this->add_additional_fields_schema( $this->schema );
-	}
-
-
-	/**
-	 * Custom wp_prepare_attachment_for_js copied from core.
-	 *
-	 * @param array $photo Photo object.
-	 *
-	 * @return array
-	 */
-	public function wp_prepare_attachment_for_js( array $photo ) {
-		$response = [
-			'id'            => isset( $photo['id'] ) ? $photo['id'] : null,
-			'title'         => '',
-			'filename'      => isset( $photo['unsplash_id'] ) ? $photo['unsplash_id'] . '.jpg' : null,
-			'url'           => isset( $photo['urls']['raw'] ) ? $photo['urls']['raw'] : null,
-			'link'          => isset( $photo['links']['html'] ) ? $photo['links']['html'] : null,
-			'alt'           => isset( $photo['alt_description'] ) ? $photo['alt_description'] : null,
-			'author'        => isset( $photo['author'] ) ? $photo['author'] : null,
-			'description'   => isset( $photo['description'] ) ? $photo['description'] : null,
-			'caption'       => '',
-			'name'          => '',
-			'height'        => isset( $photo['height'] ) ? $photo['height'] : null,
-			'width'         => isset( $photo['width'] ) ? $photo['width'] : null,
-			'status'        => 'inherit',
-			'uploadedTo'    => 0,
-			'date'          => isset( $photo['created_at'] ) ? strtotime( $photo['created_at'] ) * 1000 : null,
-			'modified'      => isset( $photo['updated_at'] ) ? strtotime( $photo['updated_at'] ) * 1000 : null,
-			'menuOrder'     => 0,
-			'mime'          => 'image/jpeg',
-			'type'          => 'image',
-			'subtype'       => 'jpeg',
-			'icon'          => isset( $photo['urls']['thumb'] ) ? add_query_arg(
-				[
-					'w' => 150,
-					'h' => 150,
-					'q' => 80,
-				],
-				$photo['urls']['thumb']
-			) : null,
-			'dateFormatted' => isset( $photo['created_at'] ) ? mysql2date( __( 'F j, Y', 'unsplash' ), $photo['created_at'] ) : null,
-			'nonces'        => [
-				'update' => false,
-				'delete' => false,
-				'edit'   => false,
-			],
-			'editLink'      => false,
-			'meta'          => false,
-		];
-
-		$sizes = [
-			'full' => [
-				'url'    => $photo['urls']['raw'],
-				'height' => $photo['height'],
-				'width'  => $photo['width'],
-			],
-		];
-
-		foreach ( $this->plugin->image_sizes() as $name => $size ) {
-			$url            = add_query_arg(
-				[
-					'w'   => $size['height'],
-					'h'   => $size['width'],
-					'q'   => 85,
-					'fit' => 'crop',
-				],
-				$photo['urls']['full']
-			);
-			$sizes[ $name ] = [
-				'url'    => $url,
-				'height' => $size['height'],
-				'width'  => $size['width'],
-			];
-		}
-		$response['sizes'] = $sizes;
-
-		return $response;
 	}
 
 	/**
