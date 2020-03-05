@@ -178,4 +178,14 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	public function test_get_original_url_with_size( $url, $width, $height, $attr, $expected ) {
 		$this->assertSame( $this->hotlink->get_original_url_with_size( $url, $width, $height, $attr ), $expected );
 	}
+
+	/**
+	 * Test get_image_size.
+	 *
+	 * @covers ::get_image_tag()
+	 */
+	public function test_get_image_tag() {
+		$image_tag = get_image_tag( self::$attachment_id, 'alt', 'title', 'left' );
+		$this->assertEquals( self::$image_tag, $image_tag );
+	}
 }
