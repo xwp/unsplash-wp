@@ -131,8 +131,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 
 		$post    = get_post( $test_page );
 		$content = apply_filters( 'the_content', $post->post_content );
-		// FIXME: The img src in `self::$image_tag` is escaped via `get_image_tag()` and produces something similar to http://www.example.com/test.jpg?w=1&amp;h=1&h=1. Why are we adding the `w` and `h` query params?
-		// phpcs:ignore $this->assertContains( 'http://www.example.com/test.jpg?w=1&h=1', $content );
+		$this->assertContains( 'src="http://www.example.com/test.jpg?w=300&h=300"', $content );
 		$this->assertContains( '/tmp/melon.jpg', $content );
 	}
 

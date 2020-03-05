@@ -203,9 +203,8 @@ class Hotlink {
 			return $image;
 		}
 
-		$image = str_replace( $image_src, $this->get_original_url_with_size( $original_url, $width, $height ), $image );
-
-		return $image;
+		$new_src = $this->get_original_url_with_size( $original_url, $width, $height );
+		return preg_replace( '/src="([^"]+)"/', "src=\"{$new_src}\"", $image, 1 );
 	}
 
 
