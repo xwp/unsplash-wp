@@ -1,40 +1,59 @@
 <?php
 /**
  * Plugin Name: Unsplash
+ * Plugin URI: https://github.com/xwp/unsplash-wp
  * Description: Unsplash for WordPress.
  * Version: 1.0.0
- * Author: XWP
- * Author URI: https://github.com/xwp/unsplash-wp
+ * Author:  XWP
+ * Author URI: https://xwp.co/
+ * License: GPLv2+
+ * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain: unsplash
+ * Domain Path: /languages
  * Requires at least: 4.9
  * Requires PHP: 5.6
+ *
+ * Copyright (c) 2020 XWP (https://xwp.co/)
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License, version 2 or, at
+ * your discretion, any later version, as published by the Free
+ * Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  *
  * @package Unsplash
  */
 
-namespace XWP\Unsplash;
-
-// Support for site-level autoloading.
-if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
-	require_once __DIR__ . '/vendor/autoload.php';
+if ( version_compare( phpversion(), '5.6.20', '>=' ) ) {
+	require_once __DIR__ . '/instance.php';
+} else {
+	if ( defined( 'WP_CLI' ) ) {
+		WP_CLI::warning( _unsplash_php_version_text() );
+	} else {
+		add_action( 'admin_notices', '_unsplash_php_version_error' );
+	}
 }
 
-global $unsplash;
+/**
+ * Admin notice for incompatible versions of PHP.
+ */
+function _unsplash_php_version_error() {
+	printf( '<div class="error"><p>%s</p></div>', esc_html( _unsplash_php_version_text() ) );
+}
 
-$unsplash['plugin']          = new Plugin( __FILE__ );
-$unsplash['router']          = new Router( $unsplash['plugin'] );
-$unsplash['hotlink']         = new Hotlink( $unsplash['router'] );
-$unsplash['settings']        = new Settings( $unsplash['plugin'] );
-$unsplash['rest_controller'] = new RestController( $unsplash['settings'] );
-
-// Initialize Router.
-add_action( 'plugins_loaded', [ $unsplash['router'], 'init' ] );
-
-// Initialize Hotlink.
-add_action( 'template_redirect', [ $unsplash['hotlink'], 'init' ] );
-
-// Initialize Settings.
-add_action( 'plugins_loaded', [ $unsplash['settings'], 'init' ] );
-
-// Initialize REST Controller.
-add_action( 'rest_api_init', [ $unsplash['rest_controller'], 'register_routes' ] );
+/**
+ * String describing the minimum PHP version.
+ *
+ * @return string
+ */
+function _unsplash_php_version_text() {
+	return esc_html__( 'Unsplash plugin error: Your version of PHP is too old to run this plugin. You must be running PHP 5.6.20 or higher.', 'unsplash' );
+}
