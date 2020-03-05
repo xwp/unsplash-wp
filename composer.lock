@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a53d7fc1890c8ebf2f682f435748feb0",
+    "content-hash": "407702b852fe54a53676f2bda30d32e1",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -3263,8 +3263,14 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
+        "dealerdirect/phpcodesniffer-composer-installer": 0,
+        "phpcompatibility/phpcompatibility-wp": 0,
+        "slowprog/composer-copy-file": 0,
         "wp-api/basic-auth": 20,
-        "wpackagist-plugin/classic-editor": 0
+        "wp-coding-standards/wpcs": 0,
+        "wpackagist-plugin/classic-editor": 0,
+        "xwp/wordpress-tests-installer": 0,
+        "xwp/wp-dev-lib": 0
     },
     "prefer-stable": true,
     "prefer-lowest": false,
