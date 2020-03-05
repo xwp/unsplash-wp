@@ -161,8 +161,7 @@ class Hotlink {
 			return $image;
 		}
 
-		$image_src         = preg_match( '/src="([^"]+)"/', $image, $match_src ) ? $match_src[1] : '';
-		list( $image_src ) = explode( '?', $image_src );
+		$image_src = preg_match( '/src="([^"]+)"/', $image, $match_src ) ? $match_src[1] : '';
 
 		// Return early if we couldn't get the image source.
 		if ( ! $image_src ) {
@@ -183,7 +182,8 @@ class Hotlink {
 			 * If attempts to parse the size value failed, attempt to use the image meta data to match
 			 * the image file name from 'src' against the available sizes for an attachment.
 			 */
-			$image_filename = wp_basename( $image_src );
+			list( $image_src_without_params ) = explode( '?', $image_src );
+			$image_filename                   = wp_basename( $image_src_without_params );
 
 			if ( wp_basename( $image_meta['file'] ) === $image_filename ) {
 				$width  = (int) $image_meta['width'];
@@ -204,7 +204,7 @@ class Hotlink {
 		}
 
 		$new_src = $this->get_original_url_with_size( $original_url, $width, $height );
-		return preg_replace( '/src="([^"]+)"/', "src=\"{$new_src}\"", $image, 1 );
+		return str_replace( $image_src, $new_src, $image );
 	}
 
 
@@ -271,5 +271,33 @@ class Hotlink {
 
 		$get_attachments = new WP_Query();
 		return $get_attachments->query( $parsed_args );
+	}
+
+	/**
+	 * The image `src` attribute is escaped when retrieving the image tag which can mangle the `w` and `h` params we
+	 * add, so the change is reverted here.
+	 *
+	 * @param string       $html  HTML content for the image.
+	 * @param int          $id    Attachment ID.
+	 * @param string       $alt   Image description for the alt attribute.
+	 * @param string       $title Image description for the title attribute.
+	 * @param string       $align Part of the class name for aligning the image.
+	 * @param string|array $size  Size of image. Image size or array of width and height values (in that order).
+	 *                            Default 'medium'.
+	 *
+	 * @filter get_image_tag, 10, 6
+	 *
+	 * @return string Image tag.
+	 */
+	public function get_image_tag( $html, $id, $alt, $title, $align, $size ) {
+		// Verify it is an Unsplash ID.
+		$original_url = $this->get_original_url( $id );
+		if ( ! $original_url ) {
+			return $html;
+		}
+
+		// Replace img src.
+		list( $img_src ) = image_downsize( $id, $size );
+		return preg_replace( '/src="([^"]+)"/', "src=\"{$img_src}\"", $html, 1 );
 	}
 }
