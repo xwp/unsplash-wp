@@ -10,7 +10,7 @@ Unsplash for WordPress.
 **Stable tag:** 1.0.0  
 **License:** [GPLv2 or later](http://www.gnu.org/licenses/gpl-2.0.html)  
 
-[![Build Status](https://travis-ci.org/xwp/unsplash-wp.svg?branch=develop)](https://travis-ci.org/xwp/unsplash-wp) [![Coverage Status](https://coveralls.io/repos/xwp/unsplash-wp/badge.svg?branch=develop)](https://coveralls.io/github/xwp/unsplash-wp) [![Built with Grunt](https://gruntjs.com/cdn/builtwith.svg)](http://gruntjs.com) 
+[![Build Status](https://magnum.travis-ci.com/xwp/unsplash-wp.svg?token=DzyA3Sey2BLS5sL6HDJq&branch=develop)](https://magnum.travis-ci.com/xwp/unsplash-wp) [![Coverage Status](https://coveralls.io/repos/xwp/unsplash-wp/badge.svg?branch=develop&service=github&t=mLvdmf)](https://coveralls.io/github/xwp/unsplash-wp) [![Built with Grunt](https://gruntjs.com/cdn/builtwith.svg)](http://gruntjs.com) 
 
 ## Description ##
 
