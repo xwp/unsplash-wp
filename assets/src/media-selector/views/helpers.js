@@ -3,6 +3,7 @@
  */
 import ImagesBrowser from './images_browser';
 import UnsplashState from '../store/unsplash_state';
+import Attachment from './image_view';
 
 export const withUnsplashTab = View => {
 	return View.extend( {
@@ -16,11 +17,7 @@ export const withUnsplashTab = View => {
 			const state = this.state();
 
 			// For the Classic Editor, only add the Unsplash tab to libraries that support images.
-			const applicableLibraries = [
-				'insert',
-				'featured-image',
-				'library',
-			];
+			const applicableLibraries = [ 'insert', 'featured-image', 'library' ];
 			if ( state.id && ! applicableLibraries.includes( state.id ) ) {
 				return;
 			}
@@ -68,7 +65,9 @@ export const withUnsplashTab = View => {
 
 			contentRegion.view = new ImagesBrowser( {
 				controller: this,
+				AttachmentView: Attachment,
 				collection: state.get( 'library' ),
+				mode: state.get( 'mode' ),
 				selection: ogState.get( 'selection' ),
 				model: state,
 				sortable: state.get( 'sortable' ),

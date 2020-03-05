@@ -1,0 +1,129 @@
+.unsplash-browser.attachments-browser .media-toolbar-primary {
+	float: none;
+	max-width: 100%;
+	margin: 20px 7px 5px;
+}
+
+.unsplash-browser.attachments-browser .media-toolbar {
+	height: 100px;
+}
+
+.unsplash-browser.attachments-browser .unsplash-search-input-label {
+	display: block;
+	margin: 5px 0 0;
+}
+
+.unsplash-browser.attachments-browser .unplash-search {
+	width: 98%;
+	padding: 5px 10px;
+}
+
+.wp-core-ui .unsplash-browser .attachment-preview::before {
+	display: none;
+	padding-top: 0%;
+}
+
+.media-frame .unsplash-browser .no-media,
+.media-frame .unsplash-browser .attachments {
+	position: absolute !important;
+	height: auto !important;
+	margin: 10px 20px;
+	top: 89px;
+}
+
+.media-frame .unsplash-browser .no-media {
+	right: 300px;
+	text-align: center;
+	left: 0;
+}
+
+.wp-core-ui  .unsplash-attachment:focus .thumbnail,
+.wp-core-ui .selected.attachment:focus .thumbnail,
+.wp-core-ui  .unsplash-attachment.details:focus .thumbnail {
+	box-shadow:
+		0 0 0 1px #fff,
+		0 0 2px 3px #5b9dd9;
+
+	/* Only visible in Windows High Contrast mode */
+	outline: 2px solid transparent;
+}
+
+.wp-core-ui .media-selection .selected.attachment .thumbnail {
+	box-shadow: none;
+}
+
+.wp-core-ui .unsplash-attachment.details .thumbnail {
+	box-shadow:
+		0 0 0 1px #fff,
+		0 0 0 3px #0073aa;
+}
+
+.wp-core-ui .unsplash-browser .unsplash-attachment {
+	margin: 4px;
+}
+
+.media-frame .unsplash-browser .no-media img,
+.wp-core-ui .unsplash-browser .unsplash-attachment img {
+	min-width: 100%;
+	max-width: 100%;
+	vertical-align: top;
+}
+
+.wp-core-ui .unsplash-attachment .check {
+	display: none;
+	height: 24px;
+	width: 24px;
+	padding: 0;
+	border: 0;
+	position: absolute;
+	z-index: 10;
+	top: 0;
+	right: 0;
+	outline: none;
+	background: #eee;
+	cursor: pointer;
+	box-shadow: 0 0 0 1px #fff, 0 0 0 2px rgba(0, 0, 0, 0.15);
+}
+
+.wp-core-ui .unsplash-attachment .check .media-modal-icon {
+	display: block;
+	background-position: -1px 0;
+	height: 15px;
+	width: 15px;
+	margin: 5px;
+}
+
+.wp-core-ui .unsplash-attachment .check:hover .media-modal-icon {
+	background-position: -40px 0;
+}
+
+
+.wp-core-ui .unsplash-attachment.selected .check {
+	display: block;
+}
+
+.wp-core-ui .unsplash-attachment.details .check,
+.wp-core-ui .unsplash-attachment.selected .check:focus,
+.wp-core-ui .media-frame.mode-grid .attachment.selected .check {
+	background-color: #0073aa;
+	box-shadow:
+		0 0 0 1px #fff,
+		0 0 0 2px #0073aa;
+}
+
+.wp-core-ui .unsplash-attachment.selected .check:focus {
+
+	/* Only visible in Windows High Contrast mode */
+	outline: 2px solid transparent;
+}
+
+.wp-core-ui .unsplash-attachment.details .check .media-modal-icon,
+.wp-core-ui .media-frame.mode-grid .attachment.selected .check .media-modal-icon {
+	background-position: -21px 0;
+}
+
+.wp-core-ui .unsplash-attachment.details .check:hover .media-modal-icon,
+.wp-core-ui .unsplash-attachment.selected .check:focus .media-modal-icon,
+.wp-core-ui .media-frame.mode-grid .attachment.selected .check:hover .media-modal-icon {
+	background-position: -60px 0;
+}
