@@ -68,6 +68,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	public function setUp() {
 		parent::setUp();
 		$this->hotlink = new Hotlink( new Plugin() );
+		$this->hotlink->init();
 	}
 
 
