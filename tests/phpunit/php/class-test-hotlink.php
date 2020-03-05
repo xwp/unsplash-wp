@@ -67,7 +67,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	 */
 	public function setUp() {
 		parent::setUp();
-		$this->hotlink = get_plugin_instance()->hotlink;
+		$this->hotlink = new Hotlink( new Plugin() );
 	}
 
 
@@ -151,7 +151,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	 *
 	 * @return array
 	 */
-	public function get_url_with_size_data() {
+	public function data_various_params() {
 		return [
 			[ 'http://www.example.com/test.jpg', 222, 444, [], 'http://www.example.com/test.jpg?w=222&h=444' ],
 			[ 'http://www.example.com/test.jpg', 100, 100, [], 'http://www.example.com/test.jpg?w=100&h=100' ],
@@ -166,7 +166,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	 * Test get_original_url_with_size.
 	 *
 	 * @covers ::get_original_url_with_size()
-	 * @dataProvider get_url_with_size_data
+	 * @dataProvider data_various_params
 	 *
 	 * @param string $url Original URL of unsplash asset.
 	 * @param int    $width Width of image.

@@ -37,13 +37,6 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	private static $routes;
 
 	/**
-	 * Instance of REST Controller.
-	 *
-	 * @var Rest_Controller
-	 */
-	private static $rest_controller;
-
-	/**
 	 * Create fake data before our tests run.
 	 *
 	 * @param WP_UnitTest_Factory $factory Helper that lets us create fake data.
@@ -56,8 +49,6 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 			[ 'role' => 'subscriber' ]
 		);
 
-		self::$rest_controller = get_plugin_instance()->rest_controller;
-		self::$rest_controller->init();
 		static::$routes = rest_get_server()->get_routes();
 	}
 
@@ -515,7 +506,8 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 * @param bool            $expected Expected.
 	 */
 	public function test_is_ajax_request( $request, $expected ) {
-		$actual = self::$rest_controller->is_ajax_request( $request );
+		$rest_controller = new Rest_Controller( new Plugin() );
+		$actual          = $rest_controller->is_ajax_request( $request );
 		$this->assertEquals( $expected, $actual );
 	}
 
