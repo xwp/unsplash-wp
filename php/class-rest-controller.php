@@ -178,7 +178,7 @@ class Rest_Controller extends WP_REST_Controller {
 			$response->header( 'X-WP-TotalPages', (int) $max_pages );
 		} catch ( \Exception $e ) {
 			$response = new WP_Error( 'all-photos', __( 'An unknown error occurred while retrieving the photos', 'unsplash' ), [ 'status' => '500' ] );
-			$this->log_error( $e );
+			$this->plugin->log_error( $e );
 		}
 
 		return $response;
@@ -199,7 +199,7 @@ class Rest_Controller extends WP_REST_Controller {
 			$photos  = $this->prepare_item_for_response( $results, $request );
 		} catch ( \Exception $e ) {
 			$photos = new WP_Error( 'single-photo', __( 'An unknown error occurred while retrieving the photo', 'unsplash' ), [ 'status' => '500' ] );
-			$this->log_error( $e );
+			$this->plugin->log_error( $e );
 		}
 
 		return rest_ensure_response( $photos );
@@ -213,8 +213,8 @@ class Rest_Controller extends WP_REST_Controller {
 	 * @return WP_REST_Response|WP_Error Single page of photo results.
 	 */
 	public function get_import( $request ) {
-		$id      = $request->get_param( 'id' );
-		$results = [];
+		$id = $request->get_param( 'id' );
+
 		try {
 			$photo = Photo::find( $id );
 			$photo->download();
@@ -233,7 +233,7 @@ class Rest_Controller extends WP_REST_Controller {
 			$response->header( 'Location', rest_url( sprintf( '%s/%s/%d', 'wp/v2', 'media', $attachment_id ) ) );
 		} catch ( \Exception $e ) {
 			$response = new WP_Error( 'single-photo-download', __( 'An unknown error occurred while retrieving the photo', 'unsplash' ), [ 'status' => '500' ] );
-			$this->log_error( $e );
+			$this->plugin->log_error( $e );
 		}
 
 		return $response;
@@ -270,7 +270,7 @@ class Rest_Controller extends WP_REST_Controller {
 			$response->header( 'X-WP-TotalPages', (int) $max_pages );
 		} catch ( \Exception $e ) {
 			$response = new WP_Error( 'search-photos', __( 'An unknown error occurred while searching for a photo', 'unsplash' ), [ 'status' => '500' ] );
-			$this->utils->log_error( $e );
+			$this->plugin->log_error( $e );
 		}
 
 		return $response;
@@ -587,7 +587,7 @@ class Rest_Controller extends WP_REST_Controller {
 			],
 		];
 
-		foreach ( $this->utils->image_sizes() as $name => $size ) {
+		foreach ( $this->plugin->image_sizes() as $name => $size ) {
 			$url            = add_query_arg(
 				[
 					'w'   => $size['height'],

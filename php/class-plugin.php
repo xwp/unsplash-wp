@@ -55,64 +55,42 @@ class Plugin extends Plugin_Base {
 	}
 
 	/**
-	 * Load our admin assets.
+	 * Load our media selector assets.
 	 *
-	 * @action admin_enqueue_scripts
+	 * @action wp_enqueue_media
 	 */
-	public function admin_enqueue_scripts() {
+	public function enqueue_media_scripts() {
+		$asset_file = $this->dir_path . '/assets/js/media-selector.asset.php';
+		$asset      = is_readable( $asset_file ) ? require $asset_file : [];
+		$version    = isset( $asset['version'] ) ? $asset['version'] : $this->asset_version();
+
+		$dependencies   = isset( $asset['dependencies'] ) ? $asset['dependencies'] : [];
+		$dependencies[] = 'media-views';
+		$dependencies[] = 'wp-api-request';
+
 		wp_enqueue_script(
-			'unsplash-media-views',
-			$this->asset_url( 'assets/js/media-views.js' ),
-			[
-				'jquery',
-				'media-views',
-				'lodash',
-			],
-			$this->asset_version(),
-			false
+			'unsplash-media-selector',
+			$this->asset_url( 'assets/js/media-selector.js' ),
+			$dependencies,
+			$version,
+			true
 		);
 
 		wp_localize_script(
-			'unsplash-media-views',
-			'unsplashSettings',
+			'unsplash-media-selector',
+			'unsplash',
 			[
-				'tabTitle' => esc_html__( 'Unsplash', 'unsplash' ),
+				'tabTitle' => __( 'Unsplash', 'unsplash' ),
+				'route'    => rest_url( 'unsplash/v1/photos' ),
+				'toolbar'  => [
+					'filters' => [
+						'search' => [
+							'label' => __( 'Search', 'unsplash' ),
+						],
+					],
+				],
 			]
 		);
-	}
-
-	/**
-	 * Ajax handler for querying attachments.
-	 *
-	 * @action wp_ajax_query-unsplash
-	 */
-	public function wp_ajax_query_unsplash() {
-		if ( ! current_user_can( 'upload_files' ) ) {
-			wp_send_json_error();
-		}
-
-		$images = $this->get_images();
-
-		$images = array_map( [ $this, 'wp_prepare_attachment_for_js' ], $images );
-		$images = array_filter( $images );
-
-		wp_send_json_success( $images );
-	}
-
-	/**
-	 * Placeholder to get images
-	 *
-	 * @return mixed
-	 */
-	public function get_images() {
-		$path = $this->plugin->asset_dir( 'php/response.json' );
-		if ( is_readable( $path ) ) {
-			$response = wp_safe_remote_get( esc_url_raw( $path ) );
-			$images   = json_decode( wp_remote_retrieve_body( $response ), true );
-		} else {
-			$images = [];
-		}
-		return $images;
 	}
 
 	/**
@@ -203,8 +181,12 @@ class Plugin extends Plugin_Base {
 
 		$sizes = [];
 
-		// @todo This is not supported by WordPress VIP and will require a new solution.
-		foreach ( get_intermediate_image_sizes() as $s ) { // phpcs:ignore
+		$image_sizes = get_intermediate_image_sizes(); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_intermediate_image_sizes_get_intermediate_image_sizes
+		if ( 0 === count( $image_sizes ) ) {
+			return $sizes;
+		}
+
+		foreach ( $image_sizes as $s ) {
 			if ( in_array( $s, [ 'thumbnail', 'medium', 'medium_large', 'large' ], true ) ) {
 				$sizes[ $s ]['width']  = get_option( $s . '_size_w' );
 				$sizes[ $s ]['height'] = get_option( $s . '_size_h' );

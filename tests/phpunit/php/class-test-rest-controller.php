@@ -39,7 +39,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	/**
 	 * Instance of REST Controller.
 	 *
-	 * @var RestController
+	 * @var Rest_Controller
 	 */
 	private static $rest_controller;
 
@@ -49,8 +49,6 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 * @param WP_UnitTest_Factory $factory Helper that lets us create fake data.
 	 */
 	public static function wpSetUpBeforeClass( $factory ) {
-		global $unsplash;
-
 		self::$admin_id      = $factory->user->create(
 			[ 'role' => 'administrator' ]
 		);
@@ -58,7 +56,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 			[ 'role' => 'subscriber' ]
 		);
 
-		self::$rest_controller = new REST_Controller( new Plugin() );
+		self::$rest_controller = get_plugin_instance()->rest_controller;
 		self::$rest_controller->init();
 		static::$routes = rest_get_server()->get_routes();
 	}
@@ -82,6 +80,9 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 
 		$this->assertArrayHasKey( $this->get_route( '/(?P<id>[\w-]+)' ), static::$routes );
 		$this->assertCount( 1, static::$routes[ $this->get_route( '/(?P<id>[\w-]+)' ) ] );
+
+		$this->assertArrayHasKey( $this->get_route( '/import/(?P<id>[\w-]+)' ), static::$routes );
+		$this->assertCount( 1, static::$routes[ $this->get_route( '/import/(?P<id>[\w-]+)' ) ] );
 
 		$this->assertArrayHasKey( $this->get_route( '/search/(?P<search>[\w-]+)' ), static::$routes );
 		$this->assertCount( 1, static::$routes[ $this->get_route( '/search/(?P<search>[\w-]+)' ) ] );
