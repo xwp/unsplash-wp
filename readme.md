@@ -10,7 +10,7 @@ Unsplash for WordPress.
 **Stable tag:** 1.0.0  
 **License:** [GPLv2 or later](http://www.gnu.org/licenses/gpl-2.0.html)  
 
-[![Build Status](https://travis-ci.org/xwp/unsplash-wp.svg?branch=develop)](https://travis-ci.org/xwp/unsplash-wp) [![Coverage Status](https://coveralls.io/repos/xwp/unsplash-wp/badge.svg?branch=develop)](https://coveralls.io/github/xwp/unsplash-wp) [![Built with Grunt](https://gruntjs.com/cdn/builtwith.svg)](http://gruntjs.com) 
+[![Build Status](https://magnum.travis-ci.com/xwp/unsplash-wp.svg?token=DzyA3Sey2BLS5sL6HDJq&branch=develop)](https://magnum.travis-ci.com/xwp/unsplash-wp) [![Coverage Status](https://coveralls.io/repos/xwp/unsplash-wp/badge.svg?branch=develop&service=github&t=mLvdmf)](https://coveralls.io/github/xwp/unsplash-wp) [![Built with Grunt](https://gruntjs.com/cdn/builtwith.svg)](http://gruntjs.com) 
 
 ## Description ##
 
@@ -29,7 +29,7 @@ An answer to that question.
 
 ## Getting Started ##
 
-If you are a developer, we encourage you to [follow along](https://github.com/xwp/unsplash-wp) or [contribute](https://github.com/xwp/unsplash-wp/contributing.md) to the development of this plugin on GitHub.
+If you are a developer, we encourage you to [follow along](https://github.com/xwp/unsplash-wp) or [contribute](https://github.com/xwp/unsplash-wp/blob/develop/contributing.md) to the development of this plugin on GitHub.
 
 ## Screenshots ##
 
