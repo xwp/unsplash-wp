@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import { withUnsplashTab } from './media/helpers';
+import { withUnsplashTab } from './views/helpers';
 
 // Override media frames in the respective editors to add the Unsplash tab.
 
@@ -11,21 +11,27 @@ if ( wp.media && wp.media.view && wp.media.view.MediaFrame ) {
 	 * media libraries (such as Gallery and Video Playlist).
 	 */
 	if ( wp.media.view.MediaFrame.Post ) {
-		wp.media.view.MediaFrame.Post = withUnsplashTab( wp.media.view.MediaFrame.Post );
+		wp.media.view.MediaFrame.Post = withUnsplashTab(
+			wp.media.view.MediaFrame.Post
+		);
 	}
 	/**
 	 * The 'Select' media frame contains only one media library, and is used in Gutenberg and in other parts of WordPress
 	 * where selecting media is relevant (eg. setting background image via Customizer).
 	 */
 	if ( wp.media.view.MediaFrame.Select ) {
-		wp.media.view.MediaFrame.Select = withUnsplashTab( wp.media.view.MediaFrame.Select );
+		wp.media.view.MediaFrame.Select = withUnsplashTab(
+			wp.media.view.MediaFrame.Select
+		);
 	}
 }
 /**
  * Add the Unsplash tab to the media frame for image related widgets.
  */
 if ( wp.mediaWidgets && wp.mediaWidgets.MediaFrameSelect ) {
-	wp.mediaWidgets.MediaFrameSelect = withUnsplashTab( wp.mediaWidgets.MediaFrameSelect );
+	wp.mediaWidgets.MediaFrameSelect = withUnsplashTab(
+		wp.mediaWidgets.MediaFrameSelect
+	);
 }
 
 /**

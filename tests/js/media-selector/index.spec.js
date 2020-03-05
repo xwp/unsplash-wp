@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import { checkType } from '../../../assets/src/media-views';
+import { checkType } from '../../../assets/src/media-selector';
 
 /**
  * Mock domReady
@@ -10,7 +10,7 @@ jest.mock( '@wordpress/dom-ready', () => () => ( {
 	domReady: () => {},
 } ) );
 
-describe( 'media-views', () => {
+describe( 'media-selector', () => {
 	describe( 'SelectUnsplash', () => {
 		it( 'should do something', () => {
 			expect( true ).toBe( true );
