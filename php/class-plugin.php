@@ -67,6 +67,7 @@ class Plugin extends Plugin_Base {
 		$dependencies   = isset( $asset['dependencies'] ) ? $asset['dependencies'] : [];
 		$dependencies[] = 'media-views';
 		$dependencies[] = 'wp-api-request';
+		$dependencies[] = 'jquery-masonry';
 
 		wp_enqueue_script(
 			'unsplash-media-selector',
@@ -80,17 +81,31 @@ class Plugin extends Plugin_Base {
 			'unsplash-media-selector',
 			'unsplash',
 			[
-				'tabTitle' => __( 'Unsplash', 'unsplash' ),
-				'route'    => rest_url( 'unsplash/v1/photos' ),
-				'toolbar'  => [
+				'tabTitle'  => __( 'Unsplash', 'unsplash' ),
+				'route'     => rest_url( 'unsplash/v1/photos' ),
+				'toolbar'   => [
 					'filters' => [
 						'search' => [
-							'label' => __( 'Search', 'unsplash' ),
+							'label' => __( 'Search the internet’s source of freely usable images.', 'unsplash' ),
 						],
 					],
 				],
+				'noResults' => [
+					'noMedia' => __( 'No content available', 'unsplash' ),
+					'image'   => $this->asset_url( 'assets/images/no-results.png' ),
+				],
+
 			]
 		);
+
+		wp_enqueue_style(
+			'unsplash-media-selector-style',
+			$this->asset_url( 'assets/css/media-selector-compiled.css' ),
+			[],
+			$this->asset_version()
+		);
+
+		wp_styles()->add_data( 'unsplash-media-selector-style', 'rtl', 'replace' );
 	}
 
 
@@ -150,21 +165,22 @@ class Plugin extends Plugin_Base {
 		];
 
 		foreach ( $this->image_sizes() as $name => $size ) {
+			$height         = ceil( $photo['height'] / ( $photo['width'] / $size['width'] ) );
 			$url            = add_query_arg(
 				[
-					'w'   => $size['height'],
-					'h'   => $size['width'],
-					'q'   => 85,
-					'fit' => 'crop',
+					'w' => $size['width'],
+					'h' => $height,
+					'q' => 85,
 				],
 				$photo['urls']['full']
 			);
 			$sizes[ $name ] = [
 				'url'    => $url,
-				'height' => $size['height'],
+				'height' => $height,
 				'width'  => $size['width'],
 			];
 		}
+
 		$response['sizes'] = $sizes;
 
 		return $response;
@@ -184,7 +200,7 @@ class Plugin extends Plugin_Base {
 		if ( 0 === count( $image_sizes ) ) {
 			return $sizes;
 		}
-		
+
 		$default_sizes = [ 'thumbnail', 'medium', 'medium_large', 'large' ];
 		foreach ( $image_sizes as $s ) {
 			if ( in_array( $s, $default_sizes, true ) ) {
