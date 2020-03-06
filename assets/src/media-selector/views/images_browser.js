@@ -91,7 +91,7 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 		this.attachmentsNoResults.$el.html(
 			`<img src="${ noResults.image }" alt="${ noResults.noMedia }"/>`
 		);
-		this.attachmentsNoResults.$el.append( noResults.noMedia );
+		this.attachmentsNoResults.$el.append( `<p>${ noResults.noMedia }</p>` );
 
 		this.views.add( this.attachmentsNoResults );
 	},

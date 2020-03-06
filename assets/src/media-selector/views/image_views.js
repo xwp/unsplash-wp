@@ -18,11 +18,13 @@ const Attachments = wp.media.view.Attachments.extend( {
 			container: '#' + this.el.id,
 			trueOrder: true,
 			waitForImages: true,
+			useContainerForBreakpoints: true,
 			margin: 10,
 			columns: 3,
 			breakAt: {
-				1400: 2,
-				1024: 1,
+				992: 3,
+				768: 2,
+				600: 1,
 			},
 		} );
 	},

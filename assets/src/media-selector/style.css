@@ -14,7 +14,7 @@
 }
 
 .unsplash-browser.attachments-browser .unplash-search {
-	width: 98%;
+	width: 100%;
 	padding: 5px 10px;
 }
 
@@ -35,6 +35,7 @@
 	right: 300px;
 	text-align: center;
 	left: 0;
+	top: 35px;
 }
 
 .wp-core-ui  .unsplash-attachment:focus .thumbnail,
@@ -62,7 +63,9 @@
 	margin: 4px;
 }
 
-.media-frame .unsplash-browser .no-media img,
+.media-frame .unsplash-browser .no-media img{
+	width: 400px;
+}
 .wp-core-ui .unsplash-browser .unsplash-attachment img {
 	min-width: 100%;
 	max-width: 100%;
