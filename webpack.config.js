@@ -61,22 +61,22 @@ const sharedConfig = {
 	],
 };
 
-const mediaViews = {
+const mediaSelector = {
 	...defaultConfig,
 	...sharedConfig,
 	entry: {
-		'media-views': [
-			'./assets/src/media-views/index.js',
-			'./assets/css/src/media-views.css',
+		'media-selector': [
+			'./assets/src/media-selector/index.js',
+			'./assets/css/src/media-selector.css',
 		],
 	},
 	plugins: [
 		...sharedConfig.plugins,
 		new WebpackBar( {
-			name: 'Media Views',
+			name: 'Media Selector',
 			color: '#36f271',
 		} ),
 	],
 };
 
-module.exports = [ mediaViews ];
+module.exports = [ mediaSelector ];

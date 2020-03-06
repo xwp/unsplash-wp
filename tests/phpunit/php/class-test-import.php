@@ -47,12 +47,9 @@ class Test_Import extends \WP_UnitTestCase {
 	/**
 	 * Test create attachment.
 	 *
-	 * @covers \Unsplash\Import::__construct()
 	 * @covers \Unsplash\Import::create_attachment()
 	 */
 	public function test_create_attachment() {
-		$this->markTestSkipped( 'Test incomplete' );
-
 		$file   = [
 			'file' => true,
 			'url'  => 'http://www.example.com/test.jpg',
@@ -70,17 +67,15 @@ class Test_Import extends \WP_UnitTestCase {
 			$image
 		);
 
-		$attachment_id = $import->create_attachment( $file ); // phpcs:ignore
-		$actual_id     = get_page_by_path( 'eOvv4N6yNmk', ARRAY_A, 'attachment' )['ID']; // phpcs:ignore
+		$attachment_id = $import->create_attachment( $file );
+		$actual_id     = get_page_by_path( 'eOvv4N6yNmk', ARRAY_A, 'attachment' )['ID'];
 
-		// TODO: uncomment once $actual_id can be retrieved.
-		// phpcs:ignore $this->assertEquals( $attachment_id, $actual_id );
+		$this->assertEquals( $attachment_id, $actual_id );
 	}
 
 	/**
 	 * Test pass empty array to create_attachment.
 	 *
-	 * @covers \Unsplash\Import::__construct()
 	 * @covers \Unsplash\Import::create_attachment()
 	 */
 	public function test_invalid_create_attachment() {
@@ -106,7 +101,6 @@ class Test_Import extends \WP_UnitTestCase {
 	/**
 	 * Test pass WP_error to create_attachment.
 	 *
-	 * @covers \Unsplash\Import::__construct()
 	 * @covers \Unsplash\Import::create_attachment()
 	 */
 	public function test_wp_error_create_attachment() {
@@ -131,7 +125,6 @@ class Test_Import extends \WP_UnitTestCase {
 	/**
 	 * Test pass WP_error to create_attachment.
 	 *
-	 * @covers \Unsplash\Import::__construct()
 	 * @covers \Unsplash\Import::create_attachment()
 	 */
 	public function test_wp_error_wp_insert_attachment() {
@@ -155,7 +148,6 @@ class Test_Import extends \WP_UnitTestCase {
 	/**
 	 * Test import image.
 	 *
-	 * @covers \Unsplash\Import::__construct()
 	 * @covers \Unsplash\Import::import_image()
 	 */
 	public function test_import_image() {
@@ -184,7 +176,6 @@ class Test_Import extends \WP_UnitTestCase {
 	 * Test import image on multisite.
 	 *
 	 * @covers \Unsplash\Import::import_image()
-	 * @covers \Unsplash\Import::check_upload_size()
 	 */
 	public function test_import_image_multisite() {
 		$this->skipWithoutMultisite();
@@ -218,7 +209,6 @@ class Test_Import extends \WP_UnitTestCase {
 	/**
 	 * Test invalid import image.
 	 *
-	 * @covers \Unsplash\Import::__construct()
 	 * @covers \Unsplash\Import::import_image()
 	 */
 	public function test_invalid_import_image() {
@@ -246,7 +236,6 @@ class Test_Import extends \WP_UnitTestCase {
 	/**
 	 * Test invalid handle upload.
 	 *
-	 * @covers \Unsplash\Import::__construct()
 	 * @covers \Unsplash\Import::import_image()
 	 */
 	public function test_invalid_handle_upload_import_image() {
@@ -274,7 +263,6 @@ class Test_Import extends \WP_UnitTestCase {
 	/**
 	 * Test process user.
 	 *
-	 * @covers \Unsplash\Import::__construct()
 	 * @covers \Unsplash\Import::process_user()
 	 */
 	public function test_process_user() {
@@ -316,18 +304,12 @@ class Test_Import extends \WP_UnitTestCase {
 	/**
 	 * Test process.
 	 *
-	 * @covers \Unsplash\Import::__construct()
 	 * @covers \Unsplash\Import::process()
-	 * @covers \Unsplash\Import::process_meta()
-	 * @covers \Unsplash\Import::process_user()
-	 * @covers \Unsplash\Import::process_source()
-	 * @covers \Unsplash\Import::process_tags()
 	 */
 	public function test_process() {
-		$this->markTestSkipped( 'Test incomplete.' );
-
 		$image  = new Image(
 			[
+				'id'   => 'processed_id',
 				'urls' => [
 					'full' => 'https://images.unsplash.com/photo-1552667466-07770ae110d0?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
 				],
@@ -339,14 +321,13 @@ class Test_Import extends \WP_UnitTestCase {
 			]
 		);
 		$import = new Import(
-			'eOvv4N6yNmk',
+			'processed_id',
 			$image
 		);
 
-		$attachment_id = $import->process(); // phpcs:ignore
-		$actual_id     = get_page_by_path( 'eOvv4N6yNmk', ARRAY_A, 'attachment' )['ID']; // phpcs:ignore
+		$attachment_id = $import->process();
+		$actual_id     = get_page_by_path( 'processed_id', ARRAY_A, 'attachment' )['ID'];
 
-		// TODO: uncomment once Import::get_attachment_id() is made more robust.
-		// phpcs:ignore $this->assertEquals( $attachment_id, $actual_id );
+		$this->assertEquals( $attachment_id, $actual_id );
 	}
 }

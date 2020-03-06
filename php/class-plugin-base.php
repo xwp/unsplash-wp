@@ -402,4 +402,31 @@ abstract class Plugin_Base {
 		}
 		unset( $this->_called_doc_hooks[ $class_name ] );
 	}
+
+	/**
+	 * Log an exception.
+	 *
+	 * @param \Exception $e Exception.
+	 */
+	public function log_error( \Exception $e ) {
+
+		if ( ! constant( 'WP_DEBUG' ) ) {
+			return;
+		}
+
+		$message = sprintf(
+			"%1\$s: %2\$s\n%3\$s:\n%4\$s",
+			__( 'Error', 'unsplash' ),
+			$e->getMessage(),
+			__( 'Stack Trace', 'unsplash' ),
+			$e->getTraceAsString()
+		);
+
+		/**
+		 * Stop IDE from complaining.
+		 *
+		 * @noinspection ForgottenDebugOutputInspection
+		 */
+		error_log( $message, $e->getCode() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+	}
 }

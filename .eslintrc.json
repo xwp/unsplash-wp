@@ -2,6 +2,10 @@
   "extends": [
     "plugin:@wordpress/eslint-plugin/recommended"
   ],
+  "globals": {
+    "_": false,
+    "Backbone": false
+  },
   "overrides": [
     {
       "files":[

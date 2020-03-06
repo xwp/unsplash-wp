@@ -29,6 +29,13 @@ class Rest_Controller extends WP_REST_Controller {
 	public $plugin;
 
 	/**
+	 * Post type.
+	 *
+	 * @var string
+	 */
+	protected $post_type;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Plugin $plugin Instance of the plugin abstraction.
@@ -37,6 +44,7 @@ class Rest_Controller extends WP_REST_Controller {
 		$this->plugin    = $plugin;
 		$this->namespace = 'unsplash/v1';
 		$this->rest_base = 'photos';
+		$this->post_type = 'attachment';
 	}
 
 	/**
@@ -91,7 +99,7 @@ class Rest_Controller extends WP_REST_Controller {
 				[
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => [ $this, 'get_item' ],
-					'permission_callback' => [ $this, 'get_items_permissions_check' ],
+					'permission_callback' => [ $this, 'get_item_permissions_check' ],
 					'args'                => [
 						'context' => $this->get_context_param( [ 'default' => 'view' ] ),
 					],
@@ -145,31 +153,33 @@ class Rest_Controller extends WP_REST_Controller {
 	 * @return WP_REST_Response Single page of photo results.
 	 */
 	public function get_items( $request ) {
-		$page      = $request->get_param( 'page' );
-		$per_page  = $request->get_param( 'per_page' );
-		$order_by  = $request->get_param( 'order_by' );
-		$photos    = [];
-		$total     = 0;
-		$max_pages = 0;
+		$page     = $request->get_param( 'page' );
+		$per_page = $request->get_param( 'per_page' );
+		$order_by = $request->get_param( 'order_by' );
+		$photos   = [];
 
 		try {
 			$api_response = Photo::all( $page, $per_page, $order_by );
 			$results      = $api_response->toArray();
 			$max_pages    = $api_response->totalPages();
 			$total        = $api_response->totalObjects();
-			foreach ( $results as $photo ) {
+
+			foreach ( $results as $index => $photo ) {
+				$photo['unsplash_id'] = $photo['id'];
+				// Set an incremental ID so that the media selector can order the images correctly.
+				$photo['id'] = $index + ( ( $page - 1 ) * $per_page );
+
 				$data     = $this->prepare_item_for_response( $photo, $request );
 				$photos[] = $this->prepare_response_for_collection( $data );
 			}
+
+			$response = rest_ensure_response( $photos );
+			$response->header( 'X-WP-Total', (int) $total );
+			$response->header( 'X-WP-TotalPages', (int) $max_pages );
 		} catch ( \Exception $e ) {
-			$photos = new WP_Error( 'all-photos', __( 'An unknown error occurred while retrieving the photos', 'unsplash' ), [ 'status' => '500' ] );
-			$this->log_error( $e );
+			$response = new WP_Error( 'all-photos', __( 'An unknown error occurred while retrieving the photos', 'unsplash' ), [ 'status' => '500' ] );
+			$this->plugin->log_error( $e );
 		}
-
-		$response = rest_ensure_response( $photos );
-
-		$response->header( 'X-WP-Total', (int) $total );
-		$response->header( 'X-WP-TotalPages', (int) $max_pages );
 
 		return $response;
 	}
@@ -189,7 +199,7 @@ class Rest_Controller extends WP_REST_Controller {
 			$photos  = $this->prepare_item_for_response( $results, $request );
 		} catch ( \Exception $e ) {
 			$photos = new WP_Error( 'single-photo', __( 'An unknown error occurred while retrieving the photo', 'unsplash' ), [ 'status' => '500' ] );
-			$this->log_error( $e );
+			$this->plugin->log_error( $e );
 		}
 
 		return rest_ensure_response( $photos );
@@ -203,32 +213,28 @@ class Rest_Controller extends WP_REST_Controller {
 	 * @return WP_REST_Response|WP_Error Single page of photo results.
 	 */
 	public function get_import( $request ) {
-		$id      = $request->get_param( 'id' );
-		$results = [];
+		$id = $request->get_param( 'id' );
+
 		try {
 			$photo = Photo::find( $id );
 			$photo->download();
 			$results = $photo->toArray();
-			$photos  = $this->prepare_item_for_response( $results, $request );
+
+			$image         = new Image( $results );
+			$importer      = new Import( $id, $image );
+			$attachment_id = $importer->process();
+			if ( is_wp_error( $attachment_id ) ) {
+				return $attachment_id;
+			}
+
+			$response = $this->prepare_item_for_response( $results, $request );
+			$response = rest_ensure_response( $response );
+			$response->set_status( 301 );
+			$response->header( 'Location', rest_url( sprintf( '%s/%s/%d', 'wp/v2', 'media', $attachment_id ) ) );
 		} catch ( \Exception $e ) {
-			$photos = new WP_Error( 'single-photo-download', __( 'An unknown error occurred while retrieving the photo', 'unsplash' ), [ 'status' => '500' ] );
-			$this->log_error( $e );
+			$response = new WP_Error( 'single-photo-download', __( 'An unknown error occurred while retrieving the photo', 'unsplash' ), [ 'status' => '500' ] );
+			$this->plugin->log_error( $e );
 		}
-
-		if ( is_wp_error( $photos ) ) {
-			return $photos;
-		}
-		$image         = new Image( $results );
-		$importer      = new Import( $id, $image );
-		$attachment_id = $importer->process();
-		if ( is_wp_error( $attachment_id ) ) {
-			return $attachment_id;
-		}
-
-		$response = $this->prepare_item_for_response( $results, $request );
-		$response = rest_ensure_response( $response );
-		$response->set_status( 301 );
-		$response->header( 'Location', rest_url( sprintf( '%s/%s/%d', 'wp/v2', 'media', $attachment_id ) ) );
 
 		return $response;
 	}
@@ -247,27 +253,25 @@ class Rest_Controller extends WP_REST_Controller {
 		$orientation = $request->get_param( 'orientation' );
 		$collections = $request->get_param( 'collections' );
 		$photos      = [];
-		$total       = 0;
-		$max_pages   = 0;
 
 		try {
 			$api_response = Search::photos( $search, $page, $per_page, $orientation, $collections )->getArrayObject();
 			$results      = $api_response->toArray();
 			$max_pages    = $api_response->totalPages();
 			$total        = $api_response->totalObjects();
+
 			foreach ( $results as $photo ) {
 				$data     = $this->prepare_item_for_response( $photo, $request );
 				$photos[] = $this->prepare_response_for_collection( $data );
 			}
+
+			$response = rest_ensure_response( $photos );
+			$response->header( 'X-WP-Total', (int) $total );
+			$response->header( 'X-WP-TotalPages', (int) $max_pages );
 		} catch ( \Exception $e ) {
-			$photos = new WP_Error( 'search-photos', __( 'An unknown error occurred while searching for a photo', 'unsplash' ), [ 'status' => '500' ] );
-			$this->log_error( $e );
+			$response = new WP_Error( 'search-photos', __( 'An unknown error occurred while searching for a photo', 'unsplash' ), [ 'status' => '500' ] );
+			$this->plugin->log_error( $e );
 		}
-
-		$response = rest_ensure_response( $photos );
-
-		$response->header( 'X-WP-Total', (int) $total );
-		$response->header( 'X-WP-TotalPages', (int) $max_pages );
 
 		return $response;
 	}
@@ -275,22 +279,64 @@ class Rest_Controller extends WP_REST_Controller {
 	/**
 	 * Checks if a given request has access to get a specific item.
 	 *
+	 * @see   https://github.com/WordPress/WordPress/blob/c85c8f5235356cbf65680a3201e9ee4161803c0b/wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php#L128-L149
+	 *
 	 * @param WP_REST_Request $request Full data about the request.
+	 *
 	 * @return WP_Error|bool True if the request has read access for the item, WP_Error object otherwise.
 	 */
-	public function get_items_permissions_check( $request ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
-		// TODO Change permissions to edit_posts.
-		return true;
+	public function get_items_permissions_check( $request ) {
+		$post_type = get_post_type_object( $this->post_type );
+
+		if ( 'edit' === $request['context'] && ! current_user_can( $post_type->cap->edit_posts ) ) {
+			return new WP_Error(
+				'rest_forbidden_context',
+				__( 'Sorry, you are not allowed to edit posts in this post type.', 'unsplash' ),
+				[ 'status' => rest_authorization_required_code() ]
+			);
+		}
+
+		return current_user_can( 'edit_posts' );
+	}
+
+	/**
+	 * Checks if a given request has access to get a specific item.
+	 *
+	 * @param WP_REST_Request $request Full data about the request.
+	 * @return bool|WP_Error True if the request has read access for the item, WP_Error object otherwise.
+	 */
+	public function get_item_permissions_check( $request ) {
+		return $this->get_items_permissions_check( $request );
 	}
 
 	/**
 	 * Checks if a given request has access to create items.
 	 *
+	 * @see   https://github.com/WordPress/WordPress/blob/c85c8f5235356cbf65680a3201e9ee4161803c0b/wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php#L515-L567
+	 *
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return WP_Error|bool True if the request has access to create items, WP_Error object otherwise.
 	 */
-	public function create_item_permissions_check( $request ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
-		// TODO Change permissions to edit_posts.
+	public function create_item_permissions_check( $request ) {
+
+		$post_type = get_post_type_object( $this->post_type );
+
+		if ( ! current_user_can( $post_type->cap->create_posts ) ) {
+			return new WP_Error(
+				'rest_cannot_create',
+				__( 'Sorry, you are not allowed to create posts as this user.', 'unsplash' ),
+				[ 'status' => rest_authorization_required_code() ]
+			);
+		}
+
+		if ( ! current_user_can( 'upload_files' ) ) {
+			return new WP_Error(
+				'rest_cannot_create',
+				__( 'Sorry, you are not allowed to upload media on this site.', 'unsplash' ),
+				[ 'status' => 400 ]
+			);
+		}
+
 		return true;
 	}
 
@@ -300,9 +346,13 @@ class Rest_Controller extends WP_REST_Controller {
 	 * @param array|Object    $photo Photo object.
 	 * @param WP_REST_Request $request Request object.
 	 *
-	 * @return WP_REST_Response|WP_Error Response object.
+	 * @return array|WP_Error|WP_REST_Response Array if its an AJAX request, WP_Error if an error occurs, otherwise a REST response object.
 	 */
 	public function prepare_item_for_response( $photo, $request ) {
+		if ( $this->is_ajax_request( $request ) ) {
+			return $this->plugin->wp_prepare_attachment_for_js( $photo );
+		}
+
 		$fields     = $this->get_fields_for_response( $request );
 		$schema     = $this->get_item_schema();
 		$properties = $schema['properties'];
@@ -482,29 +532,12 @@ class Rest_Controller extends WP_REST_Controller {
 	}
 
 	/**
-	 * Log an exception.
+	 * Determine if a request is an AJAX one.
 	 *
-	 * @param \Exception $e Exception.
+	 * @param WP_REST_Request $request Request.
+	 * @return bool
 	 */
-	private function log_error( \Exception $e ) {
-
-		if ( ! constant( 'WP_DEBUG' ) ) {
-			return;
-		}
-
-		$message = sprintf(
-			"%1\$s: %2\$s\n%3\$s:\n%4\$s",
-			__( 'Error', 'unsplash' ),
-			$e->getMessage(),
-			__( 'Stack Trace', 'unsplash' ),
-			$e->getTraceAsString()
-		);
-
-		/**
-		 * Stop IDE from complaining.
-		 *
-		 * @noinspection ForgottenDebugOutputInspection
-		 */
-		error_log( $message, $e->getCode() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+	public function is_ajax_request( $request ) {
+		return 'XMLHttpRequest' === $request->get_header( 'X-Requested-With' );
 	}
 }

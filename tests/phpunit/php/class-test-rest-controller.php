@@ -16,18 +16,18 @@ use WP_Test_REST_Controller_Testcase;
 class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 
 	/**
-	 * API namespace.
+	 * Admin user for test.
 	 *
-	 * @var string
+	 * @var int
 	 */
-	private static $namespace = 'unsplash/v1';
+	protected static $admin_id;
 
 	/**
-	 * Base of controller route.
+	 * Subscriber user for test.
 	 *
-	 * @var string
+	 * @var int
 	 */
-	private static $rest_base = 'photos';
+	protected static $subscriber_id;
 
 	/**
 	 * List of registered routes.
@@ -37,10 +37,27 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	private static $routes;
 
 	/**
-	 * Setup before any tests are to be run for this class.
+	 * Create fake data before our tests run.
+	 *
+	 * @param WP_UnitTest_Factory $factory Helper that lets us create fake data.
 	 */
-	public static function setUpBeforeClass() {
+	public static function wpSetUpBeforeClass( $factory ) {
+		self::$admin_id      = $factory->user->create(
+			[ 'role' => 'administrator' ]
+		);
+		self::$subscriber_id = $factory->user->create(
+			[ 'role' => 'subscriber' ]
+		);
+
 		static::$routes = rest_get_server()->get_routes();
+	}
+
+	/**
+	 * Remove fake data.
+	 */
+	public static function wpTearDownAfterClass() {
+		self::delete_user( self::$admin_id );
+		self::delete_user( self::$subscriber_id );
 	}
 
 	/**
@@ -54,6 +71,9 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 
 		$this->assertArrayHasKey( $this->get_route( '/(?P<id>[\w-]+)' ), static::$routes );
 		$this->assertCount( 1, static::$routes[ $this->get_route( '/(?P<id>[\w-]+)' ) ] );
+
+		$this->assertArrayHasKey( $this->get_route( '/import/(?P<id>[\w-]+)' ), static::$routes );
+		$this->assertCount( 1, static::$routes[ $this->get_route( '/import/(?P<id>[\w-]+)' ) ] );
 
 		$this->assertArrayHasKey( $this->get_route( '/search/(?P<search>[\w-]+)' ), static::$routes );
 		$this->assertCount( 1, static::$routes[ $this->get_route( '/search/(?P<search>[\w-]+)' ) ] );
@@ -72,6 +92,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 * @covers \Unsplash\Rest_Controller::get_items()
 	 */
 	public function test_get_items() {
+		wp_set_current_user( self::$admin_id );
 		$request  = new WP_REST_Request( 'GET', $this->get_route() );
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
@@ -133,6 +154,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 * @covers \Unsplash\Rest_Controller::get_item()
 	 */
 	public function test_get_item() {
+		wp_set_current_user( self::$admin_id );
 		$request  = new WP_REST_Request( 'GET', $this->get_route( '/uRuPYB0P8to' ) );
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
@@ -165,6 +187,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 * @covers \Unsplash\Rest_Controller::get_import()
 	 */
 	public function test_get_import() {
+		wp_set_current_user( self::$admin_id );
 		add_filter( 'upload_dir', [ $this, 'upload_dir_patch' ] );
 		$request  = new WP_REST_Request( 'GET', $this->get_route( '/import/uRuPYB0P8to' ) );
 		$response = rest_get_server()->dispatch( $request );
@@ -190,6 +213,45 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		$this->assertEquals( $expected, $data );
 		$this->assertEquals( 301, $response->get_status() );
 		remove_filter( 'upload_dir', [ $this, 'upload_dir_patch' ] );
+	}
+
+	/**
+	 * Test get_item() auth.
+	 *
+	 * @covers \Unsplash\Rest_Controller::get_item()
+	 * @covers \Unsplash\Rest_Controller::get_item_permissions_check()
+	 */
+	public function test_get_item_auth() {
+		wp_set_current_user( self::$subscriber_id );
+		$request  = new WP_REST_Request( 'GET', $this->get_route( '/uRuPYB0P8to' ) );
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertErrorResponse( 'rest_forbidden', $response, 403 );
+	}
+
+	/**
+	 * Test get_items() auth.
+	 *
+	 * @covers \Unsplash\Rest_Controller::get_items()
+	 * @covers \Unsplash\Rest_Controller::get_items_permissions_check()
+	 */
+	public function test_get_items_auth() {
+		wp_set_current_user( self::$subscriber_id );
+		$request  = new WP_REST_Request( 'GET', $this->get_route() );
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertErrorResponse( 'rest_forbidden', $response, 403 );
+	}
+
+	/**
+	 * Test get_import() auth.
+	 *
+	 * @covers \Unsplash\Rest_Controller::get_import()
+	 * @covers \Unsplash\Rest_Controller::create_item_permissions_check()
+	 */
+	public function test_get_import_auth() {
+		wp_set_current_user( self::$subscriber_id );
+		$request  = new WP_REST_Request( 'GET', $this->get_route( '/import/uRuPYB0P8to' ) );
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertErrorResponse( 'rest_cannot_create', $response, 403 );
 	}
 
 	/**
@@ -220,6 +282,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 * @covers \Unsplash\Rest_Controller::get_search()
 	 */
 	public function test_get_search() {
+		wp_set_current_user( self::$admin_id );
 		$request  = new WP_REST_Request( 'GET', $this->get_route( '/search/motorcycle' ) );
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
@@ -290,6 +353,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 * @param int    $status_code Expected status code.
 	 */
 	public function test_get_search_collections_param( $query_param, $status_code ) {
+		wp_set_current_user( self::$admin_id );
 		$request = new WP_REST_Request( 'GET', $this->get_route( '/search/motorcycle' ) );
 		$request->set_query_params( [ 'collections' => $query_param ] );
 		$response = rest_get_server()->dispatch( $request );
@@ -403,16 +467,6 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	}
 
 	/**
-	 * Generate a prefixed route path.
-	 *
-	 * @param string $path URL path.
-	 * @return string Route path.
-	 */
-	private function get_route( $path = '' ) {
-		return '/' . self::$namespace . '/' . self::$rest_base . "$path";
-	}
-
-	/**
 	 * Callback to patch "basedir" when used in `wp_unique_filename()
 	 *
 	 * @param array $upload_dir Array of upload dir values.
@@ -423,5 +477,47 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		$upload_dir['path'] = $upload_dir['basedir'];
 		$upload_dir['url']  = $upload_dir['baseurl'];
 		return $upload_dir;
+	}
+
+	/**
+	 * Data provider for test_is_ajax_request.
+	 *
+	 * @return array
+	 */
+	public function data_test_is_ajax_request() {
+		$normal_request = new WP_REST_Request();
+
+		$ajax_request = new WP_REST_Request();
+		$ajax_request->set_header( 'X-Requested-With', 'XMLHttpRequest' );
+
+		return [
+			[ $normal_request, false ],
+			[ $ajax_request, true ],
+		];
+	}
+
+	/**
+	 * Test is_ajax_request().
+	 *
+	 * @dataProvider data_test_is_ajax_request
+	 * @covers       \Unsplash\Rest_Controller::is_ajax_request()
+	 *
+	 * @param WP_REST_Request $request  Request.
+	 * @param bool            $expected Expected.
+	 */
+	public function test_is_ajax_request( $request, $expected ) {
+		$rest_controller = new Rest_Controller( new Plugin() );
+		$actual          = $rest_controller->is_ajax_request( $request );
+		$this->assertEquals( $expected, $actual );
+	}
+
+	/**
+	 * Generate a prefixed route path.
+	 *
+	 * @param string $path URL path.
+	 * @return string Route path.
+	 */
+	private function get_route( $path = '' ) {
+		return '/unsplash/v1/photos' . "$path";
 	}
 }
