@@ -63,9 +63,10 @@
 	margin: 4px;
 }
 
-.media-frame .unsplash-browser .no-media img{
+.media-frame .unsplash-browser .no-media img {
 	width: 400px;
 }
+
 .wp-core-ui .unsplash-browser .unsplash-attachment img {
 	min-width: 100%;
 	max-width: 100%;
