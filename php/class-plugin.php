@@ -67,7 +67,6 @@ class Plugin extends Plugin_Base {
 		$dependencies   = isset( $asset['dependencies'] ) ? $asset['dependencies'] : [];
 		$dependencies[] = 'media-views';
 		$dependencies[] = 'wp-api-request';
-		$dependencies[] = 'jquery-masonry';
 
 		wp_enqueue_script(
 			'unsplash-media-selector',
@@ -180,7 +179,6 @@ class Plugin extends Plugin_Base {
 				'width'  => $size['width'],
 			];
 		}
-
 		$response['sizes'] = $sizes;
 
 		return $response;
