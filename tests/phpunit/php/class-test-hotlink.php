@@ -67,7 +67,8 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	 */
 	public function setUp() {
 		parent::setUp();
-		$this->hotlink = get_plugin_instance()->hotlink;
+		$this->hotlink = new Hotlink( new Plugin() );
+		$this->hotlink->init();
 	}
 
 
@@ -80,6 +81,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$this->assertEquals( 10, has_filter( 'image_downsize', [ $this->hotlink, 'image_downsize' ] ) );
 		$this->assertEquals( 10, has_filter( 'wp_get_attachment_url', [ $this->hotlink, 'wp_get_attachment_url' ] ) );
 		$this->assertEquals( 99, has_filter( 'the_content', [ $this->hotlink, 'hotlink_images_in_content' ] ) );
+		$this->assertEquals( 10, has_filter( 'get_image_tag', [ $this->hotlink, 'get_image_tag' ] ) );
 	}
 
 	/**
@@ -130,8 +132,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 
 		$post    = get_post( $test_page );
 		$content = apply_filters( 'the_content', $post->post_content );
-		// FIXME: The img src in `self::$image_tag` is escaped via `get_image_tag()` and produces something similar to http://www.example.com/test.jpg?w=1&amp;h=1&h=1. Why are we adding the `w` and `h` query params?
-		// phpcs:ignore $this->assertContains( 'http://www.example.com/test.jpg?w=1&h=1', $content );
+		$this->assertContains( 'src="http://www.example.com/test.jpg?w=300&h=300"', $content );
 		$this->assertContains( '/tmp/melon.jpg', $content );
 	}
 
