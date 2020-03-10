@@ -77,8 +77,8 @@ class Test_Plugin extends \WP_UnitTestCase {
 		$this->assertEquals( $output['sizes']['full']['height'], $image['height'] );
 		$this->assertEquals( $output['sizes']['full']['width'], $image['width'] );
 		$this->assertEquals( $output['sizes']['full']['url'], $image['urls']['raw'] );
-		$this->assertEquals( $output['sizes']['thumbnail']['url'], 'http://www.example.com/test.jpg?w=150&h=150&q=85&fm=jpg' );
-		$this->assertEquals( $output['sizes']['medium_large']['url'], 'http://www.example.com/test.jpg?w=768&h=208&q=85&fm=jpg' );
+		$this->assertEquals( $output['sizes']['thumbnail']['url'], 'http://www.example.com/test.jpg?w=150&h=150&fm=jpg&q=85&fit=crop' );
+		$this->assertEquals( $output['sizes']['medium_large']['url'], 'http://www.example.com/test.jpg?w=768&h=0&fm=jpg&q=85&fit=crop' );
 	}
 
 	/**
@@ -100,7 +100,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 	/**
 	 * Test get_original_url_with_size.
 	 *
-	 * @covers ::get_original_url_with_size()
+	 * @covers Plugin::get_original_url_with_size()
 	 * @dataProvider get_url_with_size_data
 	 *
 	 * @param string $url Original URL of unsplash asset.
