@@ -116,9 +116,13 @@ class Plugin extends Plugin_Base {
 	 * @return array
 	 */
 	public function wp_prepare_attachment_for_js( array $photo ) {
-		$image_format  = 'jpg';
-		$image_quality = '85';
-		$response      = [
+		$attrs = [
+			'fm'  => 'jpg',
+			'q'   => '85',
+			'fit' => 'crop',
+		];
+
+		$response = [
 			'id'            => isset( $photo['id'] ) ? $photo['id'] : null,
 			'title'         => '',
 			'filename'      => isset( $photo['unsplash_id'] ) ? $photo['unsplash_id'] . '.jpg' : null,
@@ -139,15 +143,7 @@ class Plugin extends Plugin_Base {
 			'mime'          => 'image/jpeg',
 			'type'          => 'image',
 			'subtype'       => 'jpeg',
-			'icon'          => isset( $photo['urls']['thumb'] ) ? add_query_arg(
-				[
-					'w'  => 150,
-					'h'  => 150,
-					'q'  => $image_quality,
-					'fm' => $image_format,
-				],
-				$photo['urls']['thumb']
-			) : null,
+			'icon'          => isset( $photo['urls']['thumb'] ) ? $this->get_original_url_with_size( $photo['urls']['thumb'], 150, 150, $attrs ) : null,
 			'dateFormatted' => isset( $photo['created_at'] ) ? mysql2date( __( 'F j, Y', 'unsplash' ), $photo['created_at'] ) : null,
 			'nonces'        => [
 				'update' => false,
@@ -157,39 +153,62 @@ class Plugin extends Plugin_Base {
 			'editLink'      => false,
 			'meta'          => false,
 		];
-
-		$sizes = [
-			'full' => [
+		$width    = 400;
+		$height   = ceil( $photo['height'] / ( $photo['width'] / $width ) );
+		$url      = isset( $photo['urls']['small'] ) ? $photo['urls']['small'] : $this->get_original_url_with_size( $photo['urls']['raw'], $width, $height, $attrs );
+		$sizes    = [
+			'full'   => [
 				'url'    => $photo['urls']['raw'],
 				'height' => $photo['height'],
 				'width'  => $photo['width'],
 			],
+			'medium' => [
+				'url'    => $url,
+				'height' => $height,
+				'width'  => $width,
+			],
 		];
 
 		foreach ( $this->image_sizes() as $name => $size ) {
-			if ( $size['width'] === $size['height'] ) {
-				$height = $size['height'];
-			} else {
-				$height = ceil( $photo['height'] / ( $photo['width'] / $size['width'] ) );
+			if ( in_array( $name, array_keys( $sizes ), true ) ) {
+				continue;
 			}
-			$url            = add_query_arg(
-				[
-					'w'  => $size['width'],
-					'h'  => $height,
-					'q'  => $image_quality,
-					'fm' => $image_format,
-				],
-				$photo['urls']['raw']
-			);
+			$url            = $this->get_original_url_with_size( $photo['urls']['raw'], $size['width'], $size['height'], $attrs );
 			$sizes[ $name ] = [
 				'url'    => $url,
-				'height' => $height,
+				'height' => $size['height'],
 				'width'  => $size['width'],
 			];
 		}
 		$response['sizes'] = $sizes;
 
 		return $response;
+	}
+
+	/**
+	 * Helper function to get sized URL.
+	 *
+	 * @param string $url Original URL of unsplash asset.
+	 * @param int    $width Width of image.
+	 * @param int    $height Height of image.
+	 * @param array  $attr Other attributes to be passed to the URL.
+	 *
+	 * @return string Format image url.
+	 */
+	public function get_original_url_with_size( $url, $width, $height, $attr = [] ) {
+		$attr = wp_parse_args(
+			$attr,
+			[
+				'w' => absint( $width ),
+				'h' => absint( $height ),
+			]
+		);
+		$url  = add_query_arg(
+			$attr,
+			$url
+		);
+
+		return $url;
 	}
 
 	/**
