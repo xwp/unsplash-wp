@@ -49,4 +49,34 @@ class Test_Plugin extends \WP_UnitTestCase {
 		$plugin->enqueue_media_scripts();
 		$this->assertTrue( wp_script_is( 'unsplash-media-selector', 'enqueued' ) );
 	}
+
+	/**
+	 * Test for wp_prepare_attachment_for_js() method.
+	 *
+	 * @see Plugin::wp_prepare_attachment_for_js()
+	 */
+	public function test_wp_prepare_attachment_for_js() {
+		$plugin = get_plugin_instance();
+		$image  = [
+			'id'              => 'eOvv4N6yNmk',
+			'tags'            => [],
+			'height'          => 123,
+			'width'           => 456,
+			'description'     => 'test description',
+			'alt_description' => 'test alt description',
+			'urls'            => [
+				'full' => 'http://www.example.com/test.jpg',
+			],
+		];
+		$output = $plugin->wp_prepare_attachment_for_js( $image );
+		$this->assertEquals( $output['id'], $image['id'] );
+		$this->assertEquals( $output['alt'], $image['alt_description'] );
+		$this->assertEquals( $output['description'], $image['description'] );
+		$this->assertEquals( $output['sizes']['full']['height'], $image['height'] );
+		$this->assertEquals( $output['sizes']['full']['width'], $image['width'] );
+		$this->assertEquals( $output['sizes']['full']['url'], $image['urls']['full'] );
+		$this->assertEquals( array_keys( $output['sizes'] ), array( 'full', 'thumbnail', 'medium', 'medium_large', 'large' ) );
+		$this->assertEquals( $output['sizes']['thumbnail']['url'], 'http://www.example.com/test.jpg?w=150&height=150&q=85' );
+		$this->assertEquals( $output['sizes']['medium_large']['url'], 'http://www.example.com/test.jpg?w=150&height=150&q=85' );
+	}
 }

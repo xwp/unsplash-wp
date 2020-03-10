@@ -164,7 +164,11 @@ class Plugin extends Plugin_Base {
 		];
 
 		foreach ( $this->image_sizes() as $name => $size ) {
-			$height         = ceil( $photo['height'] / ( $photo['width'] / $size['width'] ) );
+			if ( $size['width'] === $size['height'] ) {
+				$height = $size['height'];
+			} else {
+				$height = ceil( $photo['height'] / ( $photo['width'] / $size['width'] ) );
+			}
 			$url            = add_query_arg(
 				[
 					'w' => $size['width'],
