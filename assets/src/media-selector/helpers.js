@@ -1,8 +1,9 @@
 /**
  * Internal dependencies
  */
-import ImagesBrowser from './images_browser';
-import UnsplashState from '../store/unsplash_state';
+import ImagesBrowser from './views/images_browser';
+import UnsplashState from './store/unsplash_state';
+import Toolbar from './views/toolbar';
 
 export const withUnsplashTab = View => {
 	return View.extend( {
@@ -10,6 +11,7 @@ export const withUnsplashTab = View => {
 			View.prototype.createStates.apply( this, arguments );
 			this.states.add( [ new UnsplashState() ] );
 		},
+
 		browseRouter( routerView ) {
 			View.prototype.browseRouter.apply( this, arguments );
 
@@ -40,7 +42,7 @@ export const withUnsplashTab = View => {
 			// Add the Unsplash tab to the router.
 			routerView.set( {
 				unsplash: {
-					text: window.unsplash.tabTitle,
+					text: getConfig( 'tabTitle' ),
 					priority: 60,
 				},
 			} );
@@ -80,5 +82,27 @@ export const withUnsplashTab = View => {
 				suggestedHeight: state.get( 'suggestedHeight' ),
 			} );
 		},
+
+		createToolbar( toolbar ) {
+			toolbar.view = new Toolbar( {
+				controller: this,
+			} );
+		},
 	} );
+};
+
+/**
+ * Get Unsplash config value.
+ *
+ * @param {string} configName Name of config value to retrieve.
+ * @return {string|undefined} Value of config.
+ */
+export const getConfig = configName => {
+	const configData = window.unsplash;
+
+	if ( undefined === configData ) {
+		return undefined;
+	}
+
+	return configData[ configName ];
 };

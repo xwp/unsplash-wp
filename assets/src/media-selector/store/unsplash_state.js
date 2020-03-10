@@ -2,6 +2,7 @@
  * Internal dependencies
  */
 import ImagesCollection from '../views/collections/images_collection';
+import { getConfig } from '../helpers';
 
 const State = wp.media.controller.State;
 
@@ -9,7 +10,7 @@ const UnsplashState = State.extend( {
 	defaults: {
 		id: 'unsplash',
 		toolbar: 'unsplash',
-		title: window.unsplash.tabTitle,
+		title: () => getConfig( 'tabTitle' ),
 		content: 'unsplash',
 		menu: 'unsplash',
 		router: false,

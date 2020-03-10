@@ -104,6 +104,7 @@ class Plugin extends Plugin_Base {
 	public function wp_prepare_attachment_for_js( array $photo ) {
 		$response = [
 			'id'            => isset( $photo['id'] ) ? $photo['id'] : null,
+			'unsplashId'    => isset( $photo['unsplash_id'] ) ? $photo['unsplash_id'] : null,
 			'title'         => '',
 			'filename'      => isset( $photo['unsplash_id'] ) ? $photo['unsplash_id'] . '.jpg' : null,
 			'url'           => isset( $photo['urls']['raw'] ) ? $photo['urls']['raw'] : null,
@@ -184,7 +185,7 @@ class Plugin extends Plugin_Base {
 		if ( 0 === count( $image_sizes ) ) {
 			return $sizes;
 		}
-		
+
 		$default_sizes = [ 'thumbnail', 'medium', 'medium_large', 'large' ];
 		foreach ( $image_sizes as $s ) {
 			if ( in_array( $s, $default_sizes, true ) ) {

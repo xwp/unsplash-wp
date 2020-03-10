@@ -165,9 +165,15 @@ class Rest_Controller extends WP_REST_Controller {
 			$total        = $api_response->totalObjects();
 
 			foreach ( $results as $index => $photo ) {
-				$photo['unsplash_id'] = $photo['id'];
-				// Set an incremental ID so that the media selector can order the images correctly.
-				$photo['id'] = $index + ( ( $page - 1 ) * $per_page );
+				/*
+				 * The media selector uses the image ID to sort the list of images received from the API, so an
+				 * incremental ID is set so that they are ordered correctly.
+				 */
+				if ( $this->is_ajax_request( $request ) ) {
+					$photo['unsplash_id'] = $photo['id'];
+
+					$photo['id'] = $index + ( ( $page - 1 ) * $per_page );
+				}
 
 				$data     = $this->prepare_item_for_response( $photo, $request );
 				$photos[] = $this->prepare_response_for_collection( $data );

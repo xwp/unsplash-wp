@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import { withUnsplashTab } from './views/helpers';
+import { withUnsplashTab } from './helpers';
 
 // Override media frames in the respective editors to add the Unsplash tab.
 

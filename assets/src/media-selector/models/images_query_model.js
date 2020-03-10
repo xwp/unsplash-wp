@@ -2,6 +2,7 @@
  * Internal dependencies
  */
 import ImagesCollection from '../views/collections/images_collection';
+import { getConfig } from '../helpers';
 
 const ImagesQueryModel = wp.media.model.Query.extend(
 	{
@@ -17,7 +18,7 @@ const ImagesQueryModel = wp.media.model.Query.extend(
 		sync( method, model, options = {} ) {
 			// Overload the read method so Image.fetch() functions correctly.
 			if ( 'read' === method ) {
-				const { route } = window.unsplash;
+				const route = getConfig( 'route' );
 				// Clone the args so manipulation is non-destructive.
 				const args = _.clone( this.args );
 

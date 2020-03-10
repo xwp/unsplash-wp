@@ -1,8 +1,10 @@
+import { getConfig } from '../helpers';
+
 const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 	className: 'unsplash-browser attachments-browser',
 
 	createToolbar() {
-		const { toolbar } = window.unsplash;
+		const toolbar = getConfig( 'toolbar' );
 
 		this.toolbar = new wp.media.view.Toolbar( {
 			controller: this.controller,
