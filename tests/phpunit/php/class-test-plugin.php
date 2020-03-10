@@ -65,13 +65,15 @@ class Test_Plugin extends \WP_UnitTestCase {
 			'description'     => 'test description',
 			'alt_description' => 'test alt description',
 			'urls'            => [
-				'raw' => 'http://www.example.com/test.jpg',
+				'raw'   => 'http://www.example.com/test.jpg',
+				'thumb' => 'http://www.example.com/thumb.jpg',
 			],
 		];
 		$output = $plugin->wp_prepare_attachment_for_js( $image );
 		$this->assertEquals( $output['id'], $image['id'] );
 		$this->assertEquals( $output['alt'], $image['alt_description'] );
 		$this->assertEquals( $output['description'], $image['description'] );
+		$this->assertEquals( $output['icon'], 'http://www.example.com/thumb.jpg?w=150&h=150&q=85&fm=jpg' );
 		$this->assertEquals( $output['sizes']['full']['height'], $image['height'] );
 		$this->assertEquals( $output['sizes']['full']['width'], $image['width'] );
 		$this->assertEquals( $output['sizes']['full']['url'], $image['urls']['raw'] );

@@ -116,7 +116,9 @@ class Plugin extends Plugin_Base {
 	 * @return array
 	 */
 	public function wp_prepare_attachment_for_js( array $photo ) {
-		$response = [
+		$image_format  = 'jpg';
+		$image_quality = '85';
+		$response      = [
 			'id'            => isset( $photo['id'] ) ? $photo['id'] : null,
 			'title'         => '',
 			'filename'      => isset( $photo['unsplash_id'] ) ? $photo['unsplash_id'] . '.jpg' : null,
@@ -139,9 +141,10 @@ class Plugin extends Plugin_Base {
 			'subtype'       => 'jpeg',
 			'icon'          => isset( $photo['urls']['thumb'] ) ? add_query_arg(
 				[
-					'w' => 150,
-					'h' => 150,
-					'q' => 80,
+					'w'  => 150,
+					'h'  => 150,
+					'q'  => $image_quality,
+					'fm' => $image_format,
 				],
 				$photo['urls']['thumb']
 			) : null,
@@ -173,8 +176,8 @@ class Plugin extends Plugin_Base {
 				[
 					'w'  => $size['width'],
 					'h'  => $height,
-					'q'  => 85,
-					'fm' => 'jpg',
+					'q'  => $image_quality,
+					'fm' => $image_format,
 				],
 				$photo['urls']['raw']
 			);
