@@ -75,8 +75,8 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		$this->assertArrayHasKey( $this->get_route( '/import/(?P<id>[\w-]+)' ), static::$routes );
 		$this->assertCount( 1, static::$routes[ $this->get_route( '/import/(?P<id>[\w-]+)' ) ] );
 
-		$this->assertArrayHasKey( $this->get_route( '/search/(?P<search>[\w-]+)' ), static::$routes );
-		$this->assertCount( 1, static::$routes[ $this->get_route( '/search/(?P<search>[\w-]+)' ) ] );
+		$this->assertArrayHasKey( $this->get_route( '/search/(?P<search>[a-zA-Z0-9 ]+)' ), static::$routes );
+		$this->assertCount( 1, static::$routes[ $this->get_route( '/search/(?P<search>[a-zA-Z0-9 ]+)' ) ] );
 	}
 
 	/**
@@ -307,6 +307,36 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	}
 
 	/**
+	 * Test get_search() with spaces.
+	 *
+	 * @covers \Unsplash\Rest_Controller::get_search()
+	 */
+	public function test_get_search_with_spaces() {
+		wp_set_current_user( self::$admin_id );
+		$request  = new WP_REST_Request( 'GET', $this->get_route( '/search/star wars' ) );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+		var_dump( $data ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_dump
+		$this->assertCount( 10, $data );
+		$expected_keys = [
+			'id',
+			'created_at',
+			'updated_at',
+			'width',
+			'height',
+			'color',
+			'description',
+			'alt_description',
+			'urls',
+		];
+		foreach ( $data as $photo_data ) {
+			foreach ( $expected_keys as $key ) {
+				$this->assertArrayHasKey( $key, $photo_data );
+			}
+		}
+	}
+
+	/**
 	 * Data for the test `test_get_search_collections_param()`.
 	 *
 	 * @return array
@@ -412,7 +442,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 			],
 		];
 
-		$this->assertEquals( $expected, static::$routes[ $this->get_route( '/search/(?P<search>[\w-]+)' ) ][0]['args'] );
+		$this->assertEquals( $expected, static::$routes[ $this->get_route( '/search/(?P<search>[a-zA-Z0-9 ]+)' ) ][0]['args'] );
 	}
 
 	/**

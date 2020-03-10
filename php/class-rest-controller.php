@@ -132,7 +132,7 @@ class Rest_Controller extends WP_REST_Controller {
 
 		register_rest_route(
 			$this->namespace,
-			'/' . $this->rest_base . '/search/(?P<search>[\w-]+)',
+			'/' . $this->rest_base . '/search/(?P<search>[a-zA-Z0-9 ]+)',
 			[
 				[
 					'methods'             => WP_REST_Server::READABLE,
