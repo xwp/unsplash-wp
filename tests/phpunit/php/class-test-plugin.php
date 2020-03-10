@@ -100,7 +100,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 	/**
 	 * Test get_original_url_with_size.
 	 *
-	 * @covers Plugin::get_original_url_with_size()
+	 * @see Plugin::get_original_url_with_size()
 	 * @dataProvider get_url_with_size_data
 	 *
 	 * @param string $url Original URL of unsplash asset.
