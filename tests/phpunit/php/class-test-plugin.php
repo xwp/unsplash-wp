@@ -65,7 +65,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 			'description'     => 'test description',
 			'alt_description' => 'test alt description',
 			'urls'            => [
-				'full' => 'http://www.example.com/test.jpg',
+				'raw' => 'http://www.example.com/test.jpg',
 			],
 		];
 		$output = $plugin->wp_prepare_attachment_for_js( $image );
@@ -74,9 +74,8 @@ class Test_Plugin extends \WP_UnitTestCase {
 		$this->assertEquals( $output['description'], $image['description'] );
 		$this->assertEquals( $output['sizes']['full']['height'], $image['height'] );
 		$this->assertEquals( $output['sizes']['full']['width'], $image['width'] );
-		$this->assertEquals( $output['sizes']['full']['url'], $image['urls']['full'] );
-		$this->assertEquals( array_keys( $output['sizes'] ), array( 'full', 'thumbnail', 'medium', 'medium_large', 'large' ) );
-		$this->assertEquals( $output['sizes']['thumbnail']['url'], 'http://www.example.com/test.jpg?w=150&height=150&q=85' );
-		$this->assertEquals( $output['sizes']['medium_large']['url'], 'http://www.example.com/test.jpg?w=150&height=150&q=85' );
+		$this->assertEquals( $output['sizes']['full']['url'], $image['urls']['raw'] );
+		$this->assertEquals( $output['sizes']['thumbnail']['url'], 'http://www.example.com/test.jpg?w=150&h=150&q=85&fm=jpg' );
+		$this->assertEquals( $output['sizes']['medium_large']['url'], 'http://www.example.com/test.jpg?w=768&h=208&q=85&fm=jpg' );
 	}
 }

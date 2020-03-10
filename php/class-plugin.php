@@ -171,11 +171,12 @@ class Plugin extends Plugin_Base {
 			}
 			$url            = add_query_arg(
 				[
-					'w' => $size['width'],
-					'h' => $height,
-					'q' => 85,
+					'w'  => $size['width'],
+					'h'  => $height,
+					'q'  => 85,
+					'fm' => 'jpg',
 				],
-				$photo['urls']['full']
+				$photo['urls']['raw']
 			);
 			$sizes[ $name ] = [
 				'url'    => $url,
