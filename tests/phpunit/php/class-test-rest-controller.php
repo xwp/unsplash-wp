@@ -316,7 +316,6 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		$request  = new WP_REST_Request( 'GET', $this->get_route( '/search/star wars' ) );
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
-		var_dump( $data ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_dump
 		$this->assertCount( 10, $data );
 		$expected_keys = [
 			'id',
