@@ -461,7 +461,7 @@ class Rest_Controller extends WP_REST_Controller {
 	 * @return array Item schema data.
 	 */
 	public function get_item_schema() {
-		if ( $this->schema ) {
+		if ( property_exists( self::class, 'schema' ) ) {
 			return $this->add_additional_fields_schema( $this->schema );
 		}
 		// TODO Add in all required fields.
