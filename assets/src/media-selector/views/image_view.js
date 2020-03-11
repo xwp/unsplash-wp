@@ -1,4 +1,4 @@
-const Attachment = wp.media.view.Attachment.extend( {
+const ImageView = wp.media.view.Attachment.extend( {
 	className: 'unsplash-attachment',
 	tagName: 'div',
 	buttons: {
@@ -6,4 +6,4 @@ const Attachment = wp.media.view.Attachment.extend( {
 	},
 } );
 
-export default Attachment;
+export default ImageView;

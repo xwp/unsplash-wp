@@ -1,4 +1,4 @@
-import Attachments from './image_views';
+import ImageViews from './image_views';
 
 const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 	className: 'unsplash-browser attachments-browser',
@@ -57,7 +57,7 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 	createAttachments() {
 		const { noResults } = window.unsplash;
 
-		this.attachments = new Attachments( {
+		this.attachments = new ImageViews( {
 			controller: this.controller,
 			collection: this.collection,
 			selection: this.options.selection,

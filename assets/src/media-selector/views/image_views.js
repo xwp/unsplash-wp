@@ -1,6 +1,6 @@
 import Macy from 'macy';
 
-const Attachments = wp.media.view.Attachments.extend( {
+const ImageViews = wp.media.view.Attachments.extend( {
 	className: 'attachments',
 	tagName: 'div',
 	macy: null,
@@ -35,4 +35,4 @@ const Attachments = wp.media.view.Attachments.extend( {
 	},
 } );
 
-export default Attachments;
+export default ImageViews;
