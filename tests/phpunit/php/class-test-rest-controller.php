@@ -240,7 +240,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 			];
 		}
 
-		$actual   = get_plugin_instance()->rest_controller->prepare_item_for_response( $photo, $request );
+		$actual = get_plugin_instance()->rest_controller->prepare_item_for_response( $photo, $request );
 
 		$this->assertEquals( $expected, $actual );
 	}
