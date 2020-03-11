@@ -168,21 +168,21 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 
 		$expected = new \WP_REST_Response(
 			[
-				'id' => 'rO8TdlRrOo0',
-				'created_at' => '2019-05-12T09:40:48-04:00',
-				'updated_at' => '2020-03-07T00:04:08-05:00',
-				'width' => 3998,
-				'height' => 2785,
-				'color' => '#F6F7FB',
-				'description' => '',
+				'id'              => 'rO8TdlRrOo0',
+				'created_at'      => '2019-05-12T09:40:48-04:00',
+				'updated_at'      => '2020-03-07T00:04:08-05:00',
+				'width'           => 3998,
+				'height'          => 2785,
+				'color'           => '#F6F7FB',
+				'description'     => '',
 				'alt_description' => 'black wolf near rocks',
-				'urls' => [
-					'raw' => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
-					'full' => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
+				'urls'            => [
+					'raw'     => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
+					'full'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
 					'regular' => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
-					'small' => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
-					'thumb' => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
-				]
+					'small'   => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
+					'thumb'   => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
+				],
 			]
 		);
 
