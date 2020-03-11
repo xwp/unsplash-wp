@@ -56,7 +56,7 @@ const Button = wp.media.view.Button.extend(
 
 			selections
 				.filter( image => {
-					return undefined === image.unsplashId;
+					return image.attributes && undefined !== image.attributes.unsplashId;
 				} )
 				.forEach( image => imports.push( Button.import( image ) ) );
 
@@ -78,9 +78,12 @@ const Button = wp.media.view.Button.extend(
 					url: importUrl,
 				} ).done( attachmentData => {
 					// Update image model with actual attachment data.
-					// TODO: replace only what's needed.
-					const newAttrs = { ...image.attributes, ...attachmentData };
-					image.set( newAttrs );
+					const newAttrs = {
+						id: attachmentData.id,
+						title: attachmentData.title.raw,
+						url: attachmentData.guid.raw,
+					};
+					image.set( { ...image.attributes, ...newAttrs } );
 
 					resolve();
 				} );
