@@ -146,46 +146,4 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$primed_attachments = $this->hotlink->prime_post_caches( $attachment_ids );
 		$this->assertEqualSets( $primed_attachments, [ get_post( self::$attachment_id ) ] );
 	}
-
-	/**
-	 * Data provider for test_get_original_url_with_size.
-	 *
-	 * @return array
-	 */
-	public function data_various_params() {
-		return [
-			[ 'http://www.example.com/test.jpg', 222, 444, [], 'http://www.example.com/test.jpg?w=222&h=444' ],
-			[ 'http://www.example.com/test.jpg', 100, 100, [], 'http://www.example.com/test.jpg?w=100&h=100' ],
-			[ 'http://www.example.com/test.jpg', -1, -1, [], 'http://www.example.com/test.jpg?w=1&h=1' ],
-			[ 'http://www.example.com/test.jpg', 'invalid', 'invalid', [], 'http://www.example.com/test.jpg?w=0&h=0' ],
-			[ 'http://www.example.com/test.jpg', 100, 100, [ 'crop' => true ], 'http://www.example.com/test.jpg?w=100&h=100&crop=1' ],
-			[ 'http://www.example.com/test.jpg?crop=1', 100, 100, [], 'http://www.example.com/test.jpg?crop=1&w=100&h=100' ],
-		];
-	}
-
-	/**
-	 * Test get_original_url_with_size.
-	 *
-	 * @covers ::get_original_url_with_size()
-	 * @dataProvider data_various_params
-	 *
-	 * @param string $url Original URL of unsplash asset.
-	 * @param int    $width Width of image.
-	 * @param int    $height Height of image.
-	 * @param array  $attr Other attributes to be passed to the URL.
-	 * @param string $expected Expected value.
-	 */
-	public function test_get_original_url_with_size( $url, $width, $height, $attr, $expected ) {
-		$this->assertSame( $this->hotlink->get_original_url_with_size( $url, $width, $height, $attr ), $expected );
-	}
-
-	/**
-	 * Test get_image_size.
-	 *
-	 * @covers ::get_image_tag()
-	 */
-	public function test_get_image_tag() {
-		$image_tag = get_image_tag( self::$attachment_id, 'alt', 'title', 'left' );
-		$this->assertEquals( self::$image_tag, $image_tag );
-	}
 }

@@ -2,6 +2,7 @@
  * Internal dependencies
  */
 import ImagesBrowser from './views/images_browser';
+import ImageView from './views/image_view';
 import UnsplashState from './store/unsplash_state';
 import Toolbar from './views/toolbar';
 
@@ -66,7 +67,9 @@ export const withUnsplashTab = View => {
 
 			contentRegion.view = new ImagesBrowser( {
 				controller: this,
+				AttachmentView: ImageView,
 				collection: state.get( 'library' ),
+				mode: state.get( 'mode' ),
 				selection: ogState.get( 'selection' ),
 				model: state,
 				sortable: state.get( 'sortable' ),

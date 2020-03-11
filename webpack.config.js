@@ -65,10 +65,7 @@ const mediaSelector = {
 	...defaultConfig,
 	...sharedConfig,
 	entry: {
-		'media-selector': [
-			'./assets/src/media-selector/index.js',
-			'./assets/css/src/media-selector.css',
-		],
+		'media-selector': [ './assets/src/media-selector/index.js' ],
 	},
 	plugins: [
 		...sharedConfig.plugins,

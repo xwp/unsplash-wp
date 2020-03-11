@@ -2,6 +2,7 @@
  * Internal dependencies
  */
 import { withUnsplashTab } from './helpers';
+import './style.css';
 
 // Override media frames in the respective editors to add the Unsplash tab.
 
