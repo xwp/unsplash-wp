@@ -170,7 +170,7 @@ class Plugin extends Plugin_Base {
 		];
 
 		foreach ( $this->image_sizes() as $name => $size ) {
-			if ( in_array( $name, array_keys( $sizes ), true ) ) {
+			if ( array_key_exists( $name, $sizes ) ) {
 				continue;
 			}
 			$url            = $this->get_original_url_with_size( $photo['urls']['raw'], $size['width'], $size['height'], $attrs );
