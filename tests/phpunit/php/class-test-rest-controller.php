@@ -223,18 +223,23 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 					'height' => '1024',
 					'width'  => '1024',
 				],
-				'1536x1536'    => [
-					'url'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=1536&h=1536&fit=crop',
-					'height' => '1536',
-					'width'  => '1536',
-				],
-				'2048x2048'    => [
-					'url'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=2048&h=2048&fit=crop',
-					'height' => '2048',
-					'width'  => '2048',
-				],
 			],
 		];
+
+		if ( version_compare( '5.2', get_bloginfo( 'version' ), '<' ) ) {
+			$expected['sizes']['1536x1536'] = [
+				'url'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=1536&h=1536&fit=crop',
+				'height' => '1536',
+				'width'  => '1536',
+			];
+
+			$expected['sizes']['2048x2048'] = [
+				'url'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=2048&h=2048&fit=crop',
+				'height' => '2048',
+				'width'  => '2048',
+			];
+		}
+
 		$actual   = get_plugin_instance()->rest_controller->prepare_item_for_response( $photo, $request );
 
 		$this->assertEquals( $expected, $actual );
