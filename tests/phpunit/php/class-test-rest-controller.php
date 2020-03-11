@@ -108,6 +108,139 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	}
 
 	/**
+	 * Test get_items().
+	 *
+	 * @covers \Unsplash\Rest_Controller::get_items()
+	 */
+	public function test_get_items_via_ajax() {
+		wp_set_current_user( self::$admin_id );
+		$request = new WP_REST_Request( 'GET', $this->get_route() );
+		$request->set_header( 'X-Requested-With', 'XMLHttpRequest' );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		// Assert that 10 photos are returned.
+		$this->assertCount( 10, $data );
+
+		// Assert that each photo object has the attributes we would need.
+		foreach ( $data as $photo_object ) {
+			$expected_keys = [
+				'id',
+				'title',
+				'filename',
+				'url',
+				'link',
+				'alt',
+				'author',
+				'description',
+				'caption',
+				'name',
+				'height',
+				'width',
+				'status',
+				'uploadedTo',
+				'date',
+				'modified',
+				'menuOrder',
+				'mime',
+				'type',
+				'subtype',
+				'icon',
+				'dateFormatted',
+				'nonces',
+				'editLink',
+				'meta',
+				'sizes',
+			];
+			$this->assertEquals( $expected_keys, array_keys( $photo_object ) );
+		}
+	}
+
+	/**
+	 * Test prepare_item_for_response().
+	 *
+	 * @covers \Unsplash\Rest_Controller::prepare_item_for_response()
+	 */
+	public function test_prepare_item_for_response() {
+		wp_set_current_user( self::$admin_id );
+		$photo   = $this->get_photo_response();
+		$request = new WP_REST_Request( 'GET', $this->get_route() );
+		$request->set_header( 'X-Requested-With', 'XMLHttpRequest' );
+
+		$expected = [
+			'id'            => 'rO8TdlRrOo0',
+			'title'         => '',
+			'filename'      => null,
+			'url'           => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
+			'link'          => 'https://unsplash.com/photos/rO8TdlRrOo0?utm_source=WordPress-XWP&utm_medium=referral&utm_campaign=api-credit',
+			'alt'           => 'black wolf near rocks',
+			'author'        => null,
+			'description'   => null,
+			'caption'       => '',
+			'name'          => '',
+			'height'        => 2785,
+			'width'         => 3998,
+			'status'        => 'inherit',
+			'uploadedTo'    => 0,
+			'date'          => 1557668448000,
+			'modified'      => 1583557448000,
+			'menuOrder'     => 0,
+			'mime'          => 'image/jpeg',
+			'type'          => 'image',
+			'subtype'       => 'jpeg',
+			'icon'          => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=150&fit=max&ixid=eyJhcHBfaWQiOjEwMjU2NX0&h=150',
+			'dateFormatted' => 'May 12, 2019',
+			'nonces'        => [
+				'update' => false,
+				'delete' => false,
+				'edit'   => false,
+			],
+			'editLink'      => false,
+			'meta'          => false,
+			'sizes'         => [
+				'full'         => [
+					'url'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
+					'height' => '2785',
+					'width'  => '3998',
+				],
+				'thumbnail'    => [
+					'url'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=150&h=150&fit=crop',
+					'height' => '150',
+					'width'  => '150',
+				],
+				'medium'       => [
+					'url'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=300&h=300&fit=crop',
+					'height' => '300',
+					'width'  => '300',
+				],
+				'medium_large' => [
+					'url'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=0&h=768&fit=crop',
+					'height' => '0',
+					'width'  => '768',
+				],
+				'large'        => [
+					'url'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=1024&h=1024&fit=crop',
+					'height' => '1024',
+					'width'  => '1024',
+				],
+				'1536x1536'    => [
+					'url'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=1536&h=1536&fit=crop',
+					'height' => '1536',
+					'width'  => '1536',
+				],
+				'2048x2048'    => [
+					'url'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=2048&h=2048&fit=crop',
+					'height' => '2048',
+					'width'  => '2048',
+				],
+			],
+		];
+		$actual   = get_plugin_instance()->rest_controller->prepare_item_for_response( $photo, $request );
+
+		$this->assertEquals( $expected, $actual );
+	}
+
+	/**
 	 * Test arguments for get_items().
 	 */
 	public function test_get_items_args() {
@@ -519,5 +652,237 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 */
 	private function get_route( $path = '' ) {
 		return '/unsplash/v1/photos' . "$path";
+	}
+
+	private function get_photo_response() {
+		return [
+			'id'                       => 'rO8TdlRrOo0',
+			'created_at'               => '2019-05-12T09:40:48-04:00',
+			'updated_at'               => '2020-03-07T00:04:08-05:00',
+			'promoted_at'              => null,
+			'width'                    => 3998,
+			'height'                   => 2785,
+			'color'                    => '#F6F7FB',
+			'description'              => null,
+			'alt_description'          => 'black wolf near rocks',
+			'urls'                     => [
+				'raw'     => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
+				'full'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
+				'regular' => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
+				'small'   => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
+				'thumb'   => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
+			],
+			'links'                    => [
+				'self'              => 'https://api.unsplash.com/photos/rO8TdlRrOo0',
+				'html'              => 'https://unsplash.com/photos/rO8TdlRrOo0?utm_source=WordPress-XWP&utm_medium=referral&utm_campaign=api-credit',
+				'download'          => 'https://unsplash.com/photos/rO8TdlRrOo0/download?utm_source=WordPress-XWP&utm_medium=referral&utm_campaign=api-credit',
+				'download_location' => 'https://api.unsplash.com/photos/rO8TdlRrOo0/download',
+			],
+			'categories'               => [],
+			'likes'                    => 16,
+			'liked_by_user'            => false,
+			'current_user_collections' => [],
+			'user'                     => [
+				'id'                 => 'FNxGZSkxTiM',
+				'updated_at'         => '2020-03-10T00:32:39-04:00',
+				'username'           => 'waldemarbrandt67w',
+				'name'               => 'Waldemar Brandt',
+				'first_name'         => 'Waldemar',
+				'last_name'          => 'Brandt',
+				'twitter_username'   => 'BrandtWaldemar',
+				'portfolio_url'      => null,
+				'bio'                => null,
+				'location'           => 'Schleswig-Holstein , Germany',
+				'links'              => [
+					'self'      => 'https://api.unsplash.com/users/waldemarbrandt67w',
+					'html'      => 'https://unsplash.com/@waldemarbrandt67w?utm_source=WordPress-XWP&utm_medium=referral&utm_campaign=api-credit',
+					'photos'    => 'https://api.unsplash.com/users/waldemarbrandt67w/photos',
+					'likes'     => 'https://api.unsplash.com/users/waldemarbrandt67w/likes',
+					'portfolio' => 'https://api.unsplash.com/users/waldemarbrandt67w/portfolio',
+					'following' => 'https://api.unsplash.com/users/waldemarbrandt67w/following',
+					'followers' => 'https://api.unsplash.com/users/waldemarbrandt67w/followers',
+				],
+				'profile_image'      => [
+					'small'  => 'https://images.unsplash.com/profile-1527426873441-dba4a87c4458?ixlib=rb-1.2.1&q=80&fm=jpg&crop=faces&cs=tinysrgb&fit=crop&h=32&w=32',
+					'medium' => 'https://images.unsplash.com/profile-1527426873441-dba4a87c4458?ixlib=rb-1.2.1&q=80&fm=jpg&crop=faces&cs=tinysrgb&fit=crop&h=64&w=64',
+					'large'  => 'https://images.unsplash.com/profile-1527426873441-dba4a87c4458?ixlib=rb-1.2.1&q=80&fm=jpg&crop=faces&cs=tinysrgb&fit=crop&h=128&w=128',
+				],
+				'instagram_username' => 'waldemarbrandt67',
+				'total_collections'  => 1,
+				'total_likes'        => 2780,
+				'total_photos'       => 656,
+				'accepted_tos'       => true,
+			],
+			'tags'                     => [
+				[
+					'type'   => 'landing_page',
+					'title'  => 'animal',
+					'source' => [
+						'ancestry'         => [
+							'type'     => [
+								'slug'        => 'images',
+								'pretty_slug' => 'Images',
+							],
+							'category' => [
+								'slug'        => 'animals',
+								'pretty_slug' => 'Animals',
+							],
+						],
+						'title'            => 'Animals Images & Pictures',
+						'subtitle'         => 'Download free animals images',
+						'description'      => 'Passionate photographers have captured the most gorgeous animals in the world in their natural habitats and shared them with Unsplash. Now you can use these photos however you wish, for free!',
+						'meta_title'       => 'Best 20+ Animals Pictures [HD] | Download Free Images on Unsplash',
+						'meta_description' => 'Choose from hundreds of free animals pictures. Download HD animals photos for free on Unsplash.',
+						'cover_photo'      => [
+							'id'                       => 'adK3Vu70DEQ',
+							'created_at'               => '2015-02-27T19:18:03-05:00',
+							'updated_at'               => '2020-02-28T00:01:52-05:00',
+							'promoted_at'              => '2015-02-27T19:18:03-05:00',
+							'width'                    => 4239,
+							'height'                   => 2808,
+							'color'                    => '#ACA5A3',
+							'description'              => null,
+							'alt_description'          => 'selective focus photography of brown hamster',
+							'urls'                     => [
+								'raw'     => 'https://images.unsplash.com/photo-1425082661705-1834bfd09dca?ixlib=rb-1.2.1',
+								'full'    => 'https://images.unsplash.com/photo-1425082661705-1834bfd09dca?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb',
+								'regular' => 'https://images.unsplash.com/photo-1425082661705-1834bfd09dca?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max',
+								'small'   => 'https://images.unsplash.com/photo-1425082661705-1834bfd09dca?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max',
+								'thumb'   => 'https://images.unsplash.com/photo-1425082661705-1834bfd09dca?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max',
+							],
+							'links'                    => [
+								'self'              => 'https://api.unsplash.com/photos/adK3Vu70DEQ',
+								'html'              => 'https://unsplash.com/photos/adK3Vu70DEQ?utm_source=WordPress-XWP&utm_medium=referral&utm_campaign=api-credit',
+								'download'          => 'https://unsplash.com/photos/adK3Vu70DEQ/download?utm_source=WordPress-XWP&utm_medium=referral&utm_campaign=api-credit',
+								'download_location' => 'https://api.unsplash.com/photos/adK3Vu70DEQ/download',
+							],
+							'categories'               => [],
+							'likes'                    => 1325,
+							'liked_by_user'            => false,
+							'current_user_collections' => [],
+							'user'                     => [
+								'id'                 => '0e7bDgtjCJw',
+								'updated_at'         => '2020-03-03T09:58:45-05:00',
+								'username'           => 'sweetmangostudios',
+								'name'               => 'Ricky  Kharawala',
+								'first_name'         => 'Ricky ',
+								'last_name'          => 'Kharawala',
+								'twitter_username'   => 'rickykharawala',
+								'portfolio_url'      => 'http://www.sweetmangostudios.com',
+								'bio'                => null,
+								'location'           => null,
+								'links'              => [
+									'self'      => 'https://api.unsplash.com/users/sweetmangostudios',
+									'html'      => 'https://unsplash.com/@sweetmangostudios?utm_source=WordPress-XWP&utm_medium=referral&utm_campaign=api-credit',
+									'photos'    => 'https://api.unsplash.com/users/sweetmangostudios/photos',
+									'likes'     => 'https://api.unsplash.com/users/sweetmangostudios/likes',
+									'portfolio' => 'https://api.unsplash.com/users/sweetmangostudios/portfolio',
+									'following' => 'https://api.unsplash.com/users/sweetmangostudios/following',
+									'followers' => 'https://api.unsplash.com/users/sweetmangostudios/followers',
+								],
+								'profile_image'      => [
+									'small'  => 'https://images.unsplash.com/profile-1473176711009-5afa1898d622?ixlib=rb-1.2.1&q=80&fm=jpg&crop=faces&cs=tinysrgb&fit=crop&h=32&w=32',
+									'medium' => 'https://images.unsplash.com/profile-1473176711009-5afa1898d622?ixlib=rb-1.2.1&q=80&fm=jpg&crop=faces&cs=tinysrgb&fit=crop&h=64&w=64',
+									'large'  => 'https://images.unsplash.com/profile-1473176711009-5afa1898d622?ixlib=rb-1.2.1&q=80&fm=jpg&crop=faces&cs=tinysrgb&fit=crop&h=128&w=128',
+								],
+								'instagram_username' => 'kuriouskoala',
+								'total_collections'  => 0,
+								'total_likes'        => 9,
+								'total_photos'       => 58,
+								'accepted_tos'       => true,
+							],
+						],
+					],
+				],
+				[
+					'type'   => 'landing_page',
+					'title'  => 'wolf',
+					'source' => [
+						'ancestry' => [
+							'type'             => [
+								'slug'        => 'images',
+								'pretty_slug' => 'Images',
+							],
+							'category'         => [
+								'slug'        => 'animals',
+								'pretty_slug' => 'Animals',
+							],
+							'subcategory'      => [
+								'slug'        => 'wolf',
+								'pretty_slug' => 'Wolf',
+							],
+							'title'            => 'Wolf Images & Pictures',
+							'subtitle'         => 'Download free wolf images',
+							'description'      => "The wolf is legendary for a reason, and Unsplash photographers have managed to capture the power and majesty of this creature in it's natural habitat. You can access and use over 100 wolf images as you see fit, free of charge!",
+							'meta_title'       => 'Best 100+ Wolf Pictures [HD] | Download Free Images on Unsplash',
+							'meta_description' => 'Choose from hundreds of free wolf pictures. Download HD wolf photos for free on Unsplash.',
+							'cover_photo'      => [
+								'id'                       => '_zVGPn7IxNI',
+								'created_at'               => '2019-02-14T12:41:41-05:00',
+								'updated_at'               => '2020-02-28T00:01:57-05:00',
+								'promoted_at'              => null,
+								'width'                    => 3495,
+								'height'                   => 5243,
+								'color'                    => '#EBE7E2',
+								'description'              => "She\u2019s a great model",
+								'alt_description'          => 'shallow focus photo of black and white dog',
+								'urls'                     => [
+									'raw'     => 'https://images.unsplash.com/photo-1550165703-3f6ae6887b9b?ixlib=rb-1.2.1',
+									'full'    => 'https://images.unsplash.com/photo-1550165703-3f6ae6887b9b?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb',
+									'regular' => 'https://images.unsplash.com/photo-1550165703-3f6ae6887b9b?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max',
+									'small'   => 'https://images.unsplash.com/photo-1550165703-3f6ae6887b9b?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max',
+									'thumb'   => 'https://images.unsplash.com/photo-1550165703-3f6ae6887b9b?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max',
+								],
+								'links'                    => [
+									'self'              => 'https://api.unsplash.com/photos/_zVGPn7IxNI',
+									'html'              => 'https://unsplash.com/photos/_zVGPn7IxNI?utm_source=WordPress-XWP&utm_medium=referral&utm_campaign=api-credit',
+									'download'          => 'https://unsplash.com/photos/_zVGPn7IxNI/download?utm_source=WordPress-XWP&utm_medium=referral&utm_campaign=api-credit',
+									'download_location' => 'https://api.unsplash.com/photos/_zVGPn7IxNI/download',
+								],
+								'categories'               => [],
+								'likes'                    => 102,
+								'liked_by_user'            => false,
+								'current_user_collections' => [],
+								'user'                     => [
+									'id'                 => 'WjCjB5Jn3HU',
+									'updated_at'         => '2020-02-22T00:55:44-05:00',
+									'username'           => 'tahoe',
+									'name'               => 'Tahoe',
+									'first_name'         => 'Tahoe',
+									'last_name'          => null,
+									'twitter_username'   => 'tahoooe',
+									'portfolio_url'      => 'https://tahoe.be',
+									'bio'                => "\ud83d\udc15",
+									'location'           => 'France',
+									'links'              => [
+										'self'      => 'https://api.unsplash.com/users/tahoe',
+										'html'      => 'https://unsplash.com/@tahoe?utm_source=WordPress-XWP&utm_medium=referral&utm_campaign=api-credit',
+										'photos'    => 'https://api.unsplash.com/users/tahoe/photos',
+										'likes'     => 'https://api.unsplash.com/users/tahoe/likes',
+										'portfolio' => 'https://api.unsplash.com/users/tahoe/portfolio',
+										'following' => 'https://api.unsplash.com/users/tahoe/following',
+										'followers' => 'https://api.unsplash.com/users/tahoe/followers',
+									],
+									'profile_image'      => [
+										'small'  => 'https://images.unsplash.com/profile-1568132201228-4fbf2d071604image?ixlib=rb-1.2.1&q=80&fm=jpg&crop=faces&cs=tinysrgb&fit=crop&h=32&w=32',
+										'medium' => 'https://images.unsplash.com/profile-1568132201228-4fbf2d071604image?ixlib=rb-1.2.1&q=80&fm=jpg&crop=faces&cs=tinysrgb&fit=crop&h=64&w=64',
+										'large'  => 'https://images.unsplash.com/profile-1568132201228-4fbf2d071604image?ixlib=rb-1.2.1&q=80&fm=jpg&crop=faces&cs=tinysrgb&fit=crop&h=128&w=128',
+									],
+									'instagram_username' => null,
+									'total_collections'  => 3,
+									'total_likes'        => 82,
+									'total_photos'       => 29,
+									'accepted_tos'       => true,
+								],
+							],
+						],
+					],
+					[
+						'type'  => 'search',
+						'title' => 'mammal',
+					],
+				],
+			],
+		];
 	}
 }
