@@ -188,7 +188,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 			'mime'          => 'image/jpeg',
 			'type'          => 'image',
 			'subtype'       => 'jpeg',
-			'icon'          => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=150&fit=max&ixid=eyJhcHBfaWQiOjEwMjU2NX0&h=150',
+			'icon'          => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=tinysrgb&w=150&fit=crop&ixid=eyJhcHBfaWQiOjEwMjU2NX0&h=150',
 			'dateFormatted' => 'May 12, 2019',
 			'nonces'        => [
 				'update' => false,
@@ -204,22 +204,22 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 					'width'  => '3998',
 				],
 				'thumbnail'    => [
-					'url'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=150&h=150&fit=crop',
+					'url'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=150&h=150&fm=jpg&q=85&fit=crop',
 					'height' => '150',
 					'width'  => '150',
 				],
 				'medium'       => [
-					'url'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=300&h=300&fit=crop',
-					'height' => '300',
-					'width'  => '300',
+					'url'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
+					'height' => '279',
+					'width'  => '400',
 				],
 				'medium_large' => [
-					'url'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=0&h=768&fit=crop',
+					'url'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=768&h=0&fm=jpg&q=85&fit=crop',
 					'height' => '0',
 					'width'  => '768',
 				],
 				'large'        => [
-					'url'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=1024&h=1024&fit=crop',
+					'url'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=1024&h=1024&fm=jpg&q=85&fit=crop',
 					'height' => '1024',
 					'width'  => '1024',
 				],
@@ -228,15 +228,15 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 
 		if ( version_compare( '5.2', get_bloginfo( 'version' ), '<' ) ) {
 			$expected['sizes']['1536x1536'] = [
-				'url'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=1536&h=1536&fit=crop',
-				'height' => '1536',
-				'width'  => '1536',
+				'url'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=1536&h=1536&fm=jpg&q=85&fit=crop',
+				'height' => 1536,
+				'width'  => 1536,
 			];
 
 			$expected['sizes']['2048x2048'] = [
-				'url'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=2048&h=2048&fit=crop',
-				'height' => '2048',
-				'width'  => '2048',
+				'url'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=2048&h=2048&fm=jpg&q=85&fit=crop',
+				'height' => 2048,
+				'width'  => 2048,
 			];
 		}
 
