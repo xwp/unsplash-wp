@@ -18,6 +18,7 @@ const Toolbar = wp.media.view.Toolbar.extend( {
 		if ( _.isObject( id ) ) {
 			_.each(
 				id,
+				// eslint-disable-next-line no-shadow
 				function( view, id ) {
 					this.set( id, view, { silent: true } );
 				},
