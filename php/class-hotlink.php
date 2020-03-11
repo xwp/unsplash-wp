@@ -96,7 +96,7 @@ class Hotlink {
 			return $should_resize;
 		}
 
-		$original_url = $this->get_original_url_with_size( $original_url, $width, $height );
+		$original_url = $this->plugin->get_original_url_with_size( $original_url, $width, $height );
 
 		return [ $original_url, $width, $height, false ];
 	}
@@ -203,7 +203,7 @@ class Hotlink {
 			return $image;
 		}
 
-		$new_src = $this->get_original_url_with_size( $original_url, $width, $height );
+		$new_src = $this->plugin->get_original_url_with_size( $original_url, $width, $height );
 		return str_replace( $image_src, $new_src, $image );
 	}
 
@@ -219,31 +219,6 @@ class Hotlink {
 		return get_post_meta( $id, 'original_url', true );
 	}
 
-	/**
-	 * Helper function to get sized URL.
-	 *
-	 * @param string $url Original URL of unsplash asset.
-	 * @param int    $width Width of image.
-	 * @param int    $height Height of image.
-	 * @param array  $attr Other attributes to be passed to the URL.
-	 *
-	 * @return string Format image url.
-	 */
-	public function get_original_url_with_size( $url, $width, $height, $attr = [] ) {
-		$attr = wp_parse_args(
-			$attr,
-			[
-				'w' => absint( $width ),
-				'h' => absint( $height ),
-			]
-		);
-		$url  = add_query_arg(
-			$attr,
-			$url
-		);
-
-		return $url;
-	}
 
 	/**
 	 * Warm the object cache with post and meta information for all found
