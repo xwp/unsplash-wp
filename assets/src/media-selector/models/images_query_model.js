@@ -1,4 +1,8 @@
 /**
+ * WordPress dependencies
+ */
+import { addQueryArgs } from '@wordpress/url';
+/**
  * Internal dependencies
  */
 import ImagesCollection from '../views/collections/images_collection';
@@ -28,7 +32,9 @@ const ImagesQueryModel = wp.media.model.Query.extend(
 
 				options.context = this;
 				options.type = 'GET';
-				options.url = !! args.s ? `${ route }/search/${ args.s }` : route;
+				options.url = !! args.s
+					? addQueryArgs( `${ route }/search`, { search: args.s } )
+					: route;
 				options.data = {
 					page: args.paged,
 					per_page: args.posts_per_page,

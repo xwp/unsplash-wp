@@ -88,6 +88,20 @@ class Rest_Controller extends WP_REST_Controller {
 
 		register_rest_route(
 			$this->namespace,
+			'/' . $this->rest_base . '/search',
+			[
+				[
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => [ $this, 'get_search' ],
+					'permission_callback' => [ $this, 'get_items_permissions_check' ],
+					'args'                => $this->get_search_params(),
+				],
+				'schema' => [ $this, 'get_item_schema' ],
+			]
+		);
+
+		register_rest_route(
+			$this->namespace,
 			'/' . $this->rest_base . '/(?P<id>[\w-]+)',
 			[
 				'args'   => [
@@ -127,20 +141,6 @@ class Rest_Controller extends WP_REST_Controller {
 					],
 				],
 				'schema' => [ $this, 'get_public_item_schema' ],
-			]
-		);
-
-		register_rest_route(
-			$this->namespace,
-			'/' . $this->rest_base . '/search/(?P<search>[a-zA-Z0-9 ]+)',
-			[
-				[
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => [ $this, 'get_search' ],
-					'permission_callback' => [ $this, 'get_items_permissions_check' ],
-					'args'                => $this->get_search_params(),
-				],
-				'schema' => [ $this, 'get_item_schema' ],
 			]
 		);
 	}
@@ -412,6 +412,7 @@ class Rest_Controller extends WP_REST_Controller {
 		$query_params['search'] = [
 			'description' => __( 'Limit results to those matching a string.', 'unsplash' ),
 			'type'        => 'string',
+			'required'    => true,
 		];
 
 		$query_params['orientation'] = [

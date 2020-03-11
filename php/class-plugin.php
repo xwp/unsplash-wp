@@ -184,7 +184,7 @@ class Plugin extends Plugin_Base {
 		if ( 0 === count( $image_sizes ) ) {
 			return $sizes;
 		}
-		
+
 		$default_sizes = [ 'thumbnail', 'medium', 'medium_large', 'large' ];
 		foreach ( $image_sizes as $s ) {
 			if ( in_array( $s, $default_sizes, true ) ) {
