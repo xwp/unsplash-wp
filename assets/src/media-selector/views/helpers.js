@@ -3,6 +3,7 @@
  */
 import ImagesBrowser from './images_browser';
 import UnsplashState from '../store/unsplash_state';
+import ImageView from './image_view';
 
 export const withUnsplashTab = View => {
 	return View.extend( {
@@ -64,7 +65,9 @@ export const withUnsplashTab = View => {
 
 			contentRegion.view = new ImagesBrowser( {
 				controller: this,
+				AttachmentView: ImageView,
 				collection: state.get( 'library' ),
+				mode: state.get( 'mode' ),
 				selection: ogState.get( 'selection' ),
 				model: state,
 				sortable: state.get( 'sortable' ),
