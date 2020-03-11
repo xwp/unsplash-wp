@@ -654,6 +654,11 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		return '/unsplash/v1/photos' . "$path";
 	}
 
+	/**
+	 * Get a sample photo response.
+	 *
+	 * @return array
+	 */
 	private function get_photo_response() {
 		return [
 			'id'                       => 'rO8TdlRrOo0',
