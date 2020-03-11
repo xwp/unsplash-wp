@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import ImagesQueryModel from '../../models/images_query_model';
+import ImagesQueryModel from '../models/images_query_model';
 
 const ImagesCollection = wp.media.model.Attachments.extend( {
 	/**

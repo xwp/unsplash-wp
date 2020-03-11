@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import ImagesCollection from '../views/collections/images_collection';
+import ImagesCollection from '../collections/images_collection';
 
 const State = wp.media.controller.State;
 
