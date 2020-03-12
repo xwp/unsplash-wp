@@ -5,7 +5,7 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import ImagesCollection from '../views/collections/images_collection';
+import ImagesCollection from '../collections/images_collection';
 
 const ImagesQueryModel = wp.media.model.Query.extend(
 	{

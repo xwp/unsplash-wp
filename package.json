@@ -21,7 +21,9 @@
     "node": ">=10",
     "npm": ">=6.9"
   },
-  "dependencies": {},
+  "dependencies": {
+    "macy": "^2.5.1"
+  },
   "devDependencies": {
     "@babel/cli": "7.8.4",
     "@babel/core": "7.8.6",
