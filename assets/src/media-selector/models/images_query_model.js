@@ -2,7 +2,7 @@
  * Internal dependencies
  */
 import ImagesCollection from '../collections/images_collection';
-import { getConfig } from '../helpers';
+import getConfig from '../helpers/getConfig';
 
 const ImagesQueryModel = wp.media.model.Query.extend(
 	{

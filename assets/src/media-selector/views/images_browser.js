@@ -1,5 +1,5 @@
 import ImageViews from './image_views';
-import { getConfig } from '../helpers';
+import getConfig from '../helpers/getConfig';
 
 const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 	className: 'unsplash-browser attachments-browser',

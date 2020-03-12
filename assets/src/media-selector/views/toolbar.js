@@ -4,6 +4,42 @@
 import Button from './button';
 
 const Toolbar = wp.media.view.Toolbar.extend( {
+	initialize() {
+		const state = this.controller.state(),
+			selection = ( this.selection = state.get( 'selection' ) ),
+			library = ( this.library = state.get( 'library' ) );
+
+		this._views = {};
+
+		// The toolbar is composed of two `PriorityList` views.
+		this.primary = new wp.media.view.PriorityList();
+		this.secondary = new wp.media.view.PriorityList();
+		this.primary.$el.addClass( 'media-toolbar-primary search-form' );
+		this.secondary.$el.addClass( 'media-toolbar-secondary' );
+
+		this.views.set( [ this.secondary, this.primary ] );
+
+		if ( this.options.items ) {
+			// this.set() calls the parent's method/
+			Toolbar.prototype.set.apply( this, [
+				this.options.items,
+				{ silent: true },
+			] );
+		}
+
+		if ( ! this.options.silent ) {
+			this.render();
+		}
+
+		if ( selection ) {
+			selection.on( 'add remove reset', this.refresh, this );
+		}
+
+		if ( library ) {
+			library.on( 'add remove reset', this.refresh, this );
+		}
+	},
+
 	/**
 	 * @param {string} id
 	 * @param {Backbone.View|Object} view
@@ -20,7 +56,7 @@ const Toolbar = wp.media.view.Toolbar.extend( {
 				id,
 				// eslint-disable-next-line no-shadow
 				function( view, id ) {
-					this.set( id, view, { silent: true } );
+					Toolbar.prototype.set.apply( this, [ id, view, { silent: true } ] );
 				},
 				this
 			);

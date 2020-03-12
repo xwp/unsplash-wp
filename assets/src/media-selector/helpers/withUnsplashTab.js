@@ -1,12 +1,11 @@
-/**
- * Internal dependencies
- */
-import ImagesBrowser from './views/images_browser';
-import ImageView from './views/image_view';
-import UnsplashState from './store/unsplash_state';
-import Toolbar from './views/toolbar';
+import UnsplashState from '../store/unsplash_state';
+import ImagesBrowser from '../views/images_browser';
+import ImageView from '../views/image_view';
+import Toolbar from '../views/toolbar';
+import ToolbarSelect from '../views/toolbar_select';
+import getConfig from './getConfig';
 
-export const withUnsplashTab = View => {
+export default View => {
 	return View.extend( {
 		createStates() {
 			View.prototype.createStates.apply( this, arguments );
@@ -86,6 +85,15 @@ export const withUnsplashTab = View => {
 			} );
 		},
 
+		/**
+		 * Override bottom toolbar to allow for a custom button to be created. This allows us to add a callback to
+		 * import Unsplash images when they are being inserted.
+		 *
+		 * @see wp.media.view.Toolbar
+		 *
+		 * @param {Object} toolbar
+		 * @this wp.media.controller.Region
+		 */
 		createToolbar( toolbar ) {
 			toolbar.view = new Toolbar( {
 				controller: this,
@@ -99,21 +107,29 @@ export const withUnsplashTab = View => {
 				} )
 			);
 		},
+
+		/**
+		 * Toolbars
+		 *
+		 * @see wp.media.view.Toolbar.Select
+		 *
+		 * @param {Object} toolbar
+		 * @param {Object} [options={}]
+		 * @this wp.media.controller.Region
+		 */
+		createSelectToolbar( toolbar, options ) {
+			options = options || this.options.button || {};
+			options.controller = this;
+
+			toolbar.view = new ToolbarSelect( options );
+
+			toolbar.view.set(
+				'button-spinner',
+				new wp.media.view.Spinner( {
+					// TODO: Prevent the delay when showing the spinner.
+					priority: 60,
+				} )
+			);
+		},
 	} );
-};
-
-/**
- * Get Unsplash config value.
- *
- * @param {string} configName Name of config value to retrieve.
- * @return {string|undefined} Value of config.
- */
-export const getConfig = configName => {
-	const configData = window.unsplash;
-
-	if ( undefined === configData ) {
-		return undefined;
-	}
-
-	return configData[ configName ];
 };
