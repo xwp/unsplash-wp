@@ -37,7 +37,27 @@ const Button = wp.media.view.Button.extend(
 			const state = this.controller.state();
 			const selections = state.get( 'selection' );
 
+			const hasUnsplashSelections = selections.some( image => {
+				return image.attributes && undefined !== image.attributes.unsplashId;
+			} );
+
+			if ( ! hasUnsplashSelections ) {
+				this.options.click.apply( this, arguments );
+				return;
+			}
+
+			const toolbar = this.views.parent.views.parent;
+			const spinner = toolbar.get( 'button-spinner' );
+
+			// Disable the button.
+			this.$el.attr( 'disabled', true );
+			spinner.show();
+
 			Button.processSelections( selections ).then( () => {
+				// Enable button.
+				this.$el.attr( 'disabled', false );
+				spinner.hide();
+
 				if ( this.options.click && ! this.model.get( 'disabled' ) ) {
 					this.options.click.apply( this, arguments );
 				}
@@ -77,13 +97,8 @@ const Button = wp.media.view.Button.extend(
 				wp.apiRequest( {
 					url: importUrl,
 				} ).done( attachmentData => {
-					// Update image model with actual attachment data.
-					const newAttrs = {
-						id: attachmentData.id,
-						title: attachmentData.title.raw,
-						url: attachmentData.guid.raw,
-					};
-					image.set( { ...image.attributes, ...newAttrs } );
+					// Update image ID from imported attachment. This will be used to fetch the <img> tag.
+					image.set( { ...image.attributes, ...{ id: attachmentData.id } } );
 
 					resolve();
 				} );

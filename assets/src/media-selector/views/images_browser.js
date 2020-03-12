@@ -47,7 +47,7 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 			} ).render()
 		);
 
-		// TODO: replace with better spinner.
+		// TODO: replace with better loading indicator.
 		this.toolbar.set(
 			'spinner',
 			new wp.media.view.Spinner( {

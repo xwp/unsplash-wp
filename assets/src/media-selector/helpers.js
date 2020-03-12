@@ -90,6 +90,14 @@ export const withUnsplashTab = View => {
 			toolbar.view = new Toolbar( {
 				controller: this,
 			} );
+
+			toolbar.view.set(
+				'button-spinner',
+				new wp.media.view.Spinner( {
+					// TODO: Prevent the delay when showing the spinner.
+					priority: 60,
+				} )
+			);
 		},
 	} );
 };
