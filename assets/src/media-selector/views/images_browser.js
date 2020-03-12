@@ -56,7 +56,7 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 		);
 	},
 	createAttachments() {
-		const { noResults } = window.unsplash;
+		const noResults = getConfig( 'noResults' );
 
 		this.attachments = new ImageViews( {
 			controller: this.controller,
@@ -96,6 +96,7 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 
 		this.views.add( this.attachmentsNoResults );
 	},
+
 	updateContent() {
 		const view = this;
 		const noItemsView = view.attachmentsNoResults;
