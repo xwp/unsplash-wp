@@ -8,6 +8,7 @@
 namespace Unsplash;
 
 use WP_Error;
+use WP_Query;
 
 /**
  * Test the Import class.
@@ -326,7 +327,21 @@ class Test_Import extends \WP_UnitTestCase {
 		);
 
 		$attachment_id = $import->process();
-		$actual_id     = get_page_by_path( 'processed_id', ARRAY_A, 'attachment' )['ID'];
+		$parsed_args   = [
+			'post_type'              => 'attachment',
+			'name'                   => 'processed_id',
+			'fields'                 => 'ids',
+			'order'                  => 'DESC',
+			'suppress_filters'       => false,
+			'update_post_meta_cache' => false,
+			'update_post_term_cache' => false,
+			'lazy_load_term_meta'    => false,
+			'no_found_rows'          => true,
+		];
+		$get_posts     = new WP_Query();
+		$attachments   = $get_posts->query( $parsed_args );
+
+		$actual_id = ! empty( $attachments ) ? array_shift( $attachments ) : false;
 
 		$this->assertEquals( $attachment_id, $actual_id );
 	}
