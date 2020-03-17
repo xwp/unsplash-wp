@@ -337,6 +337,7 @@ class Test_Import extends \WP_UnitTestCase {
 			'update_post_term_cache' => false,
 			'lazy_load_term_meta'    => false,
 			'no_found_rows'          => true,
+			'posts_per_page'         => 1,
 		];
 		$get_posts     = new WP_Query();
 		$attachments   = $get_posts->query( $parsed_args );
