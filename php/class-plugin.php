@@ -39,6 +39,17 @@ class Plugin extends Plugin_Base {
 	const POST_TYPE = 'attachment';
 
 	/**
+	 * Default image args.
+	 *
+	 * @var array
+	 */
+	public $attrs = [
+		'fm'  => 'jpg',
+		'q'   => '85',
+		'fit' => 'crop',
+	];
+
+	/**
 	 * Initiate the plugin resources.
 	 *
 	 * @action plugins_loaded
@@ -116,12 +127,6 @@ class Plugin extends Plugin_Base {
 	 * @return array
 	 */
 	public function wp_prepare_attachment_for_js( array $photo ) {
-		$attrs = [
-			'fm'  => 'jpg',
-			'q'   => '85',
-			'fit' => 'crop',
-		];
-
 		$response = [
 			'id'            => isset( $photo['id'] ) ? $photo['id'] : null,
 			'title'         => '',
@@ -143,7 +148,7 @@ class Plugin extends Plugin_Base {
 			'mime'          => 'image/jpeg',
 			'type'          => 'image',
 			'subtype'       => 'jpeg',
-			'icon'          => isset( $photo['urls']['thumb'] ) ? $this->get_original_url_with_size( $photo['urls']['thumb'], 150, 150, $attrs ) : null,
+			'icon'          => isset( $photo['urls']['thumb'] ) ? $this->get_original_url_with_size( $photo['urls']['thumb'], 150, 150, $this->attrs ) : null,
 			'dateFormatted' => isset( $photo['created_at'] ) ? mysql2date( __( 'F j, Y', 'unsplash' ), $photo['created_at'] ) : null,
 			'nonces'        => [
 				'update' => false,
@@ -153,19 +158,43 @@ class Plugin extends Plugin_Base {
 			'editLink'      => false,
 			'meta'          => false,
 		];
-		$width    = 400;
-		$height   = ceil( $photo['height'] / ( $photo['width'] / $width ) );
-		$url      = isset( $photo['urls']['small'] ) ? $photo['urls']['small'] : $this->get_original_url_with_size( $photo['urls']['raw'], $width, $height, $attrs );
-		$sizes    = [
+
+		$response['sizes'] = $this->add_image_sizes( $photo['urls']['raw'], $photo['width'], $photo['height'] );
+
+		return $response;
+	}
+
+	/**
+	 * Generate image sizes for Admin ajax / REST api.
+	 *
+	 * @param String $url Image URL.
+	 * @param Int    $width Width of Image.
+	 * @param Int    $height Height of Image.
+	 *
+	 * @return array
+	 */
+	public function add_image_sizes( $url, $width, $height ) {
+		$width_medium  = 400;
+		$height        = intval( $height );
+		$width         = intval( $width );
+		$ratio         = ( $width / $width_medium );
+		$height_medium = $height;
+		if ( $ratio ) {
+			$height_medium = absint( ( $height / $ratio ) );
+		}
+		$url_medium = $this->get_original_url_with_size( $url, $width, $height, $this->attrs );
+		$sizes      = [
 			'full'   => [
-				'url'    => $photo['urls']['raw'],
-				'height' => $photo['height'],
-				'width'  => $photo['width'],
+				'url'         => $url,
+				'height'      => $height,
+				'width'       => $width,
+				'orientation' => 0,
 			],
 			'medium' => [
-				'url'    => $url,
-				'height' => $height,
-				'width'  => $width,
+				'url'         => $url_medium,
+				'height'      => $height_medium,
+				'width'       => $width_medium,
+				'orientation' => 0,
 			],
 		];
 
@@ -173,16 +202,16 @@ class Plugin extends Plugin_Base {
 			if ( array_key_exists( $name, $sizes ) ) {
 				continue;
 			}
-			$url            = $this->get_original_url_with_size( $photo['urls']['raw'], $size['width'], $size['height'], $attrs );
+			$_url           = $this->get_original_url_with_size( $url, $size['width'], $size['height'], $this->attrs );
 			$sizes[ $name ] = [
-				'url'    => $url,
-				'height' => $size['height'],
-				'width'  => $size['width'],
+				'url'         => $_url,
+				'height'      => $size['height'],
+				'width'       => $size['width'],
+				'orientation' => 0,
 			];
 		}
-		$response['sizes'] = $sizes;
 
-		return $response;
+		return $sizes;
 	}
 
 	/**
