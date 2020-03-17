@@ -154,7 +154,7 @@ class Plugin extends Plugin_Base {
 			'meta'          => false,
 		];
 		$width    = 400;
-		$height   = ceil( $photo['height'] / ( $photo['width'] / $width ) );
+		$height   = (int) ceil( $photo['height'] / ( $photo['width'] / $width ) );
 		$url      = isset( $photo['urls']['small'] ) ? $photo['urls']['small'] : $this->get_original_url_with_size( $photo['urls']['raw'], $width, $height, $attrs );
 		$sizes    = [
 			'full'   => [

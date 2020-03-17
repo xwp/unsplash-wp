@@ -166,8 +166,13 @@ class Rest_Controller extends WP_REST_Controller {
 
 			foreach ( $results as $index => $photo ) {
 				$photo['unsplash_id'] = $photo['id'];
-				// Set an incremental ID so that the media selector can order the images correctly.
-				$photo['id'] = $index + ( ( $page - 1 ) * $per_page );
+
+				/*
+				 * Set an incremental ID so that the media selector can order the images correctly.
+				 * The 'unsplash-' prefix is added to prevent any attachment ID collisions in the media library and
+				 * will be stripped when the image models are being compared.
+				 */
+				$photo['id'] = 'unsplash-' . ( $index + ( ( $page - 1 ) * $per_page ) );
 
 				$data     = $this->prepare_item_for_response( $photo, $request );
 				$photos[] = $this->prepare_response_for_collection( $data );
@@ -457,7 +462,7 @@ class Rest_Controller extends WP_REST_Controller {
 	 * @return array Item schema data.
 	 */
 	public function get_item_schema() {
-		if ( $this->schema ) {
+		if ( property_exists( self::class, 'schema' ) && null !== $this->schema ) {
 			return $this->add_additional_fields_schema( $this->schema );
 		}
 		// TODO Add in all required fields.
