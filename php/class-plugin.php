@@ -175,15 +175,9 @@ class Plugin extends Plugin_Base {
 	 */
 	public function add_image_sizes( $url, $width, $height ) {
 		$width_medium  = 400;
-		$height        = intval( $height );
-		$width         = intval( $width );
-		$ratio         = ( $width / $width_medium );
-		$height_medium = $height;
-		if ( $ratio ) {
-			$height_medium = absint( ( $height / $ratio ) );
-		}
-		$url_medium = $this->get_original_url_with_size( $url, $width, $height, $this->attrs );
-		$sizes      = [
+		$height_medium = absint( ( $height / ( $width / $width_medium ) ) );
+		$url_medium    = $this->get_original_url_with_size( $url, $width, $height, $this->attrs );
+		$sizes         = [
 			'full'   => [
 				'url'         => $url,
 				'height'      => $height,
