@@ -4,4 +4,6 @@
 **/vendor/**
 **/assets/js/*.js
 build/*
+js/dist/*
+data/*
 built/*
