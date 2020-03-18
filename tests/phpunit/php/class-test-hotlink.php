@@ -146,4 +146,35 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$primed_attachments = $this->hotlink->prime_post_caches( $attachment_ids );
 		$this->assertEqualSets( $primed_attachments, [ get_post( self::$attachment_id ) ] );
 	}
+
+	/**
+	 * Test render_block.
+	 *
+	 * @covers ::render_block()
+	 */
+	public function test_render_block() {
+		if ( ! function_exists( 'do_blocks' ) ) {
+			$this->markTestSkipped( 'No do_blocks' );
+		}
+		$content   = sprintf(
+			'<!-- wp:cover {"url":"https://localhost:8088/example.jpg","id":%d} -->
+			<div class="wp-block-cover has-background-dim" style="background-image:url(https://localhost:8088/example.jpg)"><div class="wp-block-cover__inner-container"><!-- wp:paragraph {"align":"center","placeholder":"Write title…","fontSize":"large"} -->
+			<p class="has-text-align-center has-large-font-size"></p>
+			<!-- /wp:paragraph --></div></div>
+			<!-- /wp:cover -->',
+			self::$attachment_id
+		);
+		$test_page = self::factory()->post->create(
+			[
+				'post_type'    => 'page',
+				'post_title'   => 'Test page',
+				'post_status'  => 'publish',
+				'post_content' => $content,
+			]
+		);
+
+		$post    = get_post( $test_page );
+		$content = apply_filters( 'the_content', $post->post_content );
+		$this->assertContains( 'http://www.example.com/test.jpg', $content );
+	}
 }
