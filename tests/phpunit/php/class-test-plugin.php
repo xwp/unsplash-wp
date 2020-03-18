@@ -52,6 +52,28 @@ class Test_Plugin extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Test for enqueue_media_scripts() method doeesn't load on widget
+	 *
+	 * @see Plugin::enqueue_media_scripts()
+	 */
+	public function test_no_enqueue_media_scripts() {
+		set_current_screen( 'widget.php' );
+		$plugin = get_plugin_instance();
+		$this->assertFalse( $plugin->enqueue_media_scripts() );
+	}
+
+	/**
+	 * Test for enqueue_media_scripts() method doeesn't load on random screen
+	 *
+	 * @see Plugin::enqueue_media_scripts()
+	 */
+	public function test_no_random_enqueue_media_scripts() {
+		set_current_screen( 'unsplash.php' );
+		$plugin = get_plugin_instance();
+		$this->assertFalse( $plugin->enqueue_media_scripts() );
+	}
+
+	/**
 	 * Test for wp_prepare_attachment_for_js() method.
 	 *
 	 * @see Plugin::wp_prepare_attachment_for_js()

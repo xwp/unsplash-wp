@@ -65,11 +65,11 @@ class Plugin extends Plugin_Base {
 		$screen = get_current_screen();
 
 		if ( ! $screen instanceof WP_Screen ) {
-			return;
+			return false;
 		}
 
 		if ( 'post' !== $screen->base ) {
-			return;
+			return false;
 		}
 		$asset_file = $this->dir_path . '/assets/js/media-selector.asset.php';
 		$asset      = is_readable( $asset_file ) ? require $asset_file : [];
@@ -116,6 +116,8 @@ class Plugin extends Plugin_Base {
 		);
 
 		wp_styles()->add_data( 'unsplash-media-selector-style', 'rtl', 'replace' );
+
+		return true;
 	}
 
 
