@@ -7,6 +7,8 @@
 
 namespace Unsplash;
 
+use WP_Screen;
+
 /**
  * Main plugin bootstrap file.
  */
@@ -60,6 +62,15 @@ class Plugin extends Plugin_Base {
 	 * @action wp_enqueue_media
 	 */
 	public function enqueue_media_scripts() {
+		$screen = get_current_screen();
+
+		if ( ! $screen instanceof WP_Screen ) {
+			return;
+		}
+
+		if ( 'post' !== $screen->base ) {
+			return;
+		}
 		$asset_file = $this->dir_path . '/assets/js/media-selector.asset.php';
 		$asset      = is_readable( $asset_file ) ? require $asset_file : [];
 		$version    = isset( $asset['version'] ) ? $asset['version'] : $this->asset_version();

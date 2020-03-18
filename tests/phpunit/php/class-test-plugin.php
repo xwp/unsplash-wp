@@ -45,6 +45,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 	 * @see Plugin::enqueue_media_scripts()
 	 */
 	public function test_enqueue_media_scripts() {
+		set_current_screen( 'post.php' );
 		$plugin = get_plugin_instance();
 		$plugin->enqueue_media_scripts();
 		$this->assertTrue( wp_script_is( 'unsplash-media-selector', 'enqueued' ) );
