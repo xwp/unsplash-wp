@@ -306,6 +306,7 @@ class Test_Import extends \WP_UnitTestCase {
 	 * Test process.
 	 *
 	 * @covers \Unsplash\Import::process()
+	 * @covers \Unsplash\Import::get_attachment_id()
 	 */
 	public function test_process() {
 		$image  = new Image(
@@ -345,5 +346,33 @@ class Test_Import extends \WP_UnitTestCase {
 		$actual_id = ! empty( $attachments ) ? array_shift( $attachments ) : false;
 
 		$this->assertEquals( $attachment_id, $actual_id );
+	}
+
+	/**
+	 * Test get_attachment_id with no results.
+	 *
+	 * @covers \Unsplash\Import::get_attachment_id()
+	 */
+	public function test_get_no_attachment_id() {
+		$image  = new Image(
+			[
+				'id'   => 'test_get_no_attachment_id',
+				'urls' => [
+					'full' => 'https://images.unsplash.com/photo-1552667466-07770ae110d0?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
+				],
+				'user' => [
+					'id'   => 'eOvv4N6yNmk',
+					'name' => 'John Smith',
+					'bio'  => 'I am a photographer.',
+				],
+			]
+		);
+		$import = new Import(
+			'test_get_no_attachment_id',
+			$image
+		);
+
+		$attachment_id = $import->get_attachment_id();
+		$this->assertEquals( $attachment_id, false );
 	}
 }
