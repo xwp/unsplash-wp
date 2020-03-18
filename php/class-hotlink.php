@@ -300,4 +300,25 @@ class Hotlink {
 		list( $img_src ) = image_downsize( $id, $size );
 		return preg_replace( '/src="([^"]+)"/', "src=\"{$img_src}\"", $html, 1 );
 	}
+
+	/**
+	 * Filters the content of a single block.
+	 *
+	 * @filter render_block, 10, 2
+	 *
+	 * @param string $block_content The block content about to be appended.
+	 * @param array  $block The full block, including name and attributes.
+	 */
+	public function render_block( $block_content, $block ) {
+		if ( 'core/cover' === $block['blockName'] && isset( $block['attrs'], $block['attrs']['id'] ) ) {
+
+			$original_url = $this->get_original_url( $block['attrs']['id'] );
+			if ( ! $original_url ) {
+				return $block_content;
+			}
+			$block_content = str_replace( $block['attrs']['url'], $original_url, $block_content );
+		}
+
+		return $block_content;
+	}
 }
