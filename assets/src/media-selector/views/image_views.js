@@ -12,6 +12,7 @@ const ImageViews = wp.media.view.Attachments.extend( {
 	ready() {
 		this.setupMacy();
 		this.scroll();
+		this.refreshMacy();
 	},
 	setupMacy() {
 		this.macy = Macy( {
