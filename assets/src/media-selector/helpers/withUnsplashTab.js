@@ -9,9 +9,14 @@ export default View => {
 	return View.extend( {
 		createStates() {
 			View.prototype.createStates.apply( this, arguments );
-			this.states.add( [ new UnsplashState() ] );
+			this.createUnsplashStates();
 		},
-
+		createUnsplashStates() {
+			if ( ! this.unsplashStateSetup ) {
+				this.states.add( [ new UnsplashState() ] );
+				this.unsplashStateSetup = 1;
+			}
+		},
 		browseRouter( routerView ) {
 			View.prototype.browseRouter.apply( this, arguments );
 
@@ -59,6 +64,7 @@ export default View => {
 		 * @param {wp.media.controller.Region} contentRegion
 		 */
 		unsplashContent( contentRegion ) {
+			this.createUnsplashStates();
 			const state = this.state( 'unsplash' );
 
 			// TODO - Load selection from the correct state.
