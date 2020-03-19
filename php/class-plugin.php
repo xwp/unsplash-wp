@@ -62,7 +62,7 @@ class Plugin extends Plugin_Base {
 	 * @action wp_enqueue_media
 	 */
 	public function enqueue_media_scripts() {
-		$screen = get_current_screen();
+		$screen = ( function_exists( 'get_current_screen' ) ) ? get_current_screen() : false;
 
 		if ( ! $screen instanceof WP_Screen ) {
 			return false;
