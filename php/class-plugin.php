@@ -122,29 +122,31 @@ class Plugin extends Plugin_Base {
 			'fit' => 'crop',
 		];
 
+		$image = new Image( $this->settings, $photo );
+
 		$response = [
 			'id'            => isset( $photo['id'] ) ? $photo['id'] : null,
 			'title'         => '',
-			'filename'      => isset( $photo['unsplash_id'] ) ? $photo['unsplash_id'] . '.jpg' : null,
-			'url'           => isset( $photo['urls']['raw'] ) ? $photo['urls']['raw'] : null,
-			'link'          => isset( $photo['links']['html'] ) ? $photo['links']['html'] : null,
-			'alt'           => isset( $photo['alt_description'] ) ? $photo['alt_description'] : null,
-			'author'        => isset( $photo['author'] ) ? $photo['author'] : null,
-			'description'   => isset( $photo['description'] ) ? $photo['description'] : null,
-			'caption'       => $this->get_caption( $photo ),
+			'filename'      => $image->get_field( 'file' ),
+			'url'           => $image->get_field( 'original_url' ),
+			'link'          => $image->get_field( 'links' )['html'],
+			'alt'           => $image->get_field( 'alt' ),
+			'author'        => $image->get_field( 'user' )['name'],
+			'description'   => $image->get_field( 'description' ),
+			'caption'       => $image->get_caption(),
 			'name'          => '',
-			'height'        => isset( $photo['height'] ) ? $photo['height'] : null,
-			'width'         => isset( $photo['width'] ) ? $photo['width'] : null,
+			'height'        => $image->get_field( 'height' ),
+			'width'         => $image->get_field( 'width' ),
 			'status'        => 'inherit',
 			'uploadedTo'    => 0,
-			'date'          => isset( $photo['created_at'] ) ? strtotime( $photo['created_at'] ) * 1000 : null,
-			'modified'      => isset( $photo['updated_at'] ) ? strtotime( $photo['updated_at'] ) * 1000 : null,
+			'date'          => ! empty( $image->get_field( 'created_at' ) ) ? strtotime( $image->get_field( 'created_at' ) ) * 1000 : null,
+			'modified'      => ! empty( $image->get_field( 'updated_at' ) ) ? strtotime( $image->get_field( 'updated_at' ) ) * 1000 : null,
 			'menuOrder'     => 0,
-			'mime'          => 'image/jpeg',
+			'mime'          => $image->get_field( 'mime_type' ),
 			'type'          => 'image',
-			'subtype'       => 'jpeg',
-			'icon'          => isset( $photo['urls']['thumb'] ) ? $this->get_original_url_with_size( $photo['urls']['thumb'], 150, 150, $attrs ) : null,
-			'dateFormatted' => isset( $photo['created_at'] ) ? mysql2date( __( 'F j, Y', 'unsplash' ), $photo['created_at'] ) : null,
+			'subtype'       => $image->get_field( 'ext' ),
+			'icon'          => ! empty( $image->get_image_url( 'thumb' ) ) ? $this->get_original_url_with_size( $image->get_image_url( 'thumb' ), 150, 150, $attrs ) : null,
+			'dateFormatted' => ! empty( $image->get_field( 'created_at' ) ) ? mysql2date( __( 'F j, Y', 'unsplash' ), $image->get_field( 'created_at' ) ) : null,
 			'nonces'        => [
 				'update' => false,
 				'delete' => false,
@@ -154,13 +156,13 @@ class Plugin extends Plugin_Base {
 			'meta'          => false,
 		];
 		$width    = 400;
-		$height   = (int) ceil( $photo['height'] / ( $photo['width'] / $width ) );
-		$url      = isset( $photo['urls']['small'] ) ? $photo['urls']['small'] : $this->get_original_url_with_size( $photo['urls']['raw'], $width, $height, $attrs );
+		$height   = (int) ceil( $image->get_field( 'height' ) / ( $image->get_field( 'width' ) / $width ) );
+		$url      = ! empty( $image->get_image_url( 'small' ) ) ? $image->get_image_url( 'small' ) : $this->get_original_url_with_size( $image->get_field( 'original_url' ), $width, $height, $attrs );
 		$sizes    = [
 			'full'   => [
-				'url'    => $photo['urls']['raw'],
-				'height' => $photo['height'],
-				'width'  => $photo['width'],
+				'url'    => $image->get_field( 'original_url' ),
+				'height' => $image->get_field( 'height' ),
+				'width'  => $image->get_field( 'width' ),
 			],
 			'medium' => [
 				'url'    => $url,
@@ -173,7 +175,7 @@ class Plugin extends Plugin_Base {
 			if ( array_key_exists( $name, $sizes ) ) {
 				continue;
 			}
-			$url            = $this->get_original_url_with_size( $photo['urls']['raw'], $size['width'], $size['height'], $attrs );
+			$url            = $this->get_original_url_with_size( $image->get_field( 'original_url' ), $size['width'], $size['height'], $attrs );
 			$sizes[ $name ] = [
 				'url'    => $url,
 				'height' => $size['height'],
@@ -185,30 +187,7 @@ class Plugin extends Plugin_Base {
 		return $response;
 	}
 
-	/**
-	 * Return a formatted caption.
-	 *
-	 * @param array $photo Photo object.
-	 *
-	 * @return string Formatted caption.
-	 */
-	public function get_caption( array $photo ) {
-		$user_name = '';
-		$user_url  = '';
-		if ( isset( $photo['user'] ) && ! empty( $photo['user'] ) ) {
-			$user_url  = ( isset( $photo['user']['links'], $photo['user']['links']['html'] ) ) ? $photo['user']['links']['html'] : '';
-			$user_name = ( isset( $photo['user']['name'] ) ) ? $photo['user']['name'] : '';
-		}
-		$url = add_query_arg(
-			[
-				'utm_source' => $this->settings->get_option( 'utm_source', 'UNSPLASH_UTM_SOURCE' ),
-				'utm_medium' => 'referral',
-			],
-			'https://unsplash.com/'
-		);
-		/* translators: 1: User URL, 2: User's name, 3: Unsplash URL */
-		return sprintf( __( 'Photo by <a href="%1$s">%2$s</a> on <a href="%3$s">Unsplash</a>', 'unsplash' ), esc_url( $user_url ), $user_name, esc_url( $url ) );
-	}
+
 
 	/**
 	 * Helper function to get sized URL.

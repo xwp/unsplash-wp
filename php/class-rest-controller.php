@@ -223,7 +223,7 @@ class Rest_Controller extends WP_REST_Controller {
 			$photo->download();
 			$results = $photo->toArray();
 
-			$image         = new Image( $this->plugin, $results );
+			$image         = new Image( $this->plugin->settings, $results );
 			$importer      = new Import( $id, $image );
 			$attachment_id = $importer->process();
 			if ( is_wp_error( $attachment_id ) ) {
