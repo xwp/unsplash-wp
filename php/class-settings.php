@@ -35,6 +35,17 @@ class Settings {
 	 */
 	private $salt;
 
+	/**
+	 * Array of encypted keys for secure data.
+	 *
+	 * @since 1.0.0
+	 * @var array
+	 */
+	private $encypted_keys = [ 'access_key', 'secret_key' ];
+
+	/**
+	 * Setting name.
+	 */
 	const OPTION_NAME = 'unsplash_settings';
 
 	/**
@@ -151,7 +162,7 @@ class Settings {
 	 * @action admin_menu
 	 */
 	public function add_admin_menu() {
-		add_options_page( 'Unsplash', 'Unsplash', 'manage_options', 'unsplash', [ $this, 'settings_page_render' ] );
+		add_options_page( __( 'Unsplash', 'unsplash' ), __( 'Unsplash', 'unsplash' ), 'manage_options', 'unsplash', [ $this, 'settings_page_render' ] );
 	}
 
 	/**
@@ -204,11 +215,11 @@ class Settings {
 	 * @return array Sanitized and encrypted values.
 	 */
 	public function sanitize_settings( $settings ) {
-		$options = get_option( 'unsplash_settings' );
+		$options = get_option( $this::OPTION_NAME, [] );
 
 		foreach ( $settings as $key => $value ) {
 			$should_encrypt = (
-				in_array( $key, [ 'access_key', 'secret_key' ], true )
+				in_array( $key, $this->encypted_keys, true )
 				&& ! empty( $settings[ $key ] )
 				&& (
 					! isset( $options[ $key ] )
@@ -275,7 +286,7 @@ class Settings {
 	public function utm_source_render() {
 		$options = get_option( $this::OPTION_NAME );
 		?>
-		<input type='password' class="widefat" name='unsplash_settings[utm_source]' value='<?php echo esc_attr( isset( $options['utm_source'] ) ? $options['utm_source'] : '' ); ?>'>
+		<input type='text' class="widefat" name='unsplash_settings[utm_source]' value='<?php echo esc_attr( isset( $options['utm_source'] ) ? $options['utm_source'] : '' ); ?>'>
 		<?php
 	}
 
@@ -290,6 +301,16 @@ class Settings {
 	public function get_option( $name, $env_name ) {
 		$options = get_option( $this::OPTION_NAME, [] );
 
-		return isset( $options[ $name ] ) ? $this->decrypt( $options[ $name ] ) : getenv( $env_name );
+		if ( ! isset( $options[ $name ] ) ) {
+			return getenv( $env_name );
+		}
+
+		if ( in_array( $name, $this->encypted_keys, true ) ) {
+			$value = $this->decrypt( $options[ $name ] );
+		} else {
+			$value = $options[ $name ];
+		}
+
+		return $value;
 	}
 }
