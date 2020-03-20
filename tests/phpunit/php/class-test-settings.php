@@ -221,7 +221,7 @@ class Test_Settings extends \WP_UnitTestCase {
 	/**
 	 * Test utm_source_render.
 	 *
-	 * @covers ::secret_key_render()
+	 * @covers ::utm_source_render()
 	 */
 	public function test_utm_source_render() {
 		ob_start();
@@ -241,16 +241,16 @@ class Test_Settings extends \WP_UnitTestCase {
 	public function test_get_option() {
 		update_option(
 			'unsplash_settings',
-			[
-				'foo' => 'bar',
-				'baz' => 'test-value',
-			]
+			$this->settings->sanitize_settings(
+				[
+					'foo'        => 'bar',
+					'access_key' => 'test-value',
+				]
+			)
 		);
 		$test = $this->settings->get_option( 'foo', 'unused' );
 		$this->assertEquals( 'bar', $test );
-		$test = $this->settings->get_option( 'baz', 'unused' );
+		$test = $this->settings->get_option( 'access_key', 'unused' );
 		$this->assertEquals( 'test-value', $test );
-
-
 	}
 }
