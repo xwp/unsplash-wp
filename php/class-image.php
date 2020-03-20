@@ -13,7 +13,12 @@ namespace Unsplash;
  * @package Unsplash
  */
 class Image {
-
+	/**
+	 * Plugin instance.
+	 *
+	 * @var Plugin
+	 */
+	public $plugin;
 	/**
 	 * Unsplash image array.
 	 *
@@ -39,10 +44,12 @@ class Image {
 	/**
 	 * Image constructor.
 	 *
-	 * @param array $image Unsplash image array.
+	 * @param Plugin $plugin Instance of the plugin abstraction.
+	 * @param array  $image Unsplash image array.
 	 */
-	public function __construct( array $image = [] ) {
-		$this->image = $image;
+	public function __construct( $plugin, array $image = [] ) {
+		$this->plugin = $plugin;
+		$this->image  = $image;
 		$this->process_fields();
 	}
 
@@ -53,6 +60,7 @@ class Image {
 		$this->process_data['original_id']       = $this->get_image_field( 'id' );
 		$this->process_data['description']       = $this->get_image_field( 'description', $this->get_image_field( 'alt_description' ) );
 		$this->process_data['alt']               = $this->get_image_field( 'alt_description', $this->get_image_field( 'description' ) );
+		$this->process_data['caption']           = $this->plugin->get_caption( $this->image );
 		$this->process_data['original_url']      = $this->get_image_url( 'raw' );
 		$this->process_data['color']             = $this->get_image_field( 'color', '' );
 		$this->process_data['unsplash_location'] = $this->get_image_field( 'location', [] );

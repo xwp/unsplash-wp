@@ -35,6 +35,8 @@ class Settings {
 	 */
 	private $salt;
 
+	const OPTION_NAME = 'unsplash_settings';
+
 	/**
 	 * Constructor.
 	 *
@@ -161,7 +163,7 @@ class Settings {
 		$args = [
 			'sanitize_callback' => [ $this, 'sanitize_settings' ],
 		];
-		register_setting( 'unsplash', 'unsplash_settings', $args );
+		register_setting( 'unsplash', $this::OPTION_NAME, $args );
 
 		add_settings_section(
 			'unsplash_section',
@@ -182,6 +184,14 @@ class Settings {
 			'secret_key',
 			__( 'Secret Key', 'unsplash' ),
 			[ $this, 'secret_key_render' ],
+			'unsplash',
+			'unsplash_section'
+		);
+
+		add_settings_field(
+			'utm_source',
+			__( 'UTM Source', 'unsplash' ),
+			[ $this, 'utm_source_render' ],
 			'unsplash',
 			'unsplash_section'
 		);
@@ -222,7 +232,7 @@ class Settings {
 	public function settings_page_render() {
 		?>
 		<form action='options.php' method='post' style="max-width: 800px">
-			<h1>Unsplash</h1>
+			<h1><?php _e( 'Unsplash', 'unsplash' ); ?></h1>
 			<?php
 			settings_fields( 'unsplash' );
 			do_settings_sections( 'unsplash' );
@@ -243,7 +253,7 @@ class Settings {
 	 * Renders the Access Key.
 	 */
 	public function access_key_render() {
-		$options = get_option( 'unsplash_settings' );
+		$options = get_option( $this::OPTION_NAME );
 		?>
 		<input type='password' class="widefat" name='unsplash_settings[access_key]' value='<?php echo esc_attr( isset( $options['access_key'] ) ? $options['access_key'] : '' ); ?>'>
 		<?php
@@ -253,9 +263,33 @@ class Settings {
 	 * Renders the Secret Key.
 	 */
 	public function secret_key_render() {
-		$options = get_option( 'unsplash_settings' );
+		$options = get_option( $this::OPTION_NAME );
 		?>
 		<input type='password' class="widefat" name='unsplash_settings[secret_key]' value='<?php echo esc_attr( isset( $options['secret_key'] ) ? $options['secret_key'] : '' ); ?>'>
 		<?php
+	}
+
+	/**
+	 * Renders the UTM Source Key.
+	 */
+	public function utm_source_render() {
+		$options = get_option( $this::OPTION_NAME );
+		?>
+		<input type='password' class="widefat" name='unsplash_settings[utm_source]' value='<?php echo esc_attr( isset( $options['utm_source'] ) ? $options['utm_source'] : '' ); ?>'>
+		<?php
+	}
+
+	/**
+	 * Helper function to get decrypted options.
+	 *
+	 * @param String $name Setting key name.
+	 * @param String $env_name Env variable name.
+	 *
+	 * @return array|bool|false|string
+	 */
+	public function get_option( $name, $env_name ) {
+		$options = get_option( $this::OPTION_NAME, [] );
+
+		return isset( $options[ $name ] ) ? $this->decrypt( $options[ $name ] ) : getenv( $env_name );
 	}
 }

@@ -53,13 +53,11 @@ class Rest_Controller extends WP_REST_Controller {
 	public function init() {
 		$this->plugin->add_doc_hooks( $this );
 
-		$options = get_option( 'unsplash_settings' );
-
 		HttpClient::init(
 			[
-				'applicationId' => ! empty( $options['access_key'] ) ? $this->plugin->settings->decrypt( $options['access_key'] ) : getenv( 'UNSPLASH_ACCESS_KEY' ),
-				'secret'        => ! empty( $options['secret_key'] ) ? $this->plugin->settings->decrypt( $options['secret_key'] ) : getenv( 'UNSPLASH_SECRET_KEY' ),
-				'utmSource'     => 'WordPress-XWP',
+				'applicationId' => $this->plugin->settings->get_option( 'access_key', 'UNSPLASH_ACCESS_KEY' ),
+				'secret'        => $this->plugin->settings->get_option( 'secret_key', 'UNSPLASH_SECRET_KEY' ),
+				'utmSource'     => $this->plugin->settings->get_option( 'utm_source', 'UNSPLASH_UTM_SOURCE' ),
 			]
 		);
 	}
@@ -229,7 +227,7 @@ class Rest_Controller extends WP_REST_Controller {
 			$photo->download();
 			$results = $photo->toArray();
 
-			$image         = new Image( $results );
+			$image         = new Image( $this->plugin, $results );
 			$importer      = new Import( $id, $image );
 			$attachment_id = $importer->process();
 			if ( is_wp_error( $attachment_id ) ) {
