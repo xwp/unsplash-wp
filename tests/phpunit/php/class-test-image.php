@@ -26,15 +26,15 @@ class Test_Image extends \WP_UnitTestCase {
 	 */
 	public function setUp() {
 		parent::setUp();
-		$this->settings = new Settings();
+		$this->settings = new Settings( new Plugin() );
 		$this->settings->init();
 	}
 
 		/**
-	 * Get example data.
-	 *
-	 * @return array
-	 */
+		 * Get example data.
+		 *
+		 * @return array
+		 */
 	protected function get_data() {
 		return [
 			'id'              => 'xAHtaYIHlPI',

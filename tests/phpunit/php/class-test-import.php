@@ -28,7 +28,7 @@ class Test_Import extends \WP_UnitTestCase {
 	 */
 	public function setUp() {
 		parent::setUp();
-		$this->settings = new Settings();
+		$this->settings = new Settings( new Plugin() );
 		$this->settings->init();
 	}
 	/**

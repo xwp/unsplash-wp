@@ -48,7 +48,7 @@ class Image {
 	 * Image constructor.
 	 *
 	 * @param Setting $setting Unsplash setting object.
-	 * @param array $image Unsplash image array.
+	 * @param array   $image Unsplash image array.
 	 */
 	public function __construct( $setting, array $image = [] ) {
 		$this->settings = $setting;
