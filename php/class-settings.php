@@ -36,6 +36,19 @@ class Settings {
 	private $salt;
 
 	/**
+	 * Array of encypted keys for secure data.
+	 *
+	 * @since 1.0.0
+	 * @var array
+	 */
+	private $encypted_keys = [ 'access_key', 'secret_key' ];
+
+	/**
+	 * Setting name.
+	 */
+	const OPTION_NAME = 'unsplash_settings';
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Plugin $plugin Instance of the plugin abstraction.
@@ -149,7 +162,7 @@ class Settings {
 	 * @action admin_menu
 	 */
 	public function add_admin_menu() {
-		add_options_page( 'Unsplash', 'Unsplash', 'manage_options', 'unsplash', [ $this, 'settings_page_render' ] );
+		add_options_page( __( 'Unsplash', 'unsplash' ), __( 'Unsplash', 'unsplash' ), 'manage_options', 'unsplash', [ $this, 'settings_page_render' ] );
 	}
 
 	/**
@@ -161,7 +174,7 @@ class Settings {
 		$args = [
 			'sanitize_callback' => [ $this, 'sanitize_settings' ],
 		];
-		register_setting( 'unsplash', 'unsplash_settings', $args );
+		register_setting( 'unsplash', $this::OPTION_NAME, $args );
 
 		add_settings_section(
 			'unsplash_section',
@@ -185,6 +198,14 @@ class Settings {
 			'unsplash',
 			'unsplash_section'
 		);
+
+		add_settings_field(
+			'utm_source',
+			__( 'UTM Source', 'unsplash' ),
+			[ $this, 'utm_source_render' ],
+			'unsplash',
+			'unsplash_section'
+		);
 	}
 
 	/**
@@ -194,11 +215,11 @@ class Settings {
 	 * @return array Sanitized and encrypted values.
 	 */
 	public function sanitize_settings( $settings ) {
-		$options = get_option( 'unsplash_settings' );
+		$options = get_option( $this::OPTION_NAME, [] );
 
 		foreach ( $settings as $key => $value ) {
 			$should_encrypt = (
-				in_array( $key, [ 'access_key', 'secret_key' ], true )
+				in_array( $key, $this->encypted_keys, true )
 				&& ! empty( $settings[ $key ] )
 				&& (
 					! isset( $options[ $key ] )
@@ -222,7 +243,7 @@ class Settings {
 	public function settings_page_render() {
 		?>
 		<form action='options.php' method='post' style="max-width: 800px">
-			<h1>Unsplash</h1>
+			<h1><?php _e( 'Unsplash', 'unsplash' ); ?></h1>
 			<?php
 			settings_fields( 'unsplash' );
 			do_settings_sections( 'unsplash' );
@@ -243,7 +264,7 @@ class Settings {
 	 * Renders the Access Key.
 	 */
 	public function access_key_render() {
-		$options = get_option( 'unsplash_settings' );
+		$options = get_option( $this::OPTION_NAME, [] );
 		?>
 		<input type='password' class="widefat" name='unsplash_settings[access_key]' value='<?php echo esc_attr( isset( $options['access_key'] ) ? $options['access_key'] : '' ); ?>'>
 		<?php
@@ -253,9 +274,43 @@ class Settings {
 	 * Renders the Secret Key.
 	 */
 	public function secret_key_render() {
-		$options = get_option( 'unsplash_settings' );
+		$options = get_option( $this::OPTION_NAME, [] );
 		?>
 		<input type='password' class="widefat" name='unsplash_settings[secret_key]' value='<?php echo esc_attr( isset( $options['secret_key'] ) ? $options['secret_key'] : '' ); ?>'>
 		<?php
+	}
+
+	/**
+	 * Renders the UTM Source Key.
+	 */
+	public function utm_source_render() {
+		$options = get_option( $this::OPTION_NAME, [] );
+		?>
+		<input type='text' class="widefat" name='unsplash_settings[utm_source]' value='<?php echo esc_attr( isset( $options['utm_source'] ) ? $options['utm_source'] : '' ); ?>'>
+		<?php
+	}
+
+	/**
+	 * Helper function to get decrypted options.
+	 *
+	 * @param String $name Setting key name.
+	 * @param String $env_name Env variable name.
+	 *
+	 * @return array|bool|false|string
+	 */
+	public function get_option( $name, $env_name ) {
+		$options = get_option( $this::OPTION_NAME, [] );
+
+		if ( ! isset( $options[ $name ] ) || empty( $options[ $name ] ) ) {
+			return getenv( $env_name );
+		}
+
+		if ( in_array( $name, $this->encypted_keys, true ) ) {
+			$value = $this->decrypt( $options[ $name ] );
+		} else {
+			$value = $options[ $name ];
+		}
+
+		return $value;
 	}
 }

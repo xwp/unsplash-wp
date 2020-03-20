@@ -24,6 +24,7 @@ class Test_Import extends \WP_UnitTestCase {
 	 */
 	public function test_get_attachment() {
 		$image  = new Image(
+			new Plugin(),
 			[
 				'id'              => 'eOvv4N6yNmk',
 				'tags'            => [],
@@ -56,6 +57,7 @@ class Test_Import extends \WP_UnitTestCase {
 			'url'  => 'http://www.example.com/test.jpg',
 		];
 		$image  = new Image(
+			new Plugin(),
 			[
 				'id'              => 'eOvv4N6yNmk',
 				'tags'            => [],
@@ -82,6 +84,7 @@ class Test_Import extends \WP_UnitTestCase {
 	public function test_invalid_create_attachment() {
 		$file       = [];
 		$image      = new Image(
+			new Plugin(),
 			[
 				'id'              => 'eOvv4N6yNmk',
 				'tags'            => [],
@@ -107,6 +110,7 @@ class Test_Import extends \WP_UnitTestCase {
 	public function test_wp_error_create_attachment() {
 		$file       = new WP_Error( 'testing' );
 		$image      = new Image(
+			new Plugin(),
 			[
 				'id'              => 'eOvv4N6yNmk',
 				'tags'            => [],
@@ -130,6 +134,7 @@ class Test_Import extends \WP_UnitTestCase {
 	 */
 	public function test_wp_error_wp_insert_attachment() {
 		$image      = new Image(
+			new Plugin(),
 			[
 				'id'              => 'eOvv4N6yNmk',
 				'tags'            => [],
@@ -153,6 +158,7 @@ class Test_Import extends \WP_UnitTestCase {
 	 */
 	public function test_import_image() {
 		$image  = new Image(
+			new Plugin(),
 			[
 				'id'              => 'eOvv4N6yNmk',
 				'tags'            => [],
@@ -187,6 +193,7 @@ class Test_Import extends \WP_UnitTestCase {
 			'url'  => 'http://www.example.com/test.jpg',
 		];
 		$image  = new Image(
+			new Plugin(),
 			[
 				'id'              => 'eOvv4N6yNmk',
 				'tags'            => [],
@@ -214,6 +221,7 @@ class Test_Import extends \WP_UnitTestCase {
 	 */
 	public function test_invalid_import_image() {
 		$image  = new Image(
+			new Plugin(),
 			[
 				'id'              => 'eOvv4N6yNmk',
 				'tags'            => [],
@@ -241,6 +249,7 @@ class Test_Import extends \WP_UnitTestCase {
 	 */
 	public function test_invalid_handle_upload_import_image() {
 		$image  = new Image(
+			new Plugin(),
 			[
 				'id'              => 'eOvv4N6yNmk',
 				'tags'            => [],
@@ -268,6 +277,7 @@ class Test_Import extends \WP_UnitTestCase {
 	 */
 	public function test_process_user() {
 		$image  = new Image(
+			new Plugin(),
 			[
 				'user' => [
 					'id'   => 'eOvv4N6yNmk',
@@ -310,6 +320,7 @@ class Test_Import extends \WP_UnitTestCase {
 	 */
 	public function test_process() {
 		$image  = new Image(
+			new Plugin(),
 			[
 				'id'   => 'processed_id',
 				'urls' => [
@@ -355,6 +366,7 @@ class Test_Import extends \WP_UnitTestCase {
 	 */
 	public function test_get_no_attachment_id() {
 		$image  = new Image(
+			new Plugin(),
 			[
 				'id'   => 'test_get_no_attachment_id',
 				'urls' => [

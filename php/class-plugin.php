@@ -131,7 +131,7 @@ class Plugin extends Plugin_Base {
 			'alt'           => isset( $photo['alt_description'] ) ? $photo['alt_description'] : null,
 			'author'        => isset( $photo['author'] ) ? $photo['author'] : null,
 			'description'   => isset( $photo['description'] ) ? $photo['description'] : null,
-			'caption'       => '',
+			'caption'       => $this->get_caption( $photo ),
 			'name'          => '',
 			'height'        => isset( $photo['height'] ) ? $photo['height'] : null,
 			'width'         => isset( $photo['width'] ) ? $photo['width'] : null,
@@ -183,6 +183,31 @@ class Plugin extends Plugin_Base {
 		$response['sizes'] = $sizes;
 
 		return $response;
+	}
+
+	/**
+	 * Return a formatted caption.
+	 *
+	 * @param array $photo Photo object.
+	 *
+	 * @return string Formatted caption.
+	 */
+	public function get_caption( array $photo ) {
+		$user_name = '';
+		$user_url  = '';
+		if ( isset( $photo['user'] ) && ! empty( $photo['user'] ) ) {
+			$user_url  = ( isset( $photo['user']['links'], $photo['user']['links']['html'] ) ) ? $photo['user']['links']['html'] : '';
+			$user_name = ( isset( $photo['user']['name'] ) ) ? $photo['user']['name'] : '';
+		}
+		$url = add_query_arg(
+			[
+				'utm_source' => $this->settings->get_option( 'utm_source', 'UNSPLASH_UTM_SOURCE' ),
+				'utm_medium' => 'referral',
+			],
+			'https://unsplash.com/'
+		);
+		/* translators: 1: User URL, 2: User's name, 3: Unsplash URL */
+		return sprintf( __( 'Photo by <a href="%1$s">%2$s</a> on <a href="%3$s">Unsplash</a>', 'unsplash' ), esc_url( $user_url ), $user_name, esc_url( $url ) );
 	}
 
 	/**

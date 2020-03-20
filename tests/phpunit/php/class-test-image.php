@@ -73,7 +73,7 @@ class Test_Image extends \WP_UnitTestCase {
 	 */
 	public function test_process_data() {
 		$test_data = $this->get_data();
-		$image     = new Image( $test_data );
+		$image     = new Image( new Plugin(), $test_data );
 		$this->assertSame( $image->get_field( 'original_id' ), strtolower( $test_data['id'] ) );
 		$this->assertSame( $image->get_field( 'description' ), $test_data['description'] );
 		$this->assertSame( $image->get_field( 'alt' ), $test_data['alt_description'] );
@@ -87,7 +87,7 @@ class Test_Image extends \WP_UnitTestCase {
 	 * @covers \Unsplash\Image::get_image_url()
 	 */
 	public function test_get_image_url() {
-		$image = new Image( $this->get_data() );
+		$image = new Image( new Plugin(), $this->get_data() );
 		$this->assertSame( '', $image->get_image_url( 'invalid' ) );
 	}
 
@@ -98,7 +98,7 @@ class Test_Image extends \WP_UnitTestCase {
 	 * @covers \Unsplash\Image::get_field()
 	 */
 	public function test_get_field() {
-		$image = new Image( $this->get_data() );
+		$image = new Image( new Plugin(), $this->get_data() );
 		$this->assertSame( '', $image->get_field( 'invalid' ) );
 	}
 
@@ -109,7 +109,7 @@ class Test_Image extends \WP_UnitTestCase {
 	 * @covers \Unsplash\Image::get_image_field()
 	 */
 	public function test_get_image_field() {
-		$image = new Image( $this->get_data() );
+		$image = new Image( new Plugin(), $this->get_data() );
 		$this->assertSame( '', $image->get_image_field( 'invalid' ) );
 	}
 
