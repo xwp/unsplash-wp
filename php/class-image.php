@@ -166,12 +166,13 @@ class Image {
 	 * @return string Formatted caption.
 	 */
 	public function get_caption() {
-		$user_name = '';
-		$user_url  = '';
-		if ( isset( $this->image['user'] ) && ! empty( $this->image['user'] ) ) {
-			$user_url  = ( isset( $this->image['user']['links'], $this->image['user']['links']['html'] ) ) ? $this->image['user']['links']['html'] : '';
-			$user_name = ( isset( $this->image['user']['name'] ) ) ? $this->image['user']['name'] : '';
+		if ( ! isset( $this->image['user'] ) || empty( $this->image['user'] ) ) {
+			return '';
 		}
+
+		$user_url  = ( isset( $this->image['user']['links'], $this->image['user']['links']['html'] ) ) ? $this->image['user']['links']['html'] : '';
+		$user_name = ( isset( $this->image['user']['name'] ) ) ? $this->image['user']['name'] : '';
+
 		$url = add_query_arg(
 			[
 				'utm_source' => $this->settings->get_option( 'utm_source', 'UNSPLASH_UTM_SOURCE' ),

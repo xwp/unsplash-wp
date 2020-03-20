@@ -132,20 +132,24 @@ class Test_Settings extends \WP_UnitTestCase {
 				[
 					'access_key' => '',
 					'secret_key' => '',
+					'utm_source' => '',
 				],
 				[
 					'access_key' => '',
 					'secret_key' => '',
+					'utm_source' => '',
 				],
 			],
 			'encrypted settings' => [
 				[
 					'access_key' => 'foo',
 					'secret_key' => 'bar',
+					'utm_source' => 'baz',
 				],
 				[
 					'access_key' => 'foo',
 					'secret_key' => 'bar',
+					'utm_source' => 'baz',
 				],
 			],
 		];
@@ -212,5 +216,41 @@ class Test_Settings extends \WP_UnitTestCase {
 		$expected = "\t\t<input type='password' class=\"widefat\" name='unsplash_settings[secret_key]' value=''>\n\t\t";
 
 		$this->assertEquals( $expected, $input );
+	}
+
+	/**
+	 * Test utm_source_render.
+	 *
+	 * @covers ::secret_key_render()
+	 */
+	public function test_utm_source_render() {
+		ob_start();
+		$this->settings->utm_source_render();
+		$input = ob_get_clean();
+
+		$expected = "\t\t<input type='text' class=\"widefat\" name='unsplash_settings[utm_source]' value=''>\n\t\t";
+
+		$this->assertEquals( $expected, $input );
+	}
+
+	/**
+	 * Test get_option.
+	 *
+	 * @covers ::get_option()
+	 */
+	public function test_get_option() {
+		update_option(
+			'unsplash_settings',
+			[
+				'foo' => 'bar',
+				'baz' => 'test-value',
+			]
+		);
+		$test = $this->settings->get_option( 'foo', 'unused' );
+		$this->assertEquals( 'bar', $test );
+		$test = $this->settings->get_option( 'baz', 'unused' );
+		$this->assertEquals( 'test-value', $test );
+
+
 	}
 }
