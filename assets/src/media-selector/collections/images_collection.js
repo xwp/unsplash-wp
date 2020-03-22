@@ -70,13 +70,11 @@ const ImagesCollection = wp.media.model.Attachments.extend(
 
 			if ( 'id' === key ) {
 				const prefix = 'unsplash-';
-				a = String( a );
-				b = String( b );
 
 				// Strip the prefix so that the numeric ID can be compared.
 				if ( a.startsWith( prefix ) && b.startsWith( prefix ) ) {
-					a = parseInt( a.slice( prefix.length ), 10 );
-					b = parseInt( b.slice( prefix.length ), 10 );
+					a = parseInt( String( a ).slice( prefix.length ), 10 );
+					b = parseInt( String( b ).slice( prefix.length ), 10 );
 				}
 			}
 
