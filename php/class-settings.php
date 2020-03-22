@@ -295,15 +295,22 @@ class Settings {
 	 *
 	 * @param String $name Setting key name.
 	 * @param String $env_name Env variable name.
+	 * @param String $default Default value.
 	 *
 	 * @return array|bool|false|string
 	 */
-	public function get_option( $name, $env_name ) {
+	public function get_option( $name, $env_name, $default = '' ) {
 		$options = get_option( $this::OPTION_NAME, [] );
 
 		if ( ! isset( $options[ $name ] ) || empty( $options[ $name ] ) ) {
-			return getenv( $env_name );
+			$value = getenv( $env_name );
+			if ( empty( $value ) ) {
+				return $default;
+			}
+			return $value;
 		}
+
+
 
 		if ( in_array( $name, $this->encypted_keys, true ) ) {
 			$value = $this->decrypt( $options[ $name ] );

@@ -52,12 +52,11 @@ class Rest_Controller extends WP_REST_Controller {
 	 */
 	public function init() {
 		$this->plugin->add_doc_hooks( $this );
-
 		HttpClient::init(
 			[
 				'applicationId' => $this->plugin->settings->get_option( 'access_key', 'UNSPLASH_ACCESS_KEY' ),
 				'secret'        => $this->plugin->settings->get_option( 'secret_key', 'UNSPLASH_SECRET_KEY' ),
-				'utmSource'     => $this->plugin->settings->get_option( 'utm_source', 'UNSPLASH_UTM_SOURCE' ),
+				'utmSource'     => $this->plugin->settings->get_option( 'utm_source', 'UNSPLASH_UTM_SOURCE', 'WordPress-XWP' ),
 			]
 		);
 	}
