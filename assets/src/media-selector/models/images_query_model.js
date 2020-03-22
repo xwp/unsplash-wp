@@ -41,6 +41,7 @@ const ImagesQueryModel = wp.media.model.Query.extend(
 					per_page: args.posts_per_page,
 				};
 
+				// TODO: Find out how errors are displayed originally when this request fails, and apply it here.
 				return wp.apiRequest( options );
 			}
 

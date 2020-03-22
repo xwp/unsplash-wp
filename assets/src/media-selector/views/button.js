@@ -25,19 +25,25 @@ const Button = wp.media.view.Button.extend( {
 		const toolbar = this.views.parent.views.parent;
 		const spinner = toolbar.get( 'button-spinner' );
 
-		// Disable the button.
-		this.$el.attr( 'disabled', true );
+		this.$el.attr( 'disabled', true ); // Disable the button.
 		spinner.show();
 
-		importImages( selections ).then( () => {
-			// Enable button.
-			this.$el.attr( 'disabled', false );
-			spinner.hide();
+		importImages( selections )
+			.then( () => {
+				this.$el.attr( 'disabled', false ); // Enable button.
+				spinner.hide();
 
-			if ( this.options.click && ! this.model.get( 'disabled' ) ) {
-				this.options.click.apply( this, arguments );
-			}
-		} );
+				if ( this.options.click && ! this.model.get( 'disabled' ) ) {
+					this.options.click.apply( this, arguments );
+				}
+			} )
+			.catch( error => {
+				// TODO: let user know import failed
+				// eslint-disable-next-line no-console
+				console.error( error );
+				this.$el.attr( 'disabled', false ); // Enable button.
+				spinner.hide();
+			} );
 	},
 } );
 
