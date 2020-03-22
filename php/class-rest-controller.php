@@ -59,7 +59,7 @@ class Rest_Controller extends WP_REST_Controller {
 			[
 				'applicationId' => ! empty( $options['access_key'] ) ? $this->plugin->settings->decrypt( $options['access_key'] ) : getenv( 'UNSPLASH_ACCESS_KEY' ),
 				'secret'        => ! empty( $options['secret_key'] ) ? $this->plugin->settings->decrypt( $options['secret_key'] ) : getenv( 'UNSPLASH_SECRET_KEY' ),
-				'utmSource'     => 'WordPress-XWP',
+				'utmSource'     => isset( $options['utm_source'] ) && ! empty( $options['utm_source'] ) ? $options['utm_source'] : getenv( 'UNSPLASH_UTM_SOURCE' ),
 			]
 		);
 	}
