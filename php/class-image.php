@@ -54,6 +54,7 @@ class Image {
 		$this->process_data['description']       = $this->get_image_field( 'description', $this->get_image_field( 'alt_description' ) );
 		$this->process_data['alt']               = $this->get_image_field( 'alt_description', $this->get_image_field( 'description' ) );
 		$this->process_data['original_url']      = $this->get_image_url( 'raw' );
+		$this->process_data['caption']           = $this->get_caption();
 		$this->process_data['color']             = $this->get_image_field( 'color', '' );
 		$this->process_data['unsplash_location'] = $this->get_image_field( 'location', [] );
 		$this->process_data['unsplash_sponsor']  = $this->get_image_field( 'sponsor', [] );
@@ -73,6 +74,8 @@ class Image {
 		$this->process_data['height']            = $this->get_image_field( 'height', 0 );
 		$this->process_data['width']             = $this->get_image_field( 'width', 0 );
 		$this->process_data['created_at']        = $this->get_image_field( 'created_at', current_time( 'mysql' ) );
+		$this->process_data['updated_at']        = $this->get_image_field( 'updated_at', current_time( 'mysql' ) );
+		$this->process_data['links']             = $this->get_image_field( 'links', [ 'html' => '' ] );
 		$this->process_data['user']              = $this->get_image_field(
 			'user',
 			[
@@ -145,5 +148,29 @@ class Image {
 	 */
 	public function get_image_url( $size ) {
 		return isset( $this->image['urls'], $this->image['urls'][ $size ] ) ? $this->image['urls'][ $size ] : '';
+	}
+
+	/**
+	 * Return a formatted caption.
+	 *
+	 * @return string Formatted caption.
+	 */
+	public function get_caption() {
+		if ( ! isset( $this->image['user'] ) || empty( $this->image['user'] ) ) {
+			return '';
+		}
+
+		$user_url  = ( isset( $this->image['user']['links'], $this->image['user']['links']['html'] ) ) ? $this->image['user']['links']['html'] : '';
+		$user_name = ( isset( $this->image['user']['name'] ) ) ? $this->image['user']['name'] : '';
+
+		$url = add_query_arg(
+			[
+				'utm_source' => 'TEST',
+				'utm_medium' => 'referral',
+			],
+			'https://unsplash.com/'
+		);
+		/* translators: 1: User URL, 2: User's name, 3: Unsplash URL */
+		return sprintf( __( 'Photo by <a href="%1$s">%2$s</a> on <a href="%3$s">Unsplash</a>', 'unsplash' ), esc_url( $user_url ), $user_name, esc_url( $url ) );
 	}
 }
