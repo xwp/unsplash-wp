@@ -45,6 +45,9 @@ class Test_Image extends \WP_UnitTestCase {
 				'username'   => 'harleydavidson',
 				'name'       => 'Harley-Davidson',
 				'first_name' => 'Harley-Davidson',
+				'links'      => [
+					'html' => 'https://www.unpslash.com/harleydavidson',
+				],
 			],
 			'exif'            => [
 				'make'          => 'Canon',
@@ -112,5 +115,31 @@ class Test_Image extends \WP_UnitTestCase {
 		$image = new Image( $this->get_data() );
 		$this->assertSame( '', $image->get_image_field( 'invalid' ) );
 	}
+
+	/**
+	 * Test get captionl.
+	 *
+	 * @covers \Unsplash\Image::__construct()
+	 * @covers \Unsplash\Image::get_caption()
+	 */
+	public function test_get_caption() {
+		$data  = $this->get_data();
+		$image = new Image( $this->settings, $data );
+		$this->assertRegexp( '/Harley-Davidson/', $image->get_caption() );
+		$this->assertRegexp( '/https:\/\/unsplash.com/', $image->get_caption() );
+		$this->assertRegexp( '/https:\/\/www.unpslash.com\/harleydavidson/', $image->get_caption() );
+	}
+
+	/**
+	 * Test get captionl.
+	 *
+	 * @covers \Unsplash\Image::__construct()
+	 * @covers \Unsplash\Image::get_caption()
+	 */
+	public function test_no_get_caption() {
+		$image = new Image( $this->settings, [] );
+		$this->assertSame( '', $image->get_caption() );
+	}
+
 
 }

@@ -163,9 +163,12 @@ class Image {
 		$user_url  = ( isset( $this->image['user']['links'], $this->image['user']['links']['html'] ) ) ? $this->image['user']['links']['html'] : '';
 		$user_name = ( isset( $this->image['user']['name'] ) ) ? $this->image['user']['name'] : '';
 
+		$options    = get_option( 'unsplash_settings' );
+		$utm_source = ! empty( $options['utm_source'] ) ? $options['utm_source'] : ( getenv( 'UNSPLASH_UTM_SOURCE' ) ? getenv( 'UNSPLASH_UTM_SOURCE' ) : 'WordPress-XWP' ),
+
 		$url = add_query_arg(
 			[
-				'utm_source' => 'TEST',
+				'utm_source' => $utm_source,
 				'utm_medium' => 'referral',
 			],
 			'https://unsplash.com/'
