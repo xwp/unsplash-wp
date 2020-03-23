@@ -204,6 +204,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 
 		$expected = [
 			'id'            => 'rO8TdlRrOo0',
+			'title'         => '',
 			'filename'      => 'ro8tdlrroo0.jpeg',
 			'url'           => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
 			'link'          => 'https://unsplash.com/photos/rO8TdlRrOo0?utm_source=WordPress-XWP&utm_medium=referral&utm_campaign=api-credit',
