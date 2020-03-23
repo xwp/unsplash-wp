@@ -126,7 +126,7 @@ class Plugin extends Plugin_Base {
 
 		$response = [
 			'id'            => isset( $photo['id'] ) ? $photo['id'] : null,
-			'title'         => '',
+			'title'         => $image->get_field( 'alt' ),
 			'filename'      => $image->get_field( 'file' ),
 			'url'           => $image->get_field( 'original_url' ),
 			'link'          => $image->get_field( 'links' )['html'],
@@ -134,26 +134,26 @@ class Plugin extends Plugin_Base {
 			'author'        => $image->get_field( 'user' )['name'],
 			'description'   => $image->get_field( 'description' ),
 			'caption'       => $image->get_caption(),
-			'name'          => '',
+			'name'          => $image->get_field( 'original_id' ),
 			'height'        => $image->get_field( 'height' ),
 			'width'         => $image->get_field( 'width' ),
 			'status'        => 'inherit',
 			'uploadedTo'    => 0,
-			'date'          => ! empty( $image->get_field( 'created_at' ) ) ? strtotime( $image->get_field( 'created_at' ) ) * 1000 : null,
-			'modified'      => ! empty( $image->get_field( 'updated_at' ) ) ? strtotime( $image->get_field( 'updated_at' ) ) * 1000 : null,
+			'date'          => strtotime( $image->get_field( 'created_at' ) ) * 1000,
+			'modified'      => strtotime( $image->get_field( 'updated_at' ) ) * 1000,
 			'menuOrder'     => 0,
 			'mime'          => $image->get_field( 'mime_type' ),
 			'type'          => 'image',
 			'subtype'       => $image->get_field( 'ext' ),
 			'icon'          => ! empty( $image->get_image_url( 'thumb' ) ) ? $this->get_original_url_with_size( $image->get_image_url( 'thumb' ), 150, 150, $attrs ) : null,
-			'dateFormatted' => ! empty( $image->get_field( 'created_at' ) ) ? mysql2date( __( 'F j, Y', 'unsplash' ), $image->get_field( 'created_at' ) ) : null,
+			'dateFormatted' => mysql2date( __( 'F j, Y', 'unsplash' ), $image->get_field( 'created_at' ) ),
 			'nonces'        => [
 				'update' => false,
 				'delete' => false,
 				'edit'   => false,
 			],
 			'editLink'      => false,
-			'meta'          => false,
+			'meta'          => $image->get_field( 'meta' ),
 		];
 		$width    = 400;
 		$height   = (int) ceil( $image->get_field( 'height' ) / ( $image->get_field( 'width' ) / $width ) );
