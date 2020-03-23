@@ -4,6 +4,7 @@
 .media-frame-toolbar .media-toolbar-primary .spinner {
 	display: none;
 }
+
 .media-frame-toolbar .media-toolbar-primary .spinner.is-active {
 	float: left;
 	margin-top: 20px;
