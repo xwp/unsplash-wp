@@ -7,6 +7,8 @@
 
 namespace Unsplash;
 
+use WP_Screen;
+
 /**
  * Main plugin bootstrap file.
  */
@@ -60,6 +62,15 @@ class Plugin extends Plugin_Base {
 	 * @action wp_enqueue_media
 	 */
 	public function enqueue_media_scripts() {
+		$screen = ( function_exists( 'get_current_screen' ) ) ? get_current_screen() : false;
+
+		if ( ! $screen instanceof WP_Screen ) {
+			return false;
+		}
+
+		if ( 'post' !== $screen->base ) {
+			return false;
+		}
 		$asset_file = $this->dir_path . '/assets/js/media-selector.asset.php';
 		$asset      = is_readable( $asset_file ) ? require $asset_file : [];
 		$version    = isset( $asset['version'] ) ? $asset['version'] : $this->asset_version();
@@ -105,6 +116,8 @@ class Plugin extends Plugin_Base {
 		);
 
 		wp_styles()->add_data( 'unsplash-media-selector-style', 'rtl', 'replace' );
+
+		return true;
 	}
 
 

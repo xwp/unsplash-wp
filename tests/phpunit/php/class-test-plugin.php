@@ -45,9 +45,32 @@ class Test_Plugin extends \WP_UnitTestCase {
 	 * @see Plugin::enqueue_media_scripts()
 	 */
 	public function test_enqueue_media_scripts() {
+		set_current_screen( 'post.php' );
 		$plugin = get_plugin_instance();
 		$plugin->enqueue_media_scripts();
 		$this->assertTrue( wp_script_is( 'unsplash-media-selector', 'enqueued' ) );
+	}
+
+	/**
+	 * Test for enqueue_media_scripts() method doeesn't load on widget
+	 *
+	 * @see Plugin::enqueue_media_scripts()
+	 */
+	public function test_no_enqueue_media_scripts() {
+		set_current_screen( 'widget.php' );
+		$plugin = get_plugin_instance();
+		$this->assertFalse( $plugin->enqueue_media_scripts() );
+	}
+
+	/**
+	 * Test for enqueue_media_scripts() method doeesn't load on random screen
+	 *
+	 * @see Plugin::enqueue_media_scripts()
+	 */
+	public function test_no_random_enqueue_media_scripts() {
+		set_current_screen( 'unsplash.php' );
+		$plugin = get_plugin_instance();
+		$this->assertFalse( $plugin->enqueue_media_scripts() );
 	}
 
 	/**
