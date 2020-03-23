@@ -8,6 +8,7 @@
 namespace Unsplash;
 
 use WP_Error;
+use WP_Query;
 
 /**
  * Test the Import class.
@@ -305,6 +306,7 @@ class Test_Import extends \WP_UnitTestCase {
 	 * Test process.
 	 *
 	 * @covers \Unsplash\Import::process()
+	 * @covers \Unsplash\Import::get_attachment_id()
 	 */
 	public function test_process() {
 		$image  = new Image(
@@ -326,8 +328,51 @@ class Test_Import extends \WP_UnitTestCase {
 		);
 
 		$attachment_id = $import->process();
-		$actual_id     = get_page_by_path( 'processed_id', ARRAY_A, 'attachment' )['ID'];
+		$parsed_args   = [
+			'post_type'              => 'attachment',
+			'name'                   => 'processed_id',
+			'fields'                 => 'ids',
+			'order'                  => 'DESC',
+			'suppress_filters'       => false,
+			'update_post_meta_cache' => false,
+			'update_post_term_cache' => false,
+			'lazy_load_term_meta'    => false,
+			'no_found_rows'          => true,
+			'posts_per_page'         => 1,
+		];
+		$get_posts     = new WP_Query();
+		$attachments   = $get_posts->query( $parsed_args );
+
+		$actual_id = ! empty( $attachments ) ? array_shift( $attachments ) : false;
 
 		$this->assertEquals( $attachment_id, $actual_id );
+	}
+
+	/**
+	 * Test get_attachment_id with no results.
+	 *
+	 * @covers \Unsplash\Import::get_attachment_id()
+	 */
+	public function test_get_no_attachment_id() {
+		$image  = new Image(
+			[
+				'id'   => 'test_get_no_attachment_id',
+				'urls' => [
+					'full' => 'https://images.unsplash.com/photo-1552667466-07770ae110d0?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
+				],
+				'user' => [
+					'id'   => 'eOvv4N6yNmk',
+					'name' => 'John Smith',
+					'bio'  => 'I am a photographer.',
+				],
+			]
+		);
+		$import = new Import(
+			'test_get_no_attachment_id',
+			$image
+		);
+
+		$attachment_id = $import->get_attachment_id();
+		$this->assertEquals( $attachment_id, false );
 	}
 }

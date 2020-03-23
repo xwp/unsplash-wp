@@ -74,7 +74,7 @@ class Test_Image extends \WP_UnitTestCase {
 	public function test_process_data() {
 		$test_data = $this->get_data();
 		$image     = new Image( $test_data );
-		$this->assertSame( $image->get_field( 'original_id' ), $test_data['id'] );
+		$this->assertSame( $image->get_field( 'original_id' ), strtolower( $test_data['id'] ) );
 		$this->assertSame( $image->get_field( 'description' ), $test_data['description'] );
 		$this->assertSame( $image->get_field( 'alt' ), $test_data['alt_description'] );
 		$this->assertSame( $image->get_field( 'original_url' ), $image->get_image_url( 'raw' ) );
