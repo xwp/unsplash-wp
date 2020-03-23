@@ -122,69 +122,69 @@ class Plugin extends Plugin_Base {
 			'fit' => 'crop',
 		];
 
-				$image = new Image( $photo );
+		$image = new Image( $photo );
 
-				$response = [
-					'id'            => isset( $photo['id'] ) ? $photo['id'] : null,
-					'title'         => '',
-					'filename'      => $image->get_field( 'file' ),
-					'url'           => $image->get_field( 'original_url' ),
-					'link'          => $image->get_field( 'links' )['html'],
-					'alt'           => $image->get_field( 'alt' ),
-					'author'        => $image->get_field( 'user' )['name'],
-					'description'   => $image->get_field( 'description' ),
-					'caption'       => $image->get_caption(),
-					'name'          => '',
-					'height'        => $image->get_field( 'height' ),
-					'width'         => $image->get_field( 'width' ),
-					'status'        => 'inherit',
-					'uploadedTo'    => 0,
-					'date'          => ! empty( $image->get_field( 'created_at' ) ) ? strtotime( $image->get_field( 'created_at' ) ) * 1000 : null,
-					'modified'      => ! empty( $image->get_field( 'updated_at' ) ) ? strtotime( $image->get_field( 'updated_at' ) ) * 1000 : null,
-					'menuOrder'     => 0,
-					'mime'          => $image->get_field( 'mime_type' ),
-					'type'          => 'image',
-					'subtype'       => $image->get_field( 'ext' ),
-					'icon'          => ! empty( $image->get_image_url( 'thumb' ) ) ? $this->get_original_url_with_size( $image->get_image_url( 'thumb' ), 150, 150, $attrs ) : null,
-					'dateFormatted' => ! empty( $image->get_field( 'created_at' ) ) ? mysql2date( __( 'F j, Y', 'unsplash' ), $image->get_field( 'created_at' ) ) : null,
-					'nonces'        => [
-						'update' => false,
-						'delete' => false,
-						'edit'   => false,
-					],
-					'editLink'      => false,
-					'meta'          => false,
-				];
-				$width    = 400;
-				$height   = (int) ceil( $image->get_field( 'height' ) / ( $image->get_field( 'width' ) / $width ) );
-				$url      = ! empty( $image->get_image_url( 'small' ) ) ? $image->get_image_url( 'small' ) : $this->get_original_url_with_size( $image->get_field( 'original_url' ), $width, $height, $attrs );
-				$sizes    = [
-					'full'   => [
-						'url'    => $image->get_field( 'original_url' ),
-						'height' => $image->get_field( 'height' ),
-						'width'  => $image->get_field( 'width' ),
-					],
-					'medium' => [
-						'url'    => $url,
-						'height' => $height,
-						'width'  => $width,
-					],
-				];
+		$response = [
+			'id'            => isset( $photo['id'] ) ? $photo['id'] : null,
+			'title'         => '',
+			'filename'      => $image->get_field( 'file' ),
+			'url'           => $image->get_field( 'original_url' ),
+			'link'          => $image->get_field( 'links' )['html'],
+			'alt'           => $image->get_field( 'alt' ),
+			'author'        => $image->get_field( 'user' )['name'],
+			'description'   => $image->get_field( 'description' ),
+			'caption'       => $image->get_caption(),
+			'name'          => '',
+			'height'        => $image->get_field( 'height' ),
+			'width'         => $image->get_field( 'width' ),
+			'status'        => 'inherit',
+			'uploadedTo'    => 0,
+			'date'          => ! empty( $image->get_field( 'created_at' ) ) ? strtotime( $image->get_field( 'created_at' ) ) * 1000 : null,
+			'modified'      => ! empty( $image->get_field( 'updated_at' ) ) ? strtotime( $image->get_field( 'updated_at' ) ) * 1000 : null,
+			'menuOrder'     => 0,
+			'mime'          => $image->get_field( 'mime_type' ),
+			'type'          => 'image',
+			'subtype'       => $image->get_field( 'ext' ),
+			'icon'          => ! empty( $image->get_image_url( 'thumb' ) ) ? $this->get_original_url_with_size( $image->get_image_url( 'thumb' ), 150, 150, $attrs ) : null,
+			'dateFormatted' => ! empty( $image->get_field( 'created_at' ) ) ? mysql2date( __( 'F j, Y', 'unsplash' ), $image->get_field( 'created_at' ) ) : null,
+			'nonces'        => [
+				'update' => false,
+				'delete' => false,
+				'edit'   => false,
+			],
+			'editLink'      => false,
+			'meta'          => false,
+		];
+		$width    = 400;
+		$height   = (int) ceil( $image->get_field( 'height' ) / ( $image->get_field( 'width' ) / $width ) );
+		$url      = ! empty( $image->get_image_url( 'small' ) ) ? $image->get_image_url( 'small' ) : $this->get_original_url_with_size( $image->get_field( 'original_url' ), $width, $height, $attrs );
+		$sizes    = [
+			'full'   => [
+				'url'    => $image->get_field( 'original_url' ),
+				'height' => $image->get_field( 'height' ),
+				'width'  => $image->get_field( 'width' ),
+			],
+			'medium' => [
+				'url'    => $url,
+				'height' => $height,
+				'width'  => $width,
+			],
+		];
 
-				foreach ( $this->image_sizes() as $name => $size ) {
-					if ( array_key_exists( $name, $sizes ) ) {
-						continue;
-					}
-					$url            = $this->get_original_url_with_size( $image->get_field( 'original_url' ), $size['width'], $size['height'], $attrs );
-					$sizes[ $name ] = [
-						'url'    => $url,
-						'height' => $size['height'],
-						'width'  => $size['width'],
-					];
-				}
-				$response['sizes'] = $sizes;
+		foreach ( $this->image_sizes() as $name => $size ) {
+			if ( array_key_exists( $name, $sizes ) ) {
+				continue;
+			}
+			$url            = $this->get_original_url_with_size( $image->get_field( 'original_url' ), $size['width'], $size['height'], $attrs );
+			$sizes[ $name ] = [
+				'url'    => $url,
+				'height' => $size['height'],
+				'width'  => $size['width'],
+			];
+		}
+		$response['sizes'] = $sizes;
 
-				return $response;
+		return $response;
 	}
 
 	/**

@@ -217,4 +217,19 @@ class Test_Settings extends \WP_UnitTestCase {
 
 		$this->assertEquals( $expected, $input );
 	}
+
+	/**
+	 * Test utm_source_render.
+	 *
+	 * @covers ::utm_source_render()
+	 */
+	public function test_utm_source_render() {
+		ob_start();
+		$this->settings->utm_source_render();
+		$input = ob_get_clean();
+
+		$expected = "\t\t<input type='text' class=\"widefat\" name='unsplash_settings[utm_source]' value=''>\n\t\t";
+
+		$this->assertEquals( $expected, $input );
+	}
 }
