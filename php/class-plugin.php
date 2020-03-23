@@ -126,7 +126,7 @@ class Plugin extends Plugin_Base {
 
 		$response = [
 			'id'            => isset( $photo['id'] ) ? $photo['id'] : null,
-			'title'         => $image->get_field( 'alt' ),
+			'title'         => '',
 			'filename'      => $image->get_field( 'file' ),
 			'url'           => $image->get_field( 'original_url' ),
 			'link'          => $image->get_field( 'links' )['html'],
@@ -153,7 +153,7 @@ class Plugin extends Plugin_Base {
 				'edit'   => false,
 			],
 			'editLink'      => false,
-			'meta'          => $image->get_field( 'meta' ),
+			'meta'          => false,
 		];
 		$width    = 400;
 		$height   = (int) ceil( $image->get_field( 'height' ) / ( $image->get_field( 'width' ) / $width ) );
