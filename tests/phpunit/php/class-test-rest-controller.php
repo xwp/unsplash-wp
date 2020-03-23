@@ -126,6 +126,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		foreach ( $data as $photo_object ) {
 			$expected_keys = [
 				'id',
+				'unsplashId',
 				'title',
 				'filename',
 				'url',
@@ -205,14 +206,14 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		$expected = [
 			'id'            => 'rO8TdlRrOo0',
 			'title'         => '',
-			'filename'      => null,
+			'filename'      => 'unsplash-0.jpg',
 			'url'           => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
 			'link'          => 'https://unsplash.com/photos/rO8TdlRrOo0?utm_source=WordPress-XWP&utm_medium=referral&utm_campaign=api-credit',
 			'alt'           => 'black wolf near rocks',
 			'author'        => null,
 			'description'   => null,
-			'caption'       => '',
-			'name'          => '',
+			'caption'       => 'black wolf near rocks',
+			'name'          => 'unsplash-0',
 			'height'        => 2785,
 			'width'         => 3998,
 			'status'        => 'inherit',
@@ -259,6 +260,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 					'width'  => '1024',
 				],
 			],
+			'unsplashId'    => 'unsplash-0',
 		];
 
 		if ( version_compare( '5.2', get_bloginfo( 'version' ), '<' ) ) {
@@ -739,6 +741,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	private function get_photo_response() {
 		return [
 			'id'                       => 'rO8TdlRrOo0',
+			'unsplash_id'              => 'unsplash-0',
 			'created_at'               => '2019-05-12T09:40:48-04:00',
 			'updated_at'               => '2020-03-07T00:04:08-05:00',
 			'promoted_at'              => null,
