@@ -177,7 +177,7 @@ class Plugin extends Plugin_Base {
 		$width_medium  = 400;
 		$height_medium = (int) ( ( $height / ( $width / $width_medium ) ) );
 		$url_medium    = $this->get_original_url_with_size( $url, $width, $height, $this->attrs );
-		$sizes    = [
+		$sizes         = [
 			'full'   => [
 				'url'         => $url,
 				'height'      => $height,
