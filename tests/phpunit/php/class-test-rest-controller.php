@@ -724,6 +724,23 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	}
 
 	/**
+	 * Test set_unique_media_id().
+	 *
+	 * @covers \Unsplash\Rest_Controller::set_unique_media_id()
+	 */
+	public function test_set_unique_media_id() {
+		$photo = $this->get_photo_response();
+		$index = 3;
+		$page = 3;
+		$per_page = 10;
+
+		$rest_controller = new Rest_Controller( new Plugin() );
+		$actual = $rest_controller->set_unique_media_id( $photo, $index, $page, $per_page );
+		$this->assertEquals( 'unsplash-23', $actual['id'] );
+		$this->assertEquals( 'rO8TdlRrOo0', $actual['unsplash_id'] );
+	}
+
+	/**
 	 * Generate a prefixed route path.
 	 *
 	 * @param string $path URL path.
