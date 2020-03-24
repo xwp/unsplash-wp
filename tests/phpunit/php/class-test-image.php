@@ -160,6 +160,7 @@ class Test_Image extends \WP_UnitTestCase {
 		$image = new Image(
 			[
 				'user' => [
+					'name'  => '',
 					'links' => [
 						'html' => '',
 					],
