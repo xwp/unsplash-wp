@@ -160,11 +160,16 @@ class Image {
 			return '';
 		}
 
-		$user_url  = ( isset( $this->image['user']['links'], $this->image['user']['links']['html'] ) ) ? $this->image['user']['links']['html'] : '';
+		$user_url  = ( isset( $this->image['user']['links']['html'] ) ) ? $this->image['user']['links']['html'] : '';
 		$user_name = ( isset( $this->image['user']['name'] ) ) ? $this->image['user']['name'] : '';
 
-		$options    = get_option( 'unsplash_settings' );
-		$utm_source = ! empty( $options['utm_source'] ) ? $options['utm_source'] : ( getenv( 'UNSPLASH_UTM_SOURCE' ) ? getenv( 'UNSPLASH_UTM_SOURCE' ) : 'WordPress-XWP' );
+		if ( empty( $user_url ) || empty( $user_name ) ) {
+			return '';
+		}
+
+		$options     = get_option( 'unsplash_settings' );
+		$default_utm = ( getenv( 'UNSPLASH_UTM_SOURCE' ) ) ? getenv( 'UNSPLASH_UTM_SOURCE' ) : 'WordPress-XWP';
+		$utm_source  = ! empty( $options['utm_source'] ) ? $options['utm_source'] : $default_utm;
 
 		$url = add_query_arg(
 			[
