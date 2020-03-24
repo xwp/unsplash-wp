@@ -26,18 +26,16 @@ export default selections => {
  * @return {Promise} Promise.
  */
 const importImage = image => {
-	return new Promise( ( resolve, reject ) => {
-		const { unsplashId } = image.attributes;
-		const importUrl = getConfig( 'route' ) + `/import/${ unsplashId }`;
+	const { unsplashId } = image.attributes;
+	const importUrl = getConfig( 'route' ) + `/import/${ unsplashId }`;
 
-		apiFetch( { url: importUrl } )
-			.then( attachmentData => {
-				// Update image ID from imported attachment. This will be used to fetch the <img> tag.
-				// Note: `image.set()` is called rather than updating `image.id` directly so that potential Backbone event listeners can be fired.
-				image.set( { ...image.attributes, ...{ id: attachmentData.id } } );
+	return apiFetch( { url: importUrl } )
+		.then( attachmentData => {
+			// Update image ID from imported attachment. This will be used to fetch the <img> tag.
+			// Note: `image.set()` is called rather than updating `image.id` directly so that potential Backbone event listeners can be fired.
+			image.set( { ...image.attributes, ...{ id: attachmentData.id } } );
 
-				resolve( attachmentData );
-			} )
-			.catch( error => reject( { ...error, ...{ image } } ) );
-	} );
+			return attachmentData;
+		} )
+		.catch( error => Promise.reject( { ...error, ...{ image } } ) );
 };
