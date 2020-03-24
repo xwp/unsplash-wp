@@ -185,6 +185,14 @@ class Settings {
 			'unsplash',
 			'unsplash_section'
 		);
+
+		add_settings_field(
+			'utm_source',
+			__( 'UTM Source', 'unsplash' ),
+			[ $this, 'utm_source_render' ],
+			'unsplash',
+			'unsplash_section'
+		);
 	}
 
 	/**
@@ -258,4 +266,15 @@ class Settings {
 		<input type='password' class="widefat" name='unsplash_settings[secret_key]' value='<?php echo esc_attr( isset( $options['secret_key'] ) ? $options['secret_key'] : '' ); ?>'>
 		<?php
 	}
+
+	/**
+	 * Renders the UTM Source Key.
+	 */
+	public function utm_source_render() {
+			$options = get_option( 'unsplash_settings' );
+		?>
+		<input type='text' class="widefat" name='unsplash_settings[utm_source]' value='<?php echo esc_attr( isset( $options['utm_source'] ) ? $options['utm_source'] : '' ); ?>'>
+		<?php
+	}
+
 }

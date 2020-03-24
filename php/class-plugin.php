@@ -7,6 +7,8 @@
 
 namespace Unsplash;
 
+use WP_Screen;
+
 /**
  * Main plugin bootstrap file.
  */
@@ -71,6 +73,15 @@ class Plugin extends Plugin_Base {
 	 * @action wp_enqueue_media
 	 */
 	public function enqueue_media_scripts() {
+		$screen = ( function_exists( 'get_current_screen' ) ) ? get_current_screen() : false;
+
+		if ( ! $screen instanceof WP_Screen ) {
+			return false;
+		}
+
+		if ( 'post' !== $screen->base ) {
+			return false;
+		}
 		$asset_file = $this->dir_path . '/assets/js/media-selector.asset.php';
 		$asset      = is_readable( $asset_file ) ? require $asset_file : [];
 		$version    = isset( $asset['version'] ) ? $asset['version'] : $this->asset_version();
@@ -116,6 +127,8 @@ class Plugin extends Plugin_Base {
 		);
 
 		wp_styles()->add_data( 'unsplash-media-selector-style', 'rtl', 'replace' );
+
+		return true;
 	}
 
 
@@ -127,29 +140,31 @@ class Plugin extends Plugin_Base {
 	 * @return array
 	 */
 	public function wp_prepare_attachment_for_js( array $photo ) {
+		$image = new Image( $photo );
+
 		$response = [
 			'id'            => isset( $photo['id'] ) ? $photo['id'] : null,
 			'title'         => '',
-			'filename'      => isset( $photo['unsplash_id'] ) ? $photo['unsplash_id'] . '.jpg' : null,
-			'url'           => isset( $photo['urls']['raw'] ) ? $photo['urls']['raw'] : null,
-			'link'          => isset( $photo['links']['html'] ) ? $photo['links']['html'] : null,
-			'alt'           => isset( $photo['alt_description'] ) ? $photo['alt_description'] : null,
-			'author'        => isset( $photo['author'] ) ? $photo['author'] : null,
-			'description'   => isset( $photo['description'] ) ? $photo['description'] : null,
-			'caption'       => '',
-			'name'          => '',
-			'height'        => isset( $photo['height'] ) ? $photo['height'] : null,
-			'width'         => isset( $photo['width'] ) ? $photo['width'] : null,
+			'filename'      => $image->get_field( 'file' ),
+			'url'           => $image->get_field( 'original_url' ),
+			'link'          => $image->get_field( 'links' )['html'],
+			'alt'           => $image->get_field( 'alt' ),
+			'author'        => $image->get_field( 'user' )['name'],
+			'description'   => $image->get_field( 'description' ),
+			'caption'       => $image->get_caption(),
+			'name'          => $image->get_field( 'original_id' ),
+			'height'        => $image->get_field( 'height' ),
+			'width'         => $image->get_field( 'width' ),
 			'status'        => 'inherit',
 			'uploadedTo'    => 0,
-			'date'          => isset( $photo['created_at'] ) ? strtotime( $photo['created_at'] ) * 1000 : null,
-			'modified'      => isset( $photo['updated_at'] ) ? strtotime( $photo['updated_at'] ) * 1000 : null,
+			'date'          => strtotime( $image->get_field( 'created_at' ) ) * 1000,
+			'modified'      => strtotime( $image->get_field( 'updated_at' ) ) * 1000,
 			'menuOrder'     => 0,
-			'mime'          => 'image/jpeg',
+			'mime'          => $image->get_field( 'mime_type' ),
 			'type'          => 'image',
-			'subtype'       => 'jpeg',
-			'icon'          => isset( $photo['urls']['thumb'] ) ? $this->get_original_url_with_size( $photo['urls']['thumb'], 150, 150, $this->attrs ) : null,
-			'dateFormatted' => isset( $photo['created_at'] ) ? mysql2date( __( 'F j, Y', 'unsplash' ), $photo['created_at'] ) : null,
+			'subtype'       => $image->get_field( 'ext' ),
+			'icon'          => ! empty( $image->get_image_url( 'thumb' ) ) ? $this->get_original_url_with_size( $image->get_image_url( 'thumb' ), 150, 150, $attrs ) : null,
+			'dateFormatted' => mysql2date( __( 'F j, Y', 'unsplash' ), $image->get_field( 'created_at' ) ),
 			'nonces'        => [
 				'update' => false,
 				'delete' => false,
@@ -159,7 +174,7 @@ class Plugin extends Plugin_Base {
 			'meta'          => false,
 		];
 
-		$response['sizes'] = $this->add_image_sizes( $photo['urls']['raw'], $photo['width'], $photo['height'] );
+		$response['sizes'] = $this->add_image_sizes( $image->get_field( 'original_url' ), $image->get_field( 'width' ), $image->get_field( 'height' ) );
 
 		return $response;
 	}
@@ -196,7 +211,9 @@ class Plugin extends Plugin_Base {
 			if ( array_key_exists( $name, $sizes ) ) {
 				continue;
 			}
-			$_url           = $this->get_original_url_with_size( $url, $size['width'], $size['height'], $this->attrs );
+
+			$url            = $this->get_original_url_with_size( $image->get_field( 'original_url' ), $size['width'], $size['height'], $attrs );
+
 			$sizes[ $name ] = [
 				'url'         => $_url,
 				'height'      => $size['height'],

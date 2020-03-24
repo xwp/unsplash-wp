@@ -8,6 +8,7 @@
 namespace Unsplash;
 
 use WP_Error;
+use WP_Query;
 
 /**
  * Class Import
@@ -48,7 +49,7 @@ class Import {
 	 * @param int    $parent Parent ID.
 	 */
 	public function __construct( $id, $image = null, $parent = 0 ) {
-		$this->id     = $id;
+		$this->id     = strtolower( $id );
 		$this->image  = $image;
 		$this->parent = $parent;
 	}
@@ -88,10 +89,23 @@ class Import {
 			return $this->attachment_id;
 		}
 
-		// TODO: make more robust.
-		$attachment = get_page_by_path( $this->id, ARRAY_A, 'attachment' );
+		$parsed_args = [
+			'post_type'              => 'attachment',
+			'name'                   => $this->id,
+			'fields'                 => 'ids',
+			'order'                  => 'DESC',
+			'suppress_filters'       => false,
+			'update_post_meta_cache' => false,
+			'update_post_term_cache' => false,
+			'lazy_load_term_meta'    => false,
+			'no_found_rows'          => true,
+			'posts_per_page'         => 1,
+		];
 
-		return isset( $attachment['ID'] ) ? $attachment['ID'] : false;
+		$get_posts   = new WP_Query();
+		$attachments = $get_posts->query( $parsed_args );
+
+		return ! empty( $attachments ) ? array_shift( $attachments ) : false;
 	}
 
 	/**
@@ -171,7 +185,7 @@ class Import {
 			'post_name'      => $this->image->get_field( 'original_id' ),
 			'post_content'   => $this->image->get_field( 'description' ),
 			'post_title'     => $this->image->get_field( 'alt' ),
-			'post_excerpt'   => $this->image->get_field( 'alt' ),
+			'post_excerpt'   => $this->image->get_field( 'caption' ),
 			'post_mime_type' => $this->image->get_field( 'mime_type' ),
 			'guid'           => $url,
 		];

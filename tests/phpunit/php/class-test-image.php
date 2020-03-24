@@ -45,6 +45,9 @@ class Test_Image extends \WP_UnitTestCase {
 				'username'   => 'harleydavidson',
 				'name'       => 'Harley-Davidson',
 				'first_name' => 'Harley-Davidson',
+				'links'      => [
+					'html' => 'https://www.unpslash.com/harleydavidson',
+				],
 			],
 			'exif'            => [
 				'make'          => 'Canon',
@@ -74,7 +77,7 @@ class Test_Image extends \WP_UnitTestCase {
 	public function test_process_data() {
 		$test_data = $this->get_data();
 		$image     = new Image( $test_data );
-		$this->assertSame( $image->get_field( 'original_id' ), $test_data['id'] );
+		$this->assertSame( $image->get_field( 'original_id' ), strtolower( $test_data['id'] ) );
 		$this->assertSame( $image->get_field( 'description' ), $test_data['description'] );
 		$this->assertSame( $image->get_field( 'alt' ), $test_data['alt_description'] );
 		$this->assertSame( $image->get_field( 'original_url' ), $image->get_image_url( 'raw' ) );
@@ -112,5 +115,60 @@ class Test_Image extends \WP_UnitTestCase {
 		$image = new Image( $this->get_data() );
 		$this->assertSame( '', $image->get_image_field( 'invalid' ) );
 	}
+
+	/**
+	 * Test get captionl.
+	 *
+	 * @covers \Unsplash\Image::__construct()
+	 * @covers \Unsplash\Image::get_caption()
+	 */
+	public function test_get_caption() {
+		$image = new Image( $this->get_data() );
+		$this->assertRegexp( '/Harley-Davidson/', $image->get_caption() );
+		$this->assertRegexp( '/https:\/\/unsplash.com/', $image->get_caption() );
+		$this->assertRegexp( '/https:\/\/www.unpslash.com\/harleydavidson/', $image->get_caption() );
+	}
+	/**
+	 * Test get captionl.
+	 *
+	 * @covers \Unsplash\Image::__construct()
+	 * @covers \Unsplash\Image::get_caption()
+	 */
+	public function test_no_get_caption() {
+		$image = new Image( [] );
+		$this->assertSame( '', $image->get_caption() );
+	}
+
+	/**
+	 * Test get captionl.
+	 *
+	 * @covers \Unsplash\Image::__construct()
+	 * @covers \Unsplash\Image::get_caption()
+	 */
+	public function test_no_get_caption_1() {
+		$image = new Image( [] );
+		$this->assertSame( '', $image->get_caption() );
+	}
+
+	/**
+	 * Test get captionl.
+	 *
+	 * @covers \Unsplash\Image::__construct()
+	 * @covers \Unsplash\Image::get_caption()
+	 */
+	public function test_no_get_caption_2() {
+		$image = new Image(
+			[
+				'user' => [
+					'name'  => '',
+					'links' => [
+						'html' => '',
+					],
+				],
+			]
+		);
+		$this->assertSame( '', $image->get_caption() );
+	}
+
 
 }
