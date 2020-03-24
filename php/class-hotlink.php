@@ -102,14 +102,7 @@ class Hotlink {
 		if ( isset( $response['media_details'] ) ) {
 			$response['media_details']['sizes'] = $this->plugin->add_image_sizes( $original_url, $response['media_details']['width'], $response['media_details']['height'] );
 			// Reformat image sizes as REST API response is a little differently formatted.
-			foreach ( $response['media_details']['sizes'] as $size => $details ) {
-				$details['file']       = $response['media_details']['file'];
-				$details['source_url'] = $details['url'];
-				$details['mime_type']  = 'image/jpeg';
-				unset( $details['url'] );
-				unset( $details['orientation'] );
-				$response['media_details']['sizes'][ $size ] = $details;
-			}
+			$response['media_details']['sizes'] = $this->change_fields( $response['media_details']['sizes'], $response['media_details']['file'] );
 			// No image sizes missing.
 			if ( isset( $response['missing_image_sizes'] ) ) {
 				$response['missing_image_sizes'] = [];
@@ -126,6 +119,26 @@ class Hotlink {
 		$wp_response->set_data( $response );
 
 		return $wp_response;
+	}
+
+	/**
+	 * Reformat image sizes as REST API response is a little differently formatted.
+	 *
+	 * @param Array  $sizes list of sizes.
+	 * @param String $file File name.
+	 * @return Array
+	 */
+	public function change_fields( array $sizes, $file ) {
+		foreach ( $sizes as $size => $details ) {
+			$details['file']       = $file;
+			$details['source_url'] = $details['url'];
+			$details['mime_type']  = 'image/jpeg';
+			unset( $details['url'] );
+			unset( $details['orientation'] );
+			$sizes[ $size ] = $details;
+		}
+
+		return $sizes;
 	}
 
 	/**

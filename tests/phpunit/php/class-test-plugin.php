@@ -9,6 +9,7 @@ namespace Unsplash;
 
 /**
  * Tests for Plugin class.
+ *
  * @coversDefaultClass \Unsplash\Plugin
  */
 class Test_Plugin extends \WP_UnitTestCase {
