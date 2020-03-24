@@ -9,6 +9,7 @@ namespace Unsplash;
 
 /**
  * Tests for Plugin class.
+ * @coversDefaultClass \Unsplash\Plugin
  */
 class Test_Plugin extends \WP_UnitTestCase {
 
@@ -54,6 +55,8 @@ class Test_Plugin extends \WP_UnitTestCase {
 	 * Test for wp_prepare_attachment_for_js() method.
 	 *
 	 * @see Plugin::wp_prepare_attachment_for_js()
+	 * @covers ::wp_prepare_attachment_for_js
+	 * @covers ::add_image_sizes
 	 */
 	public function test_wp_prepare_attachment_for_js() {
 		$plugin = get_plugin_instance();
