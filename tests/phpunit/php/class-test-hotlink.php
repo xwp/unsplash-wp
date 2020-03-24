@@ -240,11 +240,14 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$image    = get_post( self::$attachment_id );
 		$photo    = [
 
-			'urls'          => [ 'raw' => 'http://www.example.com/test.jpg' ],
-			'media_details' => [
+			'urls'                => [ 'raw' => 'http://www.example.com/test.jpg' ],
+			'media_details'       => [
 				'width'  => 999,
 				'height' => 999,
 				'file'   => 'test.jpg',
+			],
+			'missing_image_sizes' => [
+				'large',
 			],
 		];
 		$reponse  = new \WP_REST_Response( $photo );
@@ -254,6 +257,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$expected = $this->hotlink->change_fields( $sizes, $photo['media_details']['file'] );
 		$data     = $result->get_data();
 		$this->assertEqualSets( $data['media_details']['sizes'], $expected );
+		$this->assertEqualSets( $data['missing_image_sizes'], [] );
 	}
 
 	/**
