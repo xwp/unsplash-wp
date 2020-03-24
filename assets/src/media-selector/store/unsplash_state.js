@@ -10,7 +10,7 @@ const UnsplashState = State.extend( {
 	defaults: {
 		id: 'unsplash',
 		toolbar: 'unsplash',
-		title: () => getConfig( 'tabTitle' ),
+		title: getConfig( 'tabTitle' ),
 		content: 'unsplash',
 		menu: 'unsplash',
 		router: false,
