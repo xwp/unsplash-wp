@@ -45,7 +45,7 @@ class Plugin extends Plugin_Base {
 	 *
 	 * @var array
 	 */
-	public $attrs = [
+	public $default_img_attrs = [
 		'fm'  => 'jpg',
 		'q'   => '85',
 		'fit' => 'crop',
@@ -163,7 +163,7 @@ class Plugin extends Plugin_Base {
 			'mime'          => $image->get_field( 'mime_type' ),
 			'type'          => 'image',
 			'subtype'       => $image->get_field( 'ext' ),
-			'icon'          => ! empty( $image->get_image_url( 'thumb' ) ) ? $this->get_original_url_with_size( $image->get_image_url( 'thumb' ), 150, 150, $this->attrs ) : null,
+			'icon'          => ! empty( $image->get_image_url( 'thumb' ) ) ? $this->get_original_url_with_size( $image->get_image_url( 'thumb' ), 150, 150, $this->default_img_attrs ) : null,
 			'dateFormatted' => mysql2date( __( 'F j, Y', 'unsplash' ), $image->get_field( 'created_at' ) ),
 			'nonces'        => [
 				'update' => false,
@@ -191,7 +191,7 @@ class Plugin extends Plugin_Base {
 	public function add_image_sizes( $url, $width, $height ) {
 		$width_medium  = 400;
 		$height_medium = (int) ( ( $height / ( $width / $width_medium ) ) );
-		$url_medium    = $this->get_original_url_with_size( $url, $width_medium, $height_medium, $this->attrs );
+		$url_medium    = $this->get_original_url_with_size( $url, $width_medium, $height_medium, $this->default_img_attrs );
 		$sizes         = [
 			'full'   => [
 				'url'         => $url,
@@ -212,7 +212,7 @@ class Plugin extends Plugin_Base {
 				continue;
 			}
 
-			$_url = $this->get_original_url_with_size( $url, $size['width'], $size['height'], $this->attrs );
+			$_url = $this->get_original_url_with_size( $url, $size['width'], $size['height'], $this->default_img_attrs );
 
 			$sizes[ $name ] = [
 				'url'         => $_url,

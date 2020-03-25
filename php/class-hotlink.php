@@ -8,6 +8,7 @@
 namespace Unsplash;
 
 use WP_Query;
+use WP_Post;
 
 /**
  * WordPress hotlink interface.
@@ -67,7 +68,7 @@ class Hotlink {
 	 * @return mixed
 	 */
 	public function wp_prepare_attachment_for_js( array $response, $attachment ) {
-		if ( ! is_a( $attachment, 'WP_Post' ) ) {
+		if ( ! $attachment instanceof WP_Post ) {
 			return $response;
 		}
 		$original_url = $this->get_original_url( $attachment->ID );
@@ -91,7 +92,7 @@ class Hotlink {
 	 * @return mixed
 	 */
 	public function rest_prepare_attachment( $wp_response, $attachment ) {
-		if ( ! is_a( $attachment, 'WP_Post' ) ) {
+		if ( ! $attachment instanceof WP_Post ) {
 			return $wp_response;
 		}
 		$original_url = $this->get_original_url( $attachment->ID );
