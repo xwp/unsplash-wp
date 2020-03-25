@@ -111,7 +111,7 @@ class Hotlink {
 
 		// Return raw image url in REST API.
 		if ( isset( $response['source_url'] ) ) {
-			remove_filter( 'wp_get_attachment_url', [ $this, 'wp_get_attachment_url' ], 10, 2 );
+			remove_filter( 'wp_get_attachment_url', [ $this, 'wp_get_attachment_url' ], 10 );
 			$response['source_url'] = wp_get_attachment_url( $attachment->ID );
 			add_filter( 'wp_get_attachment_url', [ $this, 'wp_get_attachment_url' ], 10, 2 );
 		}
