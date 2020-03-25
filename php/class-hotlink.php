@@ -133,8 +133,7 @@ class Hotlink {
 			$details['file']       = $file;
 			$details['source_url'] = $details['url'];
 			$details['mime_type']  = 'image/jpeg';
-			unset( $details['url'] );
-			unset( $details['orientation'] );
+			unset( $details['url'], $details['orientation'] );
 			$sizes[ $size ] = $details;
 		}
 
