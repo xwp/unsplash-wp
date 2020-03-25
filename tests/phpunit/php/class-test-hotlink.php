@@ -146,4 +146,141 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$primed_attachments = $this->hotlink->prime_post_caches( $attachment_ids );
 		$this->assertEqualSets( $primed_attachments, [ get_post( self::$attachment_id ) ] );
 	}
+
+	/**
+	 * Test wp_prepare_attachment_for_js.
+	 *
+	 * @covers ::wp_prepare_attachment_for_js()
+	 */
+	public function test_no_wp_prepare_attachment_for_js_1() {
+		$data   = [ 'foo' => 'bar' ];
+		$result = $this->hotlink->wp_prepare_attachment_for_js( $data, false );
+		$this->assertEqualSets( $result, $data );
+	}
+
+	/**
+	 * Test wp_prepare_attachment_for_js.
+	 *
+	 * @covers ::wp_prepare_attachment_for_js()
+	 */
+	public function test_no_wp_prepare_attachment_for_js_2() {
+		$second_id = $this->factory->attachment->create_object(
+			'/tmp/melon.jpg',
+			0,
+			[
+				'post_mime_type' => 'image/jpeg',
+				'post_excerpt'   => 'A sample caption 2',
+			]
+		);
+		$image     = get_post( $second_id );
+		$data      = [ 'foo' => 'bar' ];
+		$result    = $this->hotlink->wp_prepare_attachment_for_js( $data, $image );
+		$this->assertEqualSets( $result, $data );
+	}
+
+	/**
+	 * Test wp_prepare_attachment_for_js.
+	 *
+	 * @covers ::wp_prepare_attachment_for_js()
+	 */
+	public function test_wp_prepare_attachment_for_js() {
+		$image    = get_post( self::$attachment_id );
+		$photo    = [
+			'width'  => 999,
+			'height' => 999,
+			'urls'   => [ 'raw' => 'http://www.example.com/test.jpg' ],
+		];
+		$result   = $this->hotlink->wp_prepare_attachment_for_js( $photo, $image );
+		$plugin   = new Plugin();
+		$expected = $plugin->add_image_sizes( $photo['urls']['raw'], $photo['width'], $photo['height'] );
+		$this->assertEqualSets( $result['sizes'], $expected );
+	}
+
+
+		/**
+		 * Test rest_prepare_attachment.
+		 *
+		 * @covers ::rest_prepare_attachment()
+		 */
+	public function test_no_rest_prepare_attachment() {
+		$data    = [ 'foo' => 'bar' ];
+		$reponse = new \WP_REST_Response( $data );
+		$result  = $this->hotlink->rest_prepare_attachment( $reponse, false );
+		$this->assertEqualSets( $result->get_data(), $reponse->get_data() );
+	}
+
+		/**
+		 * Test rest_prepare_attachment.
+		 *
+		 * @covers ::rest_prepare_attachment()
+		 */
+	public function test_no_rest_prepare_attachment_1() {
+		$second_id = $this->factory->attachment->create_object(
+			'/tmp/melon.jpg',
+			0,
+			[
+				'post_mime_type' => 'image/jpeg',
+				'post_excerpt'   => 'A sample caption 2',
+			]
+		);
+		$image     = get_post( $second_id );
+		$data      = [ 'foo' => 'bar' ];
+		$reponse   = new \WP_REST_Response( $data );
+		$result    = $this->hotlink->rest_prepare_attachment( $reponse, $image );
+		$this->assertEqualSets( $result->get_data(), $reponse->get_data() );
+	}
+
+		/**
+		 * Test rest_prepare_attachment.
+		 *
+		 * @covers ::rest_prepare_attachment()
+		 * @covers ::change_fields()
+		 */
+	public function test_rest_prepare_attachment_2() {
+		$image    = get_post( self::$attachment_id );
+		$photo    = [
+
+			'urls'                => [ 'raw' => 'http://www.example.com/test.jpg' ],
+			'media_details'       => [
+				'width'  => 999,
+				'height' => 999,
+				'file'   => 'test.jpg',
+			],
+			'missing_image_sizes' => [
+				'large',
+			],
+		];
+		$reponse  = new \WP_REST_Response( $photo );
+		$result   = $this->hotlink->rest_prepare_attachment( $reponse, $image );
+		$plugin   = new Plugin();
+		$sizes    = $plugin->add_image_sizes( $photo['urls']['raw'], $photo['media_details']['width'], $photo['media_details']['height'] );
+		$expected = $this->hotlink->change_fields( $sizes, $photo['media_details']['file'] );
+		$data     = $result->get_data();
+		$this->assertEqualSets( $data['media_details']['sizes'], $expected );
+		$this->assertEqualSets( $data['missing_image_sizes'], [] );
+	}
+
+	/**
+	 * Test rest_prepare_attachment.
+	 *
+	 * @covers ::rest_prepare_attachment()
+	 */
+	public function test_rest_prepare_attachment_3() {
+		$image   = get_post( self::$attachment_id );
+		$photo   = [
+
+			'urls'          => [ 'raw' => 'http://www.example.com/nothing.jpg' ],
+			'media_details' => [
+				'width'  => 999,
+				'height' => 999,
+				'file'   => 'test.jpg',
+			],
+			'source_url'    => 'http://unsplash.com/test',
+		];
+		$reponse = new \WP_REST_Response( $photo );
+		$result  = $this->hotlink->rest_prepare_attachment( $reponse, $image );
+		$data    = $result->get_data();
+		$this->assertEquals( $data['source_url'], 'http://www.example.com/test.jpg' );
+	}
+
 }
