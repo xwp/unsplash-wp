@@ -209,14 +209,15 @@ class Import {
 	 */
 	public function process_meta() {
 		$map = [
-			'color'                    => 'color',
-			'original_id'              => 'original_id',
-			'original_url'             => 'original_url',
-			'unsplash_location'        => 'unsplash_location',
-			'unsplash_sponsor'         => 'unsplash_sponsor',
-			'unsplash_exif'            => 'unsplash_exif',
-			'_wp_attachment_metadata'  => 'meta',
-			'_wp_attachment_image_alt' => 'alt',
+			'color'                        => 'color',
+			'original_id'                  => 'original_id',
+			'original_url'                 => 'original_url',
+			'unsplash_location'            => 'unsplash_location',
+			'unsplash_sponsor'             => 'unsplash_sponsor',
+			'unsplash_exif'                => 'unsplash_exif',
+			'_wp_attachment_metadata'      => 'meta',
+			'unsplash_attachment_metadata' => 'meta',
+			'_wp_attachment_image_alt'     => 'alt',
 		];
 		foreach ( $map as $key => $value ) {
 			update_post_meta( $this->attachment_id, $key, $this->image->get_field( $value ), true );
