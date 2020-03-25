@@ -41,6 +41,17 @@ class Plugin extends Plugin_Base {
 	const POST_TYPE = 'attachment';
 
 	/**
+	 * Default image args.
+	 *
+	 * @var array
+	 */
+	public $default_img_attrs = [
+		'fm'  => 'jpg',
+		'q'   => '85',
+		'fit' => 'crop',
+	];
+
+	/**
 	 * Initiate the plugin resources.
 	 *
 	 * @action plugins_loaded
@@ -129,36 +140,32 @@ class Plugin extends Plugin_Base {
 	 * @return array
 	 */
 	public function wp_prepare_attachment_for_js( array $photo ) {
-		$attrs = [
-			'fm'  => 'jpg',
-			'q'   => '85',
-			'fit' => 'crop',
-		];
+		$image = new Image( $photo );
 
 		$response = [
 			'id'            => isset( $photo['id'] ) ? $photo['id'] : null,
 			'unsplashId'    => isset( $photo['unsplash_id'] ) ? $photo['unsplash_id'] : null,
 			'title'         => '',
-			'filename'      => isset( $photo['unsplash_id'] ) ? $photo['unsplash_id'] . '.jpg' : null,
-			'url'           => isset( $photo['urls']['raw'] ) ? $photo['urls']['raw'] : null,
-			'link'          => isset( $photo['links']['html'] ) ? $photo['links']['html'] : null,
-			'alt'           => isset( $photo['alt_description'] ) ? $photo['alt_description'] : null,
-			'author'        => isset( $photo['author'] ) ? $photo['author'] : null,
-			'description'   => isset( $photo['description'] ) ? $photo['description'] : null,
-			'caption'       => isset( $photo['alt_description'] ) ? $photo['alt_description'] : null,
-			'name'          => isset( $photo['unsplash_id'] ) ? $photo['unsplash_id'] : null,
-			'height'        => isset( $photo['height'] ) ? $photo['height'] : null,
-			'width'         => isset( $photo['width'] ) ? $photo['width'] : null,
+			'filename'      => $image->get_field( 'file' ),
+			'url'           => $image->get_field( 'original_url' ),
+			'link'          => $image->get_field( 'links' )['html'],
+			'alt'           => $image->get_field( 'alt' ),
+			'author'        => $image->get_field( 'user' )['name'],
+			'description'   => $image->get_field( 'description' ),
+			'caption'       => $image->get_caption(),
+			'name'          => $image->get_field( 'original_id' ),
+			'height'        => $image->get_field( 'height' ),
+			'width'         => $image->get_field( 'width' ),
 			'status'        => 'inherit',
 			'uploadedTo'    => 0,
-			'date'          => isset( $photo['created_at'] ) ? strtotime( $photo['created_at'] ) * 1000 : null,
-			'modified'      => isset( $photo['updated_at'] ) ? strtotime( $photo['updated_at'] ) * 1000 : null,
+			'date'          => strtotime( $image->get_field( 'created_at' ) ) * 1000,
+			'modified'      => strtotime( $image->get_field( 'updated_at' ) ) * 1000,
 			'menuOrder'     => 0,
-			'mime'          => 'image/jpeg',
+			'mime'          => $image->get_field( 'mime_type' ),
 			'type'          => 'image',
-			'subtype'       => 'jpeg',
-			'icon'          => isset( $photo['urls']['thumb'] ) ? $this->get_original_url_with_size( $photo['urls']['thumb'], 150, 150, $attrs ) : null,
-			'dateFormatted' => isset( $photo['created_at'] ) ? mysql2date( __( 'F j, Y', 'unsplash' ), $photo['created_at'] ) : null,
+			'subtype'       => $image->get_field( 'ext' ),
+			'icon'          => ! empty( $image->get_image_url( 'thumb' ) ) ? $this->get_original_url_with_size( $image->get_image_url( 'thumb' ), 150, 150, $this->default_img_attrs ) : null,
+			'dateFormatted' => mysql2date( __( 'F j, Y', 'unsplash' ), $image->get_field( 'created_at' ) ),
 			'nonces'        => [
 				'update' => false,
 				'delete' => false,
@@ -167,19 +174,37 @@ class Plugin extends Plugin_Base {
 			'editLink'      => false,
 			'meta'          => false,
 		];
-		$width    = 400;
-		$height   = (int) ceil( $photo['height'] / ( $photo['width'] / $width ) );
-		$url      = isset( $photo['urls']['small'] ) ? $photo['urls']['small'] : $this->get_original_url_with_size( $photo['urls']['raw'], $width, $height, $attrs );
-		$sizes    = [
+
+		$response['sizes'] = $this->add_image_sizes( $image->get_field( 'original_url' ), $image->get_field( 'width' ), $image->get_field( 'height' ) );
+
+		return $response;
+	}
+
+	/**
+	 * Generate image sizes for Admin ajax / REST api.
+	 *
+	 * @param String $url Image URL.
+	 * @param Int    $width Width of Image.
+	 * @param Int    $height Height of Image.
+	 *
+	 * @return array
+	 */
+	public function add_image_sizes( $url, $width, $height ) {
+		$width_medium  = 400;
+		$height_medium = (int) ( ( $height / ( $width / $width_medium ) ) );
+		$url_medium    = $this->get_original_url_with_size( $url, $width_medium, $height_medium, $this->default_img_attrs );
+		$sizes         = [
 			'full'   => [
-				'url'    => $photo['urls']['raw'],
-				'height' => $photo['height'],
-				'width'  => $photo['width'],
+				'url'         => $url,
+				'height'      => $height,
+				'width'       => $width,
+				'orientation' => 0,
 			],
 			'medium' => [
-				'url'    => $url,
-				'height' => $height,
-				'width'  => $width,
+				'url'         => $url_medium,
+				'height'      => $height_medium,
+				'width'       => $width_medium,
+				'orientation' => 0,
 			],
 		];
 
@@ -187,16 +212,18 @@ class Plugin extends Plugin_Base {
 			if ( array_key_exists( $name, $sizes ) ) {
 				continue;
 			}
-			$url            = $this->get_original_url_with_size( $photo['urls']['raw'], $size['width'], $size['height'], $attrs );
+
+			$_url = $this->get_original_url_with_size( $url, $size['width'], $size['height'], $this->default_img_attrs );
+
 			$sizes[ $name ] = [
-				'url'    => $url,
-				'height' => $size['height'],
-				'width'  => $size['width'],
+				'url'         => $_url,
+				'height'      => $size['height'],
+				'width'       => $size['width'],
+				'orientation' => 0,
 			];
 		}
-		$response['sizes'] = $sizes;
 
-		return $response;
+		return $sizes;
 	}
 
 	/**

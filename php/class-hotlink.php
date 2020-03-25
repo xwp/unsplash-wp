@@ -8,6 +8,7 @@
 namespace Unsplash;
 
 use WP_Query;
+use WP_Post;
 
 /**
  * WordPress hotlink interface.
@@ -54,6 +55,90 @@ class Hotlink {
 		}
 
 		return $original_url;
+	}
+
+	/**
+	 * Add unsplash image sizes to admin ajax.
+	 *
+	 * @param array   $response Data for admin ajax.
+	 * @param WP_Post $attachment Attachment object.
+	 *
+	 * @filter wp_prepare_attachment_for_js, 99, 2
+	 *
+	 * @return mixed
+	 */
+	public function wp_prepare_attachment_for_js( array $response, $attachment ) {
+		if ( ! $attachment instanceof WP_Post ) {
+			return $response;
+		}
+		$original_url = $this->get_original_url( $attachment->ID );
+		if ( ! $original_url ) {
+			return $response;
+		}
+		$response['sizes'] = $this->plugin->add_image_sizes( $original_url, $response['width'], $response['height'] );
+
+
+		return $response;
+	}
+
+	/**
+	 * Add unsplash image sizes to REST API.
+	 *
+	 * @param WP_Response $wp_response Data for REST API.
+	 * @param WP_Post     $attachment Attachment object.
+	 *
+	 * @filter rest_prepare_attachment, 99, 2
+	 *
+	 * @return mixed
+	 */
+	public function rest_prepare_attachment( $wp_response, $attachment ) {
+		if ( ! $attachment instanceof WP_Post ) {
+			return $wp_response;
+		}
+		$original_url = $this->get_original_url( $attachment->ID );
+		if ( ! $original_url ) {
+			return $wp_response;
+		}
+		$response = $wp_response->get_data();
+		if ( isset( $response['media_details'] ) ) {
+			$response['media_details']['sizes'] = $this->plugin->add_image_sizes( $original_url, $response['media_details']['width'], $response['media_details']['height'] );
+			// Reformat image sizes as REST API response is a little differently formatted.
+			$response['media_details']['sizes'] = $this->change_fields( $response['media_details']['sizes'], $response['media_details']['file'] );
+			// No image sizes missing.
+			if ( isset( $response['missing_image_sizes'] ) ) {
+				$response['missing_image_sizes'] = [];
+			}
+		}
+
+		// Return raw image url in REST API.
+		if ( isset( $response['source_url'] ) ) {
+			remove_filter( 'wp_get_attachment_url', [ $this, 'wp_get_attachment_url' ], 10 );
+			$response['source_url'] = wp_get_attachment_url( $attachment->ID );
+			add_filter( 'wp_get_attachment_url', [ $this, 'wp_get_attachment_url' ], 10, 2 );
+		}
+
+		$wp_response->set_data( $response );
+
+		return $wp_response;
+	}
+
+	/**
+	 * Reformat image sizes as REST API response is a little differently formatted.
+	 *
+	 * @param array  $sizes List of sizes.
+	 * @param String $file  File name.
+	 * @return array
+	 */
+	public function change_fields( array $sizes, $file ) {
+		foreach ( $sizes as $size => $details ) {
+			$details['file']       = $file;
+			$details['source_url'] = $details['url'];
+			$details['mime_type']  = 'image/jpeg';
+			unset( $details['url'], $details['orientation'] );
+			$sizes[ $size ] = $details;
+		}
+
+		return $sizes;
 	}
 
 	/**
@@ -106,9 +191,10 @@ class Hotlink {
 	 *
 	 * @see wp_image_add_srcset_and_sizes()
 	 *
+	 * @param string $content The raw post content to be filtered.
+	 *
 	 * @filter the_content, 99, 1
 	 *
-	 * @param string $content The raw post content to be filtered.
 	 * @return string Converted content with hotlinked images.
 	 */
 	public function hotlink_images_in_content( $content ) {
@@ -153,6 +239,7 @@ class Hotlink {
 	 *
 	 * @param string $image         An HTML 'img' element to be filtered.
 	 * @param int    $attachment_id Image attachment ID.
+	 *
 	 * @return string Converted 'img' element with 'srcset' and 'sizes' attributes added.
 	 */
 	public function replace_image( $image, $attachment_id ) {

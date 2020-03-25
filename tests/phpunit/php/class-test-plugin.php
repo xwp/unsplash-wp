@@ -9,6 +9,8 @@ namespace Unsplash;
 
 /**
  * Tests for Plugin class.
+ *
+ * @coversDefaultClass \Unsplash\Plugin
  */
 class Test_Plugin extends \WP_UnitTestCase {
 
@@ -74,9 +76,40 @@ class Test_Plugin extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Test for image_sizes()
+	 *
+	 * @see Plugin::image_sizes()
+	 */
+	public function test_no_image_sizes() {
+		$plugin = get_plugin_instance();
+		add_filter( 'intermediate_image_sizes', '__return_empty_array' );
+		$this->assertEqualSets( $plugin->image_sizes(), [] );
+		remove_filter( 'intermediate_image_sizes', '__return_empty_array' );
+	}
+
+	/**
+	 * Test for image_sizes()
+	 *
+	 * @see Plugin::image_sizes()
+	 */
+	public function test_image_sizes() {
+		$plugin   = get_plugin_instance();
+		$expected = [ 'large', 'medium', 'medium_large', 'thumbnail' ];
+
+		if ( version_compare( '5.2', get_bloginfo( 'version' ), '<' ) ) {
+			$expected[] = '1536x1536';
+			$expected[] = '2048x2048';
+		}
+
+		$this->assertEqualSets( array_keys( $plugin->image_sizes() ), $expected );
+	}
+
+	/**
 	 * Test for wp_prepare_attachment_for_js() method.
 	 *
 	 * @see Plugin::wp_prepare_attachment_for_js()
+	 * @covers ::wp_prepare_attachment_for_js
+	 * @covers ::add_image_sizes
 	 */
 	public function test_wp_prepare_attachment_for_js() {
 		$plugin = get_plugin_instance();
