@@ -286,13 +286,20 @@ class Rest_Controller extends WP_REST_Controller {
 			$meta     = (array) get_post_meta( $attachment_id, 'unsplash_attachment_metadata', true );
 			$file     = get_attached_file( $attachment_id );
 			$new_meta = wp_generate_attachment_metadata( $attachment_id, $file );
-			unset( $meta['sizes'] );
-			unset( $new_meta['image_meta'] );
+			unset( $meta['sizes'], $new_meta['image_meta'] );
 			$new_meta  = wp_parse_args( $new_meta, $meta );
 			$processed = wp_update_attachment_metadata( $attachment_id, $new_meta );
 			$data      = [ 'processed' => $processed ];
 		} catch ( \Exception $e ) {
-			$response = new WP_Error( 'single-photo-process', __( 'Unable to process image', 'unsplash' ), [ 'status' => '400' ] );
+			$response = new WP_Error(
+				'single-photo-process',
+				/* translators: %d: attachment id */
+				sprintf( __( 'Unable to process image attachment %d.', 'unsplash' ), $attachment_id ),
+				[
+					'attachment_id' => $attachment_id,
+					'status'        => '400',
+				]
+			);
 			$this->plugin->log_error( $e );
 			return $response;
 		}
