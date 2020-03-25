@@ -124,9 +124,9 @@ class Hotlink {
 	/**
 	 * Reformat image sizes as REST API response is a little differently formatted.
 	 *
-	 * @param Array  $sizes list of sizes.
-	 * @param String $file File name.
-	 * @return Array
+	 * @param array  $sizes List of sizes.
+	 * @param String $file  File name.
+	 * @return array
 	 */
 	public function change_fields( array $sizes, $file ) {
 		foreach ( $sizes as $size => $details ) {
