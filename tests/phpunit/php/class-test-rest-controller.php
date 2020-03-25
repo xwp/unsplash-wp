@@ -388,6 +388,86 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	}
 
 	/**
+	 * Test post_process() auth.
+	 *
+	 * @covers \Unsplash\Rest_Controller::post_process()
+	 * @covers \Unsplash\Rest_Controller::create_item_permissions_check()
+	 */
+	public function test_post_process() {
+		add_filter( 'upload_dir', [ $this, 'upload_dir_patch' ] );
+		$orig_file = DIR_TESTDATA . '/images/test-image.jpg';
+		$test_file = get_temp_dir() . 'test-image.jpg';
+		copy( $orig_file, $test_file );
+		$second_id = $this->factory->attachment->create_object(
+			$test_file,
+			0,
+			[
+				'post_mime_type' => 'image/jpeg',
+				'post_excerpt'   => 'A sample caption 2',
+			]
+		);
+		update_post_meta(
+			$second_id,
+			'unsplash_attachment_metadata',
+			[
+				'width'      => 2,
+				'foo'        => 'bar',
+				'image_meta' => [ 'aperture' => 1 ],
+				'sizes'      => null,
+			]
+		);
+		wp_set_current_user( self::$admin_id );
+		$request  = new WP_REST_Request( 'GET', $this->get_route( '/post-process/' . $second_id ) );
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertEquals( 200, $response->get_status() );
+		$this->assertEquals( $response->get_data(), [ 'processed' => true ] );
+		$meta = wp_get_attachment_metadata( $second_id );
+		$this->assertArrayHasKey( 'foo', $meta );
+		$this->assertArrayHasKey( 'sizes', $meta );
+		$this->assertArrayHasKey( 'width', $meta );
+		$this->assertSame( 50, $meta['width'] );
+		$this->assertSame( [ 'aperture' => 1 ], $meta['image_meta'] );
+		remove_filter( 'upload_dir', [ $this, 'upload_dir_patch' ] );
+	}
+
+	/**
+	 * Test validate_get_attachment().
+	 *
+	 * @covers \Unsplash\Rest_Controller::post_process()
+	 * @covers \Unsplash\Rest_Controller::validate_get_attachment()
+	 */
+	public function test_post_process_invalid() {
+		$test_page = self::factory()->post->create(
+			[
+				'post_type'    => 'page',
+				'post_title'   => 'About',
+				'post_status'  => 'publish',
+				'post_content' => 'hello there',
+			]
+		);
+
+		wp_set_current_user( self::$admin_id );
+		$request  = new WP_REST_Request( 'GET', $this->get_route( '/post-process/' . $test_page ) );
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertErrorResponse( 'rest_invalid_param', $response, 400 );
+	}
+
+	/**
+	 * Test validate_get_attachment().
+	 *
+	 * @covers \Unsplash\Rest_Controller::post_process()
+	 * @covers \Unsplash\Rest_Controller::validate_get_attachment()
+	 */
+	public function test_post_process_invalid_2() {
+		$test_page = wp_rand();
+
+		wp_set_current_user( self::$admin_id );
+		$request  = new WP_REST_Request( 'GET', $this->get_route( '/post-process/' . $test_page ) );
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertErrorResponse( 'rest_invalid_param', $response, 400 );
+	}
+
+	/**
 	 * Test get_item() auth.
 	 *
 	 * @covers \Unsplash\Rest_Controller::get_item()
@@ -422,6 +502,27 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	public function test_get_import_auth() {
 		wp_set_current_user( self::$subscriber_id );
 		$request  = new WP_REST_Request( 'GET', $this->get_route( '/import/uRuPYB0P8to' ) );
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertErrorResponse( 'rest_cannot_create', $response, 403 );
+	}
+
+	/**
+	 * Test post_process() auth.
+	 *
+	 * @covers \Unsplash\Rest_Controller::post_process()
+	 * @covers \Unsplash\Rest_Controller::create_item_permissions_check()
+	 */
+	public function test_post_process_auth() {
+		$second_id = $this->factory->attachment->create_object(
+			'/tmp/melon.jpg',
+			0,
+			[
+				'post_mime_type' => 'image/jpeg',
+				'post_excerpt'   => 'A sample caption 2',
+			]
+		);
+		wp_set_current_user( self::$subscriber_id );
+		$request  = new WP_REST_Request( 'GET', $this->get_route( '/post-process/' . $second_id ) );
 		$response = rest_get_server()->dispatch( $request );
 		$this->assertErrorResponse( 'rest_cannot_create', $response, 403 );
 	}
