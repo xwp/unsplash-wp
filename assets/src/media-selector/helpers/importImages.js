@@ -28,13 +28,14 @@ export default selections => {
 const importImage = image => {
 	const { unsplashId } = image.attributes;
 	const importUrl = getConfig( 'route' ) + `/import/${ unsplashId }`;
+	const processUrl = getConfig( 'route' ) + `/post-process/`;
 
 	return apiFetch( { url: importUrl } )
 		.then( attachmentData => {
 			// Update image ID from imported attachment. This will be used to fetch the <img> tag.
 			// Note: `image.set()` is called rather than updating `image.id` directly so that potential Backbone event listeners can be fired.
 			image.set( { ...image.attributes, ...{ id: attachmentData.id } } );
-
+			apiFetch( { url: processUrl + attachmentData.id } );
 			return attachmentData;
 		} )
 		.catch( error => Promise.reject( { ...error, ...{ image } } ) );
