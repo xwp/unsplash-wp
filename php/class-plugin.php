@@ -212,13 +212,16 @@ class Plugin extends Plugin_Base {
 			if ( array_key_exists( $name, $sizes ) ) {
 				continue;
 			}
-
-			$_url = $this->get_original_url_with_size( $url, $size['width'], $size['height'], $this->default_img_attrs );
+			$_height = (int) ( ( $height / ( $width / $size['width'] ) ) );
+			if ( $size['height'] ) {
+				$_height = min( $_height, $size['height'] );
+			}
+			$_url = $this->get_original_url_with_size( $url, $size['width'], $_height, $this->default_img_attrs );
 
 			$sizes[ $name ] = [
 				'url'         => $_url,
-				'height'      => $size['height'],
-				'width'       => $size['width'],
+				'height'      => (int) $_height,
+				'width'       => (int) $size['width'],
 				'orientation' => 0,
 			];
 		}
