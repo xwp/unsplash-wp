@@ -62,7 +62,7 @@ const ImagesQueryModel = wp.media.model.Query.extend(
 		},
 
 		defaultArgs: {
-			posts_per_page: 30,
+			posts_per_page: 20,
 		},
 
 		get: ( function() {
