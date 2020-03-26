@@ -56,7 +56,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 			]
 		);
 
-		update_post_meta( self::$attachment_id, 'original_url', 'http://www.example.com/test.jpg' );
+		update_post_meta( self::$attachment_id, 'original_url', 'https://images.unsplash.com/test.jpg' );
 		self::$image_tag = get_image_tag( self::$attachment_id, 'alt', 'title', 'left' );
 	}
 
@@ -90,7 +90,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	 * @covers ::wp_get_attachment_url()
 	 */
 	public function test_wp_get_attachment_url() {
-		$this->assertEquals( wp_get_attachment_url( self::$attachment_id ), 'http://www.example.com/test.jpg' );
+		$this->assertEquals( wp_get_attachment_url( self::$attachment_id ), 'https://images.unsplash.com/test.jpg' );
 	}
 
 	/**
@@ -101,7 +101,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	public function test_wp_get_attachment_image_src() {
 		$image = image_downsize( self::$attachment_id );
 		$this->assertInternalType( 'array', $image );
-		$this->assertEquals( $image[0], 'http://www.example.com/test.jpg?w=300&h=300' );
+		$this->assertEquals( $image[0], 'https://images.unsplash.com/test.jpg?w=300&h=300' );
 	}
 
 	/**
@@ -132,7 +132,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 
 		$post    = get_post( $test_page );
 		$content = apply_filters( 'the_content', $post->post_content );
-		$this->assertContains( 'src="http://www.example.com/test.jpg?w=300&h=300"', $content );
+		$this->assertContains( 'src="https://images.unsplash.com/test.jpg?w=300&h=300"', $content );
 		$this->assertContains( '/tmp/melon.jpg', $content );
 	}
 
@@ -188,7 +188,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$photo    = [
 			'width'  => 999,
 			'height' => 999,
-			'urls'   => [ 'raw' => 'http://www.example.com/test.jpg' ],
+			'urls'   => [ 'raw' => 'https://images.unsplash.com/test.jpg' ],
 		];
 		$result   = $this->hotlink->wp_prepare_attachment_for_js( $photo, $image );
 		$plugin   = new Plugin();
@@ -240,7 +240,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$image    = get_post( self::$attachment_id );
 		$photo    = [
 
-			'urls'                => [ 'raw' => 'http://www.example.com/test.jpg' ],
+			'urls'                => [ 'raw' => 'https://images.unsplash.com/test.jpg' ],
 			'media_details'       => [
 				'width'  => 999,
 				'height' => 999,
@@ -269,7 +269,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$image   = get_post( self::$attachment_id );
 		$photo   = [
 
-			'urls'          => [ 'raw' => 'http://www.example.com/nothing.jpg' ],
+			'urls'          => [ 'raw' => 'https://images.unsplash.com/nothing.jpg' ],
 			'media_details' => [
 				'width'  => 999,
 				'height' => 999,
@@ -280,7 +280,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$reponse = new \WP_REST_Response( $photo );
 		$result  = $this->hotlink->rest_prepare_attachment( $reponse, $image );
 		$data    = $result->get_data();
-		$this->assertEquals( $data['source_url'], 'http://www.example.com/test.jpg' );
+		$this->assertEquals( $data['source_url'], 'https://images.unsplash.com/test.jpg' );
 	}
 
 }

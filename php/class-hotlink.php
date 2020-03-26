@@ -187,6 +187,65 @@ class Hotlink {
 	}
 
 	/**
+	 * Retrieve all Unsplash image tags from content.
+	 *
+	 * @param string $content Content.
+	 * @return array Array consisting of the image tag and src URL, keyed by the attachment ID.
+	 */
+	public function get_attachments_from_content( $content ) {
+		// Get all <img> tags with a 'src' starting with 'https://images.unsplash.com'.
+		if ( ! preg_match_all( '#<img.+?src="(?P<url>https:\/\/images\.unsplash.com.+?)".+?\/>#', wp_unslash( $content ), $matches ) ) {
+			return [];
+		}
+
+		$selected_images = [];
+
+		foreach ( $matches[0] as $key => $image_tag ) {
+			if ( preg_match( '/wp-image-([0-9]+)/i', $image_tag, $class_id ) ) {
+				$attachment_id = absint( $class_id[1] );
+
+				if ( $attachment_id ) {
+					/*
+					 * If exactly the same image tag is used more than once, overwrite it.
+					 * All identical tags will be replaced later with 'str_replace()'.
+					 */
+					$selected_images[ $attachment_id ] = [
+						'tag' => $image_tag,
+						'url' => $matches['url'][ $key ],
+					];
+				}
+			}
+		}
+
+		return $selected_images;
+	}
+
+	/**
+	 * Replace hotlinked image URLs in content with ones from WordPress.
+	 *
+	 * @filter content_save_pre, 99, 1
+	 *
+	 * @param string $content Content.
+	 * @return string Converted content with local images.
+	 */
+	public function replace_hotlinked_images_in_content( $content ) {
+		$attachments = $this->get_attachments_from_content( $content );
+
+		if ( count( $attachments ) > 1 ) {
+			$this->prime_post_caches( array_keys( $attachments ) );
+		}
+
+		remove_filter( 'wp_get_attachment_url', [ $this, 'wp_get_attachment_url' ], 10 );
+		foreach ( $attachments as $attachment_id => $img_data ) {
+			$wordpress_url = wp_get_attachment_url( $attachment_id );
+			$content       = str_replace( $img_data['url'], $wordpress_url, $content );
+		}
+		add_filter( 'wp_get_attachment_url', [ $this, 'wp_get_attachment_url' ], 10, 2 );
+
+		return $content;
+	}
+
+	/**
 	 * Filters 'img' elements in post content to add hotlinked images.
 	 *
 	 * @see wp_image_add_srcset_and_sizes()
@@ -198,35 +257,14 @@ class Hotlink {
 	 * @return string Converted content with hotlinked images.
 	 */
 	public function hotlink_images_in_content( $content ) {
-		if ( ! preg_match_all( '/<img [^>]+>/', $content, $matches ) ) {
-			return $content;
+		$attachments = $this->get_attachments_from_content( $content );
+
+		if ( count( $attachments ) > 1 ) {
+			$this->prime_post_caches( array_keys( $attachments ) );
 		}
 
-		$selected_images = [];
-		$attachment_ids  = [];
-
-		foreach ( $matches[0] as $image ) {
-			if ( preg_match( '/wp-image-([0-9]+)/i', $image, $class_id ) ) {
-				$attachment_id = absint( $class_id[1] );
-
-				if ( $attachment_id ) {
-					/*
-					 * If exactly the same image tag is used more than once, overwrite it.
-					 * All identical tags will be replaced later with 'str_replace()'.
-					 */
-					$selected_images[ $image ] = $attachment_id;
-					// Overwrite the ID when the same image is included more than once.
-					$attachment_ids[ $attachment_id ] = true;
-				}
-			}
-		}
-
-		if ( count( $attachment_ids ) > 1 ) {
-			$this->prime_post_caches( array_keys( $attachment_ids ) );
-		}
-
-		foreach ( $selected_images as $image => $attachment_id ) {
-			$content = str_replace( $image, $this->replace_image( $image, $attachment_id ), $content );
+		foreach ( $attachments as $attachment_id => $img_data ) {
+			$content = str_replace( $img_data['tag'], $this->replace_image( $img_data['tag'], $img_data['url'], $attachment_id ), $content );
 		}
 
 		return $content;
@@ -237,39 +275,33 @@ class Hotlink {
 	 *
 	 * @see wp_image_add_srcset_and_sizes()
 	 *
-	 * @param string $image         An HTML 'img' element to be filtered.
+	 * @param string $img_tag An HTML 'img' element to be filtered.
+	 * @param string $img_src Image URL.
 	 * @param int    $attachment_id Image attachment ID.
 	 *
 	 * @return string Converted 'img' element with 'srcset' and 'sizes' attributes added.
 	 */
-	public function replace_image( $image, $attachment_id ) {
+	public function replace_image( $img_tag, $img_src, $attachment_id ) {
 		$original_url = $this->get_original_url( $attachment_id );
 		if ( ! $original_url ) {
-			return $image;
-		}
-
-		$image_src = preg_match( '/src="([^"]+)"/', $image, $match_src ) ? $match_src[1] : '';
-
-		// Return early if we couldn't get the image source.
-		if ( ! $image_src ) {
-			return $image;
+			return $img_tag;
 		}
 
 		$image_meta = wp_get_attachment_metadata( $attachment_id );
 		// Bail early if an image has been inserted and later edited.
-		if ( $image_meta && preg_match( '/-e[0-9]{13}/', $image_meta['file'], $img_edit_hash ) && false === strpos( wp_basename( $image_src ), $img_edit_hash[0] ) ) {
-			return $image;
+		if ( $image_meta && preg_match( '/-e[0-9]{13}/', $image_meta['file'], $img_edit_hash ) && false === strpos( wp_basename( $img_src ), $img_edit_hash[0] ) ) {
+			return $img_tag;
 		}
 
-		$width  = preg_match( '/ width="([0-9]+)"/', $image, $match_width ) ? (int) $match_width[1] : 0;
-		$height = preg_match( '/ height="([0-9]+)"/', $image, $match_height ) ? (int) $match_height[1] : 0;
+		$width  = preg_match( '/ width="([0-9]+)"/', $img_tag, $match_width ) ? (int) $match_width[1] : 0;
+		$height = preg_match( '/ height="([0-9]+)"/', $img_tag, $match_height ) ? (int) $match_height[1] : 0;
 
 		if ( ! $width || ! $height ) {
 			/*
 			 * If attempts to parse the size value failed, attempt to use the image meta data to match
 			 * the image file name from 'src' against the available sizes for an attachment.
 			 */
-			list( $image_src_without_params ) = explode( '?', $image_src );
+			list( $image_src_without_params ) = explode( '?', $img_src );
 			$image_filename                   = wp_basename( $image_src_without_params );
 
 			if ( wp_basename( $image_meta['file'] ) === $image_filename ) {
@@ -287,11 +319,11 @@ class Hotlink {
 		}
 
 		if ( ! $width || ! $height ) {
-			return $image;
+			return $img_tag;
 		}
 
 		$new_src = $this->plugin->get_original_url_with_size( $original_url, $width, $height );
-		return str_replace( $image_src, $new_src, $image );
+		return str_replace( $img_src, $new_src, $img_tag );
 	}
 
 
