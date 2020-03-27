@@ -187,14 +187,14 @@ class Hotlink {
 	}
 
 	/**
-	 * Retrieve all Unsplash image tags from content.
+	 * Retrieve all image tags from content.
 	 *
 	 * @param string $content Content.
 	 * @return array Array consisting of the image tag and src URL, keyed by the attachment ID.
 	 */
 	public function get_attachments_from_content( $content ) {
-		// Get all <img> tags with a 'src' starting with 'https://images.unsplash.com'.
-		if ( ! preg_match_all( '#<img.+?src="(?P<url>https:\/\/images\.unsplash.com.+?)".+?\/>#', wp_unslash( $content ), $matches ) ) {
+		// Get all <img> tags with a 'src' attribute.
+		if ( ! preg_match_all( '#<img.+?src="(?P<url>.+?)".+?/>#', wp_unslash( $content ), $matches ) ) {
 			return [];
 		}
 
@@ -236,12 +236,37 @@ class Hotlink {
 		}
 
 		remove_filter( 'wp_get_attachment_url', [ $this, 'wp_get_attachment_url' ], 10 );
+		remove_filter( 'image_downsize', [ $this, 'image_downsize' ], 10 );
 		foreach ( $attachments as $attachment_id => $img_data ) {
-			$wordpress_url = wp_get_attachment_url( $attachment_id );
-			$content       = str_replace( $img_data['url'], $wordpress_url, $content );
+			$original_url = $this->get_original_url( $attachment_id );
+			if ( ! $original_url ) {
+				continue;
+			}
+			if ( ! strpos( $img_data['url'], 'images.unsplash.com' ) ) {
+				continue;
+			}
+			list( $width, $height ) = $this->get_image_size_from_url( $img_data['url'] );
+			if ( ! $width || ! $height ) {
+				list( $width, $height ) = $this->get_image_size( $img_data['tag'], $img_data['url'], $attachment_id );
+			}
+			$wordpress_url = false;
+			if ( $width && $height ) {
+				$wordpress_src = wp_get_attachment_image_src( $attachment_id, [ $width, $height ] );
+				if ( is_array( $wordpress_src ) ) {
+					$wordpress_url = array_shift( $wordpress_src );
+				}
+			}
+
+			if ( ! $wordpress_url ) {
+				$wordpress_url = wp_get_attachment_url( $attachment_id );
+			}
+
+			if ( $wordpress_url ) {
+				$content = str_replace( $img_data['url'], $wordpress_url, $content );
+			}
 		}
 		add_filter( 'wp_get_attachment_url', [ $this, 'wp_get_attachment_url' ], 10, 2 );
-
+		add_filter( 'image_downsize', [ $this, 'image_downsize' ], 10, 3 );
 		return $content;
 	}
 
@@ -287,10 +312,30 @@ class Hotlink {
 			return $img_tag;
 		}
 
+		list( $width, $height ) = $this->get_image_size( $img_tag, $img_src, $attachment_id );
+
+		if ( ! $width || ! $height ) {
+			return $img_tag;
+		}
+
+		$new_src = $this->plugin->get_original_url_with_size( $original_url, $width, $height );
+		return str_replace( $img_src, $new_src, $img_tag );
+	}
+
+	/**
+	 * Get image size.
+	 *
+	 * @param string $img_tag An HTML 'img' element to be filtered.
+	 * @param string $img_src Image URL.
+	 * @param int    $attachment_id Image attachment ID.
+	 *
+	 * @return array Array with width and height.
+	 */
+	public function get_image_size( $img_tag, $img_src, $attachment_id ) {
 		$image_meta = wp_get_attachment_metadata( $attachment_id );
 		// Bail early if an image has been inserted and later edited.
 		if ( $image_meta && preg_match( '/-e[0-9]{13}/', $image_meta['file'], $img_edit_hash ) && false === strpos( wp_basename( $img_src ), $img_edit_hash[0] ) ) {
-			return $img_tag;
+			return [];
 		}
 
 		$width  = preg_match( '/ width="([0-9]+)"/', $img_tag, $match_width ) ? (int) $match_width[1] : 0;
@@ -318,14 +363,31 @@ class Hotlink {
 			}
 		}
 
-		if ( ! $width || ! $height ) {
-			return $img_tag;
-		}
-
-		$new_src = $this->plugin->get_original_url_with_size( $original_url, $width, $height );
-		return str_replace( $img_src, $new_src, $img_tag );
+		return [ $width, $height ];
 	}
 
+	/**
+	 * Get height and width from URL.
+	 *
+	 * @param string $url URL Current URL of image.
+	 * @return array Array with width and height.
+	 */
+	public function get_image_size_from_url( $url ) {
+		$width  = 0;
+		$height = 0;
+		$url    = str_replace( '&amp;', '&', $url );
+		$query  = wp_parse_url( $url, PHP_URL_QUERY );
+		if ( $query ) {
+			parse_str( $query, $output );
+
+			if ( isset( $output['w'], $output['h'] ) ) {
+				$width  = $output['w'];
+				$height = $output['h'];
+			}
+		}
+
+		return [ $width, $height ];
+	}
 
 	/**
 	 * Helper to get original url from post meta.
