@@ -283,7 +283,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 			];
 		}
 
-		$photo = get_plugin_instance()->rest_controller->set_unique_media_id( $photo, 0, 1, 30 );
+		$photo  = get_plugin_instance()->rest_controller->set_unique_media_id( $photo, 0, 1, 30 );
 		$actual = get_plugin_instance()->rest_controller->prepare_item_for_response( $photo, $request );
 		unset( $actual['caption'] );
 		$this->assertEquals( $expected, $actual );
