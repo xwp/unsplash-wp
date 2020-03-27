@@ -238,11 +238,11 @@ class Hotlink {
 		remove_filter( 'wp_get_attachment_url', [ $this, 'wp_get_attachment_url' ], 10 );
 		remove_filter( 'image_downsize', [ $this, 'image_downsize' ], 10 );
 		foreach ( $attachments as $attachment_id => $img_data ) {
-			$original_url = $this->get_original_url( $attachment_id );
-			if ( ! $original_url ) {
+			if ( ! strpos( $img_data['url'], 'images.unsplash.com' ) ) {
 				continue;
 			}
-			if ( ! strpos( $img_data['url'], 'images.unsplash.com' ) ) {
+			$original_url = $this->get_original_url( $attachment_id );
+			if ( ! $original_url ) {
 				continue;
 			}
 			list( $width, $height ) = $this->get_image_size_from_url( $img_data['url'] );
@@ -373,20 +373,24 @@ class Hotlink {
 	 * @return array Array with width and height.
 	 */
 	public function get_image_size_from_url( $url ) {
-		$width  = 0;
-		$height = 0;
-		$url    = str_replace( '&amp;', '&', $url );
-		$query  = wp_parse_url( $url, PHP_URL_QUERY );
-		if ( $query ) {
-			parse_str( $query, $output );
+		$dimensions = array_fill_keys( [ 'w', 'h' ], 0 );
 
-			if ( isset( $output['w'], $output['h'] ) ) {
-				$width  = $output['w'];
-				$height = $output['h'];
+		$url   = str_replace( '&amp;', '&', $url );
+		$query = wp_parse_url( $url, PHP_URL_QUERY );
+
+		if ( $query ) {
+			parse_str( $query, $args );
+
+			if ( isset( $args['w'] ) ) {
+				$dimensions['w'] = (int) $args['w'];
+			}
+
+			if ( isset( $args['h'] ) ) {
+				$dimensions['h'] = (int) $args['h'];
 			}
 		}
 
-		return [ $width, $height ];
+		return $dimensions;
 	}
 
 	/**
