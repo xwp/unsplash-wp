@@ -109,6 +109,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	 *
 	 * @covers ::hotlink_images_in_content()
 	 * @covers ::replace_image()
+	 * @covers ::get_image_size()
 	 */
 	public function test_the_content() {
 		$second_id  = $this->factory->attachment->create_object(
