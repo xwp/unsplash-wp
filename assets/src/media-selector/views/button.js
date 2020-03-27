@@ -37,10 +37,8 @@ const Button = wp.media.view.Button.extend( {
 					this.options.click.apply( this, arguments );
 				}
 			} )
-			.catch( error => {
+			.catch( () => {
 				// TODO: let user know import failed
-				// eslint-disable-next-line no-console
-				console.error( error );
 				this.$el.attr( 'disabled', false ); // Enable button.
 				spinner.hide();
 			} );
