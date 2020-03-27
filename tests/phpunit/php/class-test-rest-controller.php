@@ -204,7 +204,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		$request->set_header( 'X-Requested-With', 'XMLHttpRequest' );
 
 		$expected = [
-			'id'            => 'rO8TdlRrOo0',
+			'id'            => 'unsplash-0',
 			'title'         => '',
 			'filename'      => 'ro8tdlrroo0.jpeg',
 			'url'           => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
@@ -264,7 +264,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 					'orientation' => 0,
 				],
 			],
-			'unsplashId'    => 'unsplash-0',
+			'unsplashId'    => 'rO8TdlRrOo0',
 		];
 
 		if ( version_compare( '5.2', get_bloginfo( 'version' ), '<' ) ) {
@@ -283,6 +283,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 			];
 		}
 
+		$photo = get_plugin_instance()->rest_controller->set_unique_media_id( $photo, 0, 1, 30 );
 		$actual = get_plugin_instance()->rest_controller->prepare_item_for_response( $photo, $request );
 		unset( $actual['caption'] );
 		$this->assertEquals( $expected, $actual );
