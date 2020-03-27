@@ -50,7 +50,7 @@ class Image {
 	 * Process image and format data in the correct format.
 	 */
 	public function process_fields() {
-		$this->process_data['original_id']       = strtolower( $this->get_image_field( 'id' ) );
+		$this->process_data['original_id']       = strtolower( $this->get_image_field( 'unsplash_id', $this->get_image_field( 'id' ) ) );
 		$this->process_data['description']       = $this->get_image_field( 'description', $this->get_image_field( 'alt_description' ) );
 		$this->process_data['alt']               = $this->get_image_field( 'alt_description', $this->get_image_field( 'description' ) );
 		$this->process_data['original_url']      = $this->get_image_url( 'raw' );
