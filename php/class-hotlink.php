@@ -187,14 +187,14 @@ class Hotlink {
 	}
 
 	/**
-	 * Retrieve all Unsplash image tags from content.
+	 * Retrieve all image tags from content.
 	 *
 	 * @param string $content Content.
 	 * @return array Array consisting of the image tag and src URL, keyed by the attachment ID.
 	 */
 	public function get_attachments_from_content( $content ) {
-		// Get all <img> tags with a 'src' starting with 'https://images.unsplash.com'.
-		if ( ! preg_match_all( '#<img.+?src="(?P<url>.+?)".+?\/>#', wp_unslash( $content ), $matches ) ) {
+		// Get all <img> tags with a 'src' attribute.
+		if ( ! preg_match_all( '#<img.+?src="(?P<url>.+?)".+?/>#', wp_unslash( $content ), $matches ) ) {
 			return [];
 		}
 
@@ -335,7 +335,7 @@ class Hotlink {
 		$image_meta = wp_get_attachment_metadata( $attachment_id );
 		// Bail early if an image has been inserted and later edited.
 		if ( $image_meta && preg_match( '/-e[0-9]{13}/', $image_meta['file'], $img_edit_hash ) && false === strpos( wp_basename( $img_src ), $img_edit_hash[0] ) ) {
-			return $img_tag;
+			return [];
 		}
 
 		$width  = preg_match( '/ width="([0-9]+)"/', $img_tag, $match_width ) ? (int) $match_width[1] : 0;
