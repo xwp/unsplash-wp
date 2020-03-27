@@ -69,7 +69,6 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 
 			// The single `Attachment` view to be used in the `Attachments` view.
 			AttachmentView: this.options.AttachmentView,
-			refreshThreshold: 5,
 		} );
 
 		// Add keydown listener to the instance of the Attachments view
