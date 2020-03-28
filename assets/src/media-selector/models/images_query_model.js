@@ -6,6 +6,7 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import ImagesCollection from '../collections/images_collection';
+import getConfig from '../helpers/getConfig';
 
 const ImagesQueryModel = wp.media.model.Query.extend(
 	{
@@ -21,7 +22,7 @@ const ImagesQueryModel = wp.media.model.Query.extend(
 		sync( method, model, options = {} ) {
 			// Overload the read method so Image.fetch() functions correctly.
 			if ( 'read' === method ) {
-				const { route } = window.unsplash;
+				const route = getConfig( 'route' );
 				// Clone the args so manipulation is non-destructive.
 				const args = _.clone( this.args );
 
@@ -40,6 +41,7 @@ const ImagesQueryModel = wp.media.model.Query.extend(
 					per_page: args.posts_per_page,
 				};
 
+				// TODO: Find out how errors are displayed originally when this request fails, and apply it here.
 				return wp.apiRequest( options );
 			}
 

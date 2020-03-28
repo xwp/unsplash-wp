@@ -1,14 +1,14 @@
 /**
  * Internal dependencies
  */
-import { withUnsplashTab } from './views/helpers';
 import './style.css';
+import withUnsplashTab from './helpers/withUnsplashTab';
 
 // Override media frames in the respective editors to add the Unsplash tab.
 
 if ( wp.media && wp.media.view && wp.media.view.MediaFrame ) {
 	/**
-	 * The Classic Editor makes use of the 'Post' media frame (parent of the 'Select' media frame), which contains multiple
+	 * The Classic Editor makes use of the 'Post' media frame (child of the 'Select' media frame), which contains multiple
 	 * media libraries (such as Gallery and Video Playlist).
 	 */
 	if ( wp.media.view.MediaFrame.Post ) {

@@ -1,4 +1,5 @@
 import ImageViews from './image_views';
+import getConfig from '../helpers/getConfig';
 
 const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 	className: 'unsplash-browser attachments-browser',
@@ -13,7 +14,7 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 	},
 
 	createToolbar() {
-		const { toolbar } = window.unsplash;
+		const toolbar = getConfig( 'toolbar' );
 
 		this.toolbar = new wp.media.view.Toolbar( {
 			controller: this.controller,
@@ -46,7 +47,7 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 			} ).render()
 		);
 
-		// TODO: replace with better spinner.
+		// TODO: replace with better loading indicator.
 		this.toolbar.set(
 			'spinner',
 			new wp.media.view.Spinner( {
@@ -55,7 +56,7 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 		);
 	},
 	createAttachments() {
-		const { noResults } = window.unsplash;
+		const noResults = getConfig( 'noResults' );
 
 		this.attachments = new ImageViews( {
 			controller: this.controller,
@@ -95,6 +96,7 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 
 		this.views.add( this.attachmentsNoResults );
 	},
+
 	updateContent() {
 		const view = this;
 		const noItemsView = view.attachmentsNoResults;
