@@ -117,22 +117,25 @@ class Test_Hotlink extends \WP_UnitTestCase {
 			'img_tag_with_src'          => [
 				'<img class="wp-image-1" src="bar.jpg" />',
 				[
-					1 => [
+					[
 						'tag' => '<img class="wp-image-1" src="bar.jpg" />',
 						'url' => 'bar.jpg',
+						'id'  => 1,
 					],
 				],
 			],
 			'multiple_img_tag_with_src' => [
 				'<img class="wp-image-1" src="bar.jpg" /><img class="wp-image-2" src="baz.jpg" />',
 				[
-					1 => [
+					[
 						'tag' => '<img class="wp-image-1" src="bar.jpg" />',
 						'url' => 'bar.jpg',
+						'id'  => 1,
 					],
-					2 => [
+				  [
 						'tag' => '<img class="wp-image-2" src="baz.jpg" />',
 						'url' => 'baz.jpg',
+						'id'  => 2,
 					],
 				],
 			],

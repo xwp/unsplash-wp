@@ -208,14 +208,15 @@ class Hotlink {
 					 * If exactly the same image tag is used more than once, overwrite it.
 					 * All identical tags will be replaced later with 'str_replace()'.
 					 */
-					$selected_images[ $attachment_id ] = [
+					$selected_images[] = [
 						'tag' => $image_tag,
 						'url' => $matches['url'][ $key ],
+						'id'  => $attachment_id,
 					];
 				}
 			}
 		}
-
+		
 		return $selected_images;
 	}
 
@@ -231,34 +232,34 @@ class Hotlink {
 		$attachments = $this->get_attachments_from_content( $content );
 
 		if ( count( $attachments ) > 1 ) {
-			$this->prime_post_caches( array_keys( $attachments ) );
+			$this->prime_post_caches( wp_list_pluck( $attachments, 'id' ) );
 		}
 
 		remove_filter( 'wp_get_attachment_url', [ $this, 'wp_get_attachment_url' ], 10 );
 		remove_filter( 'image_downsize', [ $this, 'image_downsize' ], 10 );
-		foreach ( $attachments as $attachment_id => $img_data ) {
+		foreach ( $attachments as $img_data ) {
 			if ( ! strpos( $img_data['url'], 'images.unsplash.com' ) ) {
 				continue;
 			}
 
-			$original_url = $this->get_original_url( $attachment_id );
+			$original_url = $this->get_original_url( $img_data['id'] );
 			if ( ! $original_url ) {
 				continue;
 			}
 			list( $width, $height ) = $this->get_image_size_from_url( $img_data['url'] );
 			if ( ! $width || ! $height ) {
-				list( $width, $height ) = $this->get_image_size( $img_data['tag'], $img_data['url'], $attachment_id );
+				list( $width, $height ) = $this->get_image_size( $img_data['tag'], $img_data['url'], $img_data['id'] );
 			}
 			$wordpress_url = false;
 			if ( $width && $height ) {
-				$wordpress_src = wp_get_attachment_image_src( $attachment_id, [ $width, $height ] );
+				$wordpress_src = wp_get_attachment_image_src( $img_data['id'], [ $width, $height ] );
 				if ( is_array( $wordpress_src ) ) {
 					$wordpress_url = array_shift( $wordpress_src );
 				}
 			}
 
 			if ( ! $wordpress_url ) {
-				$wordpress_url = wp_get_attachment_url( $attachment_id );
+				$wordpress_url = wp_get_attachment_url( $img_data['id'] );
 			}
 
 			if ( $wordpress_url ) {
@@ -285,11 +286,11 @@ class Hotlink {
 		$attachments = $this->get_attachments_from_content( $content );
 
 		if ( count( $attachments ) > 1 ) {
-			$this->prime_post_caches( array_keys( $attachments ) );
+			$this->prime_post_caches( wp_list_pluck( $attachments, 'id' ) );
 		}
 
-		foreach ( $attachments as $attachment_id => $img_data ) {
-			$content = str_replace( $img_data['tag'], $this->replace_image( $img_data['tag'], $img_data['url'], $attachment_id ), $content );
+		foreach ( $attachments as $img_data ) {
+			$content = str_replace( $img_data['tag'], $this->replace_image( $img_data['tag'], $img_data['url'], $img_data['id'] ), $content );
 		}
 
 		return $content;
