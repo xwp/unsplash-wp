@@ -1,15 +1,21 @@
-/**
- * Internal dependencies
- */
-import ImagesBrowser from './images_browser';
 import UnsplashState from '../store/unsplash_state';
-import ImageView from './image_view';
+import ImagesBrowser from '../views/images_browser';
+import ImageView from '../views/image_view';
+import Toolbar from '../views/toolbar';
+import ToolbarSelect from '../views/toolbar_select';
+import getConfig from './getConfig';
 
-export const withUnsplashTab = View => {
+export default View => {
 	return View.extend( {
 		createStates() {
 			View.prototype.createStates.apply( this, arguments );
-			this.states.add( [ new UnsplashState() ] );
+			this.createUnsplashStates();
+		},
+		createUnsplashStates() {
+			if ( ! this.unsplashStateSetup ) {
+				this.states.add( [ new UnsplashState() ] );
+				this.unsplashStateSetup = 1;
+			}
 		},
 		browseRouter( routerView ) {
 			View.prototype.browseRouter.apply( this, arguments );
@@ -41,7 +47,7 @@ export const withUnsplashTab = View => {
 			// Add the Unsplash tab to the router.
 			routerView.set( {
 				unsplash: {
-					text: window.unsplash.tabTitle,
+					text: getConfig( 'tabTitle' ),
 					priority: 60,
 				},
 			} );
@@ -58,6 +64,7 @@ export const withUnsplashTab = View => {
 		 * @param {wp.media.controller.Region} contentRegion
 		 */
 		unsplashContent( contentRegion ) {
+			this.createUnsplashStates();
 			const state = this.state( 'unsplash' );
 
 			// TODO - Load selection from the correct state.
@@ -82,6 +89,53 @@ export const withUnsplashTab = View => {
 				suggestedWidth: state.get( 'suggestedWidth' ),
 				suggestedHeight: state.get( 'suggestedHeight' ),
 			} );
+		},
+
+		/**
+		 * Override bottom toolbar to allow for a custom button to be created. This allows us to add a callback to
+		 * import Unsplash images when they are being inserted.
+		 *
+		 * @see wp.media.view.Toolbar
+		 *
+		 * @param {Object} toolbar
+		 * @this wp.media.controller.Region
+		 */
+		createToolbar( toolbar ) {
+			toolbar.view = new Toolbar( {
+				controller: this,
+			} );
+
+			toolbar.view.set(
+				'button-spinner',
+				new wp.media.view.Spinner( {
+					// TODO: Prevent the delay when showing the spinner.
+					priority: 60,
+				} )
+			);
+		},
+
+		/**
+		 * Toolbars
+		 *
+		 * @see wp.media.view.Toolbar.Select
+		 *
+		 * @param {Object} toolbar
+		 * @param {Object} [options={}]
+		 * @this wp.media.controller.Region
+		 */
+		createSelectToolbar( toolbar, options ) {
+			options = options || this.options.button || {};
+			options.controller = this;
+
+			toolbar.view = new ToolbarSelect( options );
+
+			toolbar.view.set(
+				'button-spinner',
+				new wp.media.view.Spinner( {
+					// TODO: Prevent the delay when showing the spinner.
+					priority: 60,
+				} )
+			);
 		},
 	} );
 };

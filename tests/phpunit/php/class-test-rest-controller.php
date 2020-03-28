@@ -126,6 +126,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		foreach ( $data as $photo_object ) {
 			$expected_keys = [
 				'id',
+				'unsplashId',
 				'title',
 				'filename',
 				'url',
@@ -203,7 +204,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		$request->set_header( 'X-Requested-With', 'XMLHttpRequest' );
 
 		$expected = [
-			'id'            => 'rO8TdlRrOo0',
+			'id'            => 'unsplash-0',
 			'title'         => '',
 			'filename'      => 'ro8tdlrroo0.jpeg',
 			'url'           => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
@@ -233,47 +234,56 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 			'meta'          => false,
 			'sizes'         => [
 				'full'         => [
-					'url'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
-					'height' => '2785',
-					'width'  => '3998',
+					'url'         => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
+					'height'      => 2785,
+					'width'       => 3998,
+					'orientation' => 0,
 				],
 				'thumbnail'    => [
-					'url'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=150&h=150&fm=jpg&q=85&fit=crop',
-					'height' => '150',
-					'width'  => '150',
+					'url'         => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=150&h=104&fm=jpg&q=85&fit=crop',
+					'height'      => 104,
+					'width'       => 150,
+					'orientation' => 0,
 				],
 				'medium'       => [
-					'url'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
-					'height' => '279',
-					'width'  => '400',
+					'url'         => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=400&h=278&fm=jpg&q=85&fit=crop',
+					'height'      => 278,
+					'width'       => 400,
+					'orientation' => 0,
 				],
 				'medium_large' => [
-					'url'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=768&h=0&fm=jpg&q=85&fit=crop',
-					'height' => '0',
-					'width'  => '768',
+					'url'         => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=768&h=534&fm=jpg&q=85&fit=crop',
+					'height'      => 534,
+					'width'       => 768,
+					'orientation' => 0,
 				],
 				'large'        => [
-					'url'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=1024&h=1024&fm=jpg&q=85&fit=crop',
-					'height' => '1024',
-					'width'  => '1024',
+					'url'         => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=1024&h=713&fm=jpg&q=85&fit=crop',
+					'height'      => 713,
+					'width'       => 1024,
+					'orientation' => 0,
 				],
 			],
+			'unsplashId'    => 'rO8TdlRrOo0',
 		];
 
 		if ( version_compare( '5.2', get_bloginfo( 'version' ), '<' ) ) {
 			$expected['sizes']['1536x1536'] = [
-				'url'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=1536&h=1536&fm=jpg&q=85&fit=crop',
-				'height' => 1536,
-				'width'  => 1536,
+				'url'         => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=1536&h=1069&fm=jpg&q=85&fit=crop',
+				'height'      => 1069,
+				'width'       => 1536,
+				'orientation' => 0,
 			];
 
 			$expected['sizes']['2048x2048'] = [
-				'url'    => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=2048&h=2048&fm=jpg&q=85&fit=crop',
-				'height' => 2048,
-				'width'  => 2048,
+				'url'         => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=2048&h=1426&fm=jpg&q=85&fit=crop',
+				'height'      => 1426,
+				'width'       => 2048,
+				'orientation' => 0,
 			];
 		}
 
+		$photo  = get_plugin_instance()->rest_controller->set_unique_media_id( $photo, 0, 1, 30 );
 		$actual = get_plugin_instance()->rest_controller->prepare_item_for_response( $photo, $request );
 		unset( $actual['caption'] );
 		$this->assertEquals( $expected, $actual );
@@ -388,6 +398,86 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	}
 
 	/**
+	 * Test post_process() auth.
+	 *
+	 * @covers \Unsplash\Rest_Controller::post_process()
+	 * @covers \Unsplash\Rest_Controller::create_item_permissions_check()
+	 */
+	public function test_post_process() {
+		add_filter( 'upload_dir', [ $this, 'upload_dir_patch' ] );
+		$orig_file = DIR_TESTDATA . '/images/test-image.jpg';
+		$test_file = get_temp_dir() . 'test-image.jpg';
+		copy( $orig_file, $test_file );
+		$second_id = $this->factory->attachment->create_object(
+			$test_file,
+			0,
+			[
+				'post_mime_type' => 'image/jpeg',
+				'post_excerpt'   => 'A sample caption 2',
+			]
+		);
+		update_post_meta(
+			$second_id,
+			'unsplash_attachment_metadata',
+			[
+				'width'      => 2,
+				'foo'        => 'bar',
+				'image_meta' => [ 'aperture' => 1 ],
+				'sizes'      => null,
+			]
+		);
+		wp_set_current_user( self::$admin_id );
+		$request  = new WP_REST_Request( 'GET', $this->get_route( '/post-process/' . $second_id ) );
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertEquals( 200, $response->get_status() );
+		$this->assertEquals( $response->get_data(), [ 'processed' => true ] );
+		$meta = wp_get_attachment_metadata( $second_id );
+		$this->assertArrayHasKey( 'foo', $meta );
+		$this->assertArrayHasKey( 'sizes', $meta );
+		$this->assertArrayHasKey( 'width', $meta );
+		$this->assertSame( 50, $meta['width'] );
+		$this->assertSame( [ 'aperture' => 1 ], $meta['image_meta'] );
+		remove_filter( 'upload_dir', [ $this, 'upload_dir_patch' ] );
+	}
+
+	/**
+	 * Test validate_get_attachment().
+	 *
+	 * @covers \Unsplash\Rest_Controller::post_process()
+	 * @covers \Unsplash\Rest_Controller::validate_get_attachment()
+	 */
+	public function test_post_process_invalid() {
+		$test_page = self::factory()->post->create(
+			[
+				'post_type'    => 'page',
+				'post_title'   => 'About',
+				'post_status'  => 'publish',
+				'post_content' => 'hello there',
+			]
+		);
+
+		wp_set_current_user( self::$admin_id );
+		$request  = new WP_REST_Request( 'GET', $this->get_route( '/post-process/' . $test_page ) );
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertErrorResponse( 'rest_invalid_param', $response, 400 );
+	}
+
+	/**
+	 * Test validate_get_attachment().
+	 *
+	 * @covers \Unsplash\Rest_Controller::post_process()
+	 * @covers \Unsplash\Rest_Controller::validate_get_attachment()
+	 */
+	public function test_post_process_invalid_2() {
+		$test_page = wp_rand();
+
+		wp_set_current_user( self::$admin_id );
+		$request  = new WP_REST_Request( 'GET', $this->get_route( '/post-process/' . $test_page ) );
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertErrorResponse( 'rest_invalid_param', $response, 400 );
+	}
+
+	/**
 	 * Test get_item() auth.
 	 *
 	 * @covers \Unsplash\Rest_Controller::get_item()
@@ -422,6 +512,27 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	public function test_get_import_auth() {
 		wp_set_current_user( self::$subscriber_id );
 		$request  = new WP_REST_Request( 'GET', $this->get_route( '/import/uRuPYB0P8to' ) );
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertErrorResponse( 'rest_cannot_create', $response, 403 );
+	}
+
+	/**
+	 * Test post_process() auth.
+	 *
+	 * @covers \Unsplash\Rest_Controller::post_process()
+	 * @covers \Unsplash\Rest_Controller::create_item_permissions_check()
+	 */
+	public function test_post_process_auth() {
+		$second_id = $this->factory->attachment->create_object(
+			'/tmp/melon.jpg',
+			0,
+			[
+				'post_mime_type' => 'image/jpeg',
+				'post_excerpt'   => 'A sample caption 2',
+			]
+		);
+		wp_set_current_user( self::$subscriber_id );
+		$request  = new WP_REST_Request( 'GET', $this->get_route( '/post-process/' . $second_id ) );
 		$response = rest_get_server()->dispatch( $request );
 		$this->assertErrorResponse( 'rest_cannot_create', $response, 403 );
 	}
@@ -721,6 +832,23 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	}
 
 	/**
+	 * Test set_unique_media_id().
+	 *
+	 * @covers \Unsplash\Rest_Controller::set_unique_media_id()
+	 */
+	public function test_set_unique_media_id() {
+		$photo    = $this->get_photo_response();
+		$index    = 3;
+		$page     = 3;
+		$per_page = 10;
+
+		$rest_controller = new Rest_Controller( new Plugin() );
+		$actual          = $rest_controller->set_unique_media_id( $photo, $index, $page, $per_page );
+		$this->assertEquals( 'unsplash-23', $actual['id'] );
+		$this->assertEquals( 'rO8TdlRrOo0', $actual['unsplash_id'] );
+	}
+
+	/**
 	 * Generate a prefixed route path.
 	 *
 	 * @param string $path URL path.
@@ -738,6 +866,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	private function get_photo_response() {
 		return [
 			'id'                       => 'rO8TdlRrOo0',
+			'unsplash_id'              => 'unsplash-0',
 			'created_at'               => '2019-05-12T09:40:48-04:00',
 			'updated_at'               => '2020-03-07T00:04:08-05:00',
 			'promoted_at'              => null,

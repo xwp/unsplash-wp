@@ -1,3 +1,19 @@
+/**
+ * Spinner next to 'Insert to post' button
+ */
+.media-frame-toolbar .media-toolbar-primary .spinner {
+	display: none;
+}
+
+.media-frame-toolbar .media-toolbar-primary .spinner.is-active {
+	float: left;
+	margin-top: 20px;
+	display: block;
+}
+
+/**
+ * Masonry layout
+ */
 .unsplash-browser.attachments-browser .media-toolbar-primary {
 	float: none;
 	max-width: 100%;

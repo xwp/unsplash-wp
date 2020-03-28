@@ -9,6 +9,8 @@ namespace Unsplash;
 
 /**
  * Tests for Plugin class.
+ *
+ * @coversDefaultClass \Unsplash\Plugin
  */
 class Test_Plugin extends \WP_UnitTestCase {
 
@@ -74,9 +76,40 @@ class Test_Plugin extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Test for image_sizes()
+	 *
+	 * @see Plugin::image_sizes()
+	 */
+	public function test_no_image_sizes() {
+		$plugin = get_plugin_instance();
+		add_filter( 'intermediate_image_sizes', '__return_empty_array' );
+		$this->assertEqualSets( $plugin->image_sizes(), [] );
+		remove_filter( 'intermediate_image_sizes', '__return_empty_array' );
+	}
+
+	/**
+	 * Test for image_sizes()
+	 *
+	 * @see Plugin::image_sizes()
+	 */
+	public function test_image_sizes() {
+		$plugin   = get_plugin_instance();
+		$expected = [ 'large', 'medium', 'medium_large', 'thumbnail' ];
+
+		if ( version_compare( '5.2', get_bloginfo( 'version' ), '<' ) ) {
+			$expected[] = '1536x1536';
+			$expected[] = '2048x2048';
+		}
+
+		$this->assertEqualSets( array_keys( $plugin->image_sizes() ), $expected );
+	}
+
+	/**
 	 * Test for wp_prepare_attachment_for_js() method.
 	 *
 	 * @see Plugin::wp_prepare_attachment_for_js()
+	 * @covers ::wp_prepare_attachment_for_js
+	 * @covers ::add_image_sizes
 	 */
 	public function test_wp_prepare_attachment_for_js() {
 		$plugin = get_plugin_instance();
@@ -100,8 +133,8 @@ class Test_Plugin extends \WP_UnitTestCase {
 		$this->assertEquals( $output['sizes']['full']['height'], $image['height'] );
 		$this->assertEquals( $output['sizes']['full']['width'], $image['width'] );
 		$this->assertEquals( $output['sizes']['full']['url'], $image['urls']['raw'] );
-		$this->assertEquals( $output['sizes']['thumbnail']['url'], 'http://www.example.com/test.jpg?w=150&h=150&fm=jpg&q=85&fit=crop' );
-		$this->assertEquals( $output['sizes']['medium_large']['url'], 'http://www.example.com/test.jpg?w=768&h=0&fm=jpg&q=85&fit=crop' );
+		$this->assertEquals( $output['sizes']['thumbnail']['url'], 'http://www.example.com/test.jpg?w=150&h=40&fm=jpg&q=85&fit=crop' );
+		$this->assertEquals( $output['sizes']['medium_large']['url'], 'http://www.example.com/test.jpg?w=768&h=207&fm=jpg&q=85&fit=crop' );
 	}
 
 	/**

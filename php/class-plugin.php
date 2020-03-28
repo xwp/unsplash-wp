@@ -41,6 +41,17 @@ class Plugin extends Plugin_Base {
 	const POST_TYPE = 'attachment';
 
 	/**
+	 * Default image args.
+	 *
+	 * @var array
+	 */
+	public $default_img_attrs = [
+		'fm'  => 'jpg',
+		'q'   => '85',
+		'fit' => 'crop',
+	];
+
+	/**
 	 * Initiate the plugin resources.
 	 *
 	 * @action plugins_loaded
@@ -129,16 +140,11 @@ class Plugin extends Plugin_Base {
 	 * @return array
 	 */
 	public function wp_prepare_attachment_for_js( array $photo ) {
-		$attrs = [
-			'fm'  => 'jpg',
-			'q'   => '85',
-			'fit' => 'crop',
-		];
-
 		$image = new Image( $photo );
 
 		$response = [
 			'id'            => isset( $photo['id'] ) ? $photo['id'] : null,
+			'unsplashId'    => isset( $photo['unsplash_id'] ) ? $photo['unsplash_id'] : null,
 			'title'         => '',
 			'filename'      => $image->get_field( 'file' ),
 			'url'           => $image->get_field( 'original_url' ),
@@ -158,7 +164,7 @@ class Plugin extends Plugin_Base {
 			'mime'          => $image->get_field( 'mime_type' ),
 			'type'          => 'image',
 			'subtype'       => $image->get_field( 'ext' ),
-			'icon'          => ! empty( $image->get_image_url( 'thumb' ) ) ? $this->get_original_url_with_size( $image->get_image_url( 'thumb' ), 150, 150, $attrs ) : null,
+			'icon'          => ! empty( $image->get_image_url( 'thumb' ) ) ? $this->get_original_url_with_size( $image->get_image_url( 'thumb' ), 150, 150, $this->default_img_attrs ) : null,
 			'dateFormatted' => mysql2date( __( 'F j, Y', 'unsplash' ), $image->get_field( 'created_at' ) ),
 			'nonces'        => [
 				'update' => false,
@@ -168,19 +174,37 @@ class Plugin extends Plugin_Base {
 			'editLink'      => false,
 			'meta'          => false,
 		];
-		$width    = 400;
-		$height   = (int) ceil( $image->get_field( 'height' ) / ( $image->get_field( 'width' ) / $width ) );
-		$url      = ! empty( $image->get_image_url( 'small' ) ) ? $image->get_image_url( 'small' ) : $this->get_original_url_with_size( $image->get_field( 'original_url' ), $width, $height, $attrs );
-		$sizes    = [
+
+		$response['sizes'] = $this->add_image_sizes( $image->get_field( 'original_url' ), $image->get_field( 'width' ), $image->get_field( 'height' ) );
+
+		return $response;
+	}
+
+	/**
+	 * Generate image sizes for Admin ajax / REST api.
+	 *
+	 * @param String $url Image URL.
+	 * @param Int    $width Width of Image.
+	 * @param Int    $height Height of Image.
+	 *
+	 * @return array
+	 */
+	public function add_image_sizes( $url, $width, $height ) {
+		$width_medium  = 400;
+		$height_medium = (int) ( ( $height / ( $width / $width_medium ) ) );
+		$url_medium    = $this->get_original_url_with_size( $url, $width_medium, $height_medium, $this->default_img_attrs );
+		$sizes         = [
 			'full'   => [
-				'url'    => $image->get_field( 'original_url' ),
-				'height' => $image->get_field( 'height' ),
-				'width'  => $image->get_field( 'width' ),
+				'url'         => $url,
+				'height'      => $height,
+				'width'       => $width,
+				'orientation' => 0,
 			],
 			'medium' => [
-				'url'    => $url,
-				'height' => $height,
-				'width'  => $width,
+				'url'         => $url_medium,
+				'height'      => $height_medium,
+				'width'       => $width_medium,
+				'orientation' => 0,
 			],
 		];
 
@@ -188,16 +212,21 @@ class Plugin extends Plugin_Base {
 			if ( array_key_exists( $name, $sizes ) ) {
 				continue;
 			}
-			$url            = $this->get_original_url_with_size( $image->get_field( 'original_url' ), $size['width'], $size['height'], $attrs );
+			$_height = (int) ( ( $height / ( $width / $size['width'] ) ) );
+			if ( $size['height'] ) {
+				$_height = min( $_height, $size['height'] );
+			}
+			$_url = $this->get_original_url_with_size( $url, $size['width'], $_height, $this->default_img_attrs );
+
 			$sizes[ $name ] = [
-				'url'    => $url,
-				'height' => $size['height'],
-				'width'  => $size['width'],
+				'url'         => $_url,
+				'height'      => (int) $_height,
+				'width'       => (int) $size['width'],
+				'orientation' => 0,
 			];
 		}
-		$response['sizes'] = $sizes;
 
-		return $response;
+		return $sizes;
 	}
 
 	/**
