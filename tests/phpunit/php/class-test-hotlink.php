@@ -132,7 +132,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 						'url' => 'bar.jpg',
 						'id'  => 1,
 					],
-				  [
+					[
 						'tag' => '<img class="wp-image-2" src="baz.jpg" />',
 						'url' => 'baz.jpg',
 						'id'  => 2,
