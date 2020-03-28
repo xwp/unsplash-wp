@@ -180,10 +180,10 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		);
 
 		$post    = get_post( $test_page );
-		$content = apply_filters( 'content_save_pre', $post->post_content );
+		$content = $this->hotlink->replace_hotlinked_images_in_content( $post->post_content );
 		$this->assertNotContains( 'https://images.unsplash.com', $content );
-		$this->assertContains( 'http://example.org/content/uploads//tmp/canola.jpg', $content );
-		$this->assertContains( 'http://example.org/content/uploads/melon.jpg', $content );
+		$this->assertContains( 'http://example.org/wp-content/uploads//tmp/canola.jpg', $content );
+		$this->assertContains( 'http://example.org/wp-content/uploads/melon.jpg', $content );
 	}
 
 	/**
@@ -196,43 +196,43 @@ class Test_Hotlink extends \WP_UnitTestCase {
 			'empty_string'      => [
 				'',
 				[
-					'w' => 0,
-					'h' => 0,
+					0,
+					0,
 				],
 			],
 			'no_query'          => [
 				'http://example.org',
 				[
-					'w' => 0,
-					'h' => 0,
+					0,
+					0,
 				],
 			],
 			'no_width'          => [
 				'http://example.org/?h=100',
 				[
-					'w' => 0,
-					'h' => 100,
+					0,
+					100,
 				],
 			],
 			'no_height'         => [
 				'http://example.org/?w=100',
 				[
-					'w' => 100,
-					'h' => 0,
+					100,
+					0,
 				],
 			],
 			'width_and_height'  => [
 				'http://example.org/?w=100&h=200',
 				[
-					'w' => 100,
-					'h' => 200,
+					100,
+					200,
 				],
 			],
 			'escaped_ampersand' => [
 				'http://example.org/?w=100&amp;h=200&amp;foo=bar&buzz',
 				[
-					'w' => 100,
-					'h' => 200,
+					100,
+					200,
 				],
 			],
 		];
@@ -281,7 +281,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		);
 
 		$post    = get_post( $test_page );
-		$content = apply_filters( 'the_content', $post->post_content );
+		$content = $this->hotlink->hotlink_images_in_content( $post->post_content );
 		$this->assertContains( 'src="https://images.unsplash.com/test.jpg?w=300&h=300"', $content );
 		$this->assertContains( '/tmp/melon.jpg', $content );
 	}
@@ -430,7 +430,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$reponse = new \WP_REST_Response( $photo );
 		$result  = $this->hotlink->rest_prepare_attachment( $reponse, $image );
 		$data    = $result->get_data();
-		$this->assertEquals( $data['source_url'], 'https://images.unsplash.com/test.jpg' );
+		$this->assertEquals( $data['source_url'], 'http://example.org/wp-content/uploads//tmp/canola.jpg' );
 	}
 
 }

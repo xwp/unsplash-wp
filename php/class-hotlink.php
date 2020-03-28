@@ -36,6 +36,9 @@ class Hotlink {
 	 */
 	public function init() {
 		$this->plugin->add_doc_hooks( $this );
+		// Hook these filters this way to make them unhookable.
+		add_filter( 'wp_get_attachment_url', [ $this, 'wp_get_attachment_url' ], 10, 2 );
+		add_filter( 'image_downsize', [ $this, 'image_downsize' ], 10, 3 );
 	}
 
 	/**
@@ -43,8 +46,6 @@ class Hotlink {
 	 *
 	 * @param string $url Original URL.
 	 * @param int    $id Attachment ID.
-	 *
-	 * @filter wp_get_attachment_url, 10, 2
 	 *
 	 * @return mixed
 	 */
@@ -148,8 +149,6 @@ class Hotlink {
 	 * @param int          $id Attachment ID.
 	 * @param array|string $size Size.
 	 *
-	 * @filter image_downsize, 10, 3
-	 *
 	 * @return mixed
 	 */
 	public function image_downsize( $should_resize, $id, $size ) {
@@ -241,6 +240,7 @@ class Hotlink {
 			if ( ! strpos( $img_data['url'], 'images.unsplash.com' ) ) {
 				continue;
 			}
+
 			$original_url = $this->get_original_url( $attachment_id );
 			if ( ! $original_url ) {
 				continue;
@@ -373,24 +373,24 @@ class Hotlink {
 	 * @return array Array with width and height.
 	 */
 	public function get_image_size_from_url( $url ) {
-		$dimensions = array_fill_keys( [ 'w', 'h' ], 0 );
-
-		$url   = str_replace( '&amp;', '&', $url );
-		$query = wp_parse_url( $url, PHP_URL_QUERY );
+		$width  = 0;
+		$height = 0;
+		$url    = str_replace( '&amp;', '&', $url );
+		$query  = wp_parse_url( $url, PHP_URL_QUERY );
 
 		if ( $query ) {
 			parse_str( $query, $args );
 
 			if ( isset( $args['w'] ) ) {
-				$dimensions['w'] = (int) $args['w'];
+				$width = (int) $args['w'];
 			}
 
 			if ( isset( $args['h'] ) ) {
-				$dimensions['h'] = (int) $args['h'];
+				$height = (int) $args['h'];
 			}
 		}
 
-		return $dimensions;
+		return [ $width, $height ];
 	}
 
 	/**
