@@ -163,7 +163,7 @@ class Hotlink {
 
 	/**
 	 * Helper function to replace full image url.
-	 * 
+	 *
 	 * @param  array  $sizes Array of sizes.
 	 * @param  string $field Field to replace.
 	 * @param  string $url   URL to replace.
@@ -499,15 +499,17 @@ class Hotlink {
 	 *
 	 * @param string $block_content The block content about to be appended.
 	 * @param array  $block The full block, including name and attributes.
+	 *
+	 * @return string $block_content Filtered block content.
 	 */
 	public function render_block( $block_content, $block ) {
-		if ( 'core/cover' === $block['blockName'] && isset( $block['attrs'], $block['attrs']['id'] ) ) {
+		if ( 'core/cover' === $block['blockName'] && isset( $block['attrs']['id'] ) ) {
 
 			$original_url = $this->get_original_url( $block['attrs']['id'] );
-			if ( ! $original_url ) {
-				return $block_content;
+			if ( $original_url ) {
+				$block_content = str_replace( $block['attrs']['url'], $original_url, $block_content );
 			}
-			$block_content = str_replace( $block['attrs']['url'], $original_url, $block_content );
+
 		}
 
 		return $block_content;
