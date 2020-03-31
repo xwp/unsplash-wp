@@ -160,6 +160,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	 * Test replace_hotlinked_images_in_content()
 	 *
 	 * @covers ::replace_hotlinked_images_in_content()
+	 * @covers ::attachment_url()
 	 */
 	public function test_replace_hotlinked_images_in_content() {
 		$wp_id = $this->factory->attachment->create_object(
@@ -328,10 +329,10 @@ class Test_Hotlink extends \WP_UnitTestCase {
 
 		$post    = get_post( $test_page );
 		$content = apply_filters( 'the_content', $post->post_content );
-		$this->assertContains( 'http://www.example.com/test.jpg', $content );
+		$this->assertContains( 'https://images.unsplash.com/test.jpg', $content );
 	}
 
-  /**
+	/**
 	 * Test wp_prepare_attachment_for_js.
 	 *
 	 * @covers ::wp_prepare_attachment_for_js()
@@ -366,6 +367,8 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	 * Test wp_prepare_attachment_for_js.
 	 *
 	 * @covers ::wp_prepare_attachment_for_js()
+	 * @covers ::attachment_url()
+	 * @covers ::change_full_url()
 	 */
 	public function test_wp_prepare_attachment_for_js() {
 		$image    = get_post( self::$attachment_id );
@@ -377,6 +380,8 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$result   = $this->hotlink->wp_prepare_attachment_for_js( $photo, $image );
 		$plugin   = new Plugin();
 		$expected = $plugin->add_image_sizes( $photo['urls']['raw'], $photo['width'], $photo['height'] );
+		$url      = $this->hotlink->attachment_url( self::$attachment_id );
+		$expected = $this->hotlink->change_full_url( $expected, 'url', $url );
 		$this->assertEqualSets( $result['sizes'], $expected );
 	}
 
@@ -419,6 +424,8 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		 *
 		 * @covers ::rest_prepare_attachment()
 		 * @covers ::change_fields()
+		 * @covers ::attachment_url()
+		 * @covers ::change_full_url()
 		 */
 	public function test_rest_prepare_attachment_2() {
 		$image    = get_post( self::$attachment_id );
@@ -439,7 +446,10 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$plugin   = new Plugin();
 		$sizes    = $plugin->add_image_sizes( $photo['urls']['raw'], $photo['media_details']['width'], $photo['media_details']['height'] );
 		$expected = $this->hotlink->change_fields( $sizes, $photo['media_details']['file'] );
+		$url      = $this->hotlink->attachment_url( self::$attachment_id );
+		$expected = $this->hotlink->change_full_url( $expected, 'source_url', $url );
 		$data     = $result->get_data();
+
 		$this->assertEqualSets( $data['media_details']['sizes'], $expected );
 		$this->assertEqualSets( $data['missing_image_sizes'], [] );
 	}

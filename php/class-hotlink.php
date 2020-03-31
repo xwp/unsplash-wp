@@ -59,6 +59,19 @@ class Hotlink {
 	}
 
 	/**
+	 * Retrieve the unfiltered URL for an attachment.
+	 *
+	 * @param  int $attachment_id Attachment ID.
+	 * @return string|false Unfiltered Attachment URL, otherwise false.
+	 */
+	public function attachment_url( $attachment_id ) {
+		remove_filter( 'wp_get_attachment_url', [ $this, 'wp_get_attachment_url' ], 10 );
+		$url = wp_get_attachment_url( $attachment_id );
+		add_filter( 'wp_get_attachment_url', [ $this, 'wp_get_attachment_url' ], 10, 2 );
+		return $url;
+	}
+
+	/**
 	 * Add unsplash image sizes to admin ajax.
 	 *
 	 * @param array   $response Data for admin ajax.
@@ -77,7 +90,10 @@ class Hotlink {
 			return $response;
 		}
 		$response['sizes'] = $this->plugin->add_image_sizes( $original_url, $response['width'], $response['height'] );
-
+		// We always have the full sized image.
+		$url               = $this->attachment_url( $attachment->ID );
+		$response['url']   = $url;
+		$response['sizes'] = $this->change_full_url( $response['sizes'], 'url', $url );
 
 		return $response;
 	}
@@ -100,11 +116,16 @@ class Hotlink {
 		if ( ! $original_url ) {
 			return $wp_response;
 		}
+
+		$url = $this->attachment_url( $attachment->ID );
+
 		$response = $wp_response->get_data();
 		if ( isset( $response['media_details'] ) ) {
 			$response['media_details']['sizes'] = $this->plugin->add_image_sizes( $original_url, $response['media_details']['width'], $response['media_details']['height'] );
 			// Reformat image sizes as REST API response is a little differently formatted.
 			$response['media_details']['sizes'] = $this->change_fields( $response['media_details']['sizes'], $response['media_details']['file'] );
+			// We always have the full sized image.
+			$response['media_details']['sizes'] = $this->change_full_url( $response['media_details']['sizes'], 'source_url', $url );
 			// No image sizes missing.
 			if ( isset( $response['missing_image_sizes'] ) ) {
 				$response['missing_image_sizes'] = [];
@@ -113,9 +134,7 @@ class Hotlink {
 
 		// Return raw image url in REST API.
 		if ( isset( $response['source_url'] ) ) {
-			remove_filter( 'wp_get_attachment_url', [ $this, 'wp_get_attachment_url' ], 10 );
-			$response['source_url'] = wp_get_attachment_url( $attachment->ID );
-			add_filter( 'wp_get_attachment_url', [ $this, 'wp_get_attachment_url' ], 10, 2 );
+			$response['source_url'] = $url;
 		}
 
 		$wp_response->set_data( $response );
@@ -139,6 +158,19 @@ class Hotlink {
 			$sizes[ $size ] = $details;
 		}
 
+		return $sizes;
+	}
+
+	/**
+	 * Helper function to replace full image url.
+	 * 
+	 * @param  array  $sizes Array of sizes.
+	 * @param  string $field Field to replace.
+	 * @param  string $url   URL to replace.
+	 * @return array   Array of sizes.
+	 */
+	public function change_full_url( array $sizes, $field, $url ) {
+		$sizes['full'][ $field ] = $url;
 		return $sizes;
 	}
 
@@ -216,7 +248,6 @@ class Hotlink {
 				}
 			}
 		}
-		
 		return $selected_images;
 	}
 
@@ -234,7 +265,6 @@ class Hotlink {
 		if ( count( $attachments ) > 1 ) {
 			$this->prime_post_caches( wp_list_pluck( $attachments, 'id' ) );
 		}
-
 		remove_filter( 'wp_get_attachment_url', [ $this, 'wp_get_attachment_url' ], 10 );
 		remove_filter( 'image_downsize', [ $this, 'image_downsize' ], 10 );
 		foreach ( $attachments as $img_data ) {

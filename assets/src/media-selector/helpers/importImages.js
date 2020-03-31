@@ -34,7 +34,7 @@ const importImage = image => {
 		.then( attachmentData => {
 			// Update image ID from imported attachment. This will be used to fetch the <img> tag.
 			// Note: `image.set()` is called rather than updating `image.id` directly so that potential Backbone event listeners can be fired.
-			image.set( { ...image.attributes, ...{ id: attachmentData.id } } );
+			image.set( { ...image.attributes, ...{ id: attachmentData.id, url: attachmentData.source_url } } );
 			apiFetch( { url: processUrl + attachmentData.id } );
 			return attachmentData;
 		} )
