@@ -508,8 +508,7 @@ class Hotlink {
 			$original_url = $this->get_original_url( $block['attrs']['id'] );
 			if ( $original_url ) {
 				$block_content = str_replace( $block['attrs']['url'], $original_url, $block_content );
-			}
-
+			}       
 		}
 
 		return $block_content;
