@@ -328,15 +328,23 @@ class Hotlink {
 			return $sources;
 		}
 
+		$height = absint( $image_meta['height'] );
+		$width  = absint( $image_meta['width'] );
+
 		$new_sources = [];
-		foreach ( $this->plugin->image_sizes() as $name => $value ) {
-			$new_sources[ $value['width'] ] = [
-				'url'        => $this->plugin->get_original_url_with_size( $original_url, $value['width'], $value['height'] ),
-				'descriptor' => 'w',
-				'value'      => $value['width'],
-			];
+		if ( ! empty( $image_meta['sizes'] ) ) {
+			foreach ( $image_meta['sizes'] as $name => $value ) {
+				$new_height                = absint( $value['height'] );
+				$new_width                 = absint( $value['width'] );
+				$_height                   = $this->plugin->get_image_height( $width, $height, $new_width, $new_height );
+				$new_sources[ $new_width ] = [
+					'url'        => $this->plugin->get_original_url_with_size( $original_url, $new_width, $_height, $this->plugin->default_img_attrs ),
+					'descriptor' => 'w',
+					'value'      => $new_width,
+				];
+			}
 		}
-		
+
 		return $new_sources;
 	}
 

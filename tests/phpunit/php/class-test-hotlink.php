@@ -441,41 +441,30 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	 * @covers ::wp_calculate_image_srcset()
 	 */
 	public function test_wp_calculate_image_srcset() {
-		$result   = $this->hotlink->wp_calculate_image_srcset( [], [], '', [], self::$attachment_id );
+		$result   = $this->hotlink->wp_calculate_image_srcset(
+			[],
+			[],
+			'',
+			[
+				'width'  => 2000,
+				'height' => 2000,
+				'sizes'  => [
+					'large' => [
+						'width'  => 300,
+						'height' => 9999,
+					],
+				],
+			],
+			self::$attachment_id
+		);
 		$expected = [
 			[
-				'url'        => 'https://images.unsplash.com/test.jpg?w=150&h=150',
-				'descriptor' => 'w',
-				'value'      => 150,
-			],
-			[
-				'url'        => 'https://images.unsplash.com/test.jpg?w=300&h=300',
+				'url'        => 'https://images.unsplash.com/test.jpg?w=300&h=300&fm=jpg&q=85&fit=crop',
 				'descriptor' => 'w',
 				'value'      => 300,
 			],
-			[
-				'url'        => 'https://images.unsplash.com/test.jpg?w=768&h=0',
-				'descriptor' => 'w',
-				'value'      => 768,
-			],
-			[
-				'url'        => 'https://images.unsplash.com/test.jpg?w=1024&h=1024',
-				'descriptor' => 'w',
-				'value'      => 1024,
-			],
 		];
-		if ( version_compare( '5.2', get_bloginfo( 'version' ), '<' ) ) {
-			$expected[] = [
-				'url'        => 'https://images.unsplash.com/test.jpg?w=1536&h=1536',
-				'descriptor' => 'w',
-				'value'      => 1536,
-			];
-			$expected[] = [
-				'url'        => 'https://images.unsplash.com/test.jpg?w=2048&h=2048',
-				'descriptor' => 'w',
-				'value'      => 2048,
-			];
-		}
+
 		$this->assertEqualSets( $expected, array_values( $result ) );
 	}
 
@@ -493,7 +482,16 @@ class Test_Hotlink extends \WP_UnitTestCase {
 				'post_excerpt'   => 'A sample caption 2',
 			]
 		);
-		$result    = $this->hotlink->wp_calculate_image_srcset( [ 'foo' => 'bar' ], [], '', [], $second_id );
+		$result    = $this->hotlink->wp_calculate_image_srcset(
+			[ 'foo' => 'bar' ],
+			[],
+			'',
+			[
+				'width'  => 2000,
+				'height' => 2000,
+			],
+			$second_id
+		);
 		$this->assertEqualSets( [ 'foo' => 'bar' ], $result );
 	}
 
