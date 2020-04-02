@@ -105,6 +105,10 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 			$expected_keys = [ 'id', 'created_at', 'updated_at', 'width', 'height', 'color', 'description', 'alt_description', 'urls' ];
 			$this->assertEquals( $expected_keys, array_keys( $photo_object ) );
 		}
+
+		$header = $response->get_headers();
+		$hit    = $header['X-WP-Unsplash-Cache-Hit'];
+		$this->assertEquals( $hit, 1 );
 	}
 
 	/**
@@ -360,7 +364,12 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 			'alt_description' => 'black motorcycle',
 		];
 
+		$header = $response->get_headers();
+		$hit    = $header['X-WP-Unsplash-Cache-Hit'];
+		$this->assertEquals( $hit, 1 );
+
 		$this->assertEquals( $expected, $data );
+
 	}
 
 	/**
@@ -588,6 +597,9 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 				$this->assertArrayHasKey( $key, $photo_data );
 			}
 		}
+		$header = $response->get_headers();
+		$hit    = $header['X-WP-Unsplash-Cache-Hit'];
+		$this->assertEquals( $hit, 1 );
 	}
 
 	/**
