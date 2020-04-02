@@ -392,7 +392,6 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	public function test_rest_prepare_attachment_2() {
 		$image    = get_post( self::$attachment_id );
 		$photo    = [
-
 			'urls'                => [ 'raw' => 'https://images.unsplash.com/test.jpg' ],
 			'media_details'       => [
 				'width'  => 999,
@@ -435,5 +434,69 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$data    = $result->get_data();
 		$this->assertEquals( $data['source_url'], 'http://example.org/wp-content/uploads//tmp/canola.jpg' );
 	}
+
+	/**
+	 * Test wp_calculate_image_srcset.
+	 *
+	 * @covers ::wp_calculate_image_srcset()
+	 */
+	public function test_wp_calculate_image_srcset() {
+		$result   = $this->hotlink->wp_calculate_image_srcset( [], [], '', [], self::$attachment_id );
+		$expected = [
+			[
+				'url'        => 'https://images.unsplash.com/test.jpg?w=150&h=150',
+				'descriptor' => 'w',
+				'value'      => 150,
+			],
+			[
+				'url'        => 'https://images.unsplash.com/test.jpg?w=300&h=300',
+				'descriptor' => 'w',
+				'value'      => 300,
+			],
+			[
+				'url'        => 'https://images.unsplash.com/test.jpg?w=768&h=0',
+				'descriptor' => 'w',
+				'value'      => 768,
+			],
+			[
+				'url'        => 'https://images.unsplash.com/test.jpg?w=1024&h=1024',
+				'descriptor' => 'w',
+				'value'      => 1024,
+			],
+		];
+		if ( version_compare( '5.2', get_bloginfo( 'version' ), '<' ) ) {
+			$expected[] = [
+				'url'        => 'https://images.unsplash.com/test.jpg?w=1536&h=1536',
+				'descriptor' => 'w',
+				'value'      => 1536,
+			];
+			$expected[] = [
+				'url'        => 'https://images.unsplash.com/test.jpg?w=2048&h=2048',
+				'descriptor' => 'w',
+				'value'      => 2048,
+			];
+		}
+		$this->assertEqualSets( $expected, array_values( $result ) );
+	}
+
+	/**
+	 * Test wp_calculate_image_srcset.
+	 *
+	 * @covers ::wp_calculate_image_srcset()
+	 */
+	public function test_no_wp_calculate_image_srcset() {
+		$second_id = $this->factory->attachment->create_object(
+			'/tmp/melon.jpg',
+			0,
+			[
+				'post_mime_type' => 'image/jpeg',
+				'post_excerpt'   => 'A sample caption 2',
+			]
+		);
+		$result    = $this->hotlink->wp_calculate_image_srcset( [ 'foo' => 'bar' ], [], '', [], $second_id );
+		$this->assertEqualSets( [ 'foo' => 'bar' ], $result );
+	}
+
+
 
 }

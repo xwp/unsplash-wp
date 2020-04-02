@@ -329,16 +329,14 @@ class Hotlink {
 		}
 
 		$new_sources = [];
-		if ( ! empty( $image_meta['sizes'] ) ) {
-			foreach ( $image_meta['sizes'] as $name => $value ) {
-				$new_sources[ $value['width'] ] = [
-					'url'        => $this->plugin->get_original_url_with_size( $original_url, $value['width'], $value['height'] ),
-					'descriptor' => 'w',
-					'value'      => $value['width'],
-				];
-			}
+		foreach ( $this->plugin->image_sizes() as $name => $value ) {
+			$new_sources[ $value['width'] ] = [
+				'url'        => $this->plugin->get_original_url_with_size( $original_url, $value['width'], $value['height'] ),
+				'descriptor' => 'w',
+				'value'      => $value['width'],
+			];
 		}
-
+		
 		return $new_sources;
 	}
 
