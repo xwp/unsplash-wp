@@ -216,7 +216,7 @@ class Hotlink {
 				}
 			}
 		}
-		
+
 		return $selected_images;
 	}
 
@@ -460,5 +460,23 @@ class Hotlink {
 		// Replace img src.
 		list( $img_src ) = image_downsize( $id, $size );
 		return preg_replace( '/src="([^"]+)"/', "src=\"{$img_src}\"", $html, 1 );
+	}
+
+	/**
+	 * Remove html for captions, as some themes esc_html captions before displaying.
+	 *
+	 * @filter wp_get_attachment_caption, 10, 2
+	 *
+	 * @param string $caption Caption for the given attachment.
+	 * @param int    $post_id Attachment ID.
+	 * @return string  Caption for the given attachment with html removed.
+	 */
+	public function wp_get_attachment_caption( $caption, $attachment_id ){
+		$original_url = $this->get_original_url( $attachment_id );
+		if ( ! $original_url ) {
+			return $caption;
+		}
+
+		return wp_strip_all_tags( $caption );
 	}
 }

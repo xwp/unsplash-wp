@@ -436,4 +436,34 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$this->assertEquals( $data['source_url'], 'http://example.org/wp-content/uploads//tmp/canola.jpg' );
 	}
 
+	/**
+	 * Test wp_get_attachment_caption.
+	 *
+	 * @covers ::wp_get_attachment_caption()
+	 */
+	public function test_wp_get_attachment_caption() {
+		$caption = 'Hello <a href="#">there</a>!';
+		$result  = $this->hotlink->wp_get_attachment_caption( $caption, self::$attachment_id );
+		$this->assertEquals( $result, 'Hello there!' );
+	}
+
+	/**
+	 * Test wp_get_attachment_caption.
+	 *
+	 * @covers ::wp_get_attachment_caption()
+	 */
+	public function test_no_wp_get_attachment_caption() {
+		$second_id = $this->factory->attachment->create_object(
+			'/tmp/melon.jpg',
+			0,
+			[
+				'post_mime_type' => 'image/jpeg',
+				'post_excerpt'   => 'A sample caption 2',
+			]
+		);
+		$caption = 'Hello <a href="#">there</a>!';
+		$result  = $this->hotlink->wp_get_attachment_caption( $caption, $second_id );
+		$this->assertEquals( $caption, $result );
+	}
+
 }
