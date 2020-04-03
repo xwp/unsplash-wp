@@ -461,8 +461,8 @@ class Test_Hotlink extends \WP_UnitTestCase {
 				'post_excerpt'   => 'A sample caption 2',
 			]
 		);
-		$caption = 'Hello <a href="#">there</a>!';
-		$result  = $this->hotlink->wp_get_attachment_caption( $caption, $second_id );
+		$caption   = 'Hello <a href="#">there</a>!';
+		$result    = $this->hotlink->wp_get_attachment_caption( $caption, $second_id );
 		$this->assertEquals( $caption, $result );
 	}
 

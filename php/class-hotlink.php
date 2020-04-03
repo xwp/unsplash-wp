@@ -468,10 +468,10 @@ class Hotlink {
 	 * @filter wp_get_attachment_caption, 10, 2
 	 *
 	 * @param string $caption Caption for the given attachment.
-	 * @param int    $post_id Attachment ID.
+	 * @param int    $attachment_id Attachment ID.
 	 * @return string  Caption for the given attachment with html removed.
 	 */
-	public function wp_get_attachment_caption( $caption, $attachment_id ){
+	public function wp_get_attachment_caption( $caption, $attachment_id ) {
 		$original_url = $this->get_original_url( $attachment_id );
 		if ( ! $original_url ) {
 			return $caption;
