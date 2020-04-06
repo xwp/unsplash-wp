@@ -503,16 +503,16 @@ class Hotlink {
 	 * @return string  Caption for the given attachment with html removed.
 	 */
 	public function wp_get_attachment_caption( $caption, $attachment_id ) {
-		$unsplash_url = $this->get_unsplash_url(  $attachment_id );
+		$unsplash_url = $this->get_unsplash_url( $attachment_id );
 		if ( ! $unsplash_url ) {
 			return $caption;
 		}
-    
+	
 
 		return wp_strip_all_tags( $caption );
-  }
+	}
   
-  /**
+	/**
 	 * Filters the content of a single block.
 	 *
 	 * @filter render_block, 10, 2
