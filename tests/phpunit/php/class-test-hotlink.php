@@ -430,7 +430,6 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	public function test_rest_prepare_attachment_2() {
 		$image    = get_post( self::$attachment_id );
 		$photo    = [
-
 			'urls'                => [ 'raw' => 'https://images.unsplash.com/test.jpg' ],
 			'media_details'       => [
 				'width'  => 999,
@@ -475,5 +474,65 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$result  = $this->hotlink->rest_prepare_attachment( $reponse, $image );
 		$data    = $result->get_data();
 		$this->assertEquals( $data['source_url'], 'http://example.org/wp-content/uploads//tmp/canola.jpg' );
+	}
+
+	/**
+	 * Test wp_calculate_image_srcset.
+	 *
+	 * @covers ::wp_calculate_image_srcset()
+	 */
+	public function test_wp_calculate_image_srcset() {
+		$result   = $this->hotlink->wp_calculate_image_srcset(
+			[],
+			[],
+			'',
+			[
+				'width'  => 2000,
+				'height' => 2000,
+				'sizes'  => [
+					'large' => [
+						'width'  => 300,
+						'height' => 9999,
+					],
+				],
+			],
+			self::$attachment_id
+		);
+		$expected = [
+			[
+				'url'        => 'https://images.unsplash.com/test.jpg?w=300&h=300&fm=jpg&q=85&fit=crop',
+				'descriptor' => 'w',
+				'value'      => 300,
+			],
+		];
+
+		$this->assertEqualSets( $expected, array_values( $result ) );
+	}
+
+	/**
+	 * Test wp_calculate_image_srcset.
+	 *
+	 * @covers ::wp_calculate_image_srcset()
+	 */
+	public function test_no_wp_calculate_image_srcset() {
+		$second_id = $this->factory->attachment->create_object(
+			'/tmp/melon.jpg',
+			0,
+			[
+				'post_mime_type' => 'image/jpeg',
+				'post_excerpt'   => 'A sample caption 2',
+			]
+		);
+		$result    = $this->hotlink->wp_calculate_image_srcset(
+			[ 'foo' => 'bar' ],
+			[],
+			'',
+			[
+				'width'  => 2000,
+				'height' => 2000,
+			],
+			$second_id
+		);
+		$this->assertEqualSets( [ 'foo' => 'bar' ], $result );
 	}
 }

@@ -194,7 +194,7 @@ class Plugin extends Plugin_Base {
 	 */
 	public function add_image_sizes( $url, $width, $height ) {
 		$width_medium  = 400;
-		$height_medium = (int) ( ( $height / ( $width / $width_medium ) ) );
+		$height_medium = $this->get_image_height( $width, $height, $width_medium );
 		$url_medium    = $this->get_original_url_with_size( $url, $width_medium, $height_medium, $this->default_img_attrs );
 		$sizes         = [
 			'full'   => [
@@ -215,11 +215,8 @@ class Plugin extends Plugin_Base {
 			if ( array_key_exists( $name, $sizes ) ) {
 				continue;
 			}
-			$_height = (int) ( ( $height / ( $width / $size['width'] ) ) );
-			if ( $size['height'] ) {
-				$_height = min( $_height, $size['height'] );
-			}
-			$_url = $this->get_original_url_with_size( $url, $size['width'], $_height, $this->default_img_attrs );
+			$_height = $this->get_image_height( $width, $height, absint( $size['width'] ), absint( $size['height'] ) );
+			$_url    = $this->get_original_url_with_size( $url, $size['width'], $_height, $this->default_img_attrs );
 
 			$sizes[ $name ] = [
 				'url'         => $_url,
@@ -230,6 +227,24 @@ class Plugin extends Plugin_Base {
 		}
 
 		return $sizes;
+	}
+
+	/**
+	 * Calculate new image height, while preserving the aspect ratio.
+	 *
+	 * @param  int $width      Full width.
+	 * @param  int $height     Full Height.
+	 * @param  int $new_width  New Width.
+	 * @param  int $new_height New height. Defaults to 0.
+	 * @return int            Height of image.
+	 */
+	public function get_image_height( $width, $height, $new_width, $new_height = 0 ) {
+		$_height = (int) ( ( $height / ( $width / $new_width ) ) );
+		if ( $new_height ) {
+			$_height = min( $_height, $new_height );
+		}
+
+		return $_height;
 	}
 
 	/**

@@ -248,6 +248,7 @@ class Hotlink {
 				}
 			}
 		}
+
 		return $selected_images;
 	}
 
@@ -324,6 +325,58 @@ class Hotlink {
 		}
 
 		return $content;
+	}
+
+	/**
+	 * Filter source sets to give hotlink images.
+	 *
+	 * @filter wp_calculate_image_srcset, 99, 5
+	 * @param array  $sources {
+	 *     One or more arrays of source data to include in the 'srcset'.
+	 *
+	 *     @type array $width {
+	 *         @type string $url        The URL of an image source.
+	 *         @type string $descriptor The descriptor type used in the image candidate string,
+	 *                                  either 'w' or 'x'.
+	 *         @type int    $value      The source width if paired with a 'w' descriptor, or a
+	 *                                  pixel density value if paired with an 'x' descriptor.
+	 *     }
+	 * }
+	 * @param array  $size_array     {
+	 *      An array of requested width and height values.
+	 *
+	 *     @type int $0 The width in pixels.
+	 *     @type int $1 The height in pixels.
+	 * }
+	 * @param string $image_src     The 'src' of the image.
+	 * @param array  $image_meta    The image meta data as returned by 'wp_get_attachment_metadata()'.
+	 * @param int    $attachment_id Image attachment ID or 0.
+	 * @return array Converted images url in an array.
+	 */
+	public function wp_calculate_image_srcset( $sources, $size_array, $image_src, $image_meta, $attachment_id ) {
+		$unsplash_url = $this->get_unsplash_url( $attachment_id );
+		if ( ! $unsplash_url ) {
+			return $sources;
+		}
+
+		$height = absint( $image_meta['height'] );
+		$width  = absint( $image_meta['width'] );
+
+		$new_sources = [];
+		if ( ! empty( $image_meta['sizes'] ) ) {
+			foreach ( $image_meta['sizes'] as $name => $value ) {
+				$new_height                = absint( $value['height'] );
+				$new_width                 = absint( $value['width'] );
+				$_height                   = $this->plugin->get_image_height( $width, $height, $new_width, $new_height );
+				$new_sources[ $new_width ] = [
+					'url'        => $this->plugin->get_original_url_with_size( $unsplash_url, $new_width, $_height, $this->plugin->default_img_attrs ),
+					'descriptor' => 'w',
+					'value'      => $new_width,
+				];
+			}
+		}
+
+		return $new_sources;
 	}
 
 	/**

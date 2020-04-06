@@ -155,6 +155,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 	 * @see Plugin::wp_prepare_attachment_for_js()
 	 * @covers ::wp_prepare_attachment_for_js
 	 * @covers ::add_image_sizes
+	 * @covers ::get_image_height 
 	 */
 	public function test_wp_prepare_attachment_for_js() {
 		$plugin = get_plugin_instance();
