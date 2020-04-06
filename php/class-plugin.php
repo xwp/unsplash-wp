@@ -227,7 +227,7 @@ class Plugin extends Plugin_Base {
 	}
 
 	/**
-	 * Get image height.
+	 * Calculate new image height, while preserving the aspect ratio.
 	 *
 	 * @param  int $width      Full width.
 	 * @param  int $height     Full Height.
