@@ -73,6 +73,9 @@ class Plugin extends Plugin_Base {
 	 * @action wp_enqueue_media
 	 */
 	public function enqueue_media_scripts() {
+		if ( ! current_user_can( 'upload_files' ) ) {
+			return false;
+		}
 		$screen = ( function_exists( 'get_current_screen' ) ) ? get_current_screen() : false;
 
 		if ( ! $screen instanceof WP_Screen ) {
