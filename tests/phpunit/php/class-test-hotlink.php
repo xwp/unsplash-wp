@@ -160,6 +160,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	 * Test replace_hotlinked_images_in_content()
 	 *
 	 * @covers ::replace_hotlinked_images_in_content()
+	 * @covers ::get_attachment_url()
 	 */
 	public function test_replace_hotlinked_images_in_content() {
 		$wp_id = $this->factory->attachment->create_object(
@@ -301,6 +302,37 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Test render_block.
+	 *
+	 * @covers ::render_block()
+	 */
+	public function test_render_block() {
+		if ( ! function_exists( 'do_blocks' ) ) {
+			$this->markTestSkipped( 'No do_blocks' );
+		}
+		$content   = sprintf(
+			'<!-- wp:cover {"url":"https://localhost:8088/example.jpg","id":%d} -->
+			<div class="wp-block-cover has-background-dim" style="background-image:url(https://localhost:8088/example.jpg)"><div class="wp-block-cover__inner-container"><!-- wp:paragraph {"align":"center","placeholder":"Write title…","fontSize":"large"} -->
+			<p class="has-text-align-center has-large-font-size"></p>
+			<!-- /wp:paragraph --></div></div>
+			<!-- /wp:cover -->',
+			self::$attachment_id
+		);
+		$test_page = self::factory()->post->create(
+			[
+				'post_type'    => 'page',
+				'post_title'   => 'Test page',
+				'post_status'  => 'publish',
+				'post_content' => $content,
+			]
+		);
+
+		$post    = get_post( $test_page );
+		$content = apply_filters( 'the_content', $post->post_content );
+		$this->assertContains( 'https://images.unsplash.com/test.jpg', $content );
+	}
+
+	/**
 	 * Test wp_prepare_attachment_for_js.
 	 *
 	 * @covers ::wp_prepare_attachment_for_js()
@@ -335,6 +367,8 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	 * Test wp_prepare_attachment_for_js.
 	 *
 	 * @covers ::wp_prepare_attachment_for_js()
+	 * @covers ::get_attachment_url()
+	 * @covers ::change_full_url()
 	 */
 	public function test_wp_prepare_attachment_for_js() {
 		$image    = get_post( self::$attachment_id );
@@ -346,6 +380,8 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$result   = $this->hotlink->wp_prepare_attachment_for_js( $photo, $image );
 		$plugin   = new Plugin();
 		$expected = $plugin->add_image_sizes( $photo['urls']['raw'], $photo['width'], $photo['height'] );
+		$url      = $this->hotlink->get_attachment_url( self::$attachment_id );
+		$expected = $this->hotlink->change_full_url( $expected, 'url', $url );
 		$this->assertEqualSets( $result['sizes'], $expected );
 	}
 
@@ -388,6 +424,8 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		 *
 		 * @covers ::rest_prepare_attachment()
 		 * @covers ::change_fields()
+		 * @covers ::get_attachment_url()
+		 * @covers ::change_full_url()
 		 */
 	public function test_rest_prepare_attachment_2() {
 		$image    = get_post( self::$attachment_id );
@@ -407,7 +445,10 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$plugin   = new Plugin();
 		$sizes    = $plugin->add_image_sizes( $photo['urls']['raw'], $photo['media_details']['width'], $photo['media_details']['height'] );
 		$expected = $this->hotlink->change_fields( $sizes, $photo['media_details']['file'] );
+		$url      = $this->hotlink->get_attachment_url( self::$attachment_id );
+		$expected = $this->hotlink->change_full_url( $expected, 'source_url', $url );
 		$data     = $result->get_data();
+
 		$this->assertEqualSets( $data['media_details']['sizes'], $expected );
 		$this->assertEqualSets( $data['missing_image_sizes'], [] );
 	}
@@ -494,7 +535,4 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		);
 		$this->assertEqualSets( [ 'foo' => 'bar' ], $result );
 	}
-
-
-
 }
