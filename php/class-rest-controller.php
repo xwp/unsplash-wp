@@ -197,7 +197,7 @@ class Rest_Controller extends WP_REST_Controller {
 				$photos[] = $this->prepare_response_for_collection( $data );
 			}
 
-			$response = rest_ensure_response( $photos );
+			$response = $this->rest_ensure_response( $photos, $request );
 			$response->header( 'X-WP-Total', (int) $total );
 			$response->header( 'X-WP-TotalPages', (int) $max_pages );
 		} catch ( \Exception $e ) {
@@ -205,7 +205,7 @@ class Rest_Controller extends WP_REST_Controller {
 			$this->plugin->log_error( $e );
 		}
 
-		return $response;
+		return $this->rest_ensure_response( $response, $request );
 	}
 
 	/**
@@ -226,7 +226,7 @@ class Rest_Controller extends WP_REST_Controller {
 			$this->plugin->log_error( $e );
 		}
 
-		return rest_ensure_response( $photos );
+		return $this->rest_ensure_response( $photos, $request );
 	}
 
 	/**
@@ -252,7 +252,7 @@ class Rest_Controller extends WP_REST_Controller {
 			}
 
 			$response = $this->prepare_item_for_response( $results, $request );
-			$response = rest_ensure_response( $response );
+			$response = $this->rest_ensure_response( $response, $request );
 			$response->set_status( 301 );
 			$response->header( 'Location', rest_url( sprintf( '%s/%s/%d', 'wp/v2', 'media', $attachment_id ) ) );
 		} catch ( \Exception $e ) {
@@ -260,7 +260,7 @@ class Rest_Controller extends WP_REST_Controller {
 			$this->plugin->log_error( $e );
 		}
 
-		return $response;
+		return $this->rest_ensure_response( $response, $request );
 	}
 
 	/**
@@ -300,7 +300,7 @@ class Rest_Controller extends WP_REST_Controller {
 		}
 		$response = new WP_REST_Response( $data );
 
-		return $response;
+		return $this->rest_ensure_response( $data, $request );
 	}
 
 	/**
@@ -333,7 +333,7 @@ class Rest_Controller extends WP_REST_Controller {
 				$photos[] = $this->prepare_response_for_collection( $data );
 			}
 
-			$response = rest_ensure_response( $photos );
+			$response = $this->rest_ensure_response( $photos, $request );
 			$response->header( 'X-WP-Total', (int) $total );
 			$response->header( 'X-WP-TotalPages', (int) $max_pages );
 		} catch ( \Exception $e ) {
@@ -341,7 +341,36 @@ class Rest_Controller extends WP_REST_Controller {
 			$this->plugin->log_error( $e );
 		}
 
-		return $response;
+		return $this->rest_ensure_response( $response, $request );
+	}
+
+	/**
+	 * Format response for AJAX.
+	 *
+	 * @param  mixed           $response Response data.
+	 * @param  WP_REST_Request $request  Request.
+	 * @return  WP_REST_Response          Repsonse object.
+	 */
+	public function rest_ensure_response( $response, WP_REST_Request $request ) {
+		if ( $this->is_ajax_request( $request ) ) {
+			if ( is_wp_error( $response ) ) {
+				$wp_error = $response;
+				$response = array( 'success' => false );
+				$result   = array();
+				foreach ( $wp_error->errors as $code => $messages ) {
+					$data = ( isset( $wp_error->error_data[ $code ] ) ) ? $wp_error->error_data[ $code ] : [];
+					foreach ( $messages as $message ) {
+						$result[] = array(
+							'code'    => $code,
+							'message' => $message,
+							'data'    => $data,
+						);
+					}
+				}
+				$response['data'] = $result;
+			}
+		}
+		return rest_ensure_response( $response );
 	}
 
 	/**

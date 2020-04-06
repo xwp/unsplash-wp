@@ -54,6 +54,42 @@ const ImagesQueryModel = wp.media.model.Query.extend(
 				: Backbone;
 			return fallback.sync.apply( this, arguments );
 		},
+		/**
+		 * Fetch more attachments from the server for the collection.
+		 *
+		 * @param   {object}  [options={}]
+		 * @returns {Promise}
+		 */
+		more: function( options ) {
+			var query = this;
+
+			// If there is already a request pending, return early with the Deferred object.
+			if ( this._more && 'pending' === this._more.state() ) {
+				return this._more;
+			}
+
+			if ( ! this.hasMore() ) {
+				return jQuery
+					.Deferred()
+					.resolveWith( this )
+					.promise();
+			}
+
+			options = options || {};
+
+			options.remove = false;
+
+			return ( this._more = this.fetch( options ).done( function( resp ) {
+				if (
+					_.isEmpty( resp ) ||
+					-1 === this.args.posts_per_page ||
+					resp.length < this.args.posts_per_page ||
+					false === resp.success
+				) {
+					query._hasMore = false;
+				}
+			} ) );
+		},
 	},
 	{
 		defaultProps: {

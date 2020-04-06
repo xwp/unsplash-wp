@@ -95,17 +95,35 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 		this.attachmentsNoResults.$el.append( `<p>${ noResults.noMedia }</p>` );
 
 		this.views.add( this.attachmentsNoResults );
+
+		this.attachmentsError = new wp.media.View( {
+			controller: this.controller,
+			tagName: 'div',
+		} );
+		this.attachmentsError.$el.addClass(
+			'hidden notice notice-warning unsplash-error'
+		);
+		this.views.add( this.attachmentsError );
 	},
 
 	updateContent() {
 		const view = this;
 		const noItemsView = view.attachmentsNoResults;
+		const errorView = view.attachmentsError;
 
 		if ( ! this.collection.length ) {
 			this.toolbar.get( 'spinner' ).show();
 			this.dfd = this.collection.more().done( function() {
 				if ( ! view.collection.length ) {
 					noItemsView.$el.removeClass( 'hidden' );
+				} else if ( view.collection.length === 1 ) {
+					const model = view.collection.first();
+					const {
+						attributes: { data },
+					} = model;
+					const error = data.shift();
+					errorView.$el.html( error.message );
+					errorView.$el.removeClass( 'hidden' );
 				} else {
 					noItemsView.$el.addClass( 'hidden' );
 				}
