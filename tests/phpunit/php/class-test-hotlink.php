@@ -160,7 +160,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	 * Test replace_hotlinked_images_in_content()
 	 *
 	 * @covers ::replace_hotlinked_images_in_content()
-	 * @covers ::attachment_url()
+	 * @covers ::get_attachment_url()
 	 */
 	public function test_replace_hotlinked_images_in_content() {
 		$wp_id = $this->factory->attachment->create_object(
@@ -367,7 +367,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	 * Test wp_prepare_attachment_for_js.
 	 *
 	 * @covers ::wp_prepare_attachment_for_js()
-	 * @covers ::attachment_url()
+	 * @covers ::get_attachment_url()
 	 * @covers ::change_full_url()
 	 */
 	public function test_wp_prepare_attachment_for_js() {
@@ -380,7 +380,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$result   = $this->hotlink->wp_prepare_attachment_for_js( $photo, $image );
 		$plugin   = new Plugin();
 		$expected = $plugin->add_image_sizes( $photo['urls']['raw'], $photo['width'], $photo['height'] );
-		$url      = $this->hotlink->attachment_url( self::$attachment_id );
+		$url      = $this->hotlink->get_attachment_url( self::$attachment_id );
 		$expected = $this->hotlink->change_full_url( $expected, 'url', $url );
 		$this->assertEqualSets( $result['sizes'], $expected );
 	}
@@ -424,7 +424,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		 *
 		 * @covers ::rest_prepare_attachment()
 		 * @covers ::change_fields()
-		 * @covers ::attachment_url()
+		 * @covers ::get_attachment_url()
 		 * @covers ::change_full_url()
 		 */
 	public function test_rest_prepare_attachment_2() {
@@ -446,7 +446,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$plugin   = new Plugin();
 		$sizes    = $plugin->add_image_sizes( $photo['urls']['raw'], $photo['media_details']['width'], $photo['media_details']['height'] );
 		$expected = $this->hotlink->change_fields( $sizes, $photo['media_details']['file'] );
-		$url      = $this->hotlink->attachment_url( self::$attachment_id );
+		$url      = $this->hotlink->get_attachment_url( self::$attachment_id );
 		$expected = $this->hotlink->change_full_url( $expected, 'source_url', $url );
 		$data     = $result->get_data();
 

@@ -50,12 +50,12 @@ class Hotlink {
 	 * @return mixed
 	 */
 	public function wp_get_attachment_url( $url, $id ) {
-		$original_url = $this->get_original_url( $id );
-		if ( ! $original_url ) {
+		$unsplash_url = $this->get_unsplash_url( $id );
+		if ( ! $unsplash_url ) {
 			return $url;
 		}
 
-		return $original_url;
+		return $unsplash_url;
 	}
 
 	/**
@@ -64,7 +64,7 @@ class Hotlink {
 	 * @param  int $attachment_id Attachment ID.
 	 * @return string|false Unfiltered Attachment URL, otherwise false.
 	 */
-	public function attachment_url( $attachment_id ) {
+	public function get_attachment_url( $attachment_id ) {
 		remove_filter( 'wp_get_attachment_url', [ $this, 'wp_get_attachment_url' ], 10 );
 		$url = wp_get_attachment_url( $attachment_id );
 		add_filter( 'wp_get_attachment_url', [ $this, 'wp_get_attachment_url' ], 10, 2 );
@@ -85,13 +85,13 @@ class Hotlink {
 		if ( ! $attachment instanceof WP_Post ) {
 			return $response;
 		}
-		$original_url = $this->get_original_url( $attachment->ID );
-		if ( ! $original_url ) {
+		$unsplash_url = $this->get_unsplash_url( $attachment->ID );
+		if ( ! $unsplash_url ) {
 			return $response;
 		}
-		$response['sizes'] = $this->plugin->add_image_sizes( $original_url, $response['width'], $response['height'] );
+		$response['sizes'] = $this->plugin->add_image_sizes( $unsplash_url, $response['width'], $response['height'] );
 		// We always have the full sized image.
-		$url               = $this->attachment_url( $attachment->ID );
+		$url               = $this->get_attachment_url( $attachment->ID );
 		$response['url']   = $url;
 		$response['sizes'] = $this->change_full_url( $response['sizes'], 'url', $url );
 
@@ -112,16 +112,16 @@ class Hotlink {
 		if ( ! $attachment instanceof WP_Post ) {
 			return $wp_response;
 		}
-		$original_url = $this->get_original_url( $attachment->ID );
-		if ( ! $original_url ) {
+		$unsplash_url = $this->get_unsplash_url( $attachment->ID );
+		if ( ! $unsplash_url ) {
 			return $wp_response;
 		}
 
-		$url = $this->attachment_url( $attachment->ID );
+		$url = $this->get_attachment_url( $attachment->ID );
 
 		$response = $wp_response->get_data();
 		if ( isset( $response['media_details'] ) ) {
-			$response['media_details']['sizes'] = $this->plugin->add_image_sizes( $original_url, $response['media_details']['width'], $response['media_details']['height'] );
+			$response['media_details']['sizes'] = $this->plugin->add_image_sizes( $unsplash_url, $response['media_details']['width'], $response['media_details']['height'] );
 			// Reformat image sizes as REST API response is a little differently formatted.
 			$response['media_details']['sizes'] = $this->change_fields( $response['media_details']['sizes'], $response['media_details']['file'] );
 			// We always have the full sized image.
@@ -184,8 +184,8 @@ class Hotlink {
 	 * @return mixed
 	 */
 	public function image_downsize( $should_resize, $id, $size ) {
-		$original_url = $this->get_original_url( $id );
-		if ( ! $original_url ) {
+		$unsplash_url = $this->get_unsplash_url( $id );
+		if ( ! $unsplash_url ) {
 			return $should_resize;
 		}
 		$image_meta = wp_get_attachment_metadata( $id );
@@ -212,9 +212,9 @@ class Hotlink {
 			return $should_resize;
 		}
 
-		$original_url = $this->plugin->get_original_url_with_size( $original_url, $width, $height );
+		$unsplash_url = $this->plugin->get_original_url_with_size( $unsplash_url, $width, $height );
 
-		return [ $original_url, $width, $height, false ];
+		return [ $unsplash_url, $width, $height, false ];
 	}
 
 	/**
@@ -272,8 +272,8 @@ class Hotlink {
 				continue;
 			}
 
-			$original_url = $this->get_original_url( $img_data['id'] );
-			if ( ! $original_url ) {
+			$unsplash_url = $this->get_unsplash_url( $img_data['id'] );
+			if ( ! $unsplash_url ) {
 				continue;
 			}
 			list( $width, $height ) = $this->get_image_size_from_url( $img_data['url'] );
@@ -338,8 +338,8 @@ class Hotlink {
 	 * @return string Converted 'img' element with 'srcset' and 'sizes' attributes added.
 	 */
 	public function replace_image( $img_tag, $img_src, $attachment_id ) {
-		$original_url = $this->get_original_url( $attachment_id );
-		if ( ! $original_url ) {
+		$unsplash_url = $this->get_unsplash_url( $attachment_id );
+		if ( ! $unsplash_url ) {
 			return $img_tag;
 		}
 
@@ -349,7 +349,7 @@ class Hotlink {
 			return $img_tag;
 		}
 
-		$new_src = $this->plugin->get_original_url_with_size( $original_url, $width, $height );
+		$new_src = $this->plugin->get_original_url_with_size( $unsplash_url, $width, $height );
 		return str_replace( $img_src, $new_src, $img_tag );
 	}
 
@@ -431,7 +431,7 @@ class Hotlink {
 	 *
 	 * @return string|bool URL or false is not found.
 	 */
-	protected function get_original_url( $id ) {
+	protected function get_unsplash_url( $id ) {
 		return get_post_meta( $id, 'original_url', true );
 	}
 
@@ -482,8 +482,8 @@ class Hotlink {
 	 */
 	public function get_image_tag( $html, $id, $alt, $title, $align, $size ) {
 		// Verify it is an Unsplash ID.
-		$original_url = $this->get_original_url( $id );
-		if ( ! $original_url ) {
+		$unsplash_url = $this->get_unsplash_url( $id );
+		if ( ! $unsplash_url ) {
 			return $html;
 		}
 
@@ -505,10 +505,10 @@ class Hotlink {
 	public function render_block( $block_content, $block ) {
 		if ( 'core/cover' === $block['blockName'] && isset( $block['attrs']['id'] ) ) {
 
-			$original_url = $this->get_original_url( $block['attrs']['id'] );
-			if ( $original_url ) {
-				$block_content = str_replace( $block['attrs']['url'], $original_url, $block_content );
-			}       
+			$unsplash_url = $this->get_unsplash_url( $block['attrs']['id'] );
+			if ( $unsplash_url ) {
+				$block_content = str_replace( $block['attrs']['url'], $unsplash_url, $block_content );
+			}
 		}
 
 		return $block_content;
