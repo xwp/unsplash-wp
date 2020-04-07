@@ -101,7 +101,7 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 			tagName: 'div',
 		} );
 		this.attachmentsError.$el.addClass(
-			'hidden notice notice-warning unsplash-error'
+			'hidden notice notice-error unsplash-error is-dismissible'
 		);
 		this.views.add( this.attachmentsError );
 	},
@@ -109,33 +109,38 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 	updateContent() {
 		const view = this;
 		const noItemsView = view.attachmentsNoResults;
-		const errorView = view.attachmentsError;
 
 		if ( ! this.collection.length ) {
 			this.toolbar.get( 'spinner' ).show();
 			this.dfd = this.collection.more().done( function() {
 				if ( ! view.collection.length ) {
 					noItemsView.$el.removeClass( 'hidden' );
-				} else if ( view.collection.length === 1 ) {
-					const model = view.collection.first();
-					const {
-						attributes: { data },
-					} = model;
-					const error = data.shift();
-					errorView.$el.html( error.message );
-					errorView.$el.removeClass( 'hidden' );
 				} else {
 					noItemsView.$el.addClass( 'hidden' );
 				}
 				view.toolbar.get( 'spinner' ).hide();
+				view.showError();
 			} );
 		} else {
 			noItemsView.$el.addClass( 'hidden' );
 			view.toolbar.get( 'spinner' ).hide();
+			view.showError();
 		}
 	},
-
+	showError() {
+		const view = this;
+		const errorView = view.attachmentsError;
+		if (
+			! view.collection.respSuccess() &&
+			view.collection.respErrorMessage()
+		) {
+			const error = view.collection.respErrorMessage();
+			errorView.$el.html( error.message );
+			errorView.$el.removeClass( 'hidden' );
+		}
+	},
 	updateLayout() {
+		this.showError();
 		this.attachments.setupMacy();
 		this.attachments.refreshMacy();
 	},

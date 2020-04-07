@@ -10,6 +10,13 @@ import getConfig from '../helpers/getConfig';
 
 const ImagesQueryModel = wp.media.model.Query.extend(
 	{
+		initialize() {
+			wp.media.model.Query.prototype.initialize.apply( this, arguments );
+
+			// Add some default values.
+			this._respSuccess = true;
+			this._respErrorMessage = {};
+		},
 		/**
 		 * Overrides Backbone.Collection.sync
 		 * Overrides ImagesCollection.sync
@@ -55,6 +62,23 @@ const ImagesQueryModel = wp.media.model.Query.extend(
 			return fallback.sync.apply( this, arguments );
 		},
 		/**
+		 * Value of api success.
+		 *
+		 * @returns {boolean}
+		 */
+		respSuccess: function() {
+			return this._respSuccess;
+		},
+
+		/**
+		 * Error message as object.
+		 *
+		 * @returns {object}
+		 */
+		respErrorMessage: function() {
+			return this._respErrorMessage;
+		},
+		/**
 		 * Fetch more attachments from the server for the collection.
 		 *
 		 * @param   {object}  [options={}]
@@ -83,10 +107,17 @@ const ImagesQueryModel = wp.media.model.Query.extend(
 				if (
 					_.isEmpty( resp ) ||
 					-1 === this.args.posts_per_page ||
-					resp.length < this.args.posts_per_page ||
-					false === resp.success
+					resp.length < this.args.posts_per_page
 				) {
 					query._hasMore = false;
+				}
+
+				// If response was error, return value.
+				if ( false === resp.success ) {
+					query._hasMore = false;
+					query._respSuccess = resp.success;
+					const error = resp.data.shift();
+					this._respErrorMessage = error;
 				}
 			} ) );
 		},
