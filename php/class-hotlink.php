@@ -546,6 +546,25 @@ class Hotlink {
 	}
 
 	/**
+	 * Remove html for captions, as some themes esc_html captions before displaying.
+	 *
+	 * @filter wp_get_attachment_caption, 10, 2
+	 *
+	 * @param string $caption Caption for the given attachment.
+	 * @param int    $attachment_id Attachment ID.
+	 * @return string  Caption for the given attachment with html removed.
+	 */
+	public function wp_get_attachment_caption( $caption, $attachment_id ) {
+		$unsplash_url = $this->get_unsplash_url( $attachment_id );
+		if ( ! $unsplash_url ) {
+			return $caption;
+		}
+	
+
+		return wp_strip_all_tags( $caption );
+	}
+  
+	/**
 	 * Filters the content of a single block.
 	 *
 	 * @filter render_block, 10, 2
