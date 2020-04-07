@@ -523,7 +523,8 @@ class Test_Hotlink extends \WP_UnitTestCase {
 				'post_excerpt'   => 'A sample caption 2',
 			]
 		);
-		$result    = $this->hotlink->wp_calculate_image_srcset(
+
+		$result = $this->hotlink->wp_calculate_image_srcset(
 			[ 'foo' => 'bar' ],
 			[],
 			'',
@@ -534,5 +535,35 @@ class Test_Hotlink extends \WP_UnitTestCase {
 			$second_id
 		);
 		$this->assertEqualSets( [ 'foo' => 'bar' ], $result );
+	}
+
+	/**
+	 * Test wp_get_attachment_caption.
+	 *
+	 * @covers ::wp_get_attachment_caption()
+	 */
+	public function test_wp_get_attachment_caption() {
+		$caption = 'Hello <a href="#">there</a>!';
+		$result  = $this->hotlink->wp_get_attachment_caption( $caption, self::$attachment_id );
+		$this->assertEquals( $result, 'Hello there!' );
+	}
+
+	/**
+	 * Test wp_get_attachment_caption.
+	 *
+	 * @covers ::wp_get_attachment_caption()
+	 */
+	public function test_no_wp_get_attachment_caption() {
+		$second_id = $this->factory->attachment->create_object(
+			'/tmp/melon.jpg',
+			0,
+			[
+				'post_mime_type' => 'image/jpeg',
+				'post_excerpt'   => 'A sample caption 2',
+			]
+		);
+		$caption   = 'Hello <a href="#">there</a>!';
+		$result    = $this->hotlink->wp_get_attachment_caption( $caption, $second_id );
+		$this->assertEquals( $caption, $result );
 	}
 }
