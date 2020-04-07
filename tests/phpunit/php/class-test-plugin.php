@@ -15,6 +15,35 @@ namespace Unsplash;
 class Test_Plugin extends \WP_UnitTestCase {
 
 	/**
+	 * Admin user for test.
+	 *
+	 * @var int
+	 */
+	protected static $admin_id;
+
+	/**
+	 * Subscriber user for test.
+	 *
+	 * @var int
+	 */
+	protected static $subscriber_id;
+
+
+	/**
+	 * Create fake data before our tests run.
+	 *
+	 * @param WP_UnitTest_Factory $factory Helper that lets us create fake data.
+	 */
+	public static function wpSetUpBeforeClass( $factory ) {
+		self::$admin_id      = $factory->user->create(
+			[ 'role' => 'administrator' ]
+		);
+		self::$subscriber_id = $factory->user->create(
+			[ 'role' => 'subscriber' ]
+		);
+	}
+
+	/**
 	 * Test constructor.
 	 *
 	 * @see Plugin::__construct()
@@ -47,6 +76,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 	 * @see Plugin::enqueue_media_scripts()
 	 */
 	public function test_enqueue_media_scripts() {
+		wp_set_current_user( self::$admin_id );
 		set_current_screen( 'post.php' );
 		$plugin = get_plugin_instance();
 		$plugin->enqueue_media_scripts();
@@ -59,10 +89,24 @@ class Test_Plugin extends \WP_UnitTestCase {
 	 * @see Plugin::enqueue_media_scripts()
 	 */
 	public function test_no_enqueue_media_scripts() {
+		wp_set_current_user( self::$admin_id );
 		set_current_screen( 'widget.php' );
 		$plugin = get_plugin_instance();
 		$this->assertFalse( $plugin->enqueue_media_scripts() );
 	}
+
+	/**
+	 * Test for enqueue_media_scripts() method doeesn't load on widget
+	 *
+	 * @see Plugin::enqueue_media_scripts()
+	 */
+	public function test_not_logged_enqueue_media_scripts() {
+		wp_set_current_user( self::$subscriber_id );
+		set_current_screen( 'post.php' );
+		$plugin = get_plugin_instance();
+		$this->assertFalse( $plugin->enqueue_media_scripts() );
+	}
+
 
 	/**
 	 * Test for enqueue_media_scripts() method doeesn't load on random screen
@@ -70,6 +114,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 	 * @see Plugin::enqueue_media_scripts()
 	 */
 	public function test_no_random_enqueue_media_scripts() {
+		wp_set_current_user( self::$admin_id );
 		set_current_screen( 'unsplash.php' );
 		$plugin = get_plugin_instance();
 		$this->assertFalse( $plugin->enqueue_media_scripts() );
@@ -110,6 +155,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 	 * @see Plugin::wp_prepare_attachment_for_js()
 	 * @covers ::wp_prepare_attachment_for_js
 	 * @covers ::add_image_sizes
+	 * @covers ::get_image_height 
 	 */
 	public function test_wp_prepare_attachment_for_js() {
 		$plugin = get_plugin_instance();
