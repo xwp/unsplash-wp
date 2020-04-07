@@ -500,7 +500,7 @@ class Hotlink {
 	 *
 	 * @return boolean    Is cropped image.
 	 */
-	protected function is_cropped_image( $id ) {
+	public function is_cropped_image( $id ) {
 		return (bool) get_post_meta( $id, '_wp_attachment_backup_sizes', true );
 	}
 
@@ -575,11 +575,11 @@ class Hotlink {
 		if ( ! $unsplash_url ) {
 			return $caption;
 		}
-	
+
 
 		return wp_strip_all_tags( $caption );
 	}
-  
+
 	/**
 	 * Filters the content of a single block.
 	 *
