@@ -123,6 +123,26 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Test image_downsize.
+	 *
+	 * @covers ::image_downsize()
+	 */
+	public function test_wp_get_attachment_image_src_cropped() {
+		$second_id  = $this->factory->attachment->create_object(
+			'/tmp/apple.jpg',
+			0,
+			[
+				'post_mime_type' => 'image/jpeg',
+				'post_excerpt'   => 'A sample caption 2',
+			]
+		);
+		update_post_meta( self::$attachment_id, '_wp_attachment_backup_sizes', [ 'foo' => 'bar' ] );
+		$image = image_downsize( $second_id );
+		$this->assertInternalType( 'array', $image );
+		$this->assertEquals( $image[0], 'http://example.org/wp-content/uploads//tmp/apple.jpg' );
+	}
+
+	/**
 	 * Data for test_get_attachments_from_content
 	 *
 	 * @return array
@@ -592,7 +612,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	 */
 	public function test_is_cropped_image() {
 		$second_id = $this->factory->attachment->create_object(
-			'/tmp/melon.jpg',
+			'/tmp/plum.jpg',
 			0,
 			[
 				'post_mime_type' => 'image/jpeg',
