@@ -42,8 +42,8 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 				controller: this.controller,
 				model: this.collection.props,
 				priority: 60,
-				className: 'unplash-search',
-				id: 'unplash-search-input',
+				className: 'unsplash-search',
+				id: 'unsplash-search-input',
 			} ).render()
 		);
 

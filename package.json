@@ -23,6 +23,8 @@
   },
   "dependencies": {
     "@wordpress/api-fetch": "^3.11.0",
+    "@wordpress/hooks": "^2.7.0",
+    "@wordpress/media-utils": "^1.8.0",
     "macy": "^2.5.1"
   },
   "devDependencies": {
