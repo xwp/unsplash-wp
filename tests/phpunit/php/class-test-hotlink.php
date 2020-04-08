@@ -128,7 +128,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	 * @covers ::image_downsize()
 	 */
 	public function test_wp_get_attachment_image_src_cropped() {
-		$second_id  = $this->factory->attachment->create_object(
+		$second_id = $this->factory->attachment->create_object(
 			'/tmp/apple.jpg',
 			0,
 			[
