@@ -49,3 +49,4 @@ addFilter(
  * Unsplash tab not being available in some media libraries, and instead showing a blank screen in the media selector.
  */
 wp.media.controller.Library.prototype.defaults.contentUserSetting = false;
+wp.media.controller.FeaturedImage.prototype.defaults.contentUserSetting = false;
