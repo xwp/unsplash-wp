@@ -53,7 +53,7 @@ class Api_Cache {
 		$params          = (array) $this->request->get_params();
 		$params['route'] = (string) $this->request->get_route();
 		$params_encoded  = wp_json_encode( $params );
-		$this->key       = 'unsplash-' . md5( $params_encoded );
+		$this->key       = 'unsplash_cache_' . md5( $params_encoded );
 
 		return true;
 	}
