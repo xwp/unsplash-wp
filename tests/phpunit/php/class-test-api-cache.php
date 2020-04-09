@@ -34,10 +34,10 @@ class Test_Api_Cache extends \WP_UnitTestCase {
 		$request = new \WP_REST_Request( 'GET', '/unsplash/v1/photos' );
 		$cache   = new Api_Cache( $request );
 		$this->assertFalse( $cache->get_cache() );
-		$this->assertEquals( $cache->get_is_cached(), 1 );
+		$this->assertEquals( $cache->get_is_cached(), 0 );
 		$value = [ 'foo' => 'bar' ];
 		$cache->set_cache( $value );
 		$this->assertEqualSets( $cache->get_cache(), $value );
-		$this->assertEquals( $cache->get_is_cached(), 0 );
+		$this->assertEquals( $cache->get_is_cached(), 1 );
 	}
 }

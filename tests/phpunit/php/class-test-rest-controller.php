@@ -108,7 +108,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 
 		$header = $response->get_headers();
 		$hit    = $header['X-WP-Unsplash-Cache-Hit'];
-		$this->assertEquals( $hit, 1 );
+		$this->assertEquals( $hit, 0 );
 	}
 
 	/**
@@ -366,7 +366,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 
 		$header = $response->get_headers();
 		$hit    = $header['X-WP-Unsplash-Cache-Hit'];
-		$this->assertEquals( $hit, 1 );
+		$this->assertEquals( $hit, 0 );
 
 		$this->assertEquals( $expected, $data );
 
@@ -599,7 +599,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		}
 		$header = $response->get_headers();
 		$hit    = $header['X-WP-Unsplash-Cache-Hit'];
-		$this->assertEquals( $hit, 1 );
+		$this->assertEquals( $hit, 0 );
 	}
 
 	/**
