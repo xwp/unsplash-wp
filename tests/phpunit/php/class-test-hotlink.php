@@ -95,6 +95,24 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Test wp_get_attachment_url.
+	 *
+	 * @covers ::wp_get_attachment_url()
+	 * @covers ::is_cropped_image()
+	 */
+	public function test_wp_get_attachment_url_croppped() {
+		$first = wp_get_attachment_url( self::$attachment_id );
+		$this->assertEquals( $first, 'https://images.unsplash.com/test.jpg' );
+		update_post_meta( self::$attachment_id, '_wp_attachment_backup_sizes', [ 'foo' => 'bar' ] );
+		$second = wp_get_attachment_url( self::$attachment_id );
+		$this->assertEquals( $second, 'http://example.org/wp-content/uploads//tmp/canola.jpg' );
+		$this->assertNotEquals( $first, $second );
+		delete_post_meta( self::$attachment_id, '_wp_attachment_backup_sizes' );
+		$third = wp_get_attachment_url( self::$attachment_id );
+		$this->assertEquals( $third, 'https://images.unsplash.com/test.jpg' );
+	}
+
+	/**
 	 * Test image_downsize.
 	 *
 	 * @covers ::image_downsize()
@@ -103,6 +121,26 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$image = image_downsize( self::$attachment_id );
 		$this->assertInternalType( 'array', $image );
 		$this->assertEquals( $image[0], 'https://images.unsplash.com/test.jpg?w=300&h=300' );
+	}
+
+	/**
+	 * Test image_downsize.
+	 *
+	 * @covers ::image_downsize()
+	 */
+	public function test_wp_get_attachment_image_src_cropped() {
+		$second_id = $this->factory->attachment->create_object(
+			'/tmp/apple.jpg',
+			0,
+			[
+				'post_mime_type' => 'image/jpeg',
+				'post_excerpt'   => 'A sample caption 2',
+			]
+		);
+		update_post_meta( self::$attachment_id, '_wp_attachment_backup_sizes', [ 'foo' => 'bar' ] );
+		$image = image_downsize( $second_id );
+		$this->assertInternalType( 'array', $image );
+		$this->assertEquals( $image[0], 'http://example.org/wp-content/uploads//tmp/apple.jpg' );
 	}
 
 	/**
@@ -568,7 +606,6 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$this->assertEquals( $caption, $result );
 	}
 
-
 	/**
 	 * Test wp_get_original_image_url.
 	 *
@@ -586,7 +623,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	 */
 	public function test_no_wp_get_original_image_url() {
 		$second_id = $this->factory->attachment->create_object(
-			'/tmp/melon.jpg',
+			'/tmp/banana.jpg',
 			0,
 			[
 				'post_mime_type' => 'image/jpeg',
@@ -595,5 +632,25 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		);
 		$result    = $this->hotlink->wp_get_original_image_url( 'https://www.example.com/', $second_id );
 		$this->assertEquals( 'https://www.example.com/', $result );
+	}
+	
+	/**
+	 * Test is_cropped_image.
+	 *
+	 * @covers ::is_cropped_image()
+	 */
+	public function test_is_cropped_image() {
+		$second_id = $this->factory->attachment->create_object(
+			'/tmp/plum.jpg',
+			0,
+			[
+				'post_mime_type' => 'image/jpeg',
+				'post_excerpt'   => 'A sample caption 2',
+			]
+		);
+
+		$this->assertFalse( $this->hotlink->is_cropped_image( $second_id ) );
+		update_post_meta( $second_id, '_wp_attachment_backup_sizes', [ 'foo' => 'bar' ] );
+		$this->assertTrue( $this->hotlink->is_cropped_image( $second_id ) );
 	}
 }
