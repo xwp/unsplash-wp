@@ -407,6 +407,24 @@ class Hotlink {
 	}
 
 	/**
+	 * Filters the URL to the original unsplash URL.
+	 *
+	 * @filter wp_get_original_image_url, 10, 2
+	 *
+	 * @param string $original_image_url URL to original image.
+	 * @param int    $attachment_id      Attachment ID.
+	 *
+	 */
+	public function wp_get_original_image_url( $original_image_url, $attachment_id ){
+		$unsplash_url = $this->get_unsplash_url( $attachment_id );
+		if ( ! $unsplash_url ) {
+			return $original_image_url;
+		}
+
+		return $unsplash_url;
+	}
+
+	/**
 	 * Get image size.
 	 *
 	 * @param string $img_tag An HTML 'img' element to be filtered.
@@ -559,11 +577,11 @@ class Hotlink {
 		if ( ! $unsplash_url ) {
 			return $caption;
 		}
-	
+
 
 		return wp_strip_all_tags( $caption );
 	}
-  
+
 	/**
 	 * Filters the content of a single block.
 	 *
