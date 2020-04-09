@@ -67,7 +67,7 @@ class Rest_Controller extends WP_REST_Controller {
 		 * @param array $credentials Array of API credentials.
 		 * @param array $options Unsplash settings.
 		 */
-		$this->credentials = apply_filters(  'unsplash_api_credentials', $this->credentials, $options );
+		$this->credentials = apply_filters( 'unsplash_api_credentials', $this->credentials, $options );
 	}
 
 	/**
