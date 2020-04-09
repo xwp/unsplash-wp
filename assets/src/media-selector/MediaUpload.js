@@ -9,7 +9,9 @@ import { MediaUpload } from '@wordpress/media-utils';
 import UnsplashState from './store/unsplash_state';
 
 /**
- * Prepares the Featured Image toolbars and frames.
+ * Copied from Gutenberg and adapted to initialize the Unsplash state.
+ *
+ * @see https://github.com/WordPress/gutenberg/blob/c58b32266f8c950c5b9927d286608343078aee02/packages/media-utils/src/components/media-upload/index.js#L19
  *
  * @return {wp.media.view.MediaFrame.Select} The default media workflow.
  */
@@ -65,12 +67,21 @@ const getFeaturedImageMediaFrame = () => {
 				new wp.media.controller.EditImage( {
 					model: this.options.editImage,
 				} ),
+				// And finally the reason this whole class exists, we initialize the Unsplash state.
 				new UnsplashState(),
 			] );
 		},
 	} );
 };
 
+/**
+ * Copied from Gutenberg.
+ *
+ * @see https://github.com/WordPress/gutenberg/blob/c58b32266f8c950c5b9927d286608343078aee02/packages/media-utils/src/components/media-upload/index.js#L214-L223
+ *
+ * @param {Array} ids
+ * @return {wp.media.model.Attachments} a new Attachments Query.
+ */
 const getAttachmentsCollection = ids => {
 	return wp.media.query( {
 		order: 'ASC',
