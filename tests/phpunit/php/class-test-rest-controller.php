@@ -1110,7 +1110,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 
 	/**
 	 * Data provider for format_exception.
-	 * 
+	 *
 	 * @return array
 	 */
 	public function data_test_format_exception() {
@@ -1164,6 +1164,74 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		$this->assertEquals( $wp_error->get_error_code(), 'missing_api_credential' );
 		$this->assertEquals( $wp_error->get_error_message(), 'Please make sure that api credentials are setup before continuing. ' );
 		remove_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
+	}
+
+	/**
+	 * Test rest_ensure_response().
+	 *
+	 * @covers       \Unsplash\Rest_Controller::rest_ensure_response()
+	 */
+	public function test_rest_ensure_response() {
+		$rest_controller = new Rest_Controller( new Plugin() );
+		$request         = new WP_REST_Request();
+		$response        = $rest_controller->rest_ensure_response( [ 'foo' => 'bar' ], $request );
+		$data            = $response->get_data();
+		$this->assertEqualSets( $data, [ 'foo' => 'bar' ] );
+	}
+
+	/**
+	 * Test rest_ensure_response().
+	 *
+	 * @covers       \Unsplash\Rest_Controller::rest_ensure_response()
+	 */
+	public function test_rest_ensure_response_wp_error() {
+		$rest_controller = new Rest_Controller( new Plugin() );
+		$request         = new WP_REST_Request();
+		$wp_error        = $rest_controller->rest_ensure_response( new \WP_Error( 'test_error', 'Testing' ), $request );
+		$this->assertEquals( $wp_error->get_error_code(), 'test_error' );
+		$this->assertEquals( $wp_error->get_error_message(), 'Testing' );
+	}
+
+	/**
+	 * Test rest_ensure_response().
+	 *
+	 * @covers       \Unsplash\Rest_Controller::rest_ensure_response()
+	 * @covers       \Unsplash\Rest_Controller::is_ajax_request()
+	 */
+	public function test_rest_ensure_response_ajax() {
+		$rest_controller = new Rest_Controller( new Plugin() );
+		$request         = new WP_REST_Request();
+		$request->set_header( 'X-Requested-With', 'XMLHttpRequest' );
+		$response = $rest_controller->rest_ensure_response( [ 'foo' => 'bar' ], $request );
+		$data     = $response->get_data();
+		$this->assertEqualSets( $data, [ 'foo' => 'bar' ] );
+	}
+
+	/**
+	 * Test rest_ensure_response().
+	 *
+	 * @covers       \Unsplash\Rest_Controller::rest_ensure_response()
+	 * @covers       \Unsplash\Rest_Controller::is_ajax_request()
+	 */
+	public function test_rest_ensure_response_wp_error_ajax() {
+		$rest_controller = new Rest_Controller( new Plugin() );
+		$request         = new WP_REST_Request();
+		$request->set_header( 'X-Requested-With', 'XMLHttpRequest' );
+		$response = $rest_controller->rest_ensure_response( new \WP_Error( 'test_error', 'Testing' ), $request );
+		$data     = $response->get_data();
+		$this->assertEqualSets(
+			$data,
+			[
+				'success' => false,
+				'data'    => [
+					[
+						'code'    => 'test_error',
+						'message' => 'Testing',
+						'data'    => [],
+					],
+				],
+			]
+		);
 	}
 
 	/**
