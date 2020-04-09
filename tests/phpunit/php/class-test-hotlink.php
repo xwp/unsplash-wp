@@ -57,6 +57,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		);
 
 		update_post_meta( self::$attachment_id, 'original_url', 'https://images.unsplash.com/test.jpg' );
+		update_post_meta( self::$attachment_id, 'original_link', 'https://www.unsplash.com/foo' );
 		self::$image_tag = get_image_tag( self::$attachment_id, 'alt', 'title', 'left' );
 	}
 
@@ -565,5 +566,34 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$caption   = 'Hello <a href="#">there</a>!';
 		$result    = $this->hotlink->wp_get_attachment_caption( $caption, $second_id );
 		$this->assertEquals( $caption, $result );
+	}
+
+
+	/**
+	 * Test wp_get_original_image_url.
+	 *
+	 * @covers ::wp_get_original_image_url()
+	 */
+	public function test_wp_get_original_image_url() {
+		$result = $this->hotlink->wp_get_original_image_url( '', self::$attachment_id );
+		$this->assertEquals( $result, 'https://www.unsplash.com/foo' );
+	}
+
+	/**
+	 * Test wp_get_original_image_url.
+	 *
+	 * @covers ::wp_get_original_image_url()
+	 */
+	public function test_no_wp_get_original_image_url() {
+		$second_id = $this->factory->attachment->create_object(
+			'/tmp/melon.jpg',
+			0,
+			[
+				'post_mime_type' => 'image/jpeg',
+				'post_excerpt'   => 'A sample caption 2',
+			]
+		);
+		$result    = $this->hotlink->wp_get_original_image_url( 'https://www.example.com/', $second_id );
+		$this->assertEquals( 'https://www.example.com/', $result );
 	}
 }
