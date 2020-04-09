@@ -46,17 +46,17 @@ const ImagesCollection = wp.media.model.Attachments.extend(
 		/**
 		 * Get value of respSuccess from mirrored object.
 		 *
-		 * @returns {boolean}
+		 * @return {boolean} True / false, response sucesss.
 		 */
-		respSuccess: function() {
+		respSuccess() {
 			return this.mirroring ? this.mirroring.respSuccess() : true;
 		},
 		/**
 		 * Get value of respErrorMessage from mirrored object.
 		 *
-		 * @returns {object}
+		 * @return {Object} Error object.
 		 */
-		respErrorMessage: function() {
+		respErrorMessage() {
 			return this.mirroring ? this.mirroring.respErrorMessage() : {};
 		},
 	},

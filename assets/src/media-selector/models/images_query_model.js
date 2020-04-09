@@ -64,28 +64,28 @@ const ImagesQueryModel = wp.media.model.Query.extend(
 		/**
 		 * Value of api success.
 		 *
-		 * @returns {boolean}
+		 * @return {boolean} True / False Of response. Defaults True.
 		 */
-		respSuccess: function() {
+		respSuccess() {
 			return this._respSuccess;
 		},
 
 		/**
 		 * Error message as object.
 		 *
-		 * @returns {object}
+		 * @return {Object} Error object.
 		 */
-		respErrorMessage: function() {
+		respErrorMessage() {
 			return this._respErrorMessage;
 		},
 		/**
 		 * Fetch more attachments from the server for the collection.
 		 *
-		 * @param   {object}  [options={}]
-		 * @returns {Promise}
+		 * @param   {Object}  [options={}]
+		 * @return {Promise} Return promise object.
 		 */
-		more: function( options ) {
-			var query = this;
+		more( options ) {
+			const query = this;
 
 			// If there is already a request pending, return early with the Deferred object.
 			if ( this._more && 'pending' === this._more.state() ) {
