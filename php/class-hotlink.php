@@ -413,15 +413,15 @@ class Hotlink {
 	 *
 	 * @param string $original_image_url URL to original image.
 	 * @param int    $attachment_id      Attachment ID.
-	 *
 	 */
-	public function wp_get_original_image_url( $original_image_url, $attachment_id ){
-		$unsplash_url = $this->get_unsplash_url( $attachment_id );
-		if ( ! $unsplash_url ) {
+	public function wp_get_original_image_url( $original_image_url, $attachment_id ) {
+		$link = get_post_meta( $attachment_id, 'original_link', true );
+		if ( ! $link ) {
 			return $original_image_url;
 		}
 
-		return $unsplash_url;
+
+		return $link;
 	}
 
 	/**
