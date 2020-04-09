@@ -81,9 +81,6 @@ class Rest_Controller extends WP_REST_Controller {
 	 * HTTP client init.
 	 */
 	public function http_client_init() {
-		$options     = get_option( 'unsplash_settings' );
-		$default_utm = ( getenv( 'UNSPLASH_UTM_SOURCE' ) ) ? getenv( 'UNSPLASH_UTM_SOURCE' ) : 'WordPress-XWP';
-
 		HttpClient::init( $this->credentials );
 	}
 
@@ -199,10 +196,7 @@ class Rest_Controller extends WP_REST_Controller {
 	 * @return WP_REST_Response Single page of photo results.
 	 */
 	public function get_items( $request ) {
-		$check_api = $this->check_api_credentials();
-		if ( is_wp_error( $check_api ) ) {
-			return $this->rest_ensure_response( $check_api, $request );
-		}
+
 		$page     = $request->get_param( 'page' );
 		$per_page = $request->get_param( 'per_page' );
 		$order_by = $request->get_param( 'order_by' );
@@ -212,6 +206,10 @@ class Rest_Controller extends WP_REST_Controller {
 		try {
 			$api_response = $cache->get_cache();
 			if ( false === $api_response ) {
+				$check_api = $this->check_api_credentials();
+				if ( is_wp_error( $check_api ) ) {
+					return $this->rest_ensure_response( $check_api, $request );
+				}
 				$this->http_client_init();
 				$api_response = Photo::all( $page, $per_page, $order_by );
 				$cache->set_cache( $api_response );
@@ -255,10 +253,10 @@ class Rest_Controller extends WP_REST_Controller {
 		try {
 			$api_response = $cache->get_cache();
 			if ( false === $api_response ) {
-        $check_api = $this->check_api_credentials();
-        if ( is_wp_error( $check_api ) ) {
-          return $this->rest_ensure_response( $check_api, $request );
-        }
+				$check_api = $this->check_api_credentials();
+				if ( is_wp_error( $check_api ) ) {
+					return $this->rest_ensure_response( $check_api, $request );
+				}
 				$this->http_client_init();
 				$api_response = Photo::find( $id );
 				$cache->set_cache( $api_response );
@@ -374,10 +372,10 @@ class Rest_Controller extends WP_REST_Controller {
 		try {
 			$api_response = $cache->get_cache();
 			if ( false === $api_response ) {
-        $check_api = $this->check_api_credentials();
-        if ( is_wp_error( $check_api ) ) {
-          return $this->rest_ensure_response( $check_api, $request );
-        }
+				$check_api = $this->check_api_credentials();
+				if ( is_wp_error( $check_api ) ) {
+					return $this->rest_ensure_response( $check_api, $request );
+				}
 				$this->http_client_init();
 				$api_response = Search::photos( $search, $page, $per_page, $orientation, $collections );
 				$cache->set_cache( $api_response );
