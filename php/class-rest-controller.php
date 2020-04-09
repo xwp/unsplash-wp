@@ -61,6 +61,13 @@ class Rest_Controller extends WP_REST_Controller {
 			'secret'        => ! empty( $options['secret_key'] ) ? $this->plugin->settings->decrypt( $options['secret_key'] ) : getenv( 'UNSPLASH_SECRET_KEY' ),
 			'utmSource'     => ! empty( $options['utm_source'] ) ? $options['utm_source'] : $default_utm,
 		];
+		/**
+		 * Filter API credentials.
+		 *
+		 * @param array $credentials Array of API credentials.
+		 * @param array $options Unsplash settings.
+		 */
+		$this->credentials = apply_filters(  'unsplash_api_credentials', $this->credentials, $options );
 	}
 
 	/**
@@ -316,7 +323,6 @@ class Rest_Controller extends WP_REST_Controller {
 			$this->plugin->log_error( $e );
 			return $response;
 		}
-		$response = new WP_REST_Response( $data );
 
 		return $this->rest_ensure_response( $data, $request );
 	}
@@ -400,11 +406,11 @@ class Rest_Controller extends WP_REST_Controller {
 	 * Format exception into usable WP_Error objects.
 	 *
 	 * @param string|int $code Error code.
-	 * @param int        $error_status HTTP error state code.
+	 * @param int        $error_status HTTP error state code. Default to 500.
 	 *
 	 * @return WP_Error
 	 */
-	public function format_exception( $code, $error_status ) {
+	public function format_exception( $code, $error_status = 500 ) {
 		if ( is_numeric( $error_status ) ) {
 			switch ( $error_status ) {
 				case 401:
@@ -419,13 +425,12 @@ class Rest_Controller extends WP_REST_Controller {
 				default:
 					$message = get_status_header_desc( $error_status );
 					if ( empty( $message ) ) {
-						$message = $this->format_exception( $code, 500 );
+						return $this->format_exception( $code );
 					}
 					break;
 			}
 		} else {
-			$message      = __( 'Unknown api error.', 'unsplash' );
-			$error_status = 500;
+			return $this->format_exception( $code );
 		}
 
 		return new WP_Error( $code, $message, [ 'status' => $error_status ] );

@@ -1095,4 +1095,68 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 			],
 		];
 	}
+
+	function data_test_format_exception(){
+		return [
+			['test_500', 500, 'Unsplash Server error. Please check and try again.'],
+			['test_401', 401, 'Unable to connect to api because of the authication error. '],
+			['test_403', 403, 'Forbidden to connect to api because of the authication error. '],
+			['test_418', 418, 'I\'m a teapot'],
+			['test_0', 0, 'Unsplash Server error. Please check and try again.'],
+			['test_foo', 'foo', 'Unsplash Server error. Please check and try again.'],
+		];
+	}
+
+	/**
+	 * Test format_exception().
+	 *
+	 * @dataProvider data_test_format_exception
+	 * @covers       \Unsplash\Rest_Controller::format_exception()
+	 *
+	 * @param string|int $code Error code.
+	 * @param int        $error_status HTTP error state code.
+	 * @param $string    $message Message.
+	 */
+	public function test_format_exception( $code, $error_status, $message ) {
+		$rest_controller = new Rest_Controller( new Plugin() );
+		$wp_error        = $rest_controller->format_exception( $code, $error_status );
+		$this->assertEquals( $wp_error->get_error_code(), $code );
+		$this->assertEquals( $wp_error->get_error_message(), $message );
+	}
+
+	/**
+	 * Test check_api_credentials().
+	 *
+	 * @covers       \Unsplash\Rest_Controller::check_api_credentials()
+	 */
+	public function test_check_api_credentials() {
+		$rest_controller = new Rest_Controller( new Plugin() );
+		$result        = $rest_controller->check_api_credentials();
+		$this->assertTrue( $result );
+	}
+
+	/**
+	 * Test check_api_credentials().
+	 *
+	 * @covers       \Unsplash\Rest_Controller::check_api_credentials()
+	 */
+	public function test_no_check_api_credentials() {
+		add_filter('unsplash_api_credentials', [$this, 'disable_unsplash_api_credentials']);
+		$rest_controller = new Rest_Controller( new Plugin() );
+		$wp_error        = $rest_controller->check_api_credentials();
+		$this->assertEquals( $wp_error->get_error_code(), 'missing_api_credential' );
+		$this->assertEquals( $wp_error->get_error_message(), 'Please make sure that api credentials are setup before continuing. ' );
+		remove_filter('unsplash_api_credentials', [$this, 'disable_unsplash_api_credentials']);
+	}
+
+	/**
+	 * Disable unsplash api details.
+	 */
+	public function disable_unsplash_api_credentials($value){
+		return [
+			'applicationId' => '',
+			'secret'        => '',
+			'utmSource'     => '',
+		];
+	}
 }
