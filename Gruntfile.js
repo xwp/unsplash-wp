@@ -21,8 +21,6 @@ module.exports = function( grunt ) {
 					'!built/**',
 					'!code_of_conduct.md',
 					'!contributing/**',
-					'!composer.json',
-					'!composer.lock',
 					'!contributing.md',
 					'!docker-compose.yml',
 					'!unsplash.zip',
