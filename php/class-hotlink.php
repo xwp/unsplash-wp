@@ -51,7 +51,8 @@ class Hotlink {
 	 */
 	public function wp_get_attachment_url( $url, $id ) {
 		$unsplash_url = $this->get_unsplash_url( $id );
-		if ( ! $unsplash_url ) {
+		$cropped      = $this->is_cropped_image( $id );
+		if ( ! $unsplash_url || $cropped ) {
 			return $url;
 		}
 
@@ -185,12 +186,14 @@ class Hotlink {
 	 */
 	public function image_downsize( $should_resize, $id, $size ) {
 		$unsplash_url = $this->get_unsplash_url( $id );
-		if ( ! $unsplash_url ) {
+		$cropped      = $this->is_cropped_image( $id );
+		if ( ! $unsplash_url || $cropped ) {
 			return $should_resize;
 		}
 		$image_meta = wp_get_attachment_metadata( $id );
 		$image_size = ( isset( $image_meta['sizes'] ) ) ? $image_meta['sizes'] : [];
 		$sizes      = $this->plugin->image_sizes();
+
 		if ( is_array( $size ) ) {
 			// If array is passed, just use height and width.
 			list( $width, $height ) = $size;
@@ -355,7 +358,8 @@ class Hotlink {
 	 */
 	public function wp_calculate_image_srcset( $sources, $size_array, $image_src, $image_meta, $attachment_id ) {
 		$unsplash_url = $this->get_unsplash_url( $attachment_id );
-		if ( ! $unsplash_url ) {
+		$cropped      = $this->is_cropped_image( $attachment_id );
+		if ( ! $unsplash_url || $cropped ) {
 			return $sources;
 		}
 
@@ -477,6 +481,7 @@ class Hotlink {
 		return [ $width, $height ];
 	}
 
+
 	/**
 	 * Helper to get original url from post meta.
 	 *
@@ -486,6 +491,17 @@ class Hotlink {
 	 */
 	protected function get_unsplash_url( $id ) {
 		return get_post_meta( $id, 'original_url', true );
+	}
+
+	/**
+	 * Is cropped image.
+	 *
+	 * @param int $id Attachment ID.
+	 *
+	 * @return boolean    Is cropped image.
+	 */
+	public function is_cropped_image( $id ) {
+		return (bool) get_post_meta( $id, '_wp_attachment_backup_sizes', true );
 	}
 
 
@@ -559,11 +575,11 @@ class Hotlink {
 		if ( ! $unsplash_url ) {
 			return $caption;
 		}
-	
+
 
 		return wp_strip_all_tags( $caption );
 	}
-  
+
 	/**
 	 * Filters the content of a single block.
 	 *
