@@ -418,8 +418,8 @@ class Rest_Controller extends WP_REST_Controller {
 					break;
 				default:
 					$message = get_status_header_desc( $error_status );
-					if( empty ( $message ) ){
-						$message      = $this->format_exception($code, 500 );
+					if ( empty( $message ) ) {
+						$message = $this->format_exception( $code, 500 );
 					}
 					break;
 			}
