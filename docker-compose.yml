@@ -21,6 +21,7 @@ services:
       context: ./bin/local-dev/wordpress
       args:
         WP_VERSION: ${WP_VERSION}
+        PHP_VERSION: ${PHP_VERSION}
     depends_on:
       - mysql
     ports:
