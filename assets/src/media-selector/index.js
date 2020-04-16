@@ -1,7 +1,7 @@
 /**
  * WordPress dependencies
  */
-import { addFilter } from '@wordpress/hooks';
+import apiFetch from '@wordpress/api-fetch';
 
 /**
  * Internal dependencies
@@ -50,3 +50,12 @@ addFilter(
  */
 wp.media.controller.Library.prototype.defaults.contentUserSetting = false;
 wp.media.controller.FeaturedImage.prototype.defaults.contentUserSetting = false;
+
+// The nonce middleware is not available in WP 4.9, so the nonce will have to be set manually.
+if ( ! wp.apiFetch.nonceMiddleware ) {
+	const { wpApiSettings } = window;
+	if ( wpApiSettings && wpApiSettings.nonce ) {
+		const nonce = wpApiSettings.nonce;
+		apiFetch.use( apiFetch.createNonceMiddleware( nonce ) );
+	}
+}
