@@ -68,6 +68,56 @@ class Plugin extends Plugin_Base {
 	}
 
 	/**
+	 * Polyfill dependencies needed to enqueue our assets.
+	 *
+	 * @action wp_default_scripts
+	 *
+	 * @param WP_Scripts $wp_scripts Scripts.
+	 */
+	public function register_default_scripts( $wp_scripts ) {
+		/*
+		* Polyfill dependencies that are registered in Gutenberg and WordPress 5.0.
+		* Note that Gutenberg will override these at wp_enqueue_scripts if it is active.
+		*/
+		$handles = [
+			'wp-api-fetch',
+			'wp-i18n',
+			'wp-polyfill',
+			'wp-url',
+		];
+
+		foreach ( $handles as $handle ) {
+			if ( ! isset( $wp_scripts->registered[ $handle ] ) ) {
+				$asset_file   = $this->dir_path . '/assets/js/' . $handle . '.asset.php';
+				$asset        = require $asset_file;
+				$dependencies = $asset['dependencies'];
+				$version      = $asset['version'];
+
+				$wp_scripts->add(
+					$handle,
+					$this->asset_url( sprintf( 'assets/js/%s.js', $handle ) ),
+					$dependencies,
+					$version
+				);
+			}
+		}
+
+		$vendor_scripts = [
+			'lodash' => [
+				'dependencies' => [],
+				'version'      => '4.17.15',
+			],
+		];
+		foreach ( $vendor_scripts as $handle => $handle_data ) {
+			if ( ! isset( $wp_scripts->registered[ $handle ] ) ) {
+				$path = $this->asset_url( sprintf( 'assets/js/vendor/%s.js', $handle ) );
+
+				$wp_scripts->add( $handle, $path, $handle_data['dependencies'], $handle_data['version'], 1 );
+			}
+		}
+	}
+
+	/**
 	 * Load our media selector assets.
 	 *
 	 * @action wp_enqueue_media
