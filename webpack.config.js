@@ -72,6 +72,9 @@ const mediaSelector = {
 	...sharedConfig,
 	entry: {
 		'media-selector': [ './assets/src/media-selector/index.js' ],
+		'featured-image-selector': [
+			'./assets/src/media-selector/featured-image-selector.js',
+		],
 	},
 	plugins: [
 		...sharedConfig.plugins,

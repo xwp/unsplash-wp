@@ -135,6 +135,8 @@ class Plugin extends Plugin_Base {
 		if ( 'post' !== $screen->base ) {
 			return false;
 		}
+
+		// Enqueue media selector JS.
 		$asset_file = $this->dir_path . '/assets/js/media-selector.asset.php';
 		$asset      = is_readable( $asset_file ) ? require $asset_file : [];
 		$version    = isset( $asset['version'] ) ? $asset['version'] : $this->asset_version();
@@ -172,6 +174,30 @@ class Plugin extends Plugin_Base {
 			]
 		);
 
+		/*
+		 * If the block editor is available, the featured image selector in the editor will need to be overridden. This
+		 * is an extension of the media selector enqueued above and is separated from it because the required dependencies
+		 * are not available in WP < 5.0. It would not make sense to polyfill these dependencies anyways since the block
+		 * editor is not officially compatible with WP < 5.0.
+		 */
+		if ( has_action( 'enqueue_block_assets' ) ) {
+			$asset_file = $this->dir_path . '/assets/js/featured-image-selector.asset.php';
+			$asset      = is_readable( $asset_file ) ? require $asset_file : [];
+			$version    = isset( $asset['version'] ) ? $asset['version'] : $this->asset_version();
+
+			$dependencies   = isset( $asset['dependencies'] ) ? $asset['dependencies'] : [];
+			$dependencies[] = 'unsplash-featured-image-selector';
+
+			wp_enqueue_script(
+				'unsplash-featured-image-selector',
+				$this->asset_url( 'assets/js/featured-image-selector.js' ),
+				$dependencies,
+				$version,
+				true
+			);
+		}
+
+		// Enqueue media selector CSS.
 		wp_enqueue_style(
 			'unsplash-media-selector-style',
 			$this->asset_url( 'assets/css/media-selector-compiled.css' ),
