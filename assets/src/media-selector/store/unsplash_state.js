@@ -15,7 +15,6 @@ const UnsplashState = State.extend( {
 		menu: 'unsplash',
 		router: false,
 		priority: -60,
-		refreshThreshold: 20,
 		filterable: 'uploaded',
 		multiple: 'add',
 		editable: false,
