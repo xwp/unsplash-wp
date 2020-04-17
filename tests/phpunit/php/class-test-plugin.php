@@ -51,6 +51,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 	public function test_construct() {
 		$plugin = new Plugin();
 		$this->assertEquals( 10, has_action( 'plugins_loaded', [ $plugin, 'init' ] ) );
+		$this->assertEquals( 10, has_action( 'wp_default_scripts', [ $plugin, 'register_default_scripts' ] ) );
 		$this->assertEquals( 10, has_action( 'wp_enqueue_media', [ $plugin, 'enqueue_media_scripts' ] ) );
 		$this->assertEquals( 10, has_action( 'init', [ $plugin, 'register_taxonomy' ] ) );
 		$this->assertEquals( 10, has_action( 'init', [ $plugin, 'register_meta' ] ) );
@@ -81,6 +82,9 @@ class Test_Plugin extends \WP_UnitTestCase {
 		$plugin = get_plugin_instance();
 		$plugin->enqueue_media_scripts();
 		$this->assertTrue( wp_script_is( 'unsplash-media-selector', 'enqueued' ) );
+
+		$featured_image_script_loads = version_compare( '5.0', get_bloginfo( 'version' ), '>=' );
+		$this->assertEquals( $featured_image_script_loads, wp_script_is( 'unsplash-featured-image-selector', 'enqueued' ) );
 	}
 
 	/**
@@ -155,7 +159,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 	 * @see Plugin::wp_prepare_attachment_for_js()
 	 * @covers ::wp_prepare_attachment_for_js
 	 * @covers ::add_image_sizes
-	 * @covers ::get_image_height 
+	 * @covers ::get_image_height
 	 */
 	public function test_wp_prepare_attachment_for_js() {
 		$plugin = get_plugin_instance();
