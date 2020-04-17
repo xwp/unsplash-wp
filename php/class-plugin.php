@@ -186,7 +186,7 @@ class Plugin extends Plugin_Base {
 			$version    = isset( $asset['version'] ) ? $asset['version'] : $this->asset_version();
 
 			$dependencies   = isset( $asset['dependencies'] ) ? $asset['dependencies'] : [];
-			$dependencies[] = 'unsplash-featured-image-selector';
+			$dependencies[] = 'unsplash-media-selector';
 
 			wp_enqueue_script(
 				'unsplash-featured-image-selector',
