@@ -179,6 +179,6 @@ class Image {
 			'https://unsplash.com/'
 		);
 		/* translators: 1: User URL, 2: User's name, 3: Unsplash URL */
-		return sprintf( __( 'Photo by <a href="%1$s">%2$s</a> on <a href="%3$s">Unsplash</a>.', 'unsplash' ), esc_url( $user_url ), $user_name, esc_url( $url ) );
+		return sprintf( __( 'Photo by <a href="%1$s">%2$s</a> on <a href="%3$s">Unsplash</a> ', 'unsplash' ), esc_url( $user_url ), $user_name, esc_url( $url ) );
 	}
 }
