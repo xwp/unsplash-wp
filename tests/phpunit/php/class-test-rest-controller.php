@@ -130,7 +130,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		foreach ( $data as $photo_object ) {
 			$expected_keys = [
 				'id',
-				'unsplashId',
+				'unsplash_order',
 				'title',
 				'filename',
 				'url',
@@ -208,7 +208,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		$request->set_header( 'X-Requested-With', 'XMLHttpRequest' );
 
 		$expected = [
-			'id'            => 'unsplash-0',
+			'id'            => 'rO8TdlRrOo0',
 			'title'         => '',
 			'filename'      => 'ro8tdlrroo0.jpeg',
 			'url'           => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
@@ -268,7 +268,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 					'orientation' => 0,
 				],
 			],
-			'unsplashId'    => 'rO8TdlRrOo0',
+			'unsplash_order' => 0
 		];
 
 		if ( version_compare( '5.2', get_bloginfo( 'version' ), '<' ) ) {
@@ -856,8 +856,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 
 		$rest_controller = new Rest_Controller( new Plugin() );
 		$actual          = $rest_controller->set_unique_media_id( $photo, $index, $page, $per_page );
-		$this->assertEquals( 'unsplash-23', $actual['id'] );
-		$this->assertEquals( 'rO8TdlRrOo0', $actual['unsplash_id'] );
+		$this->assertEquals( '23', $actual['unsplash_order'] );
 	}
 
 	/**

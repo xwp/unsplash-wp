@@ -50,7 +50,7 @@ class Image {
 	 * Process image and format data in the correct format.
 	 */
 	public function process_fields() {
-		$this->process_data['original_id']       = strtolower( $this->get_image_field( 'unsplash_id', $this->get_image_field( 'id' ) ) );
+		$this->process_data['original_id']       = strtolower( $this->get_image_field( 'id' ) );
 		$this->process_data['description']       = $this->get_image_field( 'description', $this->get_image_field( 'alt_description' ) );
 		$this->process_data['alt']               = $this->get_image_field( 'alt_description', $this->get_image_field( 'description' ) );
 		$this->process_data['original_url']      = $this->get_image_url( 'raw' );
@@ -178,7 +178,7 @@ class Image {
 			],
 			'https://unsplash.com/'
 		);
-		// Whitespace at end of caption is required. 
+		// Whitespace at end of caption is required.
 		/* translators: 1: User URL, 2: User's name, 3: Unsplash URL */
 		return sprintf( __( 'Photo by <a href="%1$s">%2$s</a> on <a href="%3$s">Unsplash</a> ', 'unsplash' ), esc_url( $user_url ), $user_name, esc_url( $url ) );
 	}
