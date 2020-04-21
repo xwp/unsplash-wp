@@ -75,6 +75,11 @@ class Plugin extends Plugin_Base {
 	 * @param WP_Scripts $wp_scripts Scripts.
 	 */
 	public function register_default_scripts( $wp_scripts ) {
+		// Nothing to do if we're on WP 5.0+.
+		if ( version_compare( '5.0', get_bloginfo( 'version' ), '<=' ) ) {
+			return;
+		}
+
 		/*
 		* Polyfill dependencies that are registered in Gutenberg and WordPress 5.0.
 		* Note that Gutenberg will override these at wp_enqueue_scripts if it is active.
