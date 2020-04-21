@@ -412,6 +412,42 @@ class Hotlink {
 	}
 
 	/**
+	 * Filters the URL to the original unsplash URL.
+	 *
+	 * @filter wp_get_original_image_url, 10, 2
+	 *
+	 * @param string $original_image_url URL to original image.
+	 * @param int    $attachment_id      Attachment ID.
+	 */
+	public function wp_get_original_image_url( $original_image_url, $attachment_id ) {
+		$link = get_post_meta( $attachment_id, 'original_link', true );
+		if ( ! $link ) {
+			return $original_image_url;
+		}
+
+
+		return $link;
+	}
+
+	/**
+	 * Filters the path the word unsplash.
+	 *
+	 * @filter wp_get_original_image_path, 10, 2
+	 *
+	 * @param string $original_image     Image path.
+	 * @param int    $attachment_id      Attachment ID.
+	 */
+	public function wp_get_original_image_path( $original_image, $attachment_id ) {
+		$link = get_post_meta( $attachment_id, 'original_link', true );
+		if ( ! $link ) {
+			return $original_image;
+		}
+
+		return __( 'Unsplash', 'unsplash' );
+	}
+
+
+	/**
 	 * Get image size.
 	 *
 	 * @param string $img_tag An HTML 'img' element to be filtered.

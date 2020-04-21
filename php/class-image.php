@@ -76,6 +76,7 @@ class Image {
 		$this->process_data['created_at']        = $this->get_image_field( 'created_at', current_time( 'mysql' ) );
 		$this->process_data['updated_at']        = $this->get_image_field( 'updated_at', current_time( 'mysql' ) );
 		$this->process_data['links']             = $this->get_image_field( 'links', [ 'html' => '' ] );
+		$this->process_data['original_link']     = $this->process_data['links']['html'];
 		$this->process_data['user']              = $this->get_image_field(
 			'user',
 			[
