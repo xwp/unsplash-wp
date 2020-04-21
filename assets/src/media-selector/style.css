@@ -12,6 +12,19 @@
 }
 
 /**
+ * Spinner next legend.
+ */
+
+.unsplash-browser .search-form .unsplash-search-input-label {
+	float: left;
+}
+
+.unsplash-browser .search-form .spinner {
+	float: left;
+	margin: 5px 0 0 5px;
+}
+
+/**
  * Masonry layout
  */
 .unsplash-browser.attachments-browser .media-toolbar-primary {
