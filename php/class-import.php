@@ -212,6 +212,7 @@ class Import {
 			'color'                        => 'color',
 			'original_id'                  => 'original_id',
 			'original_url'                 => 'original_url',
+			'original_link'                => 'original_link',
 			'unsplash_location'            => 'unsplash_location',
 			'unsplash_sponsor'             => 'unsplash_sponsor',
 			'unsplash_exif'                => 'unsplash_exif',

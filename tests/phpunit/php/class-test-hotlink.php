@@ -57,6 +57,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		);
 
 		update_post_meta( self::$attachment_id, 'original_url', 'https://images.unsplash.com/test.jpg' );
+		update_post_meta( self::$attachment_id, 'original_link', 'https://www.unsplash.com/foo' );
 		self::$image_tag = get_image_tag( self::$attachment_id, 'alt', 'title', 'left' );
 	}
 
@@ -606,6 +607,62 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Test wp_get_original_image_url.
+	 *
+	 * @covers ::wp_get_original_image_url()
+	 */
+	public function test_wp_get_original_image_url() {
+		$result = $this->hotlink->wp_get_original_image_url( '', self::$attachment_id );
+		$this->assertEquals( $result, 'https://www.unsplash.com/foo' );
+	}
+
+	/**
+	 * Test wp_get_original_image_url.
+	 *
+	 * @covers ::wp_get_original_image_url()
+	 */
+	public function test_no_wp_get_original_image_url() {
+		$second_id = $this->factory->attachment->create_object(
+			'/tmp/banana.jpg',
+			0,
+			[
+				'post_mime_type' => 'image/jpeg',
+				'post_excerpt'   => 'A sample caption 2',
+			]
+		);
+		$result    = $this->hotlink->wp_get_original_image_url( 'https://www.example.com/', $second_id );
+		$this->assertEquals( 'https://www.example.com/', $result );
+	}
+
+	/**
+	 * Test wp_get_original_image_path.
+	 *
+	 * @covers ::wp_get_original_image_path()
+	 */
+	public function test_wp_get_original_image_path() {
+		$result = $this->hotlink->wp_get_original_image_path( '', self::$attachment_id );
+		$this->assertEquals( $result, 'Unsplash' );
+	}
+
+	/**
+	 * Test wp_get_original_image_path.
+	 *
+	 * @covers ::wp_get_original_image_path()
+	 */
+	public function test_no_wp_get_original_image_path() {
+		$second_id = $this->factory->attachment->create_object(
+			'/tmp/banana.jpg',
+			0,
+			[
+				'post_mime_type' => 'image/jpeg',
+				'post_excerpt'   => 'A sample caption 2',
+			]
+		);
+		$result    = $this->hotlink->wp_get_original_image_path( 'Testing', $second_id );
+		$this->assertEquals( 'Testing', $result );
+	}
+
+	/**
 	 * Test is_cropped_image.
 	 *
 	 * @covers ::is_cropped_image()
@@ -619,6 +676,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 				'post_excerpt'   => 'A sample caption 2',
 			]
 		);
+
 		$this->assertFalse( $this->hotlink->is_cropped_image( $second_id ) );
 		update_post_meta( $second_id, '_wp_attachment_backup_sizes', [ 'foo' => 'bar' ] );
 		$this->assertTrue( $this->hotlink->is_cropped_image( $second_id ) );
