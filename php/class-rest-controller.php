@@ -190,7 +190,7 @@ class Rest_Controller extends WP_REST_Controller {
 
 		try {
 			$api_response = $cache->get_cache();
-			if ( ! $api_response instanceof Api_Cache || false === $api_response ) {
+			if ( false === $api_response ) {
 				$this->http_client_init();
 				$api_response = Photo::all( $page, $per_page, $order_by );
 				$cache->set_cache( $api_response );
@@ -233,7 +233,7 @@ class Rest_Controller extends WP_REST_Controller {
 
 		try {
 			$api_response = $cache->get_cache();
-			if ( ! $api_response instanceof Api_Cache || false === $api_response ) {
+			if ( false === $api_response ) {
 				$this->http_client_init();
 				$api_response = Photo::find( $id );
 				$cache->set_cache( $api_response );
@@ -344,7 +344,7 @@ class Rest_Controller extends WP_REST_Controller {
 
 		try {
 			$api_response = $cache->get_cache();
-			if ( ! $api_response instanceof Api_Cache || false === $api_response ) {
+			if ( false === $api_response ) {
 				$this->http_client_init();
 				$api_response = Search::photos( $search, $page, $per_page, $orientation, $collections );
 				$cache->set_cache( $api_response );
