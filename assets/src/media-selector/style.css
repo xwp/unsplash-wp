@@ -75,6 +75,14 @@
 	top: 35px;
 }
 
+@media only screen and (max-width: 640px), screen and (max-height: 400px) {
+
+	.media-frame .unsplash-browser .no-media,
+	.media-frame .unsplash-browser .attachments {
+		right: 0;
+	}
+}
+
 .wp-core-ui  .unsplash-attachment .thumbnail {
 	margin: 8px;
 }
