@@ -128,15 +128,16 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 		}
 	},
 	showError() {
-		const view = this;
-		const errorView = view.attachmentsError;
+		const errorView = this.attachmentsError;
+		const toolbarView = this.toolbar;
 		if (
-			! view.collection.respSuccess() &&
-			view.collection.respErrorMessage()
+			! this.collection.respSuccess() &&
+			this.collection.respErrorMessage()
 		) {
-			const error = view.collection.respErrorMessage();
+			const error = this.collection.respErrorMessage();
 			errorView.$el.html( error.message );
 			errorView.$el.removeClass( 'hidden' );
+			toolbarView.$el.addClass( 'hidden' );
 		}
 	},
 	updateLayout() {
