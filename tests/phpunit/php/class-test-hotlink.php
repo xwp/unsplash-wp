@@ -640,7 +640,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	 * @covers ::wp_get_original_image_path()
 	 */
 	public function test_wp_get_original_image_path() {
-		$result = $this->hotlink->wp_get_original_image_url( '', self::$attachment_id );
+		$result = $this->hotlink->wp_get_original_image_path( '', self::$attachment_id );
 		$this->assertEquals( $result, 'Unsplash' );
 	}
 
