@@ -83,7 +83,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 		$plugin->enqueue_media_scripts();
 		$this->assertTrue( wp_script_is( 'unsplash-media-selector', 'enqueued' ) );
 
-		$featured_image_script_loads = version_compare( '5.0', get_bloginfo( 'version' ), '>=' );
+		$featured_image_script_loads = version_compare( '5.0', get_bloginfo( 'version' ), '<=' );
 		$this->assertEquals( $featured_image_script_loads, wp_script_is( 'unsplash-featured-image-selector', 'enqueued' ) );
 	}
 
