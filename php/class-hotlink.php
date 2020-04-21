@@ -396,7 +396,8 @@ class Hotlink {
 	 */
 	public function replace_image( $img_tag, $img_src, $attachment_id ) {
 		$unsplash_url = $this->get_unsplash_url( $attachment_id );
-		if ( ! $unsplash_url ) {
+		$cropped      = $this->is_cropped_image( $attachment_id );
+		if ( ! $unsplash_url || $cropped ) {
 			return $img_tag;
 		}
 
