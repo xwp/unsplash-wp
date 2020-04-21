@@ -10,6 +10,7 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 			arguments
 		);
 
+		this.collection.on( 'add remove reset', this.focusInput, this );
 		this.collection.on( 'add remove reset', this.updateLayout, this );
 	},
 
@@ -31,27 +32,31 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 				attributes: {
 					for: 'media-search-input',
 				},
-				priority: 70,
+				priority: 50,
 			} ).render()
 		);
 
+		this.searchFilter = new wp.media.view.Search( {
+			controller: this.controller,
+			model: this.collection.props,
+			priority: 60,
+			className: 'unsplash-search',
+			id: 'unsplash-search-input',
+			attributes: {
+				type: 'search',
+				placeholder: toolbar.filters.search.placeholder,
+				autofocus: true,
+			},
+		} );
+
 		// Create search filter.
-		this.toolbar.set(
-			'searchFilter',
-			new wp.media.view.Search( {
-				controller: this.controller,
-				model: this.collection.props,
-				priority: 60,
-				className: 'unsplash-search',
-				id: 'unsplash-search-input',
-			} ).render()
-		);
+		this.toolbar.set( 'searchFilter', this.searchFilter.render() );
 
 		// TODO: replace with better loading indicator.
 		this.toolbar.set(
 			'spinner',
 			new wp.media.view.Spinner( {
-				priority: 80,
+				priority: 55,
 			} )
 		);
 	},
@@ -120,6 +125,15 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 	updateLayout() {
 		this.attachments.setupMacy();
 		this.attachments.refreshMacy();
+	},
+	focusInput() {
+		if (
+			this.searchFilter &&
+			this.searchFilter.$el &&
+			! this.searchFilter.$el.val()
+		) {
+			this.searchFilter.$el.focus();
+		}
 	},
 } );
 

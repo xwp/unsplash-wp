@@ -26,13 +26,20 @@
 
 .unsplash-browser.attachments-browser .unsplash-search-input-label {
 	display: block;
-	margin: 5px 0 0;
+	float: left;
+	margin: 5px 0;
+	font-weight: bold;
+}
+
+.unsplash-browser .media-toolbar .spinner {
+	float: right;
 }
 
 .unsplash-browser.attachments-browser .unsplash-search {
 	width: 100%;
 	padding: 5px 10px;
 	margin: 0;
+	clear: both;
 }
 
 .wp-core-ui .unsplash-browser .attachment-preview {
