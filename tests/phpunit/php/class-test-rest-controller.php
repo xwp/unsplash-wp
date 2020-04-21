@@ -1115,12 +1115,12 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 */
 	public function data_test_format_exception() {
 		return [
-			[ 'test_500', 500, 'Unsplash Server error. Please check and try again.' ],
-			[ 'test_401', 401, 'Unable to connect to api because of the authication error. ' ],
-			[ 'test_403', 403, 'Forbidden to connect to api because of the authication error. ' ],
+			[ 'test_500', 500, 'Server error. An error occurred contacting the Unsplash API.' ],
+			[ 'test_401', 401, 'Request unauthorized. Please check your API credentials.' ],
+			[ 'test_403', 403, 'Request forbidden. Please check your API credentials.' ],
 			[ 'test_418', 418, 'I\'m a teapot' ],
-			[ 'test_0', 0, 'Unsplash Server error. Please check and try again.' ],
-			[ 'test_foo', 'foo', 'Unsplash Server error. Please check and try again.' ],
+			[ 'test_0', 0, 'Server error. An error occurred contacting the Unsplash API.' ],
+			[ 'test_foo', 'foo', 'Server error. An error occurred contacting the Unsplash API.' ],
 		];
 	}
 

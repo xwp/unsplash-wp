@@ -447,13 +447,13 @@ class Rest_Controller extends WP_REST_Controller {
 		if ( is_numeric( $error_status ) ) {
 			switch ( $error_status ) {
 				case 401:
-					$message = __( 'Unable to connect to api because of the authication error. ', 'unsplash' );
+					$message = __( 'Request unauthorized. Please check your API credentials.', 'unsplash' );
 					break;
 				case 403:
-					$message = __( 'Forbidden to connect to api because of the authication error. ', 'unsplash' );
+					$message = __( 'Request forbidden. Please check your API credentials.', 'unsplash' );
 					break;
 				case 500:
-					$message = __( 'Unsplash Server error. Please check and try again.', 'unsplash' );
+					$message = __( 'Server error. An error occurred contacting the Unsplash API.', 'unsplash' );
 					break;
 				default:
 					$message = get_status_header_desc( $error_status );
