@@ -1116,8 +1116,8 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	public function data_test_format_exception() {
 		return [
 			[ 'test_500', 500, 'Server error. An error occurred contacting the Unsplash API.' ],
-			[ 'test_401', 401, 'Request unauthorized. Please check your API credentials.' ],
-			[ 'test_403', 403, 'Request forbidden. Please check your API credentials.' ],
+			[ 'test_401', 401, 'Request unauthorized. Please check your Unsplash settings.' ],
+			[ 'test_403', 403, 'Request forbidden. Please check your Unsplash settings.' ],
 			[ 'test_418', 418, 'I\'m a teapot' ],
 			[ 'test_0', 0, 'Server error. An error occurred contacting the Unsplash API.' ],
 			[ 'test_foo', 'foo', 'Server error. An error occurred contacting the Unsplash API.' ],
@@ -1138,7 +1138,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		$rest_controller = new Rest_Controller( new Plugin() );
 		$wp_error        = $rest_controller->format_exception( $code, $error_status );
 		$this->assertEquals( $wp_error->get_error_code(), $code );
-		$this->assertEquals( $wp_error->get_error_message(), $message );
+		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), $message );
 	}
 
 	/**
@@ -1162,7 +1162,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		$rest_controller = new Rest_Controller( new Plugin() );
 		$wp_error        = $rest_controller->check_api_credentials();
 		$this->assertEquals( $wp_error->get_error_code(), 'missing_api_credential' );
-		$this->assertEquals( $wp_error->get_error_message(), 'The following API credential is missing: applicationId.' );
+		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), 'The following API credential is missing: applicationId. Please go to Unsplash settings to setup this plugin.' );
 		remove_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
 	}
 

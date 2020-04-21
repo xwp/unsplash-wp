@@ -11,6 +11,11 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 		);
 
 		this.collection.on( 'add remove reset', this.updateLayout, this );
+		this.collection.on(
+			'add remove reset attachments:received',
+			this.showError,
+			this
+		);
 	},
 
 	createToolbar() {
@@ -141,7 +146,6 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 		}
 	},
 	updateLayout() {
-		this.showError();
 		this.attachments.setupMacy();
 		this.attachments.refreshMacy();
 	},

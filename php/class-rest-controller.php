@@ -447,10 +447,12 @@ class Rest_Controller extends WP_REST_Controller {
 		if ( is_numeric( $error_status ) ) {
 			switch ( $error_status ) {
 				case 401:
-					$message = __( 'Request unauthorized. Please check your API credentials.', 'unsplash' );
+					/* translators: %s: Link to settings page. */
+					$message = sprintf( __( 'Request unauthorized. Please check your <a href="%s">Unsplash settings</a>.', 'unsplash' ), get_admin_url( null, 'options-general.php?page=unsplash' ) );
 					break;
 				case 403:
-					$message = __( 'Request forbidden. Please check your API credentials.', 'unsplash' );
+					/* translators: %s: Link to settings page. */
+					$message = sprintf( __( 'Request forbidden. Please check your <a href="%s">Unsplash settings</a>.', 'unsplash' ), get_admin_url( null, 'options-general.php?page=unsplash' ) );
 					break;
 				case 500:
 					$message = __( 'Server error. An error occurred contacting the Unsplash API.', 'unsplash' );
@@ -479,8 +481,12 @@ class Rest_Controller extends WP_REST_Controller {
 			if ( empty( $value ) ) {
 				return new WP_Error(
 					'missing_api_credential',
-					/* translators: %s: missing API  credential */
-					sprintf( __( 'The following API credential is missing: %s.', 'unsplash' ), $key ),
+					sprintf(
+						/* translators: 1: Missing api credential, 2: Link to settings page */
+						__( 'The following API credential is missing: %1$s. Please go to <a href="%2$s">Unsplash settings</a> to setup this plugin.', 'unsplash' ),
+						$key,
+						get_admin_url( null, 'options-general.php?page=unsplash' )
+					),
 					[
 						'status' => rest_authorization_required_code(),
 						'data'   => $key,
