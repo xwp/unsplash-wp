@@ -43,6 +43,22 @@ const ImagesCollection = wp.media.model.Attachments.extend(
 				delete this.comparator;
 			}
 		},
+		/**
+		 * Get value of respSuccess from mirrored object.
+		 *
+		 * @return {boolean} True / false, response sucesss.
+		 */
+		respSuccess() {
+			return this.mirroring ? this.mirroring.respSuccess() : true;
+		},
+		/**
+		 * Get value of respErrorMessage from mirrored object.
+		 *
+		 * @return {Object} Error object.
+		 */
+		respErrorMessage() {
+			return this.mirroring ? this.mirroring.respErrorMessage() : {};
+		},
 	},
 	{
 		/**

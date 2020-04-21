@@ -58,6 +58,7 @@
 	padding-top: 0;
 }
 
+.media-frame .unsplash-browser .unsplash-error,
 .media-frame .unsplash-browser .no-media,
 .media-frame .unsplash-browser .attachments {
 	position: absolute !important;
@@ -66,6 +67,12 @@
 	right: 310px;
 	left: 10px;
 	padding: 0;
+}
+
+.media-frame .unsplash-browser .unsplash-error {
+	padding: 15px 20px;
+	font-size: 1.4em;
+	top: 20px;
 }
 
 .media-frame .unsplash-browser .no-media {
