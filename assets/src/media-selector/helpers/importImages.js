@@ -1,5 +1,6 @@
-import apiFetch from '@wordpress/api-fetch';
-
+/**
+ * Internal dependencies
+ */
 import isUnsplashImage from './isUnsplashImage';
 import getConfig from './getConfig';
 
@@ -28,18 +29,19 @@ export default selections => {
 const importImage = image => {
 	const { unsplashId } = image.attributes;
 	const importUrl = getConfig( 'route' ) + `/import/${ unsplashId }`;
-	const processUrl = getConfig( 'route' ) + `/post-process/`;
+	const processUrl = getConfig( 'route' ) + '/post-process/';
 
-	return apiFetch( { url: importUrl } )
-		.then( attachmentData => {
+	return wp
+		.apiRequest( { url: importUrl } )
+		.done( attachmentData => {
 			// Update image ID from imported attachment. This will be used to fetch the <img> tag.
 			// Note: `image.set()` is called rather than updating `image.id` directly so that potential Backbone event listeners can be fired.
 			image.set( {
 				...image.attributes,
 				...{ id: attachmentData.id, url: attachmentData.source_url },
 			} );
-			apiFetch( { url: processUrl + attachmentData.id } );
+			wp.apiRequest( { url: processUrl + attachmentData.id } );
 			return attachmentData;
 		} )
-		.catch( error => Promise.reject( { ...error, ...{ image } } ) );
+		.fail( error => jQuery.Deferred().reject( { ...error, ...{ image } } ) );
 };

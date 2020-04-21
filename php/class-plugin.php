@@ -85,7 +85,6 @@ class Plugin extends Plugin_Base {
 		* Note that Gutenberg will override these at wp_enqueue_scripts if it is active.
 		*/
 		$handles = [
-			'wp-api-fetch',
 			'wp-i18n',
 			'wp-polyfill',
 			'wp-url',

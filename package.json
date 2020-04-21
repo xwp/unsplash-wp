@@ -22,7 +22,6 @@
     "npm": ">=6.9"
   },
   "dependencies": {
-    "@wordpress/api-fetch": "^3.11.0",
     "@wordpress/hooks": "^2.8.0",
     "@wordpress/media-utils": "^1.9.1",
     "macy": "^2.5.1"

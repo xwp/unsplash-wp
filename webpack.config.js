@@ -94,7 +94,6 @@ const wpPolyfills = {
 			useDefaults: false,
 			requestToHandle: request => {
 				switch ( request ) {
-					case '@wordpress/api-fetch':
 					case '@wordpress/i18n':
 					case '@wordpress/polyfill':
 					case '@wordpress/url':
@@ -106,7 +105,6 @@ const wpPolyfills = {
 			},
 			requestToExternal: request => {
 				switch ( request ) {
-					case '@wordpress/api-fetch':
 					case '@wordpress/i18n':
 					case '@wordpress/polyfill':
 					case '@wordpress/url':
@@ -129,7 +127,6 @@ const wpPolyfills = {
 		} ),
 	],
 	entry: {
-		'wp-api-fetch': './assets/src/polyfills/wp-api-fetch.js',
 		'wp-i18n': './assets/src/polyfills/wp-i18n.js',
 		'wp-polyfill': './assets/src/polyfills/wp-polyfill.js',
 		'wp-url': './assets/src/polyfills/wp-url.js',
