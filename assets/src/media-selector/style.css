@@ -63,8 +63,9 @@
 }
 
 @media only screen and (max-width: 640px), screen and (max-height: 400px) {
+
 	.media-frame .unsplash-browser .no-media,
-	.media-frame .unsplash-browser .attachments  {
+	.media-frame .unsplash-browser .attachments {
 		right: 0;
 	}
 }
