@@ -14,17 +14,6 @@
 /**
  * Masonry layout
  */
-.unsplash-attachment {
-	opacity: 0;
-	transform: translateY(15px);
-}
-
-.unsplash-attachment[data-macy-complete] {
-	opacity: 1;
-	transform: translateY(0);
-	transition: top .2s ease-in-out, left .2s ease-in-out, opacity .2s ease-in-out, transform .2s ease-in-out;
-}
-
 .unsplash-browser.attachments-browser .media-toolbar-primary {
 	float: none;
 	max-width: 100%;
@@ -74,7 +63,7 @@
 }
 
 .wp-core-ui  .unsplash-attachment .thumbnail {
-	margin: 0;
+	margin: 12px;
 }
 
 .wp-core-ui  .unsplash-attachment:focus .thumbnail,
@@ -103,6 +92,7 @@
 }
 
 .wp-core-ui .unsplash-browser .unsplash-attachment img {
+	height: auto;
 	min-width: 100%;
 	max-width: 100%;
 	vertical-align: top;

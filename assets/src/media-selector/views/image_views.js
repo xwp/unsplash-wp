@@ -30,6 +30,8 @@ const ImageViews = wp.media.view.Attachments.extend( {
 		if ( this.macy ) {
 			// Only recalculate layout when all images in the container have been loaded.
 			this.macy.recalculateOnImageLoad( true );
+			// Recalculate layout for images that have been added while scrolling.
+			this.macy.recalculate();
 		}
 	},
 } );
