@@ -95,12 +95,11 @@ class Image {
 		];
 
 		$this->process_data['meta'] = [
-			'height'         => $this->process_data['height'],
-			'width'          => $this->process_data['width'],
-			'file'           => $this->process_data['file'],
-			'sizes'          => $this->process_data['sizes'],
-			'original_image' => $this->process_data['links']['html'],
-			'image_meta'     => [
+			'height'     => $this->process_data['height'],
+			'width'      => $this->process_data['width'],
+			'file'       => $this->process_data['file'],
+			'sizes'      => $this->process_data['sizes'],
+			'image_meta' => [
 				'aperture'          => $this->process_data['unsplash_exif']['aperture'],
 				'credit'            => $this->process_data['user']['name'],
 				'camera'            => $this->process_data['unsplash_exif']['model'],
