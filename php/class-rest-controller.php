@@ -36,6 +36,13 @@ class Rest_Controller extends WP_REST_Controller {
 	protected $post_type;
 
 	/**
+	 * API credentials.
+	 *
+	 * @var string
+	 */
+	protected $credentials = [];
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Plugin $plugin Instance of the plugin abstraction.
@@ -45,6 +52,22 @@ class Rest_Controller extends WP_REST_Controller {
 		$this->namespace = 'unsplash/v1';
 		$this->rest_base = 'photos';
 		$this->post_type = 'attachment';
+
+		$options     = get_option( 'unsplash_settings' );
+		$default_utm = ( getenv( 'UNSPLASH_UTM_SOURCE' ) ) ? getenv( 'UNSPLASH_UTM_SOURCE' ) : 'WordPress-XWP';
+
+		$this->credentials = [
+			'applicationId' => ! empty( $options['access_key'] ) ? $this->plugin->settings->decrypt( $options['access_key'] ) : getenv( 'UNSPLASH_ACCESS_KEY' ),
+			'secret'        => ! empty( $options['secret_key'] ) ? $this->plugin->settings->decrypt( $options['secret_key'] ) : getenv( 'UNSPLASH_SECRET_KEY' ),
+			'utmSource'     => ! empty( $options['utm_source'] ) ? $options['utm_source'] : $default_utm,
+		];
+		/**
+		 * Filter API credentials.
+		 *
+		 * @param array $credentials Array of API credentials.
+		 * @param array $options Unsplash settings.
+		 */
+		$this->credentials = apply_filters( 'unsplash_api_credentials', $this->credentials, $options );
 	}
 
 	/**
@@ -58,16 +81,7 @@ class Rest_Controller extends WP_REST_Controller {
 	 * HTTP client init.
 	 */
 	public function http_client_init() {
-		$options     = get_option( 'unsplash_settings' );
-		$default_utm = ( getenv( 'UNSPLASH_UTM_SOURCE' ) ) ? getenv( 'UNSPLASH_UTM_SOURCE' ) : 'WordPress-XWP';
-
-		HttpClient::init(
-			[
-				'applicationId' => ! empty( $options['access_key'] ) ? $this->plugin->settings->decrypt( $options['access_key'] ) : getenv( 'UNSPLASH_ACCESS_KEY' ),
-				'secret'        => ! empty( $options['secret_key'] ) ? $this->plugin->settings->decrypt( $options['secret_key'] ) : getenv( 'UNSPLASH_SECRET_KEY' ),
-				'utmSource'     => ! empty( $options['utm_source'] ) ? $options['utm_source'] : $default_utm,
-			]
-		);
+		HttpClient::init( $this->credentials );
 	}
 
 	/**
@@ -182,6 +196,7 @@ class Rest_Controller extends WP_REST_Controller {
 	 * @return WP_REST_Response Single page of photo results.
 	 */
 	public function get_items( $request ) {
+
 		$page     = $request->get_param( 'page' );
 		$per_page = $request->get_param( 'per_page' );
 		$order_by = $request->get_param( 'order_by' );
@@ -191,6 +206,10 @@ class Rest_Controller extends WP_REST_Controller {
 		try {
 			$api_response = $cache->get_cache();
 			if ( false === $api_response ) {
+				$check_api = $this->check_api_credentials();
+				if ( is_wp_error( $check_api ) ) {
+					return $this->rest_ensure_response( $check_api, $request );
+				}
 				$this->http_client_init();
 				$api_response = Photo::all( $page, $per_page, $order_by );
 				$cache->set_cache( $api_response );
@@ -208,16 +227,16 @@ class Rest_Controller extends WP_REST_Controller {
 				$photos[] = $this->prepare_response_for_collection( $data );
 			}
 
-			$response = rest_ensure_response( $photos );
+			$response = $this->rest_ensure_response( $photos, $request );
 			$response->header( 'X-WP-Total', (int) $total );
 			$response->header( 'X-WP-TotalPages', (int) $max_pages );
 			$response->header( 'X-WP-Unsplash-Cache-Hit', $cache->get_is_cached() );
 		} catch ( \Exception $e ) {
-			$response = new WP_Error( 'all-photos', __( 'An unknown error occurred while retrieving the photos', 'unsplash' ), [ 'status' => '500' ] );
+			$response = $this->format_exception( 'all-photos', $e->getCode() );
 			$this->plugin->log_error( $e );
 		}
 
-		return $response;
+		return $this->rest_ensure_response( $response, $request );
 	}
 
 	/**
@@ -234,6 +253,10 @@ class Rest_Controller extends WP_REST_Controller {
 		try {
 			$api_response = $cache->get_cache();
 			if ( false === $api_response ) {
+				$check_api = $this->check_api_credentials();
+				if ( is_wp_error( $check_api ) ) {
+					return $this->rest_ensure_response( $check_api, $request );
+				}
 				$this->http_client_init();
 				$api_response = Photo::find( $id );
 				$cache->set_cache( $api_response );
@@ -241,14 +264,15 @@ class Rest_Controller extends WP_REST_Controller {
 			$results = $api_response->toArray();
 			$photos  = $this->prepare_item_for_response( $results, $request );
 		} catch ( \Exception $e ) {
-			$photos = new WP_Error( 'single-photo', __( 'An unknown error occurred while retrieving the photo', 'unsplash' ), [ 'status' => '500' ] );
+			$photos = $this->format_exception( 'single-photo', $e->getCode() );
 			$this->plugin->log_error( $e );
 		}
 
-		$response = rest_ensure_response( $photos );
+		$response = $this->rest_ensure_response( $photos, $request );
 		$response->header( 'X-WP-Unsplash-Cache-Hit', $cache->get_is_cached() );
 
 		return $response;
+
 	}
 
 	/**
@@ -259,6 +283,10 @@ class Rest_Controller extends WP_REST_Controller {
 	 * @return WP_REST_Response|WP_Error Single page of photo results.
 	 */
 	public function get_import( $request ) {
+		$check_api = $this->check_api_credentials();
+		if ( is_wp_error( $check_api ) ) {
+			return $this->rest_ensure_response( $check_api, $request );
+		}
 		$id = $request->get_param( 'id' );
 
 		try {
@@ -275,15 +303,15 @@ class Rest_Controller extends WP_REST_Controller {
 			}
 
 			$response = $this->prepare_item_for_response( $results, $request );
-			$response = rest_ensure_response( $response );
+			$response = $this->rest_ensure_response( $response, $request );
 			$response->set_status( 301 );
 			$response->header( 'Location', rest_url( sprintf( '%s/%s/%d', 'wp/v2', 'media', $attachment_id ) ) );
 		} catch ( \Exception $e ) {
-			$response = new WP_Error( 'single-photo-download', __( 'An unknown error occurred while retrieving the photo', 'unsplash' ), [ 'status' => '500' ] );
+			$response = $this->format_exception( 'single-photo-download', $e->getCode() );
 			$this->plugin->log_error( $e );
 		}
 
-		return $response;
+		return $this->rest_ensure_response( $response, $request );
 	}
 
 	/**
@@ -321,9 +349,8 @@ class Rest_Controller extends WP_REST_Controller {
 			$this->plugin->log_error( $e );
 			return $response;
 		}
-		$response = new WP_REST_Response( $data );
 
-		return $response;
+		return $this->rest_ensure_response( $data, $request );
 	}
 
 	/**
@@ -345,6 +372,10 @@ class Rest_Controller extends WP_REST_Controller {
 		try {
 			$api_response = $cache->get_cache();
 			if ( false === $api_response ) {
+				$check_api = $this->check_api_credentials();
+				if ( is_wp_error( $check_api ) ) {
+					return $this->rest_ensure_response( $check_api, $request );
+				}
 				$this->http_client_init();
 				$api_response = Search::photos( $search, $page, $per_page, $orientation, $collections );
 				$cache->set_cache( $api_response );
@@ -363,16 +394,108 @@ class Rest_Controller extends WP_REST_Controller {
 				$photos[] = $this->prepare_response_for_collection( $data );
 			}
 
-			$response = rest_ensure_response( $photos );
+			$response = $this->rest_ensure_response( $photos, $request );
 			$response->header( 'X-WP-Total', (int) $total );
 			$response->header( 'X-WP-TotalPages', (int) $max_pages );
 			$response->header( 'X-WP-Unsplash-Cache-Hit', $cache->get_is_cached() );
 		} catch ( \Exception $e ) {
-			$response = new WP_Error( 'search-photos', __( 'An unknown error occurred while searching for a photo', 'unsplash' ), [ 'status' => '500' ] );
+			$response = $this->format_exception( 'search-photos', $e->getCode() );
 			$this->plugin->log_error( $e );
 		}
 
-		return $response;
+		return $this->rest_ensure_response( $response, $request );
+	}
+
+	/**
+	 * Format response for AJAX.
+	 *
+	 * @param  mixed           $response Response data.
+	 * @param  WP_REST_Request $request  Request.
+	 * @return  WP_REST_Response          Repsonse object.
+	 */
+	public function rest_ensure_response( $response, WP_REST_Request $request ) {
+		if ( $this->is_ajax_request( $request ) ) {
+			if ( is_wp_error( $response ) ) {
+				$wp_error = $response;
+				$response = array( 'success' => false );
+				$result   = array();
+				foreach ( $wp_error->errors as $code => $messages ) {
+					$data = ( isset( $wp_error->error_data[ $code ] ) ) ? $wp_error->error_data[ $code ] : [];
+					foreach ( $messages as $message ) {
+						$result[] = array(
+							'code'    => $code,
+							'message' => $message,
+							'data'    => $data,
+						);
+					}
+				}
+				$response['data'] = $result;
+			}
+		}
+		return rest_ensure_response( $response );
+	}
+
+	/**
+	 * Format exception into usable WP_Error objects.
+	 *
+	 * @param string|int $code Error code.
+	 * @param int        $error_status HTTP error state code. Default to 500.
+	 *
+	 * @return WP_Error
+	 */
+	public function format_exception( $code, $error_status = 500 ) {
+		if ( is_numeric( $error_status ) ) {
+			switch ( $error_status ) {
+				case 401:
+					/* translators: %s: Link to settings page. */
+					$message = sprintf( __( 'Request unauthorized. Please check your <a href="%s">Unsplash settings</a>.', 'unsplash' ), get_admin_url( null, 'options-general.php?page=unsplash' ) );
+					break;
+				case 403:
+					/* translators: %s: Link to settings page. */
+					$message = sprintf( __( 'Request forbidden. Please check your <a href="%s">Unsplash settings</a>.', 'unsplash' ), get_admin_url( null, 'options-general.php?page=unsplash' ) );
+					break;
+				case 500:
+					$message = __( 'Server error. An error occurred contacting the Unsplash API.', 'unsplash' );
+					break;
+				default:
+					$message = get_status_header_desc( $error_status );
+					if ( empty( $message ) ) {
+						return $this->format_exception( $code );
+					}
+					break;
+			}
+		} else {
+			return $this->format_exception( $code );
+		}
+
+		return new WP_Error( $code, $message, [ 'status' => $error_status ] );
+	}
+
+	/**
+	 * Check API credentials.
+	 *
+	 * @return bool|WP_Error
+	 */
+	public function check_api_credentials() {
+		foreach ( $this->credentials as $key => $value ) {
+			if ( empty( $value ) ) {
+				return new WP_Error(
+					'missing_api_credential',
+					sprintf(
+						/* translators: 1: Missing api credential, 2: Link to settings page */
+						__( 'The following API credential is missing: %1$s. Please go to <a href="%2$s">Unsplash settings</a> to setup this plugin.', 'unsplash' ),
+						$key,
+						get_admin_url( null, 'options-general.php?page=unsplash' )
+					),
+					[
+						'status' => rest_authorization_required_code(),
+						'data'   => $key,
+					]
+				);
+			}
+		}
+
+		return true;
 	}
 
 	/**
