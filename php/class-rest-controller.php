@@ -479,7 +479,8 @@ class Rest_Controller extends WP_REST_Controller {
 			if ( empty( $value ) ) {
 				return new WP_Error(
 					'missing_api_credential',
-					__( 'Please make sure that api credentials are setup before continuing. ', 'unsplash' ),
+					/* translators: %s: missing API  credential */
+					sprintf( __( 'The following API credential is missing: %s.', 'unsplash' ), $key ),
 					[
 						'status' => rest_authorization_required_code(),
 						'data'   => $key,

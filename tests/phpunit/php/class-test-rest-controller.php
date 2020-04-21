@@ -1162,7 +1162,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		$rest_controller = new Rest_Controller( new Plugin() );
 		$wp_error        = $rest_controller->check_api_credentials();
 		$this->assertEquals( $wp_error->get_error_code(), 'missing_api_credential' );
-		$this->assertEquals( $wp_error->get_error_message(), 'Please make sure that api credentials are setup before continuing. ' );
+		$this->assertEquals( $wp_error->get_error_message(), 'The following API credential is missing: applicationId.' );
 		remove_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
 	}
 
