@@ -101,7 +101,6 @@
     "build:prepare": "grunt clean",
     "build:js": "wp-scripts build",
     "build:run": "grunt build",
-    "build:run-composer": "composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --no-scripts --working-dir=build",
     "build:zip": "grunt create-build-zip",
     "dev": "wp-scripts start",
     "docker": "docker-compose run --rm -u 1000 --workdir=/var/www/html/wp-content/plugins/unsplash wordpress",
