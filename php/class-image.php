@@ -76,6 +76,7 @@ class Image {
 		$this->process_data['created_at']        = $this->get_image_field( 'created_at', current_time( 'mysql' ) );
 		$this->process_data['updated_at']        = $this->get_image_field( 'updated_at', current_time( 'mysql' ) );
 		$this->process_data['links']             = $this->get_image_field( 'links', [ 'html' => '' ] );
+		$this->process_data['original_link']     = $this->process_data['links']['html'];
 		$this->process_data['user']              = $this->get_image_field(
 			'user',
 			[
@@ -178,7 +179,8 @@ class Image {
 			],
 			'https://unsplash.com/'
 		);
+		// Whitespace at end of caption is required. 
 		/* translators: 1: User URL, 2: User's name, 3: Unsplash URL */
-		return sprintf( __( 'Photo by <a href="%1$s">%2$s</a> on <a href="%3$s">Unsplash</a>.', 'unsplash' ), esc_url( $user_url ), $user_name, esc_url( $url ) );
+		return sprintf( __( 'Photo by <a href="%1$s">%2$s</a> on <a href="%3$s">Unsplash</a> ', 'unsplash' ), esc_url( $user_url ), $user_name, esc_url( $url ) );
 	}
 }

@@ -12,6 +12,19 @@
 }
 
 /**
+ * Spinner next legend.
+ */
+
+.unsplash-browser .search-form .unsplash-search-input-label {
+	float: left;
+}
+
+.unsplash-browser .search-form .spinner {
+	float: left;
+	margin: 5px 0 0 5px;
+}
+
+/**
  * Masonry layout
  */
 .unsplash-browser.attachments-browser .media-toolbar-primary {
@@ -67,6 +80,14 @@
 	text-align: center;
 	left: 0;
 	top: 35px;
+}
+
+@media only screen and (max-width: 640px), screen and (max-height: 400px) {
+
+	.media-frame .unsplash-browser .no-media,
+	.media-frame .unsplash-browser .attachments {
+		right: 0;
+	}
 }
 
 .wp-core-ui  .unsplash-attachment .thumbnail {

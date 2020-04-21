@@ -325,6 +325,7 @@ class Plugin extends Plugin_Base {
 
 		$meta_args = [
 			'original_id'       => [],
+			'original_link'     => [],
 			'original_url'      => [
 				'type'         => 'string',
 				'show_in_rest' => [
