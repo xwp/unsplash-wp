@@ -207,7 +207,7 @@ abstract class Plugin_Base {
 	 *
 	 * @return string The URL to the asset.
 	 */
-	public function asset_url( $path_relative ) {
+	public function asset_url( $path_relative = '' ) {
 		return $this->dir_url . $path_relative;
 	}
 

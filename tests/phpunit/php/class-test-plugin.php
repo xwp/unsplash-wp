@@ -106,6 +106,36 @@ class Test_Plugin extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Test for register_default_scripts() method.
+	 *
+	 * @see Plugin::register_default_scripts()
+	 */
+	public function test_register_default_scripts() {
+		if ( version_compare( '5.0', get_bloginfo( 'version' ), '<=' ) ) {
+			$this->markTestSkipped( 'We only need to register scripts for WP < 5.0' );
+		}
+
+		$wp_scripts = new \WP_Scripts();
+
+		$plugin           = get_plugin_instance();
+		$plugin_asset_url = $plugin->asset_url();
+
+		$plugin->register_default_scripts( $wp_scripts );
+
+		$expected_handles = [
+			'wp-i18n',
+			'wp-polyfill',
+			'wp-url',
+			'lodash',
+		];
+
+		foreach ( $expected_handles as $expected_handle ) {
+			$this->assertContains( $expected_handle, array_keys( $wp_scripts->registered ) );
+			$this->assertContains( $plugin_asset_url, $wp_scripts->registered[ $expected_handle ]->src );
+		}
+	}
+
+	/**
 	 * Test for enqueue_media_scripts() method doeesn't load on widget
 	 *
 	 * @see Plugin::enqueue_media_scripts()
