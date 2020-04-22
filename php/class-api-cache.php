@@ -64,6 +64,14 @@ class Api_Cache {
 	 * @return mixed Value of transient.
 	 */
 	public function get_cache() {
+		/*
+		 * TODO: Remove once API solution is in place.
+		 *
+		 * This is intentional. It will be removed once we have our own API solution in place,
+		 * which will internally do caching.
+		 */
+		return false;
+
 		$transient       = get_transient( $this->key );
 		$this->is_cached = ! empty( $transient );
 		return $transient;
