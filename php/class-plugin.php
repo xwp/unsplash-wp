@@ -68,7 +68,7 @@ class Plugin extends Plugin_Base {
 	}
 
 	/**
-	 * Polyfill dependencies needed to enqueue our assets.
+	 * Polyfill dependencies needed to enqueue our assets on WordPress 4.9.
 	 *
 	 * @action wp_default_scripts
 	 *
@@ -80,10 +80,7 @@ class Plugin extends Plugin_Base {
 			return;
 		}
 
-		/*
-		* Polyfill dependencies that are registered in Gutenberg and WordPress 5.0.
-		* Note that Gutenberg will override these at wp_enqueue_scripts if it is active.
-		*/
+		// Polyfill dependencies that are registered in WordPress 4.9.
 		$handles = [
 			'wp-i18n',
 			'wp-polyfill',
