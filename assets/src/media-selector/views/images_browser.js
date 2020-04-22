@@ -11,8 +11,11 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 		);
 
 		// Update masonry layout only when a set of images (new page) is loaded.
-		this.collection.on( 'attachments:received', () =>
-			this.attachments.recalculateLayout()
+		this.collection.on( 'attachments:received', this.attachments.recalculateLayout, this );
+		this.collection.on(
+			'add remove reset attachments:received',
+			this.showError,
+			this
 		);
 	},
 
@@ -99,6 +102,15 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 		this.attachmentsNoResults.$el.append( `<p>${ noResults.noMedia }</p>` );
 
 		this.views.add( this.attachmentsNoResults );
+
+		this.attachmentsError = new wp.media.View( {
+			controller: this.controller,
+			tagName: 'div',
+		} );
+		this.attachmentsError.$el.addClass(
+			'hidden notice notice-error unsplash-error is-dismissible'
+		);
+		this.views.add( this.attachmentsError );
 	},
 
 	updateContent() {
@@ -114,10 +126,25 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 					noItemsView.$el.addClass( 'hidden' );
 				}
 				view.toolbar.get( 'spinner' ).hide();
+				view.showError();
 			} );
 		} else {
 			noItemsView.$el.addClass( 'hidden' );
 			view.toolbar.get( 'spinner' ).hide();
+			view.showError();
+		}
+	},
+	showError() {
+		const errorView = this.attachmentsError;
+		const toolbarView = this.toolbar;
+		if (
+			! this.collection.respSuccess() &&
+			this.collection.respErrorMessage()
+		) {
+			const error = this.collection.respErrorMessage();
+			errorView.$el.html( error.message );
+			errorView.$el.removeClass( 'hidden' );
+			toolbarView.$el.addClass( 'hidden' );
 		}
 	},
 } );
