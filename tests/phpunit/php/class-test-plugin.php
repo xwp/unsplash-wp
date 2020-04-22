@@ -71,6 +71,24 @@ class Test_Plugin extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Test for register_meta() method.
+	 *
+	 * @see Plugin::register_meta()
+	 */
+	public function test_register_meta() {
+		$plugin = get_plugin_instance();
+		$plugin->register_meta();
+		$keys = get_registered_meta_keys( 'post', 'attachment' );
+
+		$this->assertArrayHasKey( 'original_id', $keys );
+		$this->assertArrayHasKey( 'original_url', $keys );
+		$this->assertArrayHasKey( 'color', $keys );
+		$this->assertArrayHasKey( 'unsplash_location', $keys );
+		$this->assertArrayHasKey( 'unsplash_sponsor', $keys );
+		$this->assertArrayHasKey( 'unsplash_exif', $keys );
+	}
+
+	/**
 	 * Test for enqueue_media_scripts() method.
 	 *
 	 * @see Plugin::enqueue_media_scripts()
@@ -155,7 +173,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 	 * @see Plugin::wp_prepare_attachment_for_js()
 	 * @covers ::wp_prepare_attachment_for_js
 	 * @covers ::add_image_sizes
-	 * @covers ::get_image_height 
+	 * @covers ::get_image_height
 	 */
 	public function test_wp_prepare_attachment_for_js() {
 		$plugin = get_plugin_instance();

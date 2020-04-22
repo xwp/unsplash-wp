@@ -74,6 +74,7 @@ class Api_Cache {
 
 		$transient       = get_transient( $this->key );
 		$this->is_cached = ! empty( $transient );
+
 		return $transient;
 	}
 

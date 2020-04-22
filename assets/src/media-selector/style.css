@@ -12,6 +12,19 @@
 }
 
 /**
+ * Spinner next legend.
+ */
+
+.unsplash-browser .search-form .unsplash-search-input-label {
+	float: left;
+}
+
+.unsplash-browser .search-form .spinner {
+	float: left;
+	margin: 5px 0 0 5px;
+}
+
+/**
  * Masonry layout
  */
 .unsplash-browser.attachments-browser .media-toolbar-primary {
@@ -45,6 +58,7 @@
 	padding-top: 0;
 }
 
+.media-frame .unsplash-browser .unsplash-error,
 .media-frame .unsplash-browser .no-media,
 .media-frame .unsplash-browser .attachments {
 	position: absolute !important;
@@ -55,11 +69,25 @@
 	padding: 0;
 }
 
+.media-frame .unsplash-browser .unsplash-error {
+	padding: 15px 20px;
+	font-size: 1.4em;
+	top: 20px;
+}
+
 .media-frame .unsplash-browser .no-media {
 	right: 300px;
 	text-align: center;
 	left: 0;
 	top: 35px;
+}
+
+@media only screen and (max-width: 640px), screen and (max-height: 400px) {
+
+	.media-frame .unsplash-browser .no-media,
+	.media-frame .unsplash-browser .attachments {
+		right: 0;
+	}
 }
 
 .wp-core-ui  .unsplash-attachment .thumbnail {
