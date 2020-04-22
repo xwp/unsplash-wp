@@ -71,11 +71,6 @@ class Api_Cache {
 		 * which will internally do caching.
 		 */
 		return false;
-
-		$transient       = get_transient( $this->key );
-		$this->is_cached = ! empty( $transient );
-
-		return $transient;
 	}
 
 	/**
