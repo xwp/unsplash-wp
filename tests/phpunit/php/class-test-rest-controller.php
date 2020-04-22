@@ -130,7 +130,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		foreach ( $data as $photo_object ) {
 			$expected_keys = [
 				'id',
-				'unsplashId',
+				'unsplash_order',
 				'title',
 				'filename',
 				'url',
@@ -208,35 +208,35 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		$request->set_header( 'X-Requested-With', 'XMLHttpRequest' );
 
 		$expected = [
-			'id'            => 'unsplash-0',
-			'title'         => '',
-			'filename'      => 'ro8tdlrroo0.jpeg',
-			'url'           => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
-			'link'          => 'https://unsplash.com/photos/rO8TdlRrOo0?utm_source=WordPress-XWP&utm_medium=referral&utm_campaign=api-credit',
-			'alt'           => 'black wolf near rocks',
-			'author'        => 'Waldemar Brandt',
-			'description'   => 'black wolf near rocks',
-			'name'          => 'ro8tdlrroo0',
-			'height'        => 2785,
-			'width'         => 3998,
-			'status'        => 'inherit',
-			'uploadedTo'    => 0,
-			'date'          => 1557668448000,
-			'modified'      => 1583557448000,
-			'menuOrder'     => 0,
-			'mime'          => 'image/jpeg',
-			'type'          => 'image',
-			'subtype'       => 'jpeg',
-			'icon'          => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=tinysrgb&w=150&fit=crop&ixid=eyJhcHBfaWQiOjEwMjU2NX0&h=150',
-			'dateFormatted' => 'May 12, 2019',
-			'nonces'        => [
+			'id'             => 'rO8TdlRrOo0',
+			'title'          => '',
+			'filename'       => 'ro8tdlrroo0.jpeg',
+			'url'            => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
+			'link'           => 'https://unsplash.com/photos/rO8TdlRrOo0?utm_source=WordPress-XWP&utm_medium=referral&utm_campaign=api-credit',
+			'alt'            => 'black wolf near rocks',
+			'author'         => 'Waldemar Brandt',
+			'description'    => 'black wolf near rocks',
+			'name'           => 'ro8tdlrroo0',
+			'height'         => 2785,
+			'width'          => 3998,
+			'status'         => 'inherit',
+			'uploadedTo'     => 0,
+			'date'           => 1557668448000,
+			'modified'       => 1583557448000,
+			'menuOrder'      => 0,
+			'mime'           => 'image/jpeg',
+			'type'           => 'image',
+			'subtype'        => 'jpeg',
+			'icon'           => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=tinysrgb&w=150&fit=crop&ixid=eyJhcHBfaWQiOjEwMjU2NX0&h=150',
+			'dateFormatted'  => 'May 12, 2019',
+			'nonces'         => [
 				'update' => false,
 				'delete' => false,
 				'edit'   => false,
 			],
-			'editLink'      => false,
-			'meta'          => false,
-			'sizes'         => [
+			'editLink'       => false,
+			'meta'           => false,
+			'sizes'          => [
 				'full'         => [
 					'url'         => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
 					'height'      => 2785,
@@ -268,7 +268,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 					'orientation' => 0,
 				],
 			],
-			'unsplashId'    => 'rO8TdlRrOo0',
+			'unsplash_order' => 0,
 		];
 
 		if ( version_compare( '5.2', get_bloginfo( 'version' ), '<' ) ) {
@@ -856,8 +856,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 
 		$rest_controller = new Rest_Controller( new Plugin() );
 		$actual          = $rest_controller->set_unique_media_id( $photo, $index, $page, $per_page );
-		$this->assertEquals( 'unsplash-23', $actual['id'] );
-		$this->assertEquals( 'rO8TdlRrOo0', $actual['unsplash_id'] );
+		$this->assertEquals( '23', $actual['unsplash_order'] );
 	}
 
 	/**

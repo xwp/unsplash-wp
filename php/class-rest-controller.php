@@ -809,8 +809,7 @@ class Rest_Controller extends WP_REST_Controller {
 		 * The 'unsplash-' prefix is added to prevent any attachment ID collisions in the media selector and
 		 * will be stripped when media objects are being compared.
 		 */
-		$photo['unsplash_id'] = $photo['id'];
-		$photo['id']          = 'unsplash-' . ( $index + ( ( $page - 1 ) * $per_page ) );
+		$photo['unsplash_order'] = ( $index + ( ( $page - 1 ) * $per_page ) );
 
 		return $photo;
 	}

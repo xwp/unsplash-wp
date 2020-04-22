@@ -124,7 +124,7 @@ const ImagesQueryModel = wp.media.model.Query.extend(
 	},
 	{
 		defaultProps: {
-			orderby: 'id',
+			orderby: 'unsplash_order',
 			order: 'ASC',
 		},
 
