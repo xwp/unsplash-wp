@@ -793,7 +793,7 @@ class Rest_Controller extends WP_REST_Controller {
 	}
 
 	/**
-	 * Set a unique ID on the photo so that it does not clash with other media objects in the media library.
+	 * Add order field and set unsplash ID.
 	 *
 	 * @param array $photo    Photo attributes.
 	 * @param int   $index    Index of $photo in current page.
@@ -802,14 +802,8 @@ class Rest_Controller extends WP_REST_Controller {
 	 * @return array Photo with updated ID.
 	 */
 	public function set_unique_media_id( $photo, $index, $page, $per_page ) {
-		/*
-		 * The media selector uses the image ID to sort the list of images received from the API, so an
-		 * incremental ID is generated and set on the photo so that they can be ordered correctly.
-		 *
-		 * The 'unsplash-' prefix is added to prevent any attachment ID collisions in the media selector and
-		 * will be stripped when media objects are being compared.
-		 */
 		$photo['unsplash_order'] = ( $index + ( ( $page - 1 ) * $per_page ) );
+		$photo['unsplash_id']    = $photo['id'];
 
 		return $photo;
 	}

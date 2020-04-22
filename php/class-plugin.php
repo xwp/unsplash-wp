@@ -147,6 +147,7 @@ class Plugin extends Plugin_Base {
 
 		$response = [
 			'id'             => isset( $photo['id'] ) ? $photo['id'] : null,
+			'unsplashId'     => isset( $photo['unsplash_id'] ) ? $photo['unsplash_id'] : null,
 			'unsplash_order' => isset( $photo['unsplash_order'] ) ? $photo['unsplash_order'] : null,
 			'title'          => '',
 			'filename'       => $image->get_field( 'file' ),
