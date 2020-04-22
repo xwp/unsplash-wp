@@ -11,7 +11,9 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 		);
 
 		// Update masonry layout only when a set of images (new page) is loaded.
-		this.collection.on( 'attachments:received', this.attachments.recalculateLayout, this );
+		this.collection.on( 'attachments:received', () =>
+			this.attachments.recalculateLayout()
+		);
 		this.collection.on(
 			'add remove reset attachments:received',
 			this.showError,
