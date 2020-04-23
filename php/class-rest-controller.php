@@ -456,7 +456,7 @@ class Rest_Controller extends WP_REST_Controller {
 					break;
 				case 500:
 					/* translators: %s: Link to status page. */
-					$message = sprintf( __( 'There appears to be a communication issue with Unsplash, please check <a href="%s">status.unsplash.com</a> and try again in a few minutes.', 'unsplash' ), 'https://status.unsplash.com');
+					$message = sprintf( __( 'There appears to be a communication issue with Unsplash, please check <a href="%s">status.unsplash.com</a> and try again in a few minutes.', 'unsplash' ), 'https://status.unsplash.com' );
 					break;
 				default:
 					$message = get_status_header_desc( $error_status );
