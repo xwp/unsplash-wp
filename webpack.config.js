@@ -2,6 +2,7 @@
  * External dependencies
  */
 const path = require( 'path' );
+const CopyWebpackPlugin = require( 'copy-webpack-plugin' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const OptimizeCSSAssetsPlugin = require( 'optimize-css-assets-webpack-plugin' );
 const RtlCssPlugin = require( 'rtlcss-webpack-plugin' );
@@ -12,6 +13,11 @@ const WebpackBar = require( 'webpackbar' );
  * WordPress dependencies
  */
 const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
+const DependencyExtractionWebpackPlugin = require( '@wordpress/dependency-extraction-webpack-plugin' );
+const {
+	defaultRequestToExternal,
+	defaultRequestToHandle,
+} = require( '@wordpress/dependency-extraction-webpack-plugin/util' );
 
 const sharedConfig = {
 	output: {
@@ -66,6 +72,9 @@ const mediaSelector = {
 	...sharedConfig,
 	entry: {
 		'media-selector': [ './assets/src/media-selector/index.js' ],
+		'featured-image-selector': [
+			'./assets/src/media-selector/featured-image-selector.js',
+		],
 	},
 	plugins: [
 		...sharedConfig.plugins,
@@ -76,4 +85,52 @@ const mediaSelector = {
 	],
 };
 
-module.exports = [ mediaSelector ];
+const wpPolyfills = {
+	...defaultConfig,
+	...sharedConfig,
+	externals: {},
+	plugins: [
+		new DependencyExtractionWebpackPlugin( {
+			useDefaults: false,
+			requestToHandle: request => {
+				switch ( request ) {
+					case '@wordpress/i18n':
+					case '@wordpress/polyfill':
+					case '@wordpress/url':
+						return undefined;
+
+					default:
+						return defaultRequestToHandle( request );
+				}
+			},
+			requestToExternal: request => {
+				switch ( request ) {
+					case '@wordpress/i18n':
+					case '@wordpress/polyfill':
+					case '@wordpress/url':
+						return undefined;
+
+					default:
+						return defaultRequestToExternal( request );
+				}
+			},
+		} ),
+		new CopyWebpackPlugin( [
+			{
+				from: 'node_modules/lodash/lodash.js',
+				to: './vendor/lodash.js',
+			},
+		] ),
+		new WebpackBar( {
+			name: 'WordPress Polyfills',
+			color: '#21a0d0',
+		} ),
+	],
+	entry: {
+		'wp-i18n': './assets/src/polyfills/wp-i18n.js',
+		'wp-polyfill': './assets/src/polyfills/wp-polyfill.js',
+		'wp-url': './assets/src/polyfills/wp-url.js',
+	},
+};
+
+module.exports = [ mediaSelector, wpPolyfills ];
