@@ -233,12 +233,12 @@ class Test_Settings extends \WP_UnitTestCase {
 		$this->assertEquals( $expected, $input );
 	}
 
-	/*
-	**
-	* Test get_credentials.
-	*
-	* @covers ::get_credentials()
-	*/
+	/**
+	 *
+	 * Test get_credentials.
+	 *
+	 * @covers ::get_credentials()
+	 */
 	public function test_get_credentials() {
 		$credentials = $this->settings->get_credentials();
 		$this->assertArrayHasKey( 'applicationId', $credentials );
