@@ -7,6 +7,7 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import ImagesCollection from '../collections/images_collection';
 import getConfig from '../helpers/getConfig';
+import preloadImage from '../helpers/preloadImage';
 
 const ImagesQueryModel = wp.media.model.Query.extend(
 	{
@@ -118,6 +119,13 @@ const ImagesQueryModel = wp.media.model.Query.extend(
 					query._respSuccess = resp.success;
 					const error = resp.data.shift();
 					this._respErrorMessage = error;
+				} else if ( resp.length ) {
+					// Force images to load before the view is rendered.
+					resp.forEach( ( { sizes } ) => {
+						if ( sizes && sizes.medium && sizes.medium.url ) {
+							preloadImage( sizes.medium.url );
+						}
+					} );
 				}
 			} ) );
 		},
