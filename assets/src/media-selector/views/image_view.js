@@ -59,6 +59,7 @@ const ImageView = wp.media.view.Attachment.extend( {
 		if ( 1 === img.length ) {
 			img[ 0 ].width = options.size.width;
 			img[ 0 ].height = options.size.height;
+			img[ 0 ].style.backgroundColor = options.color;
 		}
 
 		this.$el.toggleClass( 'uploading', options.uploading );

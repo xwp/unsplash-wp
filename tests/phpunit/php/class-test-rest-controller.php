@@ -139,6 +139,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 				'author',
 				'description',
 				'caption',
+				'color',
 				'name',
 				'height',
 				'width',
@@ -269,6 +270,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 				],
 			],
 			'unsplash_order' => 0,
+			'color'          => '#F6F7FB',
 		];
 
 		if ( version_compare( '5.2', get_bloginfo( 'version' ), '<' ) ) {
