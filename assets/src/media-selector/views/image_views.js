@@ -16,7 +16,7 @@ const ImageViews = wp.media.view.Attachments.extend( {
 			trueOrder: true,
 			waitForImages: true,
 			useContainerForBreakpoints: true,
-			margin: 24,
+			margin: 0,
 			columns: 3,
 			breakAt: {
 				992: 3,
