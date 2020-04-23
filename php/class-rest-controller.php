@@ -448,14 +448,15 @@ class Rest_Controller extends WP_REST_Controller {
 			switch ( $error_status ) {
 				case 401:
 					/* translators: %s: Link to settings page. */
-					$message = sprintf( __( 'Request unauthorized. Please check your <a href="%s">Unsplash settings</a>.', 'unsplash' ), get_admin_url( null, 'options-general.php?page=unsplash' ) );
+					$message = sprintf( __( 'The Unsplash API credentials supplied are not authorized. Please visit the <a href="%s">Unsplash settings page</a> to reconnect to Unsplash now.', 'unsplash' ), get_admin_url( null, 'options-general.php?page=unsplash' ) );
 					break;
 				case 403:
 					/* translators: %s: Link to settings page. */
-					$message = sprintf( __( 'Request forbidden. Please check your <a href="%s">Unsplash settings</a>.', 'unsplash' ), get_admin_url( null, 'options-general.php?page=unsplash' ) );
+					$message = sprintf( __( 'The Unsplash API credentials supplied are not authorized for this request. Please visit the <a href="%s">Unsplash settings page</a> to reconnect to Unsplash now.', 'unsplash' ), get_admin_url( null, 'options-general.php?page=unsplash' ) );
 					break;
 				case 500:
-					$message = __( 'Server error. An error occurred contacting the Unsplash API.', 'unsplash' );
+					/* translators: %s: Link to status page. */
+					$message = sprintf( __( 'There appears to be a communication issue with Unsplash, please check <a href="%s">status.unsplash.com</a> and try again in a few minutes.', 'unsplash' ), 'https://status.unsplash.com' );
 					break;
 				default:
 					$message = get_status_header_desc( $error_status );
@@ -482,9 +483,8 @@ class Rest_Controller extends WP_REST_Controller {
 				return new WP_Error(
 					'missing_api_credential',
 					sprintf(
-						/* translators: 1: Missing api credential, 2: Link to settings page */
-						__( 'The following API credential is missing: %1$s. Please go to <a href="%2$s">Unsplash settings</a> to setup this plugin.', 'unsplash' ),
-						$key,
+						/* translators: %s: Link to settings page. */
+						__( 'The Unsplash plugin has not been provided with API credentials. Please visit the <a href="%s">Unsplash settings page</a> and confirm that the API key/secret has been provided.', 'unsplash' ),
 						get_admin_url( null, 'options-general.php?page=unsplash' )
 					),
 					[

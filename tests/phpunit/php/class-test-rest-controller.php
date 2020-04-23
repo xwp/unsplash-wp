@@ -1116,12 +1116,12 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 */
 	public function data_test_format_exception() {
 		return [
-			[ 'test_500', 500, 'Server error. An error occurred contacting the Unsplash API.' ],
-			[ 'test_401', 401, 'Request unauthorized. Please check your Unsplash settings.' ],
-			[ 'test_403', 403, 'Request forbidden. Please check your Unsplash settings.' ],
+			[ 'test_500', 500, 'There appears to be a communication issue with Unsplash, please check status.unsplash.com and try again in a few minutes.' ],
+			[ 'test_401', 401, 'The Unsplash API credentials supplied are not authorized. Please visit the Unsplash settings page to reconnect to Unsplash now.' ],
+			[ 'test_403', 403, 'The Unsplash API credentials supplied are not authorized for this request. Please visit the Unsplash settings page to reconnect to Unsplash now.' ],
 			[ 'test_418', 418, 'I\'m a teapot' ],
-			[ 'test_0', 0, 'Server error. An error occurred contacting the Unsplash API.' ],
-			[ 'test_foo', 'foo', 'Server error. An error occurred contacting the Unsplash API.' ],
+			[ 'test_0', 0, 'There appears to be a communication issue with Unsplash, please check status.unsplash.com and try again in a few minutes.' ],
+			[ 'test_foo', 'foo', 'There appears to be a communication issue with Unsplash, please check status.unsplash.com and try again in a few minutes.' ],
 		];
 	}
 
@@ -1163,7 +1163,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		$rest_controller = new Rest_Controller( new Plugin() );
 		$wp_error        = $rest_controller->check_api_credentials();
 		$this->assertEquals( $wp_error->get_error_code(), 'missing_api_credential' );
-		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), 'The following API credential is missing: applicationId. Please go to Unsplash settings to setup this plugin.' );
+		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), 'The Unsplash plugin has not been provided with API credentials. Please visit the Unsplash settings page and confirm that the API key/secret has been provided.' );
 		remove_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
 	}
 
