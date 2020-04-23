@@ -163,7 +163,8 @@ class Plugin extends Plugin_Base {
 				'toolbar'   => [
 					'filters' => [
 						'search' => [
-							'label' => __( 'Search the internet’s source of freely usable images.', 'unsplash' ),
+							'label'       => __( 'Search', 'unsplash' ),
+							'placeholder' => __( 'Search free high-resolution photos', 'unsplash' ),
 						],
 					],
 				],
