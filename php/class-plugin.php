@@ -233,6 +233,7 @@ class Plugin extends Plugin_Base {
 			'author'         => $image->get_field( 'user' )['name'],
 			'description'    => $image->get_field( 'description' ),
 			'caption'        => $image->get_caption(),
+			'color'          => $image->get_field( 'color' ),
 			'name'           => $image->get_field( 'original_id' ),
 			'height'         => $image->get_field( 'height' ),
 			'width'          => $image->get_field( 'width' ),
