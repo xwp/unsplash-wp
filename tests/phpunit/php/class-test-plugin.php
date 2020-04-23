@@ -120,6 +120,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 
 		if ( version_compare( '5.0', get_bloginfo( 'version' ), '<=' ) ) {
 			$this->assertFalse( $result );
+			return;
 		}
 
 		$expected_handles = [
