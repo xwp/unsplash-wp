@@ -406,4 +406,41 @@ class Plugin extends Plugin_Base {
 			register_taxonomy( $name, self::POST_TYPE, $args );
 		}
 	}
+
+	/**
+	 * Add an admin notice on if credntials not setup.
+	 *
+	 * @action admin_notices
+	 */
+	public function admin_notice() {
+		$credentials = $this->settings->get_credentials();
+		if ( ! empty( $credentials['applicationId'] ) && ! empty( $credentials['secret'] ) ) {
+			return false;
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return false;
+		}
+
+		$screen = ( function_exists( 'get_current_screen' ) ) ? get_current_screen() : false;
+
+		if ( ! $screen instanceof WP_Screen ) {
+			return false;
+		}
+
+		if ( 'settings_page_unsplash' === $screen->id ) {
+			return false;
+		}
+
+		$class   = 'notice notice-warning is-dismissible';
+		$logo    = $this->asset_url( 'assets/images/logo.png' );
+		$title   = __( 'Unsplash', 'unsplash' );
+		$message = __( 'Please complete unsplash setup by visit the Unsplash settings page and adding API key/secret.', 'unsplash' );
+		$button  = __( 'Start setup', 'unsplash' );
+		$url     = get_admin_url( null, 'options-general.php?page=unsplash' );
+
+		printf( '<div class="%1$s"><h3><img src="%2$s" height="14" "/>   %3$s</h3><p>%4$s</p><p><a href="%5$s" class="button button-primary button-large">%6$s</a></p></div>', esc_attr( $class ), esc_url( $logo ), esc_html( $title ), esc_html( $message ), esc_url( $url ), esc_html( $button ) );
+
+		return true;
+	}
 }

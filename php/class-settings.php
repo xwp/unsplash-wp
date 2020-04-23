@@ -165,7 +165,7 @@ class Settings {
 
 		add_settings_section(
 			'unsplash_section',
-			__( 'Section Title', 'unsplash' ),
+			__( 'API Settings', 'unsplash' ),
 			[ $this, 'settings_section_render' ],
 			'unsplash'
 		);
@@ -228,9 +228,10 @@ class Settings {
 	 * Renders the entire settings page.
 	 */
 	public function settings_page_render() {
+		$logo = $this->plugin->asset_url( 'assets/images/logo.png' );
 		?>
 		<form action='options.php' method='post' style="max-width: 800px">
-			<h1>Unsplash</h1>
+			<h1><img src="<?php echo esc_url( $logo ); ?>" height="20" />  Unsplash</h1>
 			<?php
 			settings_fields( 'unsplash' );
 			do_settings_sections( 'unsplash' );
@@ -244,7 +245,7 @@ class Settings {
 	 * Renders the settings section.
 	 */
 	public function settings_section_render() {
-		echo esc_html__( 'Section Description', 'unsplash' );
+		echo esc_html__( 'Credentials are required to contact Unsplash\'s and for this plugin to function.', 'unsplash' );
 	}
 
 	/**
@@ -275,6 +276,31 @@ class Settings {
 		?>
 		<input type='text' class="widefat" name='unsplash_settings[utm_source]' value='<?php echo esc_attr( isset( $options['utm_source'] ) ? $options['utm_source'] : '' ); ?>'>
 		<?php
+	}
+
+	/**
+	 * Format the API credentials in an array and filter.
+	 *
+	 * @return mixed|void
+	 */
+	public function get_credentials() {
+		$options     = get_option( 'unsplash_settings' );
+		$default_utm = ( getenv( 'UNSPLASH_UTM_SOURCE' ) ) ? getenv( 'UNSPLASH_UTM_SOURCE' ) : 'WordPress-XWP';
+
+		$credentials = [
+			'applicationId' => ! empty( $options['access_key'] ) ? $this->decrypt( $options['access_key'] ) : getenv( 'UNSPLASH_ACCESS_KEY' ),
+			'secret'        => ! empty( $options['secret_key'] ) ? $this->decrypt( $options['secret_key'] ) : getenv( 'UNSPLASH_SECRET_KEY' ),
+			'utmSource'     => ! empty( $options['utm_source'] ) ? $options['utm_source'] : $default_utm,
+		];
+		/**
+		 * Filter API credentials.
+		 *
+		 * @param array $credentials Array of API credentials.
+		 * @param array $options Unsplash settings.
+		 */
+		$credentials = apply_filters( 'unsplash_api_credentials', $credentials, $options );
+
+		return $credentials;
 	}
 
 }

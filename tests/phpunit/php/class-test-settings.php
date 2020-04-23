@@ -185,7 +185,7 @@ class Test_Settings extends \WP_UnitTestCase {
 		ob_start();
 		$this->settings->settings_section_render();
 		$section = ob_get_clean();
-		$this->assertEquals( 'Section Description', $section );
+		$this->assertEquals( 'Credentials are required to contact Unsplash&#039;s and for this plugin to function.', $section );
 	}
 
 	/**
@@ -231,5 +231,18 @@ class Test_Settings extends \WP_UnitTestCase {
 		$expected = "\t\t<input type='text' class=\"widefat\" name='unsplash_settings[utm_source]' value=''>\n\t\t";
 
 		$this->assertEquals( $expected, $input );
+	}
+
+	/*
+	**
+	* Test get_credentials.
+	*
+	* @covers ::get_credentials()
+	*/
+	public function test_get_credentials() {
+		$credentials = $this->settings->get_credentials();
+		$this->assertArrayHasKey( 'applicationId', $credentials );
+		$this->assertArrayHasKey( 'secret', $credentials );
+		$this->assertArrayHasKey( 'utmSource', $credentials );
 	}
 }
