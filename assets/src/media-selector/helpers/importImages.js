@@ -38,7 +38,11 @@ const importImage = image => {
 			// Note: `image.set()` is called rather than updating `image.id` directly so that potential Backbone event listeners can be fired.
 			image.set( {
 				...image.attributes,
-				...{ id: attachmentData.id, url: attachmentData.source_url },
+				...{
+					id: attachmentData.id,
+					url: attachmentData.source_url,
+					nonces: attachmentData.nonces,
+				},
 			} );
 			wp.apiRequest( { url: processUrl + attachmentData.id } );
 			return attachmentData;

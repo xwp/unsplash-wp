@@ -7,6 +7,9 @@
 
 namespace Unsplash;
 
+use WP_REST_Request;
+use WP_REST_Response;
+
 /**
  * Tests for the Hotlink class.
  *
@@ -110,6 +113,27 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		delete_post_meta( self::$attachment_id, '_wp_attachment_backup_sizes' );
 		$third = wp_get_attachment_url( self::$attachment_id );
 		$this->assertEquals( $third, 'https://images.unsplash.com/test.jpg' );
+	}
+
+	/**
+	 * Test get_image_tag.
+	 *
+	 * @covers ::get_image_tag()
+	 * @covers ::is_cropped_image()
+	 */
+	public function test_get_image_tag() {
+		$alt   = '';
+		$title = '';
+		$align = '';
+		$first = get_image_tag( self::$attachment_id, $alt, $title, $align );
+		$this->assertContains( 'https://images.unsplash.com/test.jpg', $first );
+		update_post_meta( self::$attachment_id, '_wp_attachment_backup_sizes', [ 'foo' => 'bar' ] );
+		$second = get_image_tag( self::$attachment_id, $alt, $title, $align );
+		$this->assertContains( 'http://example.org/wp-content/uploads//tmp/canola.jpg', $second );
+		$this->assertNotEquals( $first, $second );
+		delete_post_meta( self::$attachment_id, '_wp_attachment_backup_sizes' );
+		$third = get_image_tag( self::$attachment_id, $alt, $title, $align );
+		$this->assertContains( 'https://images.unsplash.com/test.jpg', $third );
 	}
 
 	/**
@@ -432,8 +456,9 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		 */
 	public function test_no_rest_prepare_attachment() {
 		$data    = [ 'foo' => 'bar' ];
-		$reponse = new \WP_REST_Response( $data );
-		$result  = $this->hotlink->rest_prepare_attachment( $reponse, false );
+		$reponse = new WP_REST_Response( $data );
+		$request = new WP_REST_Request();
+		$result  = $this->hotlink->rest_prepare_attachment( $reponse, false, $request );
 		$this->assertEqualSets( $result->get_data(), $reponse->get_data() );
 	}
 
@@ -453,8 +478,9 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		);
 		$image     = get_post( $second_id );
 		$data      = [ 'foo' => 'bar' ];
-		$reponse   = new \WP_REST_Response( $data );
-		$result    = $this->hotlink->rest_prepare_attachment( $reponse, $image );
+		$reponse   = new WP_REST_Response( $data );
+		$request   = new WP_REST_Request();
+		$result    = $this->hotlink->rest_prepare_attachment( $reponse, $image, $request );
 		$this->assertEqualSets( $result->get_data(), $reponse->get_data() );
 	}
 
@@ -479,8 +505,9 @@ class Test_Hotlink extends \WP_UnitTestCase {
 				'large',
 			],
 		];
-		$reponse  = new \WP_REST_Response( $photo );
-		$result   = $this->hotlink->rest_prepare_attachment( $reponse, $image );
+		$reponse  = new WP_REST_Response( $photo );
+		$request  = new WP_REST_Request();
+		$result   = $this->hotlink->rest_prepare_attachment( $reponse, $image, $request );
 		$plugin   = new Plugin();
 		$sizes    = $plugin->add_image_sizes( $photo['urls']['raw'], $photo['media_details']['width'], $photo['media_details']['height'] );
 		$expected = $this->hotlink->change_fields( $sizes, $photo['media_details']['file'] );
@@ -509,10 +536,36 @@ class Test_Hotlink extends \WP_UnitTestCase {
 			],
 			'source_url'    => 'http://unsplash.com/test',
 		];
-		$reponse = new \WP_REST_Response( $photo );
-		$result  = $this->hotlink->rest_prepare_attachment( $reponse, $image );
+		$reponse = new WP_REST_Response( $photo );
+		$request = new WP_REST_Request();
+		$result  = $this->hotlink->rest_prepare_attachment( $reponse, $image, $request );
 		$data    = $result->get_data();
 		$this->assertEquals( $data['source_url'], 'http://example.org/wp-content/uploads//tmp/canola.jpg' );
+	}
+
+	/**
+	 * Test rest_prepare_attachment.
+	 *
+	 * @covers ::rest_prepare_attachment()
+	 */
+	public function test_rest_prepare_attachment_4() {
+		$image   = get_post( self::$attachment_id );
+		$photo   = [
+
+			'urls'          => [ 'raw' => 'https://images.unsplash.com/nothing.jpg' ],
+			'media_details' => [
+				'width'  => 999,
+				'height' => 999,
+				'file'   => 'test.jpg',
+			],
+			'source_url'    => 'http://unsplash.com/test',
+		];
+		$reponse = new WP_REST_Response( $photo );
+		$request = new WP_REST_Request();
+		$request->set_param( 'context', 'edit' );
+		$result = $this->hotlink->rest_prepare_attachment( $reponse, $image, $request );
+		$data   = $result->get_data();
+		$this->assertArrayHasKey( 'nonces', $data );
 	}
 
 	/**

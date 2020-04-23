@@ -10,7 +10,10 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 			arguments
 		);
 
-		this.collection.on( 'add remove reset', this.updateLayout, this );
+		// Update masonry layout only when a set of images (new page) is loaded.
+		this.collection.on( 'attachments:received', () =>
+			this.attachments.recalculateLayout()
+		);
 		this.collection.on(
 			'add remove reset attachments:received',
 			this.showError,
@@ -71,6 +74,7 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 			sortable: this.options.sortable,
 			scrollElement: this.options.scrollElement,
 			idealColumnWidth: this.options.idealColumnWidth,
+			refreshThreshold: 9,
 
 			// The single `Attachment` view to be used in the `Attachments` view.
 			AttachmentView: this.options.AttachmentView,
@@ -144,10 +148,6 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 			errorView.$el.removeClass( 'hidden' );
 			toolbarView.$el.addClass( 'hidden' );
 		}
-	},
-	updateLayout() {
-		this.attachments.setupMacy();
-		this.attachments.refreshMacy();
 	},
 } );
 
