@@ -305,7 +305,7 @@ class Rest_Controller extends WP_REST_Controller {
 			$response = $this->prepare_item_for_response( $results, $request );
 			$response = $this->rest_ensure_response( $response, $request );
 			$response->set_status( 301 );
-			$response->header( 'Location', rest_url( sprintf( '%s/%s/%d', 'wp/v2', 'media', $attachment_id ) ) );
+			$response->header( 'Location', rest_url( sprintf( '%s/%s/%d?context=edit', 'wp/v2', 'media', $attachment_id ) ) );
 		} catch ( \Exception $e ) {
 			$response = $this->format_exception( 'single-photo-download', $e->getCode() );
 			$this->plugin->log_error( $e );
