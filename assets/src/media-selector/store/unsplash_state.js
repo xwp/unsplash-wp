@@ -15,7 +15,6 @@ const UnsplashState = State.extend( {
 		menu: 'unsplash',
 		router: false,
 		priority: -60,
-		refreshThreshold: 20,
 		filterable: 'uploaded',
 		multiple: 'add',
 		editable: false,
@@ -29,7 +28,7 @@ const UnsplashState = State.extend( {
 			this.set(
 				'library',
 				new ImagesCollection( null, {
-					props: { orderby: 'id', order: 'ASC', query: true },
+					props: { orderby: 'unsplash_order', order: 'ASC', query: true },
 				} )
 			);
 		}
