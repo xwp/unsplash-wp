@@ -130,7 +130,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		foreach ( $data as $photo_object ) {
 			$expected_keys = [
 				'id',
-				'unsplashId',
+				'unsplash_order',
 				'title',
 				'filename',
 				'url',
@@ -208,35 +208,35 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		$request->set_header( 'X-Requested-With', 'XMLHttpRequest' );
 
 		$expected = [
-			'id'            => 'unsplash-0',
-			'title'         => '',
-			'filename'      => 'ro8tdlrroo0.jpeg',
-			'url'           => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
-			'link'          => 'https://unsplash.com/photos/rO8TdlRrOo0?utm_source=WordPress-XWP&utm_medium=referral&utm_campaign=api-credit',
-			'alt'           => 'black wolf near rocks',
-			'author'        => 'Waldemar Brandt',
-			'description'   => 'black wolf near rocks',
-			'name'          => 'ro8tdlrroo0',
-			'height'        => 2785,
-			'width'         => 3998,
-			'status'        => 'inherit',
-			'uploadedTo'    => 0,
-			'date'          => 1557668448000,
-			'modified'      => 1583557448000,
-			'menuOrder'     => 0,
-			'mime'          => 'image/jpeg',
-			'type'          => 'image',
-			'subtype'       => 'jpeg',
-			'icon'          => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=tinysrgb&w=150&fit=crop&ixid=eyJhcHBfaWQiOjEwMjU2NX0&h=150',
-			'dateFormatted' => 'May 12, 2019',
-			'nonces'        => [
+			'id'             => 'rO8TdlRrOo0',
+			'title'          => '',
+			'filename'       => 'ro8tdlrroo0.jpeg',
+			'url'            => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
+			'link'           => 'https://unsplash.com/photos/rO8TdlRrOo0?utm_source=WordPress-XWP&utm_medium=referral&utm_campaign=api-credit',
+			'alt'            => 'black wolf near rocks',
+			'author'         => 'Waldemar Brandt',
+			'description'    => 'black wolf near rocks',
+			'name'           => 'ro8tdlrroo0',
+			'height'         => 2785,
+			'width'          => 3998,
+			'status'         => 'inherit',
+			'uploadedTo'     => 0,
+			'date'           => 1557668448000,
+			'modified'       => 1583557448000,
+			'menuOrder'      => 0,
+			'mime'           => 'image/jpeg',
+			'type'           => 'image',
+			'subtype'        => 'jpeg',
+			'icon'           => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=tinysrgb&w=150&fit=crop&ixid=eyJhcHBfaWQiOjEwMjU2NX0&h=150',
+			'dateFormatted'  => 'May 12, 2019',
+			'nonces'         => [
 				'update' => false,
 				'delete' => false,
 				'edit'   => false,
 			],
-			'editLink'      => false,
-			'meta'          => false,
-			'sizes'         => [
+			'editLink'       => false,
+			'meta'           => false,
+			'sizes'          => [
 				'full'         => [
 					'url'         => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0',
 					'height'      => 2785,
@@ -268,7 +268,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 					'orientation' => 0,
 				],
 			],
-			'unsplashId'    => 'rO8TdlRrOo0',
+			'unsplash_order' => 0,
 		];
 
 		if ( version_compare( '5.2', get_bloginfo( 'version' ), '<' ) ) {
@@ -856,8 +856,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 
 		$rest_controller = new Rest_Controller( new Plugin() );
 		$actual          = $rest_controller->set_unique_media_id( $photo, $index, $page, $per_page );
-		$this->assertEquals( 'unsplash-23', $actual['id'] );
-		$this->assertEquals( 'rO8TdlRrOo0', $actual['unsplash_id'] );
+		$this->assertEquals( '23', $actual['unsplash_order'] );
 	}
 
 	/**
@@ -1105,6 +1104,147 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 					],
 				],
 			],
+		];
+	}
+
+	/**
+	 * Data provider for format_exception.
+	 *
+	 * @return array
+	 */
+	public function data_test_format_exception() {
+		return [
+			[ 'test_500', 500, 'Server error. An error occurred contacting the Unsplash API.' ],
+			[ 'test_401', 401, 'Request unauthorized. Please check your Unsplash settings.' ],
+			[ 'test_403', 403, 'Request forbidden. Please check your Unsplash settings.' ],
+			[ 'test_418', 418, 'I\'m a teapot' ],
+			[ 'test_0', 0, 'Server error. An error occurred contacting the Unsplash API.' ],
+			[ 'test_foo', 'foo', 'Server error. An error occurred contacting the Unsplash API.' ],
+		];
+	}
+
+	/**
+	 * Test format_exception().
+	 *
+	 * @dataProvider data_test_format_exception
+	 * @covers       \Unsplash\Rest_Controller::format_exception()
+	 *
+	 * @param string|int $code Error code.
+	 * @param int        $error_status HTTP error state code.
+	 * @param string     $message Message.
+	 */
+	public function test_format_exception( $code, $error_status, $message ) {
+		$rest_controller = new Rest_Controller( new Plugin() );
+		$wp_error        = $rest_controller->format_exception( $code, $error_status );
+		$this->assertEquals( $wp_error->get_error_code(), $code );
+		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), $message );
+	}
+
+	/**
+	 * Test check_api_credentials().
+	 *
+	 * @covers       \Unsplash\Rest_Controller::check_api_credentials()
+	 */
+	public function test_check_api_credentials() {
+		$rest_controller = new Rest_Controller( new Plugin() );
+		$result          = $rest_controller->check_api_credentials();
+		$this->assertTrue( $result );
+	}
+
+	/**
+	 * Test check_api_credentials().
+	 *
+	 * @covers       \Unsplash\Rest_Controller::check_api_credentials()
+	 */
+	public function test_no_check_api_credentials() {
+		add_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
+		$rest_controller = new Rest_Controller( new Plugin() );
+		$wp_error        = $rest_controller->check_api_credentials();
+		$this->assertEquals( $wp_error->get_error_code(), 'missing_api_credential' );
+		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), 'The following API credential is missing: applicationId. Please go to Unsplash settings to setup this plugin.' );
+		remove_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
+	}
+
+	/**
+	 * Test rest_ensure_response().
+	 *
+	 * @covers       \Unsplash\Rest_Controller::rest_ensure_response()
+	 */
+	public function test_rest_ensure_response() {
+		$rest_controller = new Rest_Controller( new Plugin() );
+		$request         = new WP_REST_Request();
+		$response        = $rest_controller->rest_ensure_response( [ 'foo' => 'bar' ], $request );
+		$data            = $response->get_data();
+		$this->assertEqualSets( $data, [ 'foo' => 'bar' ] );
+	}
+
+	/**
+	 * Test rest_ensure_response().
+	 *
+	 * @covers       \Unsplash\Rest_Controller::rest_ensure_response()
+	 */
+	public function test_rest_ensure_response_wp_error() {
+		$rest_controller = new Rest_Controller( new Plugin() );
+		$request         = new WP_REST_Request();
+		$wp_error        = $rest_controller->rest_ensure_response( new \WP_Error( 'test_error', 'Testing' ), $request );
+		$this->assertEquals( $wp_error->get_error_code(), 'test_error' );
+		$this->assertEquals( $wp_error->get_error_message(), 'Testing' );
+	}
+
+	/**
+	 * Test rest_ensure_response().
+	 *
+	 * @covers       \Unsplash\Rest_Controller::rest_ensure_response()
+	 * @covers       \Unsplash\Rest_Controller::is_ajax_request()
+	 */
+	public function test_rest_ensure_response_ajax() {
+		$rest_controller = new Rest_Controller( new Plugin() );
+		$request         = new WP_REST_Request();
+		$request->set_header( 'X-Requested-With', 'XMLHttpRequest' );
+		$response = $rest_controller->rest_ensure_response( [ 'foo' => 'bar' ], $request );
+		$data     = $response->get_data();
+		$this->assertEqualSets( $data, [ 'foo' => 'bar' ] );
+	}
+
+	/**
+	 * Test rest_ensure_response().
+	 *
+	 * @covers       \Unsplash\Rest_Controller::rest_ensure_response()
+	 * @covers       \Unsplash\Rest_Controller::is_ajax_request()
+	 */
+	public function test_rest_ensure_response_wp_error_ajax() {
+		$rest_controller = new Rest_Controller( new Plugin() );
+		$request         = new WP_REST_Request();
+		$request->set_header( 'X-Requested-With', 'XMLHttpRequest' );
+		$response = $rest_controller->rest_ensure_response( new \WP_Error( 'test_error', 'Testing' ), $request );
+		$data     = $response->get_data();
+		$this->assertEqualSets(
+			$data,
+			[
+				'success' => false,
+				'data'    => [
+					[
+						'code'    => 'test_error',
+						'message' => 'Testing',
+						'data'    => [],
+					],
+				],
+			]
+		);
+	}
+
+	/**
+	 * Disable unsplash api details.
+	 *
+	 * @param array $unused Unused variable.
+	 *
+	 * @return array
+	 */
+	public function disable_unsplash_api_credentials( $unused ) { //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+		return [
+			'applicationId' => '',
+			'secret'        => '',
+			'utmSource'     => '',
 		];
 	}
 }

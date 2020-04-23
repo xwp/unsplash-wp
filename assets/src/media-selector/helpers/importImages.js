@@ -26,8 +26,8 @@ export default selections => {
  * @return {Promise} Promise.
  */
 const importImage = image => {
-	const { unsplashId } = image.attributes;
-	const importUrl = getConfig( 'route' ) + `/import/${ unsplashId }`;
+	const { id } = image.attributes;
+	const importUrl = getConfig( 'route' ) + `/import/${ id }`;
 	const processUrl = getConfig( 'route' ) + `/post-process/`;
 
 	return apiFetch( { url: importUrl } )
