@@ -5,15 +5,11 @@ const ImageViews = wp.media.view.Attachments.extend( {
 	tagName: 'div',
 	macy: null,
 
-	render() {
-		wp.media.view.Attachments.prototype.render.apply( this, arguments );
-		this.refreshMacy();
-	},
 	ready() {
 		this.setupMacy();
 		this.scroll();
-		this.refreshMacy();
 	},
+
 	setupMacy() {
 		this.macy = Macy( {
 			container: '#' + this.el.id,
@@ -29,8 +25,12 @@ const ImageViews = wp.media.view.Attachments.extend( {
 			},
 		} );
 	},
-	refreshMacy() {
+
+	recalculateLayout() {
 		if ( this.macy ) {
+			// Only recalculate layout when all images in the container have been loaded.
+			this.macy.recalculateOnImageLoad( true );
+			// Recalculate layout for images that have been added while scrolling.
 			this.macy.recalculate();
 		}
 	},

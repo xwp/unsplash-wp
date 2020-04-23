@@ -120,6 +120,7 @@
 }
 
 .wp-core-ui .unsplash-browser .unsplash-attachment img {
+	height: auto;
 	min-width: 100%;
 	max-width: 100%;
 	vertical-align: top;
