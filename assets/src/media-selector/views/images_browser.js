@@ -41,7 +41,7 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 				attributes: {
 					for: 'media-search-input',
 				},
-				priority: 70,
+				priority: 50,
 			} ).render()
 		);
 
@@ -65,7 +65,7 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 		this.toolbar.set(
 			'spinner',
 			new wp.media.view.Spinner( {
-				priority: 80,
+				priority: 55,
 			} )
 		);
 	},
