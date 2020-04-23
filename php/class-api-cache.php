@@ -70,7 +70,10 @@ class Api_Cache {
 		 * This is intentional. It will be removed once we have our own API solution in place,
 		 * which will internally do caching.
 		 */
-		return false;
+		$transient       = false;
+		$this->is_cached = ! empty( $transient );
+
+		return $transient;
 	}
 
 	/**
