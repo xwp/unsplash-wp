@@ -26,29 +26,20 @@ const ImageViews = wp.media.view.Attachments.extend( {
 		} );
 	},
 	/**
-	 * Calculates the amount of columns.
-	 *
-	 * Calculates the amount of columns and sets it on the data-columns attribute
-	 * of .media-frame-content.
-	 *
-	 * @since 4.0.0
+	 * Set the number of columns.
 	 *
 	 * @return {void}
 	 */
-	setColumns: function() {
-		var prev = this.columns,
-			width = this.$el.width();
+	setColumns() {
+		const prev = this.columns;
+		this.columns = this.macy.rows.length;
 
-		if ( width ) {
-			this.columns = this.macy.rows.length;
-
-			if ( ! prev || prev !== this.columns ) {
-				this.$el.closest( '.media-frame-content' ).attr( 'data-columns', this.columns );
-			}
+		if ( ! prev || prev !== this.columns ) {
+			this.$el
+				.closest( '.media-frame-content' )
+				.attr( 'data-columns', this.columns );
 		}
 	},
-
-
 
 	recalculateLayout() {
 		if ( this.macy ) {
