@@ -65,8 +65,9 @@ jobs:
       script:
         - source "$DEV_LIB_PATH/travis.script.sh"
         - npm run lint
-
-    - name: PHP unit tests (7.4, WordPress latest, with code coverage)
+      
+    - stage: unit-test
+      name: PHP unit tests (7.4, WordPress latest, with code coverage)
       php: "7.4"
       env: WP_VERSION=latest DEV_LIB_ONLY=phpunit,coverage PHPUNIT_VERSION=6
       before_script:
@@ -109,8 +110,9 @@ jobs:
       script:
         - npm run build:js
         - npm run test:js
-
-    - name: E2E tests with Docker (7.4, WordPress latest)
+        -
+    - stage: e2e-test
+      name: E2E tests with Docker (7.4, WordPress latest)
       php: "7.4"
       before_install:
         - nvm install
