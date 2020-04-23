@@ -77,7 +77,7 @@ class Plugin extends Plugin_Base {
 	public function register_default_scripts( $wp_scripts ) {
 		// Nothing to do if we're on WP 5.0+.
 		if ( version_compare( '5.0', get_bloginfo( 'version' ), '<=' ) ) {
-			return;
+			return false;
 		}
 
 		// Polyfill dependencies that are registered in WordPress 4.9.
