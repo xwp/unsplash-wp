@@ -68,6 +68,57 @@ class Plugin extends Plugin_Base {
 	}
 
 	/**
+	 * Polyfill dependencies needed to enqueue our assets on WordPress 4.9.
+	 *
+	 * @action wp_default_scripts
+	 *
+	 * @param WP_Scripts $wp_scripts Scripts.
+	 */
+	public function register_default_scripts( $wp_scripts ) {
+		// Nothing to do if we're on WP 5.0+.
+		if ( version_compare( '5.0', get_bloginfo( 'version' ), '<=' ) ) {
+			return false;
+		}
+
+		// Polyfill dependencies that are registered in WordPress 4.9.
+		$handles = [
+			'wp-i18n',
+			'wp-polyfill',
+			'wp-url',
+		];
+
+		foreach ( $handles as $handle ) {
+			if ( ! isset( $wp_scripts->registered[ $handle ] ) ) {
+				$asset_file   = $this->dir_path . '/assets/js/' . $handle . '.asset.php';
+				$asset        = require $asset_file;
+				$dependencies = $asset['dependencies'];
+				$version      = $asset['version'];
+
+				$wp_scripts->add(
+					$handle,
+					$this->asset_url( sprintf( 'assets/js/%s.js', $handle ) ),
+					$dependencies,
+					$version
+				);
+			}
+		}
+
+		$vendor_scripts = [
+			'lodash' => [
+				'dependencies' => [],
+				'version'      => '4.17.15',
+			],
+		];
+		foreach ( $vendor_scripts as $handle => $handle_data ) {
+			if ( ! isset( $wp_scripts->registered[ $handle ] ) ) {
+				$path = $this->asset_url( sprintf( 'assets/js/vendor/%s.js', $handle ) );
+
+				$wp_scripts->add( $handle, $path, $handle_data['dependencies'], $handle_data['version'], 1 );
+			}
+		}
+	}
+
+	/**
 	 * Load our media selector assets.
 	 *
 	 * @action wp_enqueue_media
@@ -85,6 +136,8 @@ class Plugin extends Plugin_Base {
 		if ( 'post' !== $screen->base ) {
 			return false;
 		}
+
+		// Enqueue media selector JS.
 		$asset_file = $this->dir_path . '/assets/js/media-selector.asset.php';
 		$asset      = is_readable( $asset_file ) ? require $asset_file : [];
 		$version    = isset( $asset['version'] ) ? $asset['version'] : $this->asset_version();
@@ -123,6 +176,30 @@ class Plugin extends Plugin_Base {
 			]
 		);
 
+		/*
+		 * If the block editor is available, the featured image selector in the editor will need to be overridden. This
+		 * is an extension of the media selector enqueued above and is separated from it because the required dependencies
+		 * are not available in WP < 5.0. It would not make sense to polyfill these dependencies anyways since the block
+		 * editor is not officially compatible with WP < 5.0.
+		 */
+		if ( has_action( 'enqueue_block_assets' ) ) {
+			$asset_file = $this->dir_path . '/assets/js/featured-image-selector.asset.php';
+			$asset      = is_readable( $asset_file ) ? require $asset_file : [];
+			$version    = isset( $asset['version'] ) ? $asset['version'] : $this->asset_version();
+
+			$dependencies   = isset( $asset['dependencies'] ) ? $asset['dependencies'] : [];
+			$dependencies[] = 'unsplash-media-selector';
+
+			wp_enqueue_script(
+				'unsplash-featured-image-selector',
+				$this->asset_url( 'assets/js/featured-image-selector.js' ),
+				$dependencies,
+				$version,
+				true
+			);
+		}
+
+		// Enqueue media selector CSS.
 		wp_enqueue_style(
 			'unsplash-media-selector-style',
 			$this->asset_url( 'assets/css/media-selector-compiled.css' ),
@@ -157,6 +234,7 @@ class Plugin extends Plugin_Base {
 			'author'         => $image->get_field( 'user' )['name'],
 			'description'    => $image->get_field( 'description' ),
 			'caption'        => $image->get_caption(),
+			'color'          => $image->get_field( 'color' ),
 			'name'           => $image->get_field( 'original_id' ),
 			'height'         => $image->get_field( 'height' ),
 			'width'          => $image->get_field( 'width' ),
