@@ -45,17 +45,21 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 			} ).render()
 		);
 
+		this.searchFilter = new wp.media.view.Search( {
+			controller: this.controller,
+			model: this.collection.props,
+			priority: 60,
+			className: 'unsplash-search',
+			id: 'unsplash-search-input',
+			attributes: {
+				type: 'search',
+				placeholder: toolbar.filters.search.placeholder,
+				autofocus: true,
+			},
+		} );
+
 		// Create search filter.
-		this.toolbar.set(
-			'searchFilter',
-			new wp.media.view.Search( {
-				controller: this.controller,
-				model: this.collection.props,
-				priority: 60,
-				className: 'unsplash-search',
-				id: 'unsplash-search-input',
-			} ).render()
-		);
+		this.toolbar.set( 'searchFilter', this.searchFilter.render() );
 
 		// TODO: replace with better loading indicator.
 		this.toolbar.set(
@@ -149,6 +153,15 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 			errorView.$el.html( error.message );
 			errorView.$el.removeClass( 'hidden' );
 			toolbarView.$el.addClass( 'hidden' );
+		}
+	},
+	focusInput() {
+		if (
+			this.searchFilter &&
+			this.searchFilter.$el &&
+			! this.searchFilter.$el.val()
+		) {
+			this.searchFilter.$el.focus();
 		}
 	},
 } );
