@@ -224,7 +224,7 @@ class Test_Settings extends \WP_UnitTestCase {
 	 * @covers ::get_utm_source()
 	 */
 	public function test_get_utm_source() {
-		$expected = getenv( 'UNSPLASH_UTM_SOURCE' ) ? getenv( 'UNSPLASH_UTM_SOURCE' ) : sanitize_title_with_dashes( get_bloginfo( 'name' ) );
+		$expected = sanitize_title_with_dashes( get_bloginfo( 'name' ) );
 		$actual   = Settings::get_utm_source();
 
 		$this->assertEquals( $expected, $actual );
