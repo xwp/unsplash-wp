@@ -165,7 +165,7 @@ class Settings {
 
 		add_settings_section(
 			'unsplash_section',
-			__( 'API Settings', 'unsplash' ),
+			__( 'API Authenication', 'unsplash' ),
 			[ $this, 'settings_section_render' ],
 			'unsplash'
 		);
@@ -231,7 +231,7 @@ class Settings {
 		$logo = $this->plugin->asset_url( 'assets/images/logo.png' );
 		?>
 		<form action='options.php' method='post' style="max-width: 800px">
-			<h1><img src="<?php echo esc_url( $logo ); ?>" height="20" />  Unsplash</h1>
+			<h1><img src="<?php echo esc_url( $logo ); ?>" height="20" />  Unsplash</h1><br />
 			<?php
 			settings_fields( 'unsplash' );
 			do_settings_sections( 'unsplash' );
@@ -245,7 +245,7 @@ class Settings {
 	 * Renders the settings section.
 	 */
 	public function settings_section_render() {
-		echo esc_html__( 'Credentials are required to contact Unsplash\'s and for this plugin to function.', 'unsplash' );
+		echo esc_html__( 'These settings are required to use the Unpslash plugin.', 'unsplash' );
 	}
 
 	/**
@@ -254,7 +254,8 @@ class Settings {
 	public function access_key_render() {
 		$options = get_option( 'unsplash_settings' );
 		?>
-		<input type='password' class="widefat" name='unsplash_settings[access_key]' value='<?php echo esc_attr( isset( $options['access_key'] ) ? $options['access_key'] : '' ); ?>'>
+		<input type='password' class="widefat" name='unsplash_settings[access_key]' aria-describedby="unsplash-key-description" value='<?php echo esc_attr( isset( $options['access_key'] ) ? $options['access_key'] : '' ); ?>'>
+		<p class="description" id="unsplash-key-description"><?php esc_html_e( 'The API key is a public unique identifier required for authentication.', 'unsplash' ); ?></p>
 		<?php
 	}
 
@@ -264,7 +265,8 @@ class Settings {
 	public function secret_key_render() {
 		$options = get_option( 'unsplash_settings' );
 		?>
-		<input type='password' class="widefat" name='unsplash_settings[secret_key]' value='<?php echo esc_attr( isset( $options['secret_key'] ) ? $options['secret_key'] : '' ); ?>'>
+		<input type='password' class="widefat" name='unsplash_settings[secret_key]' aria-describedby="unsplash-secret-description" value='<?php echo esc_attr( isset( $options['secret_key'] ) ? $options['secret_key'] : '' ); ?>'>
+		<p class="description" id="unsplash-secret-description"><?php esc_html_e( 'The secret shared between Unsplash and your plugin, required for authentication.', 'unsplash' ); ?></p>
 		<?php
 	}
 

@@ -435,8 +435,8 @@ class Plugin extends Plugin_Base {
 		$class   = 'notice notice-warning is-dismissible';
 		$logo    = $this->asset_url( 'assets/images/logo.png' );
 		$title   = __( 'Unsplash', 'unsplash' );
-		$message = __( 'Please complete unsplash setup by visit the Unsplash settings page and adding API key/secret.', 'unsplash' );
-		$button  = __( 'Start setup', 'unsplash' );
+		$message = __( 'To complete set up of the Unsplash plugin you’ll need to add the API key/secret.', 'unsplash' );
+		$button  = __( 'Complete setup', 'unsplash' );
 		$url     = get_admin_url( null, 'options-general.php?page=unsplash' );
 
 		printf( '<div class="%1$s"><h3><img src="%2$s" height="14" "/>   %3$s</h3><p>%4$s</p><p><a href="%5$s" class="button button-primary button-large">%6$s</a></p></div>', esc_attr( $class ), esc_url( $logo ), esc_html( $title ), esc_html( $message ), esc_url( $url ), esc_html( $button ) );
