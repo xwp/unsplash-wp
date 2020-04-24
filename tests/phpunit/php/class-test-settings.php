@@ -213,7 +213,7 @@ class Test_Settings extends \WP_UnitTestCase {
 		$this->settings->secret_key_render();
 		$input = ob_get_clean();
 
-		$expected = "\t\t<input type='password' class=\"widefat\" name='unsplash_settings[secret_key]' value=''>\n\t\t";
+		$expected = "\t\t<input type='password' class=\"widefat\" name='unsplash_settings[secret_key]' aria-describedby=\"unsplash-secret-description\" value=''>\n\t\t";
 
 		$this->assertContains( $expected, $input );
 	}
@@ -228,7 +228,7 @@ class Test_Settings extends \WP_UnitTestCase {
 		$this->settings->utm_source_render();
 		$input = ob_get_clean();
 
-		$expected = "\t\t<input type='text' class=\"widefat\" name='unsplash_settings[utm_source]' aria-describedby=\"unsplash-secret-description\" value=''>\n\t\t";
+		$expected = "\t\t<input type='text' class=\"widefat\" name='unsplash_settings[utm_source]' value=''>\n\t\t";
 
 		$this->assertContains( $expected, $input );
 	}
