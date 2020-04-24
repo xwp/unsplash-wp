@@ -219,17 +219,14 @@ class Test_Settings extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Test utm_source_render.
+	 * Test get_utm_source.
 	 *
-	 * @covers ::utm_source_render()
+	 * @covers ::get_utm_source()
 	 */
-	public function test_utm_source_render() {
-		ob_start();
-		$this->settings->utm_source_render();
-		$input = ob_get_clean();
+	public function test_get_utm_source() {
+		$expected = getenv( 'UNSPLASH_UTM_SOURCE' ) ? getenv( 'UNSPLASH_UTM_SOURCE' ) : sanitize_title_with_dashes( get_bloginfo( 'name' ) );
+		$actual   = Settings::get_utm_source();
 
-		$expected = "\t\t<input type='text' class=\"widefat\" name='unsplash_settings[utm_source]' value=''>\n\t\t";
-
-		$this->assertEquals( $expected, $input );
+		$this->assertEquals( $expected, $actual );
 	}
 }

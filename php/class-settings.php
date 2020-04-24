@@ -108,6 +108,23 @@ class Settings {
 	}
 
 	/**
+	 * Get UTM source. By default, this will be the slug of site name. This can be overridden by setting the
+	 * 'UNSPLASH_UTM_SOURCE' environment variable.
+	 *
+	 * @return string UTM source.
+	 */
+	public static function get_utm_source() {
+		static $utm_source;
+
+		if ( null === $utm_source ) {
+			$site_name_slug = sanitize_title_with_dashes( get_bloginfo( 'name' ) );
+			$utm_source     = ( getenv( 'UNSPLASH_UTM_SOURCE' ) ) ? getenv( 'UNSPLASH_UTM_SOURCE' ) : $site_name_slug;
+		}
+
+		return $utm_source;
+	}
+
+	/**
 	 * Gets the default encryption key to use.
 	 *
 	 * @return string Default (not user-based) encryption key.
@@ -185,14 +202,6 @@ class Settings {
 			'unsplash',
 			'unsplash_section'
 		);
-
-		add_settings_field(
-			'utm_source',
-			__( 'UTM Source', 'unsplash' ),
-			[ $this, 'utm_source_render' ],
-			'unsplash',
-			'unsplash_section'
-		);
 	}
 
 	/**
@@ -266,15 +275,4 @@ class Settings {
 		<input type='password' class="widefat" name='unsplash_settings[secret_key]' value='<?php echo esc_attr( isset( $options['secret_key'] ) ? $options['secret_key'] : '' ); ?>'>
 		<?php
 	}
-
-	/**
-	 * Renders the UTM Source Key.
-	 */
-	public function utm_source_render() {
-			$options = get_option( 'unsplash_settings' );
-		?>
-		<input type='text' class="widefat" name='unsplash_settings[utm_source]' value='<?php echo esc_attr( isset( $options['utm_source'] ) ? $options['utm_source'] : '' ); ?>'>
-		<?php
-	}
-
 }

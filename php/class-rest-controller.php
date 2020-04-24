@@ -53,13 +53,12 @@ class Rest_Controller extends WP_REST_Controller {
 		$this->rest_base = 'photos';
 		$this->post_type = 'attachment';
 
-		$options     = get_option( 'unsplash_settings' );
-		$default_utm = ( getenv( 'UNSPLASH_UTM_SOURCE' ) ) ? getenv( 'UNSPLASH_UTM_SOURCE' ) : 'WordPress-XWP';
+		$options = get_option( 'unsplash_settings' );
 
 		$this->credentials = [
 			'applicationId' => ! empty( $options['access_key'] ) ? $this->plugin->settings->decrypt( $options['access_key'] ) : getenv( 'UNSPLASH_ACCESS_KEY' ),
 			'secret'        => ! empty( $options['secret_key'] ) ? $this->plugin->settings->decrypt( $options['secret_key'] ) : getenv( 'UNSPLASH_SECRET_KEY' ),
-			'utmSource'     => ! empty( $options['utm_source'] ) ? $options['utm_source'] : $default_utm,
+			'utmSource'     => Settings::get_utm_source(),
 		];
 		/**
 		 * Filter API credentials.

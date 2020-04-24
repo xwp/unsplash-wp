@@ -168,13 +168,9 @@ class Image {
 			return '';
 		}
 
-		$options     = get_option( 'unsplash_settings' );
-		$default_utm = ( getenv( 'UNSPLASH_UTM_SOURCE' ) ) ? getenv( 'UNSPLASH_UTM_SOURCE' ) : 'WordPress-XWP';
-		$utm_source  = ! empty( $options['utm_source'] ) ? $options['utm_source'] : $default_utm;
-
 		$url = add_query_arg(
 			[
-				'utm_source' => $utm_source,
+				'utm_source' => Settings::get_utm_source(),
 				'utm_medium' => 'referral',
 			],
 			'https://unsplash.com/'
