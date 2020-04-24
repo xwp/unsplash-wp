@@ -95,6 +95,13 @@ jobs:
       php: "5.6"
       env: WP_VERSION=5.0 DEV_LIB_ONLY=phpunit
 
+    - name: PHP unit tests (5.6, WordPress 4.9)
+      php: "5.6"
+      env: WP_VERSION=4.9 DEV_LIB_ONLY=phpunit
+      script:
+        - npm run build:js
+        - source "$DEV_LIB_PATH/travis.script.sh"
+
     - name: PHP unit tests (7.4, WordPress trunk)
       php: "7.4"
       env: WP_VERSION=trunk DEV_LIB_ONLY=phpunit PHPUNIT_VERSION=6

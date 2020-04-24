@@ -10,7 +10,12 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 			arguments
 		);
 
-		this.collection.on( 'add remove reset', this.updateLayout, this );
+		this.collection.on( 'add remove reset', this.focusInput, this );
+
+		// Update masonry layout only when a set of images (new page) is loaded.
+		this.collection.on( 'attachments:received', () =>
+			this.attachments.recalculateLayout()
+		);
 		this.collection.on(
 			'add remove reset attachments:received',
 			this.showError,
@@ -36,27 +41,31 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 				attributes: {
 					for: 'media-search-input',
 				},
-				priority: 70,
+				priority: 50,
 			} ).render()
 		);
 
+		this.searchFilter = new wp.media.view.Search( {
+			controller: this.controller,
+			model: this.collection.props,
+			priority: 60,
+			className: 'unsplash-search',
+			id: 'unsplash-search-input',
+			attributes: {
+				type: 'search',
+				placeholder: toolbar.filters.search.placeholder,
+				autofocus: true,
+			},
+		} );
+
 		// Create search filter.
-		this.toolbar.set(
-			'searchFilter',
-			new wp.media.view.Search( {
-				controller: this.controller,
-				model: this.collection.props,
-				priority: 60,
-				className: 'unsplash-search',
-				id: 'unsplash-search-input',
-			} ).render()
-		);
+		this.toolbar.set( 'searchFilter', this.searchFilter.render() );
 
 		// TODO: replace with better loading indicator.
 		this.toolbar.set(
 			'spinner',
 			new wp.media.view.Spinner( {
-				priority: 80,
+				priority: 55,
 			} )
 		);
 	},
@@ -71,6 +80,7 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 			sortable: this.options.sortable,
 			scrollElement: this.options.scrollElement,
 			idealColumnWidth: this.options.idealColumnWidth,
+			refreshThreshold: 9,
 
 			// The single `Attachment` view to be used in the `Attachments` view.
 			AttachmentView: this.options.AttachmentView,
@@ -94,10 +104,7 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 		} );
 
 		this.attachmentsNoResults.$el.addClass( 'hidden no-media' );
-		this.attachmentsNoResults.$el.html(
-			`<img src="${ noResults.image }" alt="${ noResults.noMedia }"/>`
-		);
-		this.attachmentsNoResults.$el.append( `<p>${ noResults.noMedia }</p>` );
+		this.attachmentsNoResults.$el.append( `<h2>${ noResults.noMedia }</h2>` );
 
 		this.views.add( this.attachmentsNoResults );
 
@@ -145,9 +152,14 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 			toolbarView.$el.addClass( 'hidden' );
 		}
 	},
-	updateLayout() {
-		this.attachments.setupMacy();
-		this.attachments.refreshMacy();
+	focusInput() {
+		if (
+			this.searchFilter &&
+			this.searchFilter.$el &&
+			! this.searchFilter.$el.val()
+		) {
+			this.searchFilter.$el.focus();
+		}
 	},
 } );
 

@@ -39,13 +39,20 @@
 
 .unsplash-browser.attachments-browser .unsplash-search-input-label {
 	display: block;
-	margin: 5px 0 0;
+	float: left;
+	margin: 5px 0;
+	font-weight: bold;
+}
+
+.unsplash-browser .media-toolbar .spinner {
+	float: right;
 }
 
 .unsplash-browser.attachments-browser .unsplash-search {
 	width: 100%;
 	padding: 5px 10px;
 	margin: 0;
+	clear: both;
 }
 
 .wp-core-ui .unsplash-browser .attachment-preview {
@@ -65,7 +72,7 @@
 	height: auto !important;
 	top: 100px;
 	right: 310px;
-	left: 10px;
+	left: 20px;
 	padding: 0;
 }
 
@@ -79,7 +86,13 @@
 	right: 300px;
 	text-align: center;
 	left: 0;
-	top: 35px;
+	top: 34%;
+}
+
+.media-frame-content[data-columns="2"] .unsplash-attachment:nth-child(even) .thumbnail,
+.media-frame-content[data-columns="3"] .unsplash-attachment:nth-child(3n) .thumbnail,
+.media-frame-content[data-columns="1"] .unsplash-attachment .thumbnail {
+	margin-right: 8px;
 }
 
 @media only screen and (max-width: 640px), screen and (max-height: 400px) {
@@ -88,10 +101,6 @@
 	.media-frame .unsplash-browser .attachments {
 		right: 0;
 	}
-}
-
-.wp-core-ui  .unsplash-attachment .thumbnail {
-	margin: 12px;
 }
 
 .wp-core-ui  .unsplash-attachment:focus .thumbnail,
@@ -115,11 +124,15 @@
 		0 0 0 3px #0073aa;
 }
 
-.media-frame .unsplash-browser .no-media img {
-	width: 400px;
+.media-frame .unsplash-browser .no-media h2 {
+	font-size: 20px;
+	line-height: 1.4;
+	font-weight: 400;
+	margin: 0;
 }
 
 .wp-core-ui .unsplash-browser .unsplash-attachment img {
+	height: auto;
 	min-width: 100%;
 	max-width: 100%;
 	vertical-align: top;
