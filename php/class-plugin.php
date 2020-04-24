@@ -169,8 +169,7 @@ class Plugin extends Plugin_Base {
 					],
 				],
 				'noResults' => [
-					'noMedia' => __( 'No results found', 'unsplash' ),
-					'image'   => $this->asset_url( 'assets/images/no-results.png' ),
+					'noMedia' => __( 'No items found.', 'unsplash' ),
 				],
 
 			]
