@@ -90,6 +90,20 @@ class Test_Plugin extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Test for register_taxonomy() method.
+	 *
+	 * @see Plugin::register_taxonomy()
+	 */
+	public function test_register_taxonomy() {
+		$plugin = get_plugin_instance();
+		$plugin->register_taxonomy();
+
+		$this->assertTrue( taxonomy_exists( 'media_tag' ) );
+		$this->assertTrue( taxonomy_exists( 'media_source' ) );
+		$this->assertTrue( taxonomy_exists( 'unsplash_user' ) );
+	}
+
+	/**
 	 * Test for enqueue_media_scripts() method.
 	 *
 	 * @see Plugin::enqueue_media_scripts()
