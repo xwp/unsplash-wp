@@ -64,6 +64,13 @@ export default View => {
 			// TODO - Load selection from the correct state.
 			const ogState = this.state();
 
+			/*
+			 * By default, only the 'insert' library (Media Library) allows for attachment details to be edited.
+			 * Setting `allowLocalEdits` on the state allows for the details to be edited irregardless of the original
+			 * media library being overridden.
+			 */
+			ogState.attributes.allowLocalEdits = true;
+
 			contentRegion.view = new ImagesBrowser( {
 				controller: this,
 				AttachmentView: ImageView,
