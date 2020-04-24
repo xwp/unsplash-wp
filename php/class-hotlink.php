@@ -87,7 +87,8 @@ class Hotlink {
 			return $response;
 		}
 		$unsplash_url = $this->get_unsplash_url( $attachment->ID );
-		if ( ! $unsplash_url ) {
+		$cropped      = $this->is_cropped_image( $attachment->ID );
+		if ( ! $unsplash_url || $cropped ) {
 			return $response;
 		}
 		$response['sizes'] = $this->plugin->add_image_sizes( $unsplash_url, $response['width'], $response['height'] );
@@ -102,19 +103,21 @@ class Hotlink {
 	/**
 	 * Add unsplash image sizes to REST API.
 	 *
-	 * @param WP_Response $wp_response Data for REST API.
-	 * @param WP_Post     $attachment Attachment object.
+	 * @param WP_REST_Response $wp_response The response object.
+	 * @param WP_Post          $attachment  The original attachment post.
+	 * @param WP_REST_Request  $wp_request  Request used to generate the response.
 	 *
-	 * @filter rest_prepare_attachment, 99, 2
+	 * @filter rest_prepare_attachment, 99, 3
 	 *
 	 * @return mixed
 	 */
-	public function rest_prepare_attachment( $wp_response, $attachment ) {
+	public function rest_prepare_attachment( $wp_response, $attachment, $wp_request ) {
 		if ( ! $attachment instanceof WP_Post ) {
 			return $wp_response;
 		}
 		$unsplash_url = $this->get_unsplash_url( $attachment->ID );
-		if ( ! $unsplash_url ) {
+		$cropped      = $this->is_cropped_image( $attachment->ID );
+		if ( ! $unsplash_url || $cropped ) {
 			return $wp_response;
 		}
 
@@ -136,6 +139,23 @@ class Hotlink {
 		// Return raw image url in REST API.
 		if ( isset( $response['source_url'] ) ) {
 			$response['source_url'] = $url;
+		}
+
+		$context = ! empty( $wp_request['context'] ) ? $wp_request['context'] : 'view';
+		if ( 'edit' === $context ) {
+			$response['nonces'] = [
+				'update' => false,
+				'delete' => false,
+				'edit'   => false,
+			];
+			if ( current_user_can( 'edit_post', $attachment->ID ) ) {
+				$response['nonces']['update'] = wp_create_nonce( 'update-post_' . $attachment->ID );
+				$response['nonces']['edit']   = wp_create_nonce( 'image_editor-' . $attachment->ID );
+			}
+
+			if ( current_user_can( 'delete_post', $attachment->ID ) ) {
+				$response['nonces']['delete'] = wp_create_nonce( 'delete-post_' . $attachment->ID );
+			}
 		}
 
 		$wp_response->set_data( $response );
@@ -589,7 +609,8 @@ class Hotlink {
 	public function get_image_tag( $html, $id, $alt, $title, $align, $size ) {
 		// Verify it is an Unsplash ID.
 		$unsplash_url = $this->get_unsplash_url( $id );
-		if ( ! $unsplash_url ) {
+		$cropped      = $this->is_cropped_image( $id );
+		if ( ! $unsplash_url || $cropped ) {
 			return $html;
 		}
 

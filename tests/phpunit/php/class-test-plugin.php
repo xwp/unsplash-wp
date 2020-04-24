@@ -51,6 +51,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 	public function test_construct() {
 		$plugin = new Plugin();
 		$this->assertEquals( 10, has_action( 'plugins_loaded', [ $plugin, 'init' ] ) );
+		$this->assertEquals( 10, has_action( 'wp_default_scripts', [ $plugin, 'register_default_scripts' ] ) );
 		$this->assertEquals( 10, has_action( 'wp_enqueue_media', [ $plugin, 'enqueue_media_scripts' ] ) );
 		$this->assertEquals( 10, has_action( 'init', [ $plugin, 'register_taxonomy' ] ) );
 		$this->assertEquals( 10, has_action( 'init', [ $plugin, 'register_meta' ] ) );
@@ -89,6 +90,20 @@ class Test_Plugin extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Test for register_taxonomy() method.
+	 *
+	 * @see Plugin::register_taxonomy()
+	 */
+	public function test_register_taxonomy() {
+		$plugin = get_plugin_instance();
+		$plugin->register_taxonomy();
+
+		$this->assertTrue( taxonomy_exists( 'media_tag' ) );
+		$this->assertTrue( taxonomy_exists( 'media_source' ) );
+		$this->assertTrue( taxonomy_exists( 'unsplash_user' ) );
+	}
+
+	/**
 	 * Test for enqueue_media_scripts() method.
 	 *
 	 * @see Plugin::enqueue_media_scripts()
@@ -99,6 +114,40 @@ class Test_Plugin extends \WP_UnitTestCase {
 		$plugin = get_plugin_instance();
 		$plugin->enqueue_media_scripts();
 		$this->assertTrue( wp_script_is( 'unsplash-media-selector', 'enqueued' ) );
+
+		$featured_image_script_loads = version_compare( '5.0', get_bloginfo( 'version' ), '<=' );
+		$this->assertEquals( $featured_image_script_loads, wp_script_is( 'unsplash-featured-image-selector', 'enqueued' ) );
+	}
+
+	/**
+	 * Test for register_default_scripts() method.
+	 *
+	 * @see Plugin::register_default_scripts()
+	 */
+	public function test_register_default_scripts() {
+		$wp_scripts = new \WP_Scripts();
+
+		$plugin           = get_plugin_instance();
+		$plugin_asset_url = $plugin->asset_url();
+
+		$result = $plugin->register_default_scripts( $wp_scripts );
+
+		if ( version_compare( '5.0', get_bloginfo( 'version' ), '<=' ) ) {
+			$this->assertFalse( $result );
+			return;
+		}
+
+		$expected_handles = [
+			'wp-i18n',
+			'wp-polyfill',
+			'wp-url',
+			'lodash',
+		];
+
+		foreach ( $expected_handles as $expected_handle ) {
+			$this->assertContains( $expected_handle, array_keys( $wp_scripts->registered ) );
+			$this->assertContains( $plugin_asset_url, $wp_scripts->registered[ $expected_handle ]->src );
+		}
 	}
 
 	/**

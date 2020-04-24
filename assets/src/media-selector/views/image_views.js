@@ -5,22 +5,18 @@ const ImageViews = wp.media.view.Attachments.extend( {
 	tagName: 'div',
 	macy: null,
 
-	render() {
-		wp.media.view.Attachments.prototype.render.apply( this, arguments );
-		this.refreshMacy();
-	},
 	ready() {
 		this.setupMacy();
 		this.scroll();
-		this.refreshMacy();
 	},
+
 	setupMacy() {
 		this.macy = Macy( {
 			container: '#' + this.el.id,
 			trueOrder: true,
 			waitForImages: true,
 			useContainerForBreakpoints: true,
-			margin: 0,
+			margin: 16,
 			columns: 3,
 			breakAt: {
 				992: 3,
@@ -29,8 +25,27 @@ const ImageViews = wp.media.view.Attachments.extend( {
 			},
 		} );
 	},
-	refreshMacy() {
+	/**
+	 * Set the number of columns.
+	 *
+	 * @return {void}
+	 */
+	setColumns() {
+		const prev = this.columns;
+		this.columns = this.macy.rows.length;
+
+		if ( ! prev || prev !== this.columns ) {
+			this.$el
+				.closest( '.media-frame-content' )
+				.attr( 'data-columns', this.columns );
+		}
+	},
+
+	recalculateLayout() {
 		if ( this.macy ) {
+			// Only recalculate layout when all images in the container have been loaded.
+			this.macy.recalculateOnImageLoad( true );
+			// Recalculate layout for images that have been added while scrolling.
 			this.macy.recalculate();
 		}
 	},
