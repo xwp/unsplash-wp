@@ -69,6 +69,27 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 			} )
 		);
 	},
+
+	createSingle() {
+		wp.media.view.AttachmentsBrowser.prototype.createSingle.apply(
+			this,
+			arguments
+		);
+
+		const sidebar = this.sidebar,
+			single = this.options.selection.single();
+
+		sidebar.set(
+			'details',
+			new wp.media.view.Attachment.Details( {
+				controller: this.controller,
+				model: single,
+				priority: 80,
+				allowLocalEdits: true,
+			} )
+		);
+	},
+
 	createAttachments() {
 		const noResults = getConfig( 'noResults' );
 
