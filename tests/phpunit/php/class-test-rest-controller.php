@@ -1136,7 +1136,9 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 * @param string     $message Message.
 	 */
 	public function test_format_exception( $code, $error_status, $message ) {
-		$rest_controller = new Rest_Controller( new Plugin() );
+		$plugin = new Plugin();
+		$plugin->init();
+		$rest_controller = new Rest_Controller( $plugin );
 		$wp_error        = $rest_controller->format_exception( $code, $error_status );
 		$this->assertEquals( $wp_error->get_error_code(), $code );
 		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), $message );
@@ -1148,7 +1150,9 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 * @covers       \Unsplash\Rest_Controller::check_api_credentials()
 	 */
 	public function test_check_api_credentials() {
-		$rest_controller = new Rest_Controller( new Plugin() );
+		$plugin = new Plugin();
+		$plugin->init();
+		$rest_controller = new Rest_Controller( $plugin );
 		$result          = $rest_controller->check_api_credentials();
 		$this->assertTrue( $result );
 	}
@@ -1160,7 +1164,9 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 */
 	public function test_no_check_api_credentials() {
 		add_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
-		$rest_controller = new Rest_Controller( new Plugin() );
+		$plugin = new Plugin();
+		$plugin->init();
+		$rest_controller = new Rest_Controller( $plugin );
 		$wp_error        = $rest_controller->check_api_credentials();
 		$this->assertEquals( $wp_error->get_error_code(), 'missing_api_credential' );
 		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), 'The Unsplash plugin has not been provided with API credentials. Please visit the Unsplash settings page and confirm that the API key/secret has been provided.' );
@@ -1173,7 +1179,9 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 * @covers       \Unsplash\Rest_Controller::rest_ensure_response()
 	 */
 	public function test_rest_ensure_response() {
-		$rest_controller = new Rest_Controller( new Plugin() );
+		$plugin = new Plugin();
+		$plugin->init();
+		$rest_controller = new Rest_Controller( $plugin );
 		$request         = new WP_REST_Request();
 		$response        = $rest_controller->rest_ensure_response( [ 'foo' => 'bar' ], $request );
 		$data            = $response->get_data();
@@ -1186,7 +1194,9 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 * @covers       \Unsplash\Rest_Controller::rest_ensure_response()
 	 */
 	public function test_rest_ensure_response_wp_error() {
-		$rest_controller = new Rest_Controller( new Plugin() );
+		$plugin = new Plugin();
+		$plugin->init();
+		$rest_controller = new Rest_Controller( $plugin );
 		$request         = new WP_REST_Request();
 		$wp_error        = $rest_controller->rest_ensure_response( new \WP_Error( 'test_error', 'Testing' ), $request );
 		$this->assertEquals( $wp_error->get_error_code(), 'test_error' );
@@ -1200,7 +1210,9 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 * @covers       \Unsplash\Rest_Controller::is_ajax_request()
 	 */
 	public function test_rest_ensure_response_ajax() {
-		$rest_controller = new Rest_Controller( new Plugin() );
+		$plugin = new Plugin();
+		$plugin->init();
+		$rest_controller = new Rest_Controller( $plugin );
 		$request         = new WP_REST_Request();
 		$request->set_header( 'X-Requested-With', 'XMLHttpRequest' );
 		$response = $rest_controller->rest_ensure_response( [ 'foo' => 'bar' ], $request );
@@ -1215,7 +1227,9 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 * @covers       \Unsplash\Rest_Controller::is_ajax_request()
 	 */
 	public function test_rest_ensure_response_wp_error_ajax() {
-		$rest_controller = new Rest_Controller( new Plugin() );
+		$plugin = new Plugin();
+		$plugin->init();
+		$rest_controller = new Rest_Controller( $plugin );
 		$request         = new WP_REST_Request();
 		$request->set_header( 'X-Requested-With', 'XMLHttpRequest' );
 		$response = $rest_controller->rest_ensure_response( new \WP_Error( 'test_error', 'Testing' ), $request );

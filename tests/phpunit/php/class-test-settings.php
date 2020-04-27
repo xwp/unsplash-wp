@@ -185,7 +185,7 @@ class Test_Settings extends \WP_UnitTestCase {
 		ob_start();
 		$this->settings->settings_section_render();
 		$section = ob_get_clean();
-		$this->assertEquals( 'Section Description', $section );
+		$this->assertEquals( 'These settings are required to use the Unpslash plugin.', $section );
 	}
 
 	/**
@@ -198,9 +198,9 @@ class Test_Settings extends \WP_UnitTestCase {
 		$this->settings->access_key_render();
 		$input = ob_get_clean();
 
-		$expected = "\t\t<input type='password' class=\"widefat\" name='unsplash_settings[access_key]' value=''>\n\t\t";
+		$expected = "\t\t<input type='password' class=\"widefat\" name='unsplash_settings[access_key]' aria-describedby=\"unsplash-key-description\" value=''>\n\t\t";
 
-		$this->assertEquals( $expected, $input );
+		$this->assertContains( $expected, $input );
 	}
 
 	/**
@@ -213,9 +213,9 @@ class Test_Settings extends \WP_UnitTestCase {
 		$this->settings->secret_key_render();
 		$input = ob_get_clean();
 
-		$expected = "\t\t<input type='password' class=\"widefat\" name='unsplash_settings[secret_key]' value=''>\n\t\t";
+		$expected = "\t\t<input type='password' class=\"widefat\" name='unsplash_settings[secret_key]' aria-describedby=\"unsplash-secret-description\" value=''>\n\t\t";
 
-		$this->assertEquals( $expected, $input );
+		$this->assertContains( $expected, $input );
 	}
 
 	/**
@@ -230,6 +230,19 @@ class Test_Settings extends \WP_UnitTestCase {
 
 		$expected = "\t\t<input type='text' class=\"widefat\" name='unsplash_settings[utm_source]' value=''>\n\t\t";
 
-		$this->assertEquals( $expected, $input );
+		$this->assertContains( $expected, $input );
+	}
+
+	/**
+	 *
+	 * Test get_credentials.
+	 *
+	 * @covers ::get_credentials()
+	 */
+	public function test_get_credentials() {
+		$credentials = $this->settings->get_credentials();
+		$this->assertArrayHasKey( 'applicationId', $credentials );
+		$this->assertArrayHasKey( 'secret', $credentials );
+		$this->assertArrayHasKey( 'utmSource', $credentials );
 	}
 }
