@@ -154,7 +154,7 @@ class Test_Api extends \WP_UnitTestCase {
 	/**
 	 * Fake rate limit exceeded.
 	 *
-	 * @param array $response Array from wp_remote_get
+	 * @param array $response Array from wp_remote_get.
 	 *
 	 * @return mixed
 	 */
