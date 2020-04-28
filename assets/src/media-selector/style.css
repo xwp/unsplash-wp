@@ -53,6 +53,8 @@
 	padding: 5px 10px;
 	margin: 0;
 	clear: both;
+	-webkit-appearance: none;
+	border-radius: 4px;
 }
 
 .wp-core-ui .unsplash-browser .attachment-preview {
@@ -95,11 +97,23 @@
 	margin-right: 8px;
 }
 
+@media only screen and (max-width: 900px) {
+
+	.media-frame .unsplash-browser .unsplash-error,
+	.media-frame .unsplash-browser .no-media,
+	.media-frame .unsplash-browser .attachments {
+		right: 262px;
+		top: 120px;
+	}
+}
+
 @media only screen and (max-width: 640px), screen and (max-height: 400px) {
 
+	.media-frame .unsplash-browser .unsplash-error,
 	.media-frame .unsplash-browser .no-media,
 	.media-frame .unsplash-browser .attachments {
 		right: 0;
+		top: 120px;
 	}
 }
 
