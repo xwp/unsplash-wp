@@ -285,7 +285,7 @@ class Rest_Controller extends WP_REST_Controller {
 					'status'        => '400',
 				]
 			);
-			$this->plugin->log_error( $e );
+			$this->plugin->trigger_warning( $e->getMessage() );
 			return $response;
 		}
 
@@ -306,41 +306,29 @@ class Rest_Controller extends WP_REST_Controller {
 		$orientation = $request->get_param( 'orientation' );
 		$collections = $request->get_param( 'collections' );
 		$photos      = [];
-		$cache       = new Api_Cache( $request );
 
-		try {
-			$api_response = $cache->get_cache();
-			if ( false === $api_response ) {
-				$check_api = $this->check_api_credentials();
-				if ( is_wp_error( $check_api ) ) {
-					return $this->rest_ensure_response( $check_api, $request );
-				}
-				$this->http_client_init();
-				$api_response = Search::photos( $search, $page, $per_page, $orientation, $collections );
-				$cache->set_cache( $api_response );
-			}
-			$response_object = $api_response->getArrayObject();
-			$results         = $response_object->toArray();
-			$max_pages       = $response_object->totalPages();
-			$total           = $response_object->totalObjects();
-
-			foreach ( $results as $index => $photo ) {
-				if ( $this->is_ajax_request( $request ) ) {
-					$photo = $this->set_unique_media_id( $photo, $index, $page, $per_page );
-				}
-
-				$data     = $this->prepare_item_for_response( $photo, $request );
-				$photos[] = $this->prepare_response_for_collection( $data );
-			}
-
-			$response = $this->rest_ensure_response( $photos, $request );
-			$response->header( 'X-WP-Total', (int) $total );
-			$response->header( 'X-WP-TotalPages', (int) $max_pages );
-			$response->header( 'X-WP-Unsplash-Cache-Hit', $cache->get_is_cached() );
-		} catch ( \Exception $e ) {
-			$response = $this->format_exception( 'search-photos', $e->getCode() );
-			$this->plugin->log_error( $e );
+		$api_response = $this->api->search( $search, $page, $per_page, $orientation, $collections );
+		if ( is_wp_error( $api_response ) ) {
+			return $this->rest_ensure_response( $api_response, $request );
 		}
+		$cached    = $api_response->get_cached();
+		$results   = $api_response->get_results();
+		$max_pages = $api_response->get_total_pages();
+		$total     = $api_response->get_total_object();
+
+		foreach ( $results as $index => $photo ) {
+			if ( $this->is_ajax_request( $request ) ) {
+				$photo = $this->set_unique_media_id( $photo, $index, $page, $per_page );
+			}
+
+			$data     = $this->prepare_item_for_response( $photo, $request );
+			$photos[] = $this->prepare_response_for_collection( $data );
+		}
+
+		$response = rest_ensure_response( $photos );
+		$response->header( 'X-WP-Total', (int) $total );
+		$response->header( 'X-WP-TotalPages', (int) $max_pages );
+		$response->header( 'X-WP-Unsplash-Cache-Hit', $cached );
 
 		return $this->rest_ensure_response( $response, $request );
 	}
