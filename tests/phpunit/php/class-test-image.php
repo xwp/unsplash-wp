@@ -123,10 +123,11 @@ class Test_Image extends \WP_UnitTestCase {
 	 * @covers \Unsplash\Image::get_caption()
 	 */
 	public function test_get_caption() {
-		$image = new Image( $this->get_data() );
+		$image = new Image( $this->get_data(), 'test_utm_source' );
 		$this->assertRegexp( '/Harley-Davidson/', $image->get_caption() );
 		$this->assertRegexp( '/https:\/\/unsplash.com/', $image->get_caption() );
 		$this->assertRegexp( '/https:\/\/www.unpslash.com\/harleydavidson/', $image->get_caption() );
+		$this->assertContains( 'test_utm_source', $image->get_caption() );
 	}
 	/**
 	 * Test get captionl.
@@ -135,7 +136,7 @@ class Test_Image extends \WP_UnitTestCase {
 	 * @covers \Unsplash\Image::get_caption()
 	 */
 	public function test_no_get_caption() {
-		$image = new Image( [] );
+		$image = new Image( [], 'test_utm_source' );
 		$this->assertSame( '', $image->get_caption() );
 	}
 
@@ -146,7 +147,7 @@ class Test_Image extends \WP_UnitTestCase {
 	 * @covers \Unsplash\Image::get_caption()
 	 */
 	public function test_no_get_caption_1() {
-		$image = new Image( [] );
+		$image = new Image( [], 'test_utm_source' );
 		$this->assertSame( '', $image->get_caption() );
 	}
 
@@ -165,7 +166,8 @@ class Test_Image extends \WP_UnitTestCase {
 						'html' => '',
 					],
 				],
-			]
+			],
+			'test_utm_source'
 		);
 		$this->assertSame( '', $image->get_caption() );
 	}

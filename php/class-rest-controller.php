@@ -270,9 +270,10 @@ class Rest_Controller extends WP_REST_Controller {
 			$this->http_client_init();
 			$photo = Photo::find( $id );
 			$photo->download();
-			$results = $photo->toArray();
-
-			$image         = new Image( $results );
+			$results       = $photo->toArray();
+			$credentials   = $this->plugin->settings->get_credentials();
+			$utm_source    = $credentials['utmSource'];
+			$image         = new Image( $results, $utm_source );
 			$importer      = new Import( $id, $image );
 			$attachment_id = $importer->process();
 			if ( is_wp_error( $attachment_id ) ) {

@@ -185,14 +185,6 @@ class Settings {
 			'unsplash',
 			'unsplash_section'
 		);
-
-		add_settings_field(
-			'utm_source',
-			__( 'UTM Source', 'unsplash' ),
-			[ $this, 'utm_source_render' ],
-			'unsplash',
-			'unsplash_section'
-		);
 	}
 
 	/**
@@ -271,29 +263,20 @@ class Settings {
 	}
 
 	/**
-	 * Renders the UTM Source Key.
-	 */
-	public function utm_source_render() {
-			$options = get_option( 'unsplash_settings' );
-		?>
-		<input type='text' class="widefat" name='unsplash_settings[utm_source]' value='<?php echo esc_attr( isset( $options['utm_source'] ) ? $options['utm_source'] : '' ); ?>'>
-		<?php
-	}
-
-	/**
 	 * Format the API credentials in an array and filter.
 	 *
 	 * @return mixed|void
 	 */
 	public function get_credentials() {
-		$options     = get_option( 'unsplash_settings' );
-		$default_utm = ( getenv( 'UNSPLASH_UTM_SOURCE' ) ) ? getenv( 'UNSPLASH_UTM_SOURCE' ) : 'WordPress-XWP';
+		$options        = get_option( 'unsplash_settings' );
+		$site_name_slug = sanitize_title_with_dashes( get_bloginfo( 'name' ) );
 
 		$credentials = [
 			'applicationId' => ! empty( $options['access_key'] ) ? $this->decrypt( $options['access_key'] ) : getenv( 'UNSPLASH_ACCESS_KEY' ),
 			'secret'        => ! empty( $options['secret_key'] ) ? $this->decrypt( $options['secret_key'] ) : getenv( 'UNSPLASH_SECRET_KEY' ),
-			'utmSource'     => ! empty( $options['utm_source'] ) ? $options['utm_source'] : $default_utm,
+			'utmSource'     => getenv( 'UNSPLASH_UTM_SOURCE' ) ? getenv( 'UNSPLASH_UTM_SOURCE' ) : $site_name_slug,
 		];
+
 		/**
 		 * Filter API credentials.
 		 *
@@ -304,5 +287,4 @@ class Settings {
 
 		return $credentials;
 	}
-
 }

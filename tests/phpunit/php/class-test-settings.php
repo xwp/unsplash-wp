@@ -219,21 +219,6 @@ class Test_Settings extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Test utm_source_render.
-	 *
-	 * @covers ::utm_source_render()
-	 */
-	public function test_utm_source_render() {
-		ob_start();
-		$this->settings->utm_source_render();
-		$input = ob_get_clean();
-
-		$expected = "\t\t<input type='text' class=\"widefat\" name='unsplash_settings[utm_source]' value=''>\n\t\t";
-
-		$this->assertContains( $expected, $input );
-	}
-
-	/**
 	 *
 	 * Test get_credentials.
 	 *
@@ -241,8 +226,13 @@ class Test_Settings extends \WP_UnitTestCase {
 	 */
 	public function test_get_credentials() {
 		$credentials = $this->settings->get_credentials();
-		$this->assertArrayHasKey( 'applicationId', $credentials );
-		$this->assertArrayHasKey( 'secret', $credentials );
-		$this->assertArrayHasKey( 'utmSource', $credentials );
+
+		$this->assertEquals( [ 'applicationId', 'secret', 'utmSource' ], array_keys( $credentials ) );
+
+		// Test UTM source.
+		$expected_utm = sanitize_title_with_dashes( get_bloginfo( 'name' ) );
+		$actual_utm   = $credentials['utmSource'];
+
+		$this->assertEquals( $expected_utm, $actual_utm );
 	}
 }
