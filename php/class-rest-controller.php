@@ -78,20 +78,6 @@ class Rest_Controller extends WP_REST_Controller {
 
 		register_rest_route(
 			$this->namespace,
-			'/' . $this->rest_base . '/search',
-			[
-				[
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => [ $this, 'get_search' ],
-					'permission_callback' => [ $this, 'get_items_permissions_check' ],
-					'args'                => $this->get_search_params(),
-				],
-				'schema' => [ $this, 'get_item_schema' ],
-			]
-		);
-
-		register_rest_route(
-			$this->namespace,
 			'/' . $this->rest_base . '/(?P<id>[\w-]+)',
 			[
 				'args'   => [
@@ -166,12 +152,19 @@ class Rest_Controller extends WP_REST_Controller {
 	 * @return WP_REST_Response Single page of photo results.
 	 */
 	public function get_items( $request ) {
-		$page     = $request->get_param( 'page' );
-		$per_page = $request->get_param( 'per_page' );
-		$order_by = $request->get_param( 'order_by' );
-		$photos   = [];
+		$page        = $request->get_param( 'page' );
+		$per_page    = $request->get_param( 'per_page' );
+		$order_by    = $request->get_param( 'order_by' );
+		$search      = $request->get_param( 'search' );
+		$orientation = $request->get_param( 'orientation' );
+		$collections = $request->get_param( 'collections' );
+		$photos      = [];
+		if ( $search ) {
+			$api_response = $this->api->search( $search, $page, $per_page, $orientation, $collections );
+		} else {
+			$api_response = $this->api->all( $page, $per_page, $order_by );
+		}
 
-		$api_response = $this->api->all( $page, $per_page, $order_by );
 		if ( is_wp_error( $api_response ) ) {
 			return $this->rest_ensure_response( $api_response, $request );
 		}
@@ -291,47 +284,6 @@ class Rest_Controller extends WP_REST_Controller {
 		}
 
 		return $this->rest_ensure_response( $data, $request );
-	}
-
-	/**
-	 * Retrieve a page of photos filtered by a search term.
-	 *
-	 * @param WP_REST_Request $request Request.
-	 *
-	 * @return WP_REST_Response|WP_Error Single page of photo results.
-	 */
-	public function get_search( $request ) {
-		$search      = $request->get_param( 'search' );
-		$page        = $request->get_param( 'page' );
-		$per_page    = $request->get_param( 'per_page' );
-		$orientation = $request->get_param( 'orientation' );
-		$collections = $request->get_param( 'collections' );
-		$photos      = [];
-
-		$api_response = $this->api->search( $search, $page, $per_page, $orientation, $collections );
-		if ( is_wp_error( $api_response ) ) {
-			return $this->rest_ensure_response( $api_response, $request );
-		}
-		$cached    = (int) $api_response->get_cached();
-		$results   = $api_response->get_results();
-		$max_pages = $api_response->get_total_pages();
-		$total     = $api_response->get_total_object();
-
-		foreach ( $results as $index => $photo ) {
-			if ( $this->is_ajax_request( $request ) ) {
-				$photo = $this->set_unique_media_id( $photo, $index, $page, $per_page );
-			}
-
-			$data     = $this->prepare_item_for_response( $photo, $request );
-			$photos[] = $this->prepare_response_for_collection( $data );
-		}
-
-		$response = rest_ensure_response( $photos );
-		$response->header( 'X-WP-Total', (int) $total );
-		$response->header( 'X-WP-TotalPages', (int) $max_pages );
-		$response->header( 'X-WP-Unsplash-Cache-Hit', $cached );
-
-		return $this->rest_ensure_response( $response, $request );
 	}
 
 	/**
@@ -497,7 +449,6 @@ class Rest_Controller extends WP_REST_Controller {
 	 */
 	public function get_collection_params() {
 		$query_params = parent::get_collection_params();
-		unset( $query_params['search'] );
 
 		$query_params['context']['default'] = 'view';
 
@@ -508,25 +459,6 @@ class Rest_Controller extends WP_REST_Controller {
 			'type'        => 'string',
 			'default'     => 'latest',
 			'enum'        => [ 'latest', 'oldest', 'popular' ],
-		];
-
-		return $query_params;
-	}
-
-	/**
-	 * Override default collection for search  params to add Unsplash fields.
-	 *
-	 * @return array
-	 */
-	public function get_search_params() {
-		$query_params = parent::get_collection_params();
-
-		$query_params['context']['default'] = 'view';
-
-		$query_params['search'] = [
-			'description' => __( 'Limit results to those matching a string.', 'unsplash' ),
-			'type'        => 'string',
-			'required'    => true,
 		];
 
 		$query_params['orientation'] = [
@@ -542,8 +474,6 @@ class Rest_Controller extends WP_REST_Controller {
 			'description'       => __( 'Collection ID(‘s) to narrow search. If multiple, comma-separated.', 'unsplash' ),
 			'validate_callback' => [ static::class, 'validate_get_search_param' ],
 		];
-
-		$query_params['per_page']['maximum'] = 30;
 
 		return $query_params;
 	}

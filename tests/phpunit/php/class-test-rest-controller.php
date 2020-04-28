@@ -74,9 +74,6 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 
 		$this->assertArrayHasKey( $this->get_route( '/import/(?P<id>[\w-]+)' ), static::$routes );
 		$this->assertCount( 1, static::$routes[ $this->get_route( '/import/(?P<id>[\w-]+)' ) ] );
-
-		$this->assertArrayHasKey( $this->get_route( '/search' ), static::$routes );
-		$this->assertCount( 1, static::$routes[ $this->get_route( '/search' ) ] );
 	}
 
 	/**
@@ -579,12 +576,12 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	/**
 	 * Test get_search().
 	 *
-	 * @covers \Unsplash\Rest_Controller::get_search()
+	 * @covers \Unsplash\Rest_Controller::get_items()
 	 * @covers \Unsplash\API::search()
 	 */
 	public function test_get_search() {
 		wp_set_current_user( self::$admin_id );
-		$request = new WP_REST_Request( 'GET', $this->get_route( '/search' ) );
+		$request = new WP_REST_Request( 'GET', $this->get_route( '' ) );
 		$request->set_param( 'search', 'motorcycle' );
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
@@ -619,7 +616,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 */
 	public function test_get_search_with_spaces() {
 		wp_set_current_user( self::$admin_id );
-		$request = new WP_REST_Request( 'GET', $this->get_route( '/search' ) );
+		$request = new WP_REST_Request( 'GET', $this->get_route( '' ) );
 		$request->set_param( 'search', 'star wars' );
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
@@ -681,7 +678,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	}
 
 	/**
-	 * Test `collections` parameter for `get_search()`.
+	 * Test `collections` parameter for search.
 	 *
 	 * @dataProvider data_test_get_search
 	 *
@@ -690,7 +687,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 */
 	public function test_get_search_collections_param( $query_param, $status_code ) {
 		wp_set_current_user( self::$admin_id );
-		$request = new WP_REST_Request( 'GET', $this->get_route( '/search' ) );
+		$request = new WP_REST_Request( 'GET', $this->get_route( '' ) );
 		$request->set_query_params(
 			[
 				'search'      => 'motorcycle',
@@ -703,58 +700,6 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		if ( 400 === $status_code ) {
 			$this->assertEquals( 'rest_invalid_param', $response->data['code'] );
 		}
-	}
-
-	/**
-	 * Test arguments for get_search().
-	 */
-	public function test_get_search_args() {
-		$expected = [
-			'context'     => [
-				'default'           => 'view',
-				'enum'              => [ 'view', 'embed', 'edit' ],
-				'description'       => 'Scope under which the request is made; determines fields present in response.',
-				'type'              => 'string',
-				'sanitize_callback' => 'sanitize_key',
-				'validate_callback' => 'rest_validate_request_arg',
-			],
-			'page'        => [
-				'default'           => 1,
-				'description'       => 'Current page of the collection.',
-				'type'              => 'integer',
-				'sanitize_callback' => 'absint',
-				'validate_callback' => 'rest_validate_request_arg',
-				'minimum'           => 1,
-			],
-			'per_page'    => [
-				'default'           => 10,
-				'description'       => 'Maximum number of items to be returned in result set.',
-				'type'              => 'integer',
-				'maximum'           => 30,
-				'sanitize_callback' => 'absint',
-				'validate_callback' => 'rest_validate_request_arg',
-				'minimum'           => 1,
-			],
-			'search'      => [
-				'description' => 'Limit results to those matching a string.',
-				'type'        => 'string',
-				'required'    => true,
-			],
-			'orientation' => [
-				'enum'        => [ 'landscape', 'portrait', 'squarish' ],
-				'description' => 'Filter search results by photo orientation.',
-				'type'        => 'string',
-				'default'     => null,
-			],
-			'collections' => [
-				'description'       => 'Collection ID(‘s) to narrow search. If multiple, comma-separated.',
-				'type'              => 'string',
-				'default'           => null,
-				'validate_callback' => [ 'Unsplash\\Rest_Controller', 'validate_get_search_param' ],
-			],
-		];
-
-		$this->assertEquals( $expected, static::$routes[ $this->get_route( '/search' ) ][0]['args'] );
 	}
 
 	/**
