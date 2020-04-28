@@ -174,7 +174,7 @@ class API {
 	 * @return array|WP_Error
 	 */
 	public function get_remote( $url ) {
-		if ( $this->plugin->is_wpcom_vip_prod() ) {
+		if ( $this->plugin->is_wpcom_vip_prod() && function_exists( 'vip_safe_wp_remote_get' ) ) {
 			$response = vip_safe_wp_remote_get( $url );
 		} else {
 			$response = wp_remote_get( $url ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
