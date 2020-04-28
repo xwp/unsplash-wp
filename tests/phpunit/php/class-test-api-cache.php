@@ -28,6 +28,7 @@ class Test_Api_Cache extends \WP_UnitTestCase {
 	 * Test set_cache.
 	 *
 	 * @covers ::set_cache()
+	 * @covers ::get_is_cached()
 	 */
 	public function test_set_cache() {
 		$cache = new Api_Cache( '/unsplash/v1/photos', [ 'page' => 2 ] );

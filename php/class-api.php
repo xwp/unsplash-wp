@@ -48,7 +48,7 @@ class API {
 		}
 
 		if ( $trigger_download ) {
-			$this->get_remote( $request['body']['links']['download_location'] );
+			$this->get_remote( $request['body']['links']['download_location'], [ 'blocking' => false ] );
 		}
 		return new Api_Response( $request['body'], 1, 1, $request['cached'] );
 	}
@@ -136,12 +136,12 @@ class API {
 		$response = $this->get_remote( $url );
 
 		if ( is_wp_error( $response ) ) {
-			return $this->format_exception( 'wp_remote_get_error', 400 );
+			return $this->format_exception( $response->get_error_code(), 400 );
 		}
 
 		$code = wp_remote_retrieve_response_code( $response );
 		if ( 200 !== $code ) {
-			return $this->format_exception( 'error', $code );
+			return $this->format_exception( 'unsplash_api_error', $code );
 		}
 
 		$body        = wp_remote_retrieve_body( $response );
@@ -170,14 +170,15 @@ class API {
 	 * Helper method to submit remote url requests.
 	 *
 	 * @param string $url URL to requested.
+	 * @param array  $args Optional. Set other arguments to be passed to wp_remote_get().
 	 *
 	 * @return array|WP_Error
 	 */
-	public function get_remote( $url ) {
+	public function get_remote( $url, $args = [] ) {
 		if ( $this->plugin->is_wpcom_vip_prod() && function_exists( 'vip_safe_wp_remote_get' ) ) {
-			$response = vip_safe_wp_remote_get( $url );
+			$response = vip_safe_wp_remote_get( $url, '', 3, 3, 20, $args );
 		} else {
-			$response = wp_remote_get( $url ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
+			$response = wp_remote_get( $url, $args ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
 		}
 
 		return $response;
