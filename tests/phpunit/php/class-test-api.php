@@ -55,7 +55,7 @@ class Test_Api extends \WP_UnitTestCase {
 		$api = new API( $plugin );
 		add_filter( 'unsplash_request_url', [ $this, 'invalid_unsplash_request_url' ] );
 		$wp_error = $api->search( 'unused', [] );
-		$this->assertEquals( $wp_error->get_error_code(), 'unsplash_api_error' );
+		$this->assertEquals( $wp_error->get_error_code(), 'invalid_unsplash_response' );
 		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), 'There appears to be a communication issue with Unsplash, please check status.unsplash.com and try again in a few minutes.' );
 		remove_filter( 'unsplash_request_url', [ $this, 'invalid_unsplash_request_url' ] );
 	}
