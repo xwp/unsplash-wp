@@ -281,6 +281,8 @@ class Import {
 	 *
 	 * @see https://github.com/WordPress/WordPress/blob/12709269c19d435de019b54d2bda7e4bd1ad664e/wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php#L959-L1012
 	 *
+	 * @codeCoverageIgnore
+	 *
 	 * @param array $file $_FILES array for a given file.
 	 * @return true|WP_Error True if can upload, error for errors.
 	 */
