@@ -39,6 +39,21 @@ class Api_Response {
 	protected $results = [];
 
 	/**
+	 * Api_Response constructor.
+	 *
+	 * @param array $results Array of results for API.
+	 * @param int   $total_pages Total number of pages.
+	 * @param int   $total_objects Total number of objects.
+	 * @param bool  $cached Is cached.
+	 */
+	public function __construct( $results, $total_pages = 0, $total_objects = 0, $cached = false ) {
+		$this->results       = $results;
+		$this->total_pages   = $total_pages;
+		$this->total_objects = $total_objects;
+		$this->cached        = $cached;
+	}
+
+	/**
 	 * Get cached value.
 	 *
 	 * @return mixed

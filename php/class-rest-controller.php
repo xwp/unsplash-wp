@@ -43,7 +43,7 @@ class Rest_Controller extends WP_REST_Controller {
 		$this->rest_base = 'photos';
 		$this->post_type = 'attachment';
 
-		$this->api = new API( $this->plugin->settings->get_credentials() );
+		$this->api = new API( $this->plugin );
 	}
 
 	/**
@@ -177,8 +177,8 @@ class Rest_Controller extends WP_REST_Controller {
 		}
 		$results   = $api_response->get_results();
 		$max_pages = $api_response->get_total_pages();
-		$total     = $api_response->get_total_pages();
-		$cached    = $api_response->get_cached();
+		$total     = $api_response->get_total_object();
+		$cached    = (int) $api_response->get_cached();
 
 		foreach ( $results as $index => $photo ) {
 			if ( $this->is_ajax_request( $request ) ) {
@@ -212,7 +212,7 @@ class Rest_Controller extends WP_REST_Controller {
 			return $this->rest_ensure_response( $api_response, $request );
 		}
 		$results = $api_response->get_results();
-		$cached  = $api_response->get_cached();
+		$cached  = (int) $api_response->get_cached();
 		$photos  = $this->prepare_item_for_response( $results, $request );
 
 		$response = rest_ensure_response( $photos );
@@ -231,11 +231,11 @@ class Rest_Controller extends WP_REST_Controller {
 	public function get_import( $request ) {
 		$id = $request->get_param( 'id' );
 
-		$api_response = $this->api->get( $id );
+		$api_response = $this->api->get( $id, true );
 		if ( is_wp_error( $api_response ) ) {
 			return $this->rest_ensure_response( $api_response, $request );
 		}
-		$this->api->download( $id );
+
 		$results       = $api_response->get_results();
 		$credentials   = $this->plugin->settings->get_credentials();
 		$utm_source    = $credentials['utmSource'];
@@ -312,7 +312,7 @@ class Rest_Controller extends WP_REST_Controller {
 		if ( is_wp_error( $api_response ) ) {
 			return $this->rest_ensure_response( $api_response, $request );
 		}
-		$cached    = $api_response->get_cached();
+		$cached    = (int) $api_response->get_cached();
 		$results   = $api_response->get_results();
 		$max_pages = $api_response->get_total_pages();
 		$total     = $api_response->get_total_object();
@@ -363,42 +363,6 @@ class Rest_Controller extends WP_REST_Controller {
 		return rest_ensure_response( $response );
 	}
 
-	/**
-	 * Format exception into usable WP_Error objects.
-	 *
-	 * @param string|int $code Error code.
-	 * @param int        $error_status HTTP error state code. Default to 500.
-	 *
-	 * @return WP_Error
-	 */
-	public function format_exception( $code, $error_status = 500 ) {
-		if ( is_numeric( $error_status ) ) {
-			switch ( $error_status ) {
-				case 401:
-					/* translators: %s: Link to settings page. */
-					$message = sprintf( __( 'The Unsplash API credentials supplied are not authorized. Please visit the <a href="%s">Unsplash settings page</a> to reconnect to Unsplash now.', 'unsplash' ), get_admin_url( null, 'options-general.php?page=unsplash' ) );
-					break;
-				case 403:
-					/* translators: %s: Link to settings page. */
-					$message = sprintf( __( 'The Unsplash API credentials supplied are not authorized for this request. Please visit the <a href="%s">Unsplash settings page</a> to reconnect to Unsplash now.', 'unsplash' ), get_admin_url( null, 'options-general.php?page=unsplash' ) );
-					break;
-				case 500:
-					/* translators: %s: Link to status page. */
-					$message = sprintf( __( 'There appears to be a communication issue with Unsplash, please check <a href="%s">status.unsplash.com</a> and try again in a few minutes.', 'unsplash' ), 'https://status.unsplash.com' );
-					break;
-				default:
-					$message = get_status_header_desc( $error_status );
-					if ( empty( $message ) ) {
-						return $this->format_exception( $code );
-					}
-					break;
-			}
-		} else {
-			return $this->format_exception( $code );
-		}
-
-		return new WP_Error( $code, $message, [ 'status' => $error_status ] );
-	}
 
 	/**
 	 * Check API credentials.

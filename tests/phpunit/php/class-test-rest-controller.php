@@ -1110,41 +1110,6 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	}
 
 	/**
-	 * Data provider for format_exception.
-	 *
-	 * @return array
-	 */
-	public function data_test_format_exception() {
-		return [
-			[ 'test_500', 500, 'There appears to be a communication issue with Unsplash, please check status.unsplash.com and try again in a few minutes.' ],
-			[ 'test_401', 401, 'The Unsplash API credentials supplied are not authorized. Please visit the Unsplash settings page to reconnect to Unsplash now.' ],
-			[ 'test_403', 403, 'The Unsplash API credentials supplied are not authorized for this request. Please visit the Unsplash settings page to reconnect to Unsplash now.' ],
-			[ 'test_418', 418, 'I\'m a teapot' ],
-			[ 'test_0', 0, 'There appears to be a communication issue with Unsplash, please check status.unsplash.com and try again in a few minutes.' ],
-			[ 'test_foo', 'foo', 'There appears to be a communication issue with Unsplash, please check status.unsplash.com and try again in a few minutes.' ],
-		];
-	}
-
-	/**
-	 * Test format_exception().
-	 *
-	 * @dataProvider data_test_format_exception
-	 * @covers       \Unsplash\Rest_Controller::format_exception()
-	 *
-	 * @param string|int $code Error code.
-	 * @param int        $error_status HTTP error state code.
-	 * @param string     $message Message.
-	 */
-	public function test_format_exception( $code, $error_status, $message ) {
-		$plugin = new Plugin();
-		$plugin->init();
-		$rest_controller = new Rest_Controller( $plugin );
-		$wp_error        = $rest_controller->format_exception( $code, $error_status );
-		$this->assertEquals( $wp_error->get_error_code(), $code );
-		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), $message );
-	}
-
-	/**
 	 * Test check_api_credentials().
 	 *
 	 * @covers       \Unsplash\Rest_Controller::check_api_credentials()
