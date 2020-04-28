@@ -226,8 +226,13 @@ class Test_Settings extends \WP_UnitTestCase {
 	 */
 	public function test_get_credentials() {
 		$credentials = $this->settings->get_credentials();
-		$this->assertArrayHasKey( 'applicationId', $credentials );
-		$this->assertArrayHasKey( 'secret', $credentials );
-		$this->assertArrayHasKey( 'utmSource', $credentials );
+
+		$this->assertEquals( [ 'applicationId', 'secret', 'utmSource' ], array_keys( $credentials ) );
+
+		// Test UTM source.
+		$expected_utm = sanitize_title_with_dashes( get_bloginfo( 'name' ) );
+		$actual_utm   = $credentials['utmSource'];
+
+		$this->assertEquals( $expected_utm, $actual_utm );
 	}
 }

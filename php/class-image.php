@@ -168,9 +168,11 @@ class Image {
 			return '';
 		}
 
+		$utm_source = get_plugin_instance()->settings->get_credentials()['utmSource'];
+
 		$url = add_query_arg(
 			[
-				'utm_source' => Settings::get_utm_source(),
+				'utm_source' => $utm_source,
 				'utm_medium' => 'referral',
 			],
 			'https://unsplash.com/'
