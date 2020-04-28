@@ -629,7 +629,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	/**
 	 * Test get_search() with spaces.
 	 *
-	 * @covers \Unsplash\Rest_Controller::get_search()
+	 * @covers \Unsplash\Rest_Controller::get_items()
 	 * @covers \Unsplash\API::search()
 	 */
 	public function test_get_search_with_spaces() {
