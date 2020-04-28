@@ -220,7 +220,9 @@ class Plugin extends Plugin_Base {
 	 * @return array
 	 */
 	public function wp_prepare_attachment_for_js( array $photo ) {
-		$image = new Image( $photo );
+		$credentials = $this->settings->get_credentials();
+		$utm_source  = $credentials['utmSource'];
+		$image       = new Image( $photo, $utm_source );
 
 		$response = [
 			'id'             => isset( $photo['id'] ) ? $photo['id'] : null,

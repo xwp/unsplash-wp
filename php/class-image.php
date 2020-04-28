@@ -26,6 +26,13 @@ class Image {
 	 * @var array
 	 */
 	protected $process_data = [];
+
+	/**
+	 * UTM source.
+	 *
+	 * @var string
+	 */
+	protected $utm_source = '';
 	/**
 	 * Hardcoded file ext.
 	 */
@@ -39,10 +46,12 @@ class Image {
 	/**
 	 * Image constructor.
 	 *
-	 * @param array $image Unsplash image array.
+	 * @param array  $image Unsplash image array.
+	 * @param string $utm_source (Optional) UTM source.
 	 */
-	public function __construct( array $image = [] ) {
-		$this->image = $image;
+	public function __construct( array $image = [], $utm_source = '' ) {
+		$this->image      = $image;
+		$this->utm_source = $utm_source;
 		$this->process_fields();
 	}
 
@@ -168,11 +177,9 @@ class Image {
 			return '';
 		}
 
-		$utm_source = get_plugin_instance()->settings->get_credentials()['utmSource'];
-
 		$url = add_query_arg(
 			[
-				'utm_source' => $utm_source,
+				'utm_source' => $this->utm_source,
 				'utm_medium' => 'referral',
 			],
 			'https://unsplash.com/'
