@@ -86,7 +86,7 @@
 	right: 300px;
 	text-align: center;
 	left: 0;
-	top: 35px;
+	top: 34%;
 }
 
 .media-frame-content[data-columns="2"] .unsplash-attachment:nth-child(even) .thumbnail,
@@ -124,8 +124,11 @@
 		0 0 0 3px #0073aa;
 }
 
-.media-frame .unsplash-browser .no-media img {
-	width: 400px;
+.media-frame .unsplash-browser .no-media h2 {
+	font-size: 20px;
+	line-height: 1.4;
+	font-weight: 400;
+	margin: 0;
 }
 
 .wp-core-ui .unsplash-browser .unsplash-attachment img {

@@ -36,13 +36,6 @@ class Rest_Controller extends WP_REST_Controller {
 	protected $post_type;
 
 	/**
-	 * API credentials.
-	 *
-	 * @var string
-	 */
-	protected $credentials = [];
-
-	/**
 	 * Constructor.
 	 *
 	 * @param Plugin $plugin Instance of the plugin abstraction.
@@ -52,21 +45,6 @@ class Rest_Controller extends WP_REST_Controller {
 		$this->namespace = 'unsplash/v1';
 		$this->rest_base = 'photos';
 		$this->post_type = 'attachment';
-
-		$options = get_option( 'unsplash_settings' );
-
-		$this->credentials = [
-			'applicationId' => ! empty( $options['access_key'] ) ? $this->plugin->settings->decrypt( $options['access_key'] ) : getenv( 'UNSPLASH_ACCESS_KEY' ),
-			'secret'        => ! empty( $options['secret_key'] ) ? $this->plugin->settings->decrypt( $options['secret_key'] ) : getenv( 'UNSPLASH_SECRET_KEY' ),
-			'utmSource'     => Settings::get_utm_source(),
-		];
-		/**
-		 * Filter API credentials.
-		 *
-		 * @param array $credentials Array of API credentials.
-		 * @param array $options Unsplash settings.
-		 */
-		$this->credentials = apply_filters( 'unsplash_api_credentials', $this->credentials, $options );
 	}
 
 	/**
@@ -80,7 +58,7 @@ class Rest_Controller extends WP_REST_Controller {
 	 * HTTP client init.
 	 */
 	public function http_client_init() {
-		HttpClient::init( $this->credentials );
+		HttpClient::init( $this->plugin->settings->get_credentials() );
 	}
 
 	/**
@@ -304,7 +282,7 @@ class Rest_Controller extends WP_REST_Controller {
 			$response = $this->prepare_item_for_response( $results, $request );
 			$response = $this->rest_ensure_response( $response, $request );
 			$response->set_status( 301 );
-			$response->header( 'Location', rest_url( sprintf( '%s/%s/%d?context=edit', 'wp/v2', 'media', $attachment_id ) ) );
+			$response->header( 'Location', add_query_arg( 'context', 'edit', rest_url( sprintf( '%s/%s/%d', 'wp/v2', 'media', $attachment_id ) ) ) );
 		} catch ( \Exception $e ) {
 			$response = $this->format_exception( 'single-photo-download', $e->getCode() );
 			$this->plugin->log_error( $e );
@@ -477,7 +455,7 @@ class Rest_Controller extends WP_REST_Controller {
 	 * @return bool|WP_Error
 	 */
 	public function check_api_credentials() {
-		foreach ( $this->credentials as $key => $value ) {
+		foreach ( $this->plugin->settings->get_credentials() as $key => $value ) {
 			if ( empty( $value ) ) {
 				return new WP_Error(
 					'missing_api_credential',

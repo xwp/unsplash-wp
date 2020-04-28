@@ -104,10 +104,7 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 		} );
 
 		this.attachmentsNoResults.$el.addClass( 'hidden no-media' );
-		this.attachmentsNoResults.$el.html(
-			`<img src="${ noResults.image }" alt="${ noResults.noMedia }"/>`
-		);
-		this.attachmentsNoResults.$el.append( `<p>${ noResults.noMedia }</p>` );
+		this.attachmentsNoResults.$el.append( `<h2>${ noResults.noMedia }</h2>` );
 
 		this.views.add( this.attachmentsNoResults );
 

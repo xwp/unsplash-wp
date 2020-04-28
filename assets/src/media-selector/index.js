@@ -25,6 +25,15 @@ if ( wp.media && wp.media.view && wp.media.view.MediaFrame ) {
 			wp.media.view.MediaFrame.Select
 		);
 	}
+
+	/**
+	 * The 'ImageDetails' media frame is used for the replace image dialog.
+	 */
+	if ( wp.media.view.MediaFrame.ImageDetails ) {
+		wp.media.view.MediaFrame.ImageDetails = withUnsplashTab(
+			wp.media.view.MediaFrame.ImageDetails
+		);
+	}
 }
 
 /**

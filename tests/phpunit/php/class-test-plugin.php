@@ -90,6 +90,20 @@ class Test_Plugin extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Test for register_taxonomy() method.
+	 *
+	 * @see Plugin::register_taxonomy()
+	 */
+	public function test_register_taxonomy() {
+		$plugin = get_plugin_instance();
+		$plugin->register_taxonomy();
+
+		$this->assertTrue( taxonomy_exists( 'media_tag' ) );
+		$this->assertTrue( taxonomy_exists( 'media_source' ) );
+		$this->assertTrue( taxonomy_exists( 'unsplash_user' ) );
+	}
+
+	/**
 	 * Test for enqueue_media_scripts() method.
 	 *
 	 * @see Plugin::enqueue_media_scripts()
@@ -267,5 +281,78 @@ class Test_Plugin extends \WP_UnitTestCase {
 	public function test_get_original_url_with_size( $url, $width, $height, $attr, $expected ) {
 		$plugin = get_plugin_instance();
 		$this->assertSame( $plugin->get_original_url_with_size( $url, $width, $height, $attr ), $expected );
+	}
+
+	/**
+	 * Test for admin_notice()
+	 *
+	 * @see Plugin::admin_notice()
+	 */
+	public function test_admin_notice() {
+		add_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
+		wp_set_current_user( self::$admin_id );
+		set_current_screen( 'post.php' );
+		$plugin = get_plugin_instance();
+		ob_start();
+		$notice = $plugin->admin_notice();
+		$output = ob_get_clean();
+		$this->assertTrue( $notice );
+		$this->assertContains( 'To complete set up of the Unsplash plugin you’ll need to add the API key/secret.', $output );
+		remove_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
+	}
+
+	/**
+	 * Test for admin_notice()
+	 *
+	 * @see Plugin::admin_notice()
+	 */
+	public function test_no_admin_notice_1() {
+		add_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
+		wp_set_current_user( self::$subscriber_id );
+		set_current_screen( 'post.php' );
+		$plugin = get_plugin_instance();
+		$this->assertFalse( $plugin->admin_notice() );
+		remove_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
+	}
+
+	/**
+	 * Test for admin_notice()
+	 *
+	 * @see Plugin::admin_notice()
+	 */
+	public function test_no_admin_notice_2() {
+		add_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
+		wp_set_current_user( self::$admin_id );
+		set_current_screen( 'settings_page_unsplash' );
+		$plugin = get_plugin_instance();
+		$this->assertFalse( $plugin->admin_notice() );
+		remove_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
+	}
+
+	/**
+	 * Test for admin_notice()
+	 *
+	 * @see Plugin::admin_notice()
+	 */
+	public function test_no_admin_notice_3() {
+		wp_set_current_user( self::$admin_id );
+		set_current_screen( 'post.php' );
+		$plugin = get_plugin_instance();
+		$this->assertFalse( $plugin->admin_notice() );
+	}
+
+	/**
+	 * Disable unsplash api details.
+	 *
+	 * @param array $unused Unused variable.
+	 *
+	 * @return array
+	 */
+	public function disable_unsplash_api_credentials( $unused ) { //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+		return [
+			'applicationId' => '',
+			'secret'        => '',
+			'utmSource'     => '',
+		];
 	}
 }
