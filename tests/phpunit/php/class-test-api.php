@@ -1,4 +1,4 @@
-§<?php
+<?php
 /**
  * Tests for API.
  *
