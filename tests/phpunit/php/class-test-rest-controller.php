@@ -769,6 +769,17 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		$this->assertArrayHasKey( 'height', $properties );
 		$this->assertArrayHasKey( 'width', $properties );
 		$this->assertArrayHasKey( 'urls', $properties );
+
+		$this->assertSame( 'string', $properties['id']['type'] );
+		$this->assertSame( 'date-time', $properties['created_at']['format'] );
+		$this->assertSame( 'string', $properties['updated_at']['type'] );
+		$this->assertSame( 'date-time', $properties['updated_at']['format'] );
+		$this->assertSame( 'string', $properties['alt_description']['type'] );
+		$this->assertSame( 'string', $properties['description']['type'] );
+		$this->assertSame( 'string', $properties['color']['type'] );
+		$this->assertSame( 'integer', $properties['height']['type'] );
+		$this->assertSame( 'integer', $properties['width']['type'] );
+		$this->assertSame( 'object', $properties['urls']['type'] );
 	}
 
 	/**

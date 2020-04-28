@@ -237,7 +237,6 @@ class API {
 				case 429:
 					$message = __( 'The Unsplash API credentials supplied have been flagged for exceeding the permitted rate limit and have been temporarily disabled.', 'unsplash' );
 					break;
-				case 400:
 				case 500:
 					/* translators: %s: Link to status page. */
 					$message = sprintf( __( 'There appears to be a communication issue with Unsplash, please check <a href="%s">status.unsplash.com</a> and try again in a few minutes.', 'unsplash' ), 'https://status.unsplash.com' );

@@ -79,6 +79,23 @@ class Test_Api extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Test test_get().
+	 *
+	 * @covers       \Unsplash\API::get()
+	 * @covers       \Unsplash\API::send_request()
+	 */
+	public function test_wrong_url_get_3() {
+		$plugin = new Plugin();
+		$plugin->init();
+		$api = new API( $plugin );
+		add_filter( 'http_response', [ $this, 'fake_http_response' ] );
+		$wp_error = $api->search( 'unused', [] );
+		$this->assertEquals( $wp_error->get_error_code(), 'unsplash_rate_limit' );
+		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), 'The Unsplash API credentials supplied have been flagged for exceeding the permitted rate limit and have been temporarily disabled.' );
+		remove_filter( 'http_response', [ $this, 'fake_http_response' ] );
+	}
+
+	/**
 	 * Data provider for format_exception.
 	 *
 	 * @return array
@@ -132,5 +149,17 @@ class Test_Api extends \WP_UnitTestCase {
 	 */
 	public function fake_unsplash_request_url() {
 		return 'https://unsplash.fake/';
+	}
+
+	/**
+	 * Fake rate limit exceeded.
+	 *
+	 * @param array $response Array from wp_remote_get
+	 *
+	 * @return mixed
+	 */
+	public function fake_http_response( $response ) {
+		$response['body'] = 'Rate Limit Exceeded';
+		return $response;
 	}
 }
