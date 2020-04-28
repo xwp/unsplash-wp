@@ -122,7 +122,7 @@ class Test_Api extends \WP_UnitTestCase {
 	 * @return string
 	 */
 	public function invalid_unsplash_request_url() {
-		return 'https://www.google.com';
+		return 'https://unsplash.com/';
 	}
 
 	/**
@@ -131,6 +131,6 @@ class Test_Api extends \WP_UnitTestCase {
 	 * @return string
 	 */
 	public function fake_unsplash_request_url() {
-		return 'https://unsplash.fake';
+		return 'https://unsplash.fake/';
 	}
 }

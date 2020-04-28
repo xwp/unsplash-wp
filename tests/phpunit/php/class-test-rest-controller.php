@@ -331,8 +331,10 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 				'enum'        => [ 'latest', 'oldest', 'popular' ],
 			],
 			'search'      => [
-				'description' => 'Limit results to those matching a string.',
-				'type'        => 'string',
+				'description'       => 'Limit results to those matching a string.',
+				'type'              => 'string',
+				'sanitize_callback' => 'sanitize_text_field',
+				'validate_callback' => 'rest_validate_request_arg',
 			],
 			'orientation' => [
 				'enum'        => [ 'landscape', 'portrait', 'squarish' ],
