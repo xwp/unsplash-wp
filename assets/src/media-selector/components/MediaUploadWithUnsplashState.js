@@ -6,7 +6,7 @@ import { MediaUpload } from '@wordpress/media-utils';
 /**
  * Internal dependencies
  */
-import UnsplashState from './store/unsplash_state';
+import UnsplashState from '../store/unsplash_state';
 
 /**
  * Copied from Gutenberg and adapted to initialize the Unsplash state.

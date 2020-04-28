@@ -7,9 +7,17 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import ImagesCollection from '../collections/images_collection';
 import getConfig from '../helpers/getConfig';
+import preloadImage from '../helpers/preloadImage';
 
 const ImagesQueryModel = wp.media.model.Query.extend(
 	{
+		initialize() {
+			wp.media.model.Query.prototype.initialize.apply( this, arguments );
+
+			// Add some default values.
+			this._respSuccess = true;
+			this._respErrorMessage = {};
+		},
 		/**
 		 * Overrides Backbone.Collection.sync
 		 * Overrides ImagesCollection.sync
@@ -54,10 +62,77 @@ const ImagesQueryModel = wp.media.model.Query.extend(
 				: Backbone;
 			return fallback.sync.apply( this, arguments );
 		},
+		/**
+		 * Value of api success.
+		 *
+		 * @return {boolean} True / False Of response. Defaults True.
+		 */
+		respSuccess() {
+			return this._respSuccess;
+		},
+
+		/**
+		 * Error message as object.
+		 *
+		 * @return {Object} Error object.
+		 */
+		respErrorMessage() {
+			return this._respErrorMessage;
+		},
+		/**
+		 * Fetch more attachments from the server for the collection.
+		 *
+		 * @param   {Object}  [options={}]
+		 * @return {Promise} Return promise object.
+		 */
+		more( options ) {
+			const query = this;
+
+			// If there is already a request pending, return early with the Deferred object.
+			if ( this._more && 'pending' === this._more.state() ) {
+				return this._more;
+			}
+
+			if ( ! this.hasMore() ) {
+				return jQuery
+					.Deferred()
+					.resolveWith( this )
+					.promise();
+			}
+
+			options = options || {};
+
+			options.remove = false;
+
+			return ( this._more = this.fetch( options ).done( function( resp ) {
+				if (
+					_.isEmpty( resp ) ||
+					-1 === this.args.posts_per_page ||
+					resp.length < this.args.posts_per_page
+				) {
+					query._hasMore = false;
+				}
+
+				// If response was error, return value.
+				if ( false === resp.success ) {
+					query._hasMore = false;
+					query._respSuccess = resp.success;
+					const error = resp.data.shift();
+					this._respErrorMessage = error;
+				} else if ( resp.length ) {
+					// Force images to load before the view is rendered.
+					resp.forEach( ( { sizes } ) => {
+						if ( sizes && sizes.medium && sizes.medium.url ) {
+							preloadImage( sizes.medium.url );
+						}
+					} );
+				}
+			} ) );
+		},
 	},
 	{
 		defaultProps: {
-			orderby: 'id',
+			orderby: 'unsplash_order',
 			order: 'ASC',
 		},
 

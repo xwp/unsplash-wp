@@ -10,7 +10,17 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 			arguments
 		);
 
-		this.collection.on( 'add remove reset', this.updateLayout, this );
+		this.collection.on( 'add remove reset', this.focusInput, this );
+
+		// Update masonry layout only when a set of images (new page) is loaded.
+		this.collection.on( 'attachments:received', () =>
+			this.attachments.recalculateLayout()
+		);
+		this.collection.on(
+			'add remove reset attachments:received',
+			this.showError,
+			this
+		);
 	},
 
 	createToolbar() {
@@ -31,30 +41,55 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 				attributes: {
 					for: 'media-search-input',
 				},
-				priority: 70,
+				priority: 50,
 			} ).render()
 		);
 
+		this.searchFilter = new wp.media.view.Search( {
+			controller: this.controller,
+			model: this.collection.props,
+			priority: 60,
+			className: 'unsplash-search',
+			id: 'unsplash-search-input',
+			attributes: {
+				type: 'search',
+				placeholder: toolbar.filters.search.placeholder,
+				autofocus: true,
+			},
+		} );
+
 		// Create search filter.
-		this.toolbar.set(
-			'searchFilter',
-			new wp.media.view.Search( {
-				controller: this.controller,
-				model: this.collection.props,
-				priority: 60,
-				className: 'unsplash-search',
-				id: 'unsplash-search-input',
-			} ).render()
-		);
+		this.toolbar.set( 'searchFilter', this.searchFilter.render() );
 
 		// TODO: replace with better loading indicator.
 		this.toolbar.set(
 			'spinner',
 			new wp.media.view.Spinner( {
-				priority: 80,
+				priority: 55,
 			} )
 		);
 	},
+
+	createSingle() {
+		wp.media.view.AttachmentsBrowser.prototype.createSingle.apply(
+			this,
+			arguments
+		);
+
+		const sidebar = this.sidebar,
+			single = this.options.selection.single();
+
+		sidebar.set(
+			'details',
+			new wp.media.view.Attachment.Details( {
+				controller: this.controller,
+				model: single,
+				priority: 80,
+				allowLocalEdits: true,
+			} )
+		);
+	},
+
 	createAttachments() {
 		const noResults = getConfig( 'noResults' );
 
@@ -66,6 +101,7 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 			sortable: this.options.sortable,
 			scrollElement: this.options.scrollElement,
 			idealColumnWidth: this.options.idealColumnWidth,
+			refreshThreshold: 9,
 
 			// The single `Attachment` view to be used in the `Attachments` view.
 			AttachmentView: this.options.AttachmentView,
@@ -89,12 +125,18 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 		} );
 
 		this.attachmentsNoResults.$el.addClass( 'hidden no-media' );
-		this.attachmentsNoResults.$el.html(
-			`<img src="${ noResults.image }" alt="${ noResults.noMedia }"/>`
-		);
-		this.attachmentsNoResults.$el.append( `<p>${ noResults.noMedia }</p>` );
+		this.attachmentsNoResults.$el.append( `<h2>${ noResults.noMedia }</h2>` );
 
 		this.views.add( this.attachmentsNoResults );
+
+		this.attachmentsError = new wp.media.View( {
+			controller: this.controller,
+			tagName: 'div',
+		} );
+		this.attachmentsError.$el.addClass(
+			'hidden notice notice-error unsplash-error is-dismissible'
+		);
+		this.views.add( this.attachmentsError );
 	},
 
 	updateContent() {
@@ -110,16 +152,35 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 					noItemsView.$el.addClass( 'hidden' );
 				}
 				view.toolbar.get( 'spinner' ).hide();
+				view.showError();
 			} );
 		} else {
 			noItemsView.$el.addClass( 'hidden' );
 			view.toolbar.get( 'spinner' ).hide();
+			view.showError();
 		}
 	},
-
-	updateLayout() {
-		this.attachments.setupMacy();
-		this.attachments.refreshMacy();
+	showError() {
+		const errorView = this.attachmentsError;
+		const toolbarView = this.toolbar;
+		if (
+			! this.collection.respSuccess() &&
+			this.collection.respErrorMessage()
+		) {
+			const error = this.collection.respErrorMessage();
+			errorView.$el.html( error.message );
+			errorView.$el.removeClass( 'hidden' );
+			toolbarView.$el.addClass( 'hidden' );
+		}
+	},
+	focusInput() {
+		if (
+			this.searchFilter &&
+			this.searchFilter.$el &&
+			! this.searchFilter.$el.val()
+		) {
+			this.searchFilter.$el.focus();
+		}
 	},
 } );
 

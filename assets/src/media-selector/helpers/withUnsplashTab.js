@@ -18,7 +18,12 @@ export default View => {
 			const state = this.state();
 
 			// For the Classic Editor, only add the Unsplash tab to libraries that support images.
-			const applicableLibraries = [ 'insert', 'featured-image', 'library' ];
+			const applicableLibraries = [
+				'insert',
+				'featured-image',
+				'library',
+				'replace-image',
+			];
 			if ( state.id && ! applicableLibraries.includes( state.id ) ) {
 				return;
 			}
@@ -106,6 +111,73 @@ export default View => {
 					priority: 60,
 				} )
 			);
+		},
+		/**
+		 * Override bottom toolbar for replace image view.
+		 *
+		 * @see wp.media.view.MediaFrame.ImageDetails
+		 *
+		 * @this wp.media.view.MediaFrame.ImageDetails
+		 */
+		renderReplaceImageToolbar() {
+			const frame = this;
+			const lastState = frame.lastState();
+			const previous = lastState && lastState.id;
+
+			const toolbar = new Toolbar( {
+				controller: this,
+				items: {
+					back: {
+						text: wp.media.view.l10n.back,
+						priority: 80,
+						click() {
+							if ( previous ) {
+								frame.setState( previous );
+							} else {
+								frame.close();
+							}
+						},
+					},
+					replace: {
+						style: 'primary',
+						text: wp.media.view.l10n.replace,
+						priority: 20,
+						requires: { selection: true },
+
+						click() {
+							const controller = this.controller;
+							const state = controller.state();
+							const selection = state.get( 'selection' );
+							const attachment = selection.single();
+
+							controller.close();
+
+							controller.image.changeAttachment(
+								attachment,
+								state.display( attachment )
+							);
+
+							// Not sure if we want to use wp.media.string.image which will create a shortcode or
+							// perhaps wp.html.string to at least to build the <img />.
+							state.trigger( 'replace', controller.image.toJSON() );
+
+							// Restore and reset the default state.
+							controller.setState( controller.options.state );
+							controller.reset();
+						},
+					},
+				},
+			} );
+
+			toolbar.set(
+				'button-spinner',
+				new wp.media.view.Spinner( {
+					// TODO: Prevent the delay when showing the spinner.
+					priority: 10,
+				} )
+			);
+
+			this.toolbar.set( toolbar );
 		},
 
 		/**

@@ -26,13 +26,6 @@ class Rest_Controller extends WP_REST_Controller {
 	public $plugin;
 
 	/**
-	 * API instance.
-	 *
-	 * @var API
-	 */
-	public $api;
-
-	/**
 	 * Post type.
 	 *
 	 * @var string
@@ -50,16 +43,7 @@ class Rest_Controller extends WP_REST_Controller {
 		$this->rest_base = 'photos';
 		$this->post_type = 'attachment';
 
-		$options     = get_option( 'unsplash_settings' );
-		$default_utm = ( getenv( 'UNSPLASH_UTM_SOURCE' ) ) ? getenv( 'UNSPLASH_UTM_SOURCE' ) : 'WordPress-XWP';
-
-		$this->api = new API(
-			[
-				'applicationId' => ! empty( $options['access_key'] ) ? $this->plugin->settings->decrypt( $options['access_key'] ) : getenv( 'UNSPLASH_ACCESS_KEY' ),
-				'secret'        => ! empty( $options['secret_key'] ) ? $this->plugin->settings->decrypt( $options['secret_key'] ) : getenv( 'UNSPLASH_SECRET_KEY' ),
-				'utmSource'     => ! empty( $options['utm_source'] ) ? $options['utm_source'] : $default_utm,
-			]
-		);
+		$this->api = new API( $this->plugin->settings->get_credentials() );
 	}
 
 	/**
@@ -68,6 +52,7 @@ class Rest_Controller extends WP_REST_Controller {
 	public function init() {
 		$this->plugin->add_doc_hooks( $this );
 	}
+
 
 	/**
 	 * Registers the routes for the Unsplash API.
@@ -188,12 +173,12 @@ class Rest_Controller extends WP_REST_Controller {
 
 		$api_response = $this->api->all( $page, $per_page, $order_by );
 		if ( is_wp_error( $api_response ) ) {
-			return $api_response;
+			return $this->rest_ensure_response( $api_response, $request );
 		}
-		$results   = $api_response->getResults();
-		$max_pages = $api_response->getTotalPages();
-		$total     = $api_response->getTotalPages();
-		$cached    = $api_response->getCached();
+		$results   = $api_response->get_results();
+		$max_pages = $api_response->get_total_pages();
+		$total     = $api_response->get_total_pages();
+		$cached    = $api_response->get_cached();
 
 		foreach ( $results as $index => $photo ) {
 			if ( $this->is_ajax_request( $request ) ) {
@@ -209,7 +194,7 @@ class Rest_Controller extends WP_REST_Controller {
 		$response->header( 'X-WP-TotalPages', (int) $max_pages );
 		$response->header( 'X-WP-Unsplash-Cache-Hit', $cached );
 
-		return $response;
+		return $this->rest_ensure_response( $response, $request );
 	}
 
 	/**
@@ -224,16 +209,16 @@ class Rest_Controller extends WP_REST_Controller {
 
 		$api_response = $this->api->get( $id );
 		if ( is_wp_error( $api_response ) ) {
-			return $api_response;
+			return $this->rest_ensure_response( $api_response, $request );
 		}
-		$results = $api_response->getResults();
-		$cached  = $api_response->getCached();
+		$results = $api_response->get_results();
+		$cached  = $api_response->get_cached();
 		$photos  = $this->prepare_item_for_response( $results, $request );
 
 		$response = rest_ensure_response( $photos );
 		$response->header( 'X-WP-Unsplash-Cache-Hit', $cached );
 
-		return $response;
+		return $this->rest_ensure_response( $response, $request );
 	}
 
 	/**
@@ -248,16 +233,16 @@ class Rest_Controller extends WP_REST_Controller {
 
 		$api_response = $this->api->get( $id );
 		if ( is_wp_error( $api_response ) ) {
-			return $api_response;
+			return $this->rest_ensure_response( $api_response, $request );
 		}
 		$this->api->download( $id );
-		$results = $api_response->getResults();
+		$results = $api_response->get_results();
 
 		$image         = new Image( $results );
 		$importer      = new Import( $id, $image );
 		$attachment_id = $importer->process();
 		if ( is_wp_error( $attachment_id ) ) {
-			return $attachment_id;
+			return $this->rest_ensure_response( $attachment_id, $request );
 		}
 
 		$response = $this->prepare_item_for_response( $results, $request );
@@ -265,7 +250,7 @@ class Rest_Controller extends WP_REST_Controller {
 		$response->set_status( 301 );
 		$response->header( 'Location', rest_url( sprintf( '%s/%s/%d', 'wp/v2', 'media', $attachment_id ) ) );
 
-		return $response;
+		return $this->rest_ensure_response( $response, $request );
 	}
 
 	/**
@@ -303,9 +288,8 @@ class Rest_Controller extends WP_REST_Controller {
 			$this->plugin->log_error( $e );
 			return $response;
 		}
-		$response = new WP_REST_Response( $data );
 
-		return $response;
+		return $this->rest_ensure_response( $data, $request );
 	}
 
 	/**
@@ -322,32 +306,135 @@ class Rest_Controller extends WP_REST_Controller {
 		$orientation = $request->get_param( 'orientation' );
 		$collections = $request->get_param( 'collections' );
 		$photos      = [];
+		$cache       = new Api_Cache( $request );
 
-		$api_response = $this->api->search( $search, $page, $per_page, $orientation, $collections );
-		if ( is_wp_error( $api_response ) ) {
-			return $api_response;
-		}
-		$cached    = $api_response->isCached();
-		$results   = $api_response->toArray();
-		$max_pages = $api_response->totalPages();
-		$total     = $api_response->totalObjects();
+		try {
+			$api_response = $cache->get_cache();
+			if ( false === $api_response ) {
+				$check_api = $this->check_api_credentials();
+				if ( is_wp_error( $check_api ) ) {
+					return $this->rest_ensure_response( $check_api, $request );
+				}
+				$this->http_client_init();
+				$api_response = Search::photos( $search, $page, $per_page, $orientation, $collections );
+				$cache->set_cache( $api_response );
+			}
+			$response_object = $api_response->getArrayObject();
+			$results         = $response_object->toArray();
+			$max_pages       = $response_object->totalPages();
+			$total           = $response_object->totalObjects();
 
-		foreach ( $results as $index => $photo ) {
-			if ( $this->is_ajax_request( $request ) ) {
-				$photo = $this->set_unique_media_id( $photo, $index, $page, $per_page );
+			foreach ( $results as $index => $photo ) {
+				if ( $this->is_ajax_request( $request ) ) {
+					$photo = $this->set_unique_media_id( $photo, $index, $page, $per_page );
+				}
+
+				$data     = $this->prepare_item_for_response( $photo, $request );
+				$photos[] = $this->prepare_response_for_collection( $data );
 			}
 
-			$data     = $this->prepare_item_for_response( $photo, $request );
-			$photos[] = $this->prepare_response_for_collection( $data );
+			$response = $this->rest_ensure_response( $photos, $request );
+			$response->header( 'X-WP-Total', (int) $total );
+			$response->header( 'X-WP-TotalPages', (int) $max_pages );
+			$response->header( 'X-WP-Unsplash-Cache-Hit', $cache->get_is_cached() );
+		} catch ( \Exception $e ) {
+			$response = $this->format_exception( 'search-photos', $e->getCode() );
+			$this->plugin->log_error( $e );
 		}
 
-		$response = rest_ensure_response( $photos );
-		$response->header( 'X-WP-Total', (int) $total );
-		$response->header( 'X-WP-TotalPages', (int) $max_pages );
-		$response->header( 'X-WP-Unsplash-Cache-Hit', $cached );
+		return $this->rest_ensure_response( $response, $request );
+	}
 
+	/**
+	 * Format response for AJAX.
+	 *
+	 * @param  mixed           $response Response data.
+	 * @param  WP_REST_Request $request  Request.
+	 * @return  WP_REST_Response          Repsonse object.
+	 */
+	public function rest_ensure_response( $response, WP_REST_Request $request ) {
+		if ( $this->is_ajax_request( $request ) ) {
+			if ( is_wp_error( $response ) ) {
+				$wp_error = $response;
+				$response = array( 'success' => false );
+				$result   = array();
+				foreach ( $wp_error->errors as $code => $messages ) {
+					$data = ( isset( $wp_error->error_data[ $code ] ) ) ? $wp_error->error_data[ $code ] : [];
+					foreach ( $messages as $message ) {
+						$result[] = array(
+							'code'    => $code,
+							'message' => $message,
+							'data'    => $data,
+						);
+					}
+				}
+				$response['data'] = $result;
+			}
+		}
+		return rest_ensure_response( $response );
+	}
 
-		return $response;
+	/**
+	 * Format exception into usable WP_Error objects.
+	 *
+	 * @param string|int $code Error code.
+	 * @param int        $error_status HTTP error state code. Default to 500.
+	 *
+	 * @return WP_Error
+	 */
+	public function format_exception( $code, $error_status = 500 ) {
+		if ( is_numeric( $error_status ) ) {
+			switch ( $error_status ) {
+				case 401:
+					/* translators: %s: Link to settings page. */
+					$message = sprintf( __( 'The Unsplash API credentials supplied are not authorized. Please visit the <a href="%s">Unsplash settings page</a> to reconnect to Unsplash now.', 'unsplash' ), get_admin_url( null, 'options-general.php?page=unsplash' ) );
+					break;
+				case 403:
+					/* translators: %s: Link to settings page. */
+					$message = sprintf( __( 'The Unsplash API credentials supplied are not authorized for this request. Please visit the <a href="%s">Unsplash settings page</a> to reconnect to Unsplash now.', 'unsplash' ), get_admin_url( null, 'options-general.php?page=unsplash' ) );
+					break;
+				case 500:
+					/* translators: %s: Link to status page. */
+					$message = sprintf( __( 'There appears to be a communication issue with Unsplash, please check <a href="%s">status.unsplash.com</a> and try again in a few minutes.', 'unsplash' ), 'https://status.unsplash.com' );
+					break;
+				default:
+					$message = get_status_header_desc( $error_status );
+					if ( empty( $message ) ) {
+						return $this->format_exception( $code );
+					}
+					break;
+			}
+		} else {
+			return $this->format_exception( $code );
+		}
+
+		return new WP_Error( $code, $message, [ 'status' => $error_status ] );
+	}
+
+	/**
+	 * Check API credentials.
+	 *
+	 * @return bool|WP_Error
+	 */
+	public function check_api_credentials() {
+		foreach ( $this->plugin->settings->get_credentials() as $key => $value ) {
+			if ( empty( $value ) ) {
+				return new WP_Error(
+					'missing_api_credential',
+					sprintf(
+						/* translators: %s: Link to settings page. */
+						__( 'The Unsplash plugin has not been provided with API credentials. Please visit the <a href="%s">Unsplash settings page</a> and confirm that the API key/secret has been provided.', 'unsplash' ),
+						get_admin_url( null, 'options-general.php?page=unsplash' )
+					),
+					[
+						'status' => rest_authorization_required_code(),
+						'data'   => $key,
+					]
+				);
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -661,8 +748,7 @@ class Rest_Controller extends WP_REST_Controller {
 		 * The 'unsplash-' prefix is added to prevent any attachment ID collisions in the media selector and
 		 * will be stripped when media objects are being compared.
 		 */
-		$photo['unsplash_id'] = $photo['id'];
-		$photo['id']          = 'unsplash-' . ( $index + ( ( $page - 1 ) * $per_page ) );
+		$photo['unsplash_order'] = ( $index + ( ( $page - 1 ) * $per_page ) );
 
 		return $photo;
 	}

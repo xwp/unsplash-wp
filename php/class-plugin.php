@@ -68,6 +68,57 @@ class Plugin extends Plugin_Base {
 	}
 
 	/**
+	 * Polyfill dependencies needed to enqueue our assets on WordPress 4.9.
+	 *
+	 * @action wp_default_scripts
+	 *
+	 * @param WP_Scripts $wp_scripts Scripts.
+	 */
+	public function register_default_scripts( $wp_scripts ) {
+		// Nothing to do if we're on WP 5.0+.
+		if ( version_compare( '5.0', get_bloginfo( 'version' ), '<=' ) ) {
+			return false;
+		}
+
+		// Polyfill dependencies that are registered in WordPress 4.9.
+		$handles = [
+			'wp-i18n',
+			'wp-polyfill',
+			'wp-url',
+		];
+
+		foreach ( $handles as $handle ) {
+			if ( ! isset( $wp_scripts->registered[ $handle ] ) ) {
+				$asset_file   = $this->dir_path . '/assets/js/' . $handle . '.asset.php';
+				$asset        = require $asset_file;
+				$dependencies = $asset['dependencies'];
+				$version      = $asset['version'];
+
+				$wp_scripts->add(
+					$handle,
+					$this->asset_url( sprintf( 'assets/js/%s.js', $handle ) ),
+					$dependencies,
+					$version
+				);
+			}
+		}
+
+		$vendor_scripts = [
+			'lodash' => [
+				'dependencies' => [],
+				'version'      => '4.17.15',
+			],
+		];
+		foreach ( $vendor_scripts as $handle => $handle_data ) {
+			if ( ! isset( $wp_scripts->registered[ $handle ] ) ) {
+				$path = $this->asset_url( sprintf( 'assets/js/vendor/%s.js', $handle ) );
+
+				$wp_scripts->add( $handle, $path, $handle_data['dependencies'], $handle_data['version'], 1 );
+			}
+		}
+	}
+
+	/**
 	 * Load our media selector assets.
 	 *
 	 * @action wp_enqueue_media
@@ -85,6 +136,8 @@ class Plugin extends Plugin_Base {
 		if ( 'post' !== $screen->base ) {
 			return false;
 		}
+
+		// Enqueue media selector JS.
 		$asset_file = $this->dir_path . '/assets/js/media-selector.asset.php';
 		$asset      = is_readable( $asset_file ) ? require $asset_file : [];
 		$version    = isset( $asset['version'] ) ? $asset['version'] : $this->asset_version();
@@ -110,18 +163,42 @@ class Plugin extends Plugin_Base {
 				'toolbar'   => [
 					'filters' => [
 						'search' => [
-							'label' => __( 'Search the internet’s source of freely usable images.', 'unsplash' ),
+							'label'       => __( 'Search', 'unsplash' ),
+							'placeholder' => __( 'Search free high-resolution photos', 'unsplash' ),
 						],
 					],
 				],
 				'noResults' => [
-					'noMedia' => __( 'No results found', 'unsplash' ),
-					'image'   => $this->asset_url( 'assets/images/no-results.png' ),
+					'noMedia' => __( 'No items found.', 'unsplash' ),
 				],
 
 			]
 		);
 
+		/*
+		 * If the block editor is available, the featured image selector in the editor will need to be overridden. This
+		 * is an extension of the media selector enqueued above and is separated from it because the required dependencies
+		 * are not available in WP < 5.0. It would not make sense to polyfill these dependencies anyways since the block
+		 * editor is not officially compatible with WP < 5.0.
+		 */
+		if ( has_action( 'enqueue_block_assets' ) ) {
+			$asset_file = $this->dir_path . '/assets/js/featured-image-selector.asset.php';
+			$asset      = is_readable( $asset_file ) ? require $asset_file : [];
+			$version    = isset( $asset['version'] ) ? $asset['version'] : $this->asset_version();
+
+			$dependencies   = isset( $asset['dependencies'] ) ? $asset['dependencies'] : [];
+			$dependencies[] = 'unsplash-media-selector';
+
+			wp_enqueue_script(
+				'unsplash-featured-image-selector',
+				$this->asset_url( 'assets/js/featured-image-selector.js' ),
+				$dependencies,
+				$version,
+				true
+			);
+		}
+
+		// Enqueue media selector CSS.
 		wp_enqueue_style(
 			'unsplash-media-selector-style',
 			$this->asset_url( 'assets/css/media-selector-compiled.css' ),
@@ -146,36 +223,37 @@ class Plugin extends Plugin_Base {
 		$image = new Image( $photo );
 
 		$response = [
-			'id'            => isset( $photo['id'] ) ? $photo['id'] : null,
-			'unsplashId'    => isset( $photo['unsplash_id'] ) ? $photo['unsplash_id'] : null,
-			'title'         => '',
-			'filename'      => $image->get_field( 'file' ),
-			'url'           => $image->get_field( 'original_url' ),
-			'link'          => $image->get_field( 'links' )['html'],
-			'alt'           => $image->get_field( 'alt' ),
-			'author'        => $image->get_field( 'user' )['name'],
-			'description'   => $image->get_field( 'description' ),
-			'caption'       => $image->get_caption(),
-			'name'          => $image->get_field( 'original_id' ),
-			'height'        => $image->get_field( 'height' ),
-			'width'         => $image->get_field( 'width' ),
-			'status'        => 'inherit',
-			'uploadedTo'    => 0,
-			'date'          => strtotime( $image->get_field( 'created_at' ) ) * 1000,
-			'modified'      => strtotime( $image->get_field( 'updated_at' ) ) * 1000,
-			'menuOrder'     => 0,
-			'mime'          => $image->get_field( 'mime_type' ),
-			'type'          => 'image',
-			'subtype'       => $image->get_field( 'ext' ),
-			'icon'          => ! empty( $image->get_image_url( 'thumb' ) ) ? $this->get_original_url_with_size( $image->get_image_url( 'thumb' ), 150, 150, $this->default_img_attrs ) : null,
-			'dateFormatted' => mysql2date( __( 'F j, Y', 'unsplash' ), $image->get_field( 'created_at' ) ),
-			'nonces'        => [
+			'id'             => isset( $photo['id'] ) ? $photo['id'] : null,
+			'unsplash_order' => isset( $photo['unsplash_order'] ) ? $photo['unsplash_order'] : null,
+			'title'          => '',
+			'filename'       => $image->get_field( 'file' ),
+			'url'            => $image->get_field( 'original_url' ),
+			'link'           => $image->get_field( 'links' )['html'],
+			'alt'            => $image->get_field( 'alt' ),
+			'author'         => $image->get_field( 'user' )['name'],
+			'description'    => $image->get_field( 'description' ),
+			'caption'        => $image->get_caption(),
+			'color'          => $image->get_field( 'color' ),
+			'name'           => $image->get_field( 'original_id' ),
+			'height'         => $image->get_field( 'height' ),
+			'width'          => $image->get_field( 'width' ),
+			'status'         => 'inherit',
+			'uploadedTo'     => 0,
+			'date'           => strtotime( $image->get_field( 'created_at' ) ) * 1000,
+			'modified'       => strtotime( $image->get_field( 'updated_at' ) ) * 1000,
+			'menuOrder'      => 0,
+			'mime'           => $image->get_field( 'mime_type' ),
+			'type'           => 'image',
+			'subtype'        => $image->get_field( 'ext' ),
+			'icon'           => ! empty( $image->get_image_url( 'thumb' ) ) ? $this->get_original_url_with_size( $image->get_image_url( 'thumb' ), 150, 150, $this->default_img_attrs ) : null,
+			'dateFormatted'  => mysql2date( __( 'F j, Y', 'unsplash' ), $image->get_field( 'created_at' ) ),
+			'nonces'         => [
 				'update' => false,
 				'delete' => false,
 				'edit'   => false,
 			],
-			'editLink'      => false,
-			'meta'          => false,
+			'editLink'       => false,
+			'meta'           => false,
 		];
 
 		$response['sizes'] = $this->add_image_sizes( $image->get_field( 'original_url' ), $image->get_field( 'width' ), $image->get_field( 'height' ) );
@@ -324,6 +402,7 @@ class Plugin extends Plugin_Base {
 
 		$meta_args = [
 			'original_id'       => [],
+			'original_link'     => [],
 			'original_url'      => [
 				'type'         => 'string',
 				'show_in_rest' => [
@@ -404,5 +483,42 @@ class Plugin extends Plugin_Base {
 			$args = wp_parse_args( $args, $default_args );
 			register_taxonomy( $name, self::POST_TYPE, $args );
 		}
+	}
+
+	/**
+	 * Add an admin notice on if credntials not setup.
+	 *
+	 * @action admin_notices
+	 */
+	public function admin_notice() {
+		$credentials = $this->settings->get_credentials();
+		if ( ! empty( $credentials['applicationId'] ) && ! empty( $credentials['secret'] ) ) {
+			return false;
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return false;
+		}
+
+		$screen = ( function_exists( 'get_current_screen' ) ) ? get_current_screen() : false;
+
+		if ( ! $screen instanceof WP_Screen ) {
+			return false;
+		}
+
+		if ( 'settings_page_unsplash' === $screen->id ) {
+			return false;
+		}
+
+		$class   = 'notice notice-warning is-dismissible';
+		$logo    = $this->asset_url( 'assets/images/logo.png' );
+		$title   = __( 'Unsplash', 'unsplash' );
+		$message = __( 'To complete set up of the Unsplash plugin you’ll need to add the API key/secret.', 'unsplash' );
+		$button  = __( 'Complete setup', 'unsplash' );
+		$url     = get_admin_url( null, 'options-general.php?page=unsplash' );
+
+		printf( '<div class="%1$s"><h3><img src="%2$s" height="14" "/>   %3$s</h3><p>%4$s</p><p><a href="%5$s" class="button button-primary button-large">%6$s</a></p></div>', esc_attr( $class ), esc_url( $logo ), esc_html( $title ), esc_html( $message ), esc_url( $url ), esc_html( $button ) );
+
+		return true;
 	}
 }

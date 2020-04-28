@@ -65,33 +65,9 @@ jobs:
       script:
         - source "$DEV_LIB_PATH/travis.script.sh"
         - npm run lint
-
-    - stage: test
-      name: E2E tests with Docker (7.4, WordPress latest)
-      php: "7.4"
-      before_install:
-        - nvm install
-        - nvm use
-        - unset PUPPETEER_SKIP_CHROMIUM_DOWNLOAD
-      before_script:
-        - sudo service mysql stop
-        - echo "Running E2E tests without code coverage ..."
-      script:
-        - npm run env:start
-        - npm run wp -- wp core install --title=WordPress --admin_user=admin --admin_password=password --admin_email=admin@example.com --skip-email --url=http://localhost:8088 --quiet
-        - npm run wp -- wp plugin activate unsplash
-        - npm run build:js
-        - npm run test:e2e:ci
-
-    - name: JS unit tests (7.4, WordPress latest, without code coverage)
-      php: "7.4"
-      before_script:
-        - echo "Running JS unit tests without code coverage ..."
-      script:
-        - npm run build:js
-        - npm run test:js
-
-    - name: PHP unit tests (7.4, WordPress latest, with code coverage)
+      
+    - stage: unit-test
+      name: PHP unit tests (7.4, WordPress latest, with code coverage)
       php: "7.4"
       env: WP_VERSION=latest DEV_LIB_ONLY=phpunit,coverage PHPUNIT_VERSION=6
       before_script:
@@ -119,6 +95,13 @@ jobs:
       php: "5.6"
       env: WP_VERSION=5.0 DEV_LIB_ONLY=phpunit
 
+    - name: PHP unit tests (5.6, WordPress 4.9)
+      php: "5.6"
+      env: WP_VERSION=4.9 DEV_LIB_ONLY=phpunit
+      script:
+        - npm run build:js
+        - source "$DEV_LIB_PATH/travis.script.sh"
+
     - name: PHP unit tests (7.4, WordPress trunk)
       php: "7.4"
       env: WP_VERSION=trunk DEV_LIB_ONLY=phpunit PHPUNIT_VERSION=6
@@ -126,3 +109,28 @@ jobs:
     - name: PHP unit tests (5.6, WordPress trunk)
       php: "5.6"
       env: WP_VERSION=trunk DEV_LIB_ONLY=phpunit
+
+    - name: JS unit tests (7.4, WordPress latest, without code coverage)
+      php: "7.4"
+      before_script:
+        - echo "Running JS unit tests without code coverage ..."
+      script:
+        - npm run build:js
+        - npm run test:js
+        -
+    - stage: e2e-test
+      name: E2E tests with Docker (7.4, WordPress latest)
+      php: "7.4"
+      before_install:
+        - nvm install
+        - nvm use
+        - unset PUPPETEER_SKIP_CHROMIUM_DOWNLOAD
+      before_script:
+        - sudo service mysql stop
+        - echo "Running E2E tests without code coverage ..."
+      script:
+        - npm run env:start
+        - npm run wp -- wp core install --title=WordPress --admin_user=admin --admin_password=password --admin_email=admin@example.com --skip-email --url=http://localhost:8088 --quiet
+        - npm run wp -- wp plugin activate unsplash
+        - npm run build:js
+        - npm run test:e2e:ci

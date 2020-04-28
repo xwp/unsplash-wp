@@ -32,6 +32,7 @@
 
 	<file>.</file>
 
+	<exclude-pattern>php/class-api.php</exclude-pattern>
 	<exclude-pattern>*/assets/*</exclude-pattern>
 	<exclude-pattern>*/bin/*</exclude-pattern>
 	<exclude-pattern>*/js/*</exclude-pattern>
