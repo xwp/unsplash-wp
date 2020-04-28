@@ -299,7 +299,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 */
 	public function test_get_items_args() {
 		$expected = [
-			'context'  => [
+			'context'     => [
 				'description'       => 'Scope under which the request is made; determines fields present in response.',
 				'type'              => 'string',
 				'sanitize_callback' => 'sanitize_key',
@@ -307,7 +307,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 				'enum'              => [ 'view', 'embed', 'edit' ],
 				'default'           => 'view',
 			],
-			'page'     => [
+			'page'        => [
 				'description'       => 'Current page of the collection.',
 				'type'              => 'integer',
 				'default'           => 1,
@@ -315,7 +315,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 				'validate_callback' => 'rest_validate_request_arg',
 				'minimum'           => 1,
 			],
-			'per_page' => [
+			'per_page'    => [
 				'description'       => 'Maximum number of items to be returned in result set.',
 				'type'              => 'integer',
 				'default'           => 10,
@@ -324,7 +324,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 				'validate_callback' => 'rest_validate_request_arg',
 				'minimum'           => 1,
 			],
-			'order_by' => [
+			'order_by'    => [
 				'description' => 'How to sort the photos.',
 				'type'        => 'string',
 				'default'     => 'latest',
