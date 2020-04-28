@@ -133,7 +133,19 @@ class API {
 			$cache_value['cached'] = true;
 			return $cache_value;
 		}
-		$url      = add_query_arg( $args, $url );
+		$url = add_query_arg( $args, $url );
+
+		/**
+		 * Filter the request URL Valid.
+		 *
+		 * @param string $url URL to requested.
+		 * @param string $path Path of the Unsplash API.
+		 * @param array  $args Args passed to the url.
+		 *
+		 * @return string $url Filtered URL.
+		 */
+		$url = apply_filters( 'unsplash_request_url', $url, $path, $args );
+
 		$response = $this->get_remote( $url );
 
 		// If wp_remote_get returns an error, return a formatted error.
@@ -216,7 +228,7 @@ class API {
 					$message = sprintf( __( 'The Unsplash API credentials supplied are not authorized for this request. Please visit the <a href="%s">Unsplash settings page</a> to reconnect to Unsplash now.', 'unsplash' ), get_admin_url( null, 'options-general.php?page=unsplash' ) );
 					break;
 				case 404:
-					$message = __( 'Unable to find Unsplash photo.', 'unsplash' );
+					$message = __( 'Unable to find Unsplash resource.', 'unsplash' );
 					break;
 				case 429:
 					$message = __( 'The Unsplash API credentials supplied have been flagged for exceeding the permitted rate limit and have been temporarily disabled.', 'unsplash' );
