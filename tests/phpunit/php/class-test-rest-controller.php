@@ -754,10 +754,11 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 * @covers \Unsplash\Rest_Controller::get_item_schema()
 	 */
 	public function test_get_item_schema() {
-		$request    = new WP_REST_Request( 'OPTIONS', $this->get_route() );
-		$response   = rest_get_server()->dispatch( $request );
-		$data       = $response->get_data();
-		$properties = $data['schema']['properties'];
+		$plugin = new Plugin();
+		$plugin->init();
+		$rest_controller = new Rest_Controller( $plugin );
+		$schema          = $rest_controller->get_item_schema();
+		$properties      = $schema['properties'];
 
 		$this->assertCount( 9, $properties );
 		$this->assertArrayHasKey( 'id', $properties );
