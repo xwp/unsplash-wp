@@ -330,6 +330,22 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 				'default'     => 'latest',
 				'enum'        => [ 'latest', 'oldest', 'popular' ],
 			],
+			'search'      => [
+				'description' => 'Limit results to those matching a string.',
+				'type'        => 'string',
+			],
+			'orientation' => [
+				'enum'        => [ 'landscape', 'portrait', 'squarish' ],
+				'description' => 'Filter search results by photo orientation.',
+				'type'        => 'string',
+				'default'     => null,
+			],
+			'collections' => [
+				'description'       => 'Collection ID(‘s) to narrow search. If multiple, comma-separated.',
+				'type'              => 'string',
+				'default'           => null,
+				'validate_callback' => [ 'Unsplash\\Rest_Controller', 'validate_get_search_param' ],
+			],
 		];
 
 		$this->assertEquals( $expected, static::$routes[ $this->get_route() ][0]['args'] );

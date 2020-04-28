@@ -16,7 +16,7 @@ class Test_Api extends \WP_UnitTestCase {
 	/**
 	 * Test test_get().
 
-	 * @covers       \Unsplash\API::test_get()
+	 * @covers       \Unsplash\API::get()
 	 * @covers       \Unsplash\API::send_request()
 	 */
 	public function test_get() {
@@ -32,7 +32,7 @@ class Test_Api extends \WP_UnitTestCase {
 	/**
 	 * Test test_get().
 	 *
-	 * @covers       \Unsplash\API::test_get()
+	 * @covers       \Unsplash\API::get()
 	 * @covers       \Unsplash\API::send_request()
 	 */
 	public function test_no_get() {
@@ -40,13 +40,13 @@ class Test_Api extends \WP_UnitTestCase {
 		$plugin->init();
 		$api      = new API( $plugin );
 		$wp_error = $api->get( 'no-thank' );
-		$this->assertEquals( $wp_error->get_error_code(), 404 );
+		$this->assertEquals( $wp_error->get_error_code(), 'unsplash_api_error' );
 		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), 'Unable to find Unsplash resource.' );
 	}
 	/**
 	 * Test test_get().
 	 *
-	 * @covers       \Unsplash\API::test_get()
+	 * @covers       \Unsplash\API::get()
 	 * @covers       \Unsplash\API::send_request()
 	 */
 	public function test_wrong_url_get_1() {
@@ -55,7 +55,7 @@ class Test_Api extends \WP_UnitTestCase {
 		$api = new API( $plugin );
 		add_filter( 'unsplash_request_url', [ $this, 'invalid_unsplash_request_url' ] );
 		$wp_error = $api->search( 'unused', [] );
-		$this->assertEquals( $wp_error->get_error_code(), 400 );
+		$this->assertEquals( $wp_error->get_error_code(), 'unsplash_api_error' );
 		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), 'There appears to be a communication issue with Unsplash, please check status.unsplash.com and try again in a few minutes.' );
 		remove_filter( 'unsplash_request_url', [ $this, 'invalid_unsplash_request_url' ] );
 	}
@@ -64,7 +64,7 @@ class Test_Api extends \WP_UnitTestCase {
 	/**
 	 * Test test_get().
 	 *
-	 * @covers       \Unsplash\API::test_get()
+	 * @covers       \Unsplash\API::get()
 	 * @covers       \Unsplash\API::send_request()
 	 */
 	public function test_wrong_url_get_2() {
@@ -73,7 +73,7 @@ class Test_Api extends \WP_UnitTestCase {
 		$api = new API( $plugin );
 		add_filter( 'unsplash_request_url', [ $this, 'fake_unsplash_request_url' ] );
 		$wp_error = $api->search( 'unused', [] );
-		$this->assertEquals( $wp_error->get_error_code(), 400 );
+		$this->assertEquals( $wp_error->get_error_code(), 'http_request_failed' );
 		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), 'There appears to be a communication issue with Unsplash, please check status.unsplash.com and try again in a few minutes.' );
 		remove_filter( 'unsplash_request_url', [ $this, 'fake_unsplash_request_url' ] );
 	}
@@ -127,7 +127,7 @@ class Test_Api extends \WP_UnitTestCase {
 
 	/**
 	 * Return fake url.
-	 * 
+	 *
 	 * @return string
 	 */
 	public function fake_unsplash_request_url() {
