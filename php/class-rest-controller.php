@@ -236,9 +236,10 @@ class Rest_Controller extends WP_REST_Controller {
 			return $this->rest_ensure_response( $api_response, $request );
 		}
 		$this->api->download( $id );
-		$results = $api_response->get_results();
-
-		$image         = new Image( $results );
+		$results       = $api_response->get_results();
+		$credentials   = $this->plugin->settings->get_credentials();
+		$utm_source    = $credentials['utmSource'];
+		$image         = new Image( $results, $utm_source );
 		$importer      = new Import( $id, $image );
 		$attachment_id = $importer->process();
 		if ( is_wp_error( $attachment_id ) ) {
