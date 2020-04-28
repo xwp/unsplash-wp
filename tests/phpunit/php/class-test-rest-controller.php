@@ -90,6 +90,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 * Test get_items().
 	 *
 	 * @covers \Unsplash\Rest_Controller::get_items()
+	 * @covers \Unsplash\API::all()
 	 */
 	public function test_get_items() {
 		wp_set_current_user( self::$admin_id );
@@ -115,6 +116,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 * Test get_items() with AJAX request.
 	 *
 	 * @covers \Unsplash\Rest_Controller::get_items()
+	 * @covers \Unsplash\API::all()
 	 */
 	public function test_get_items_via_ajax() {
 		wp_set_current_user( self::$admin_id );
@@ -340,6 +342,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 * Test get_item().
 	 *
 	 * @covers \Unsplash\Rest_Controller::get_item()
+	 * @covers \Unsplash\API::get()
 	 */
 	public function test_get_item() {
 		wp_set_current_user( self::$admin_id );
@@ -493,6 +496,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 *
 	 * @covers \Unsplash\Rest_Controller::get_item()
 	 * @covers \Unsplash\Rest_Controller::get_item_permissions_check()
+	 * @covers \Unsplash\API::get()
 	 */
 	public function test_get_item_auth() {
 		wp_set_current_user( self::$subscriber_id );
@@ -506,6 +510,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 *
 	 * @covers \Unsplash\Rest_Controller::get_items()
 	 * @covers \Unsplash\Rest_Controller::get_items_permissions_check()
+	 * @covers \Unsplash\API::all()
 	 */
 	public function test_get_items_auth() {
 		wp_set_current_user( self::$subscriber_id );
@@ -519,6 +524,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 *
 	 * @covers \Unsplash\Rest_Controller::get_import()
 	 * @covers \Unsplash\Rest_Controller::create_item_permissions_check()
+	 * @covers \Unsplash\API::get()
 	 */
 	public function test_get_import_auth() {
 		wp_set_current_user( self::$subscriber_id );
@@ -574,6 +580,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 * Test get_search().
 	 *
 	 * @covers \Unsplash\Rest_Controller::get_search()
+	 * @covers \Unsplash\API::search()
 	 */
 	public function test_get_search() {
 		wp_set_current_user( self::$admin_id );
@@ -608,6 +615,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 * Test get_search() with spaces.
 	 *
 	 * @covers \Unsplash\Rest_Controller::get_search()
+	 * @covers \Unsplash\API::search()
 	 */
 	public function test_get_search_with_spaces() {
 		wp_set_current_user( self::$admin_id );
@@ -840,7 +848,9 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 * @param bool            $expected Expected.
 	 */
 	public function test_is_ajax_request( $request, $expected ) {
-		$rest_controller = new Rest_Controller( new Plugin() );
+		$plugin = new Plugin();
+		$plugin->init();
+		$rest_controller = new Rest_Controller( $plugin );
 		$actual          = $rest_controller->is_ajax_request( $request );
 		$this->assertEquals( $expected, $actual );
 	}
@@ -855,8 +865,9 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		$index    = 3;
 		$page     = 3;
 		$per_page = 10;
-
-		$rest_controller = new Rest_Controller( new Plugin() );
+		$plugin   = new Plugin();
+		$plugin->init();
+		$rest_controller = new Rest_Controller( $plugin );
 		$actual          = $rest_controller->set_unique_media_id( $photo, $index, $page, $per_page );
 		$this->assertEquals( '23', $actual['unsplash_order'] );
 	}

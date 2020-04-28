@@ -24,6 +24,7 @@ class Test_Api extends \WP_UnitTestCase {
 			[ 'test_500', 500, 'There appears to be a communication issue with Unsplash, please check status.unsplash.com and try again in a few minutes.' ],
 			[ 'test_401', 401, 'The Unsplash API credentials supplied are not authorized. Please visit the Unsplash settings page to reconnect to Unsplash now.' ],
 			[ 'test_403', 403, 'The Unsplash API credentials supplied are not authorized for this request. Please visit the Unsplash settings page to reconnect to Unsplash now.' ],
+			[ 'test_400', 400, 'There appears to be a communication issue with Unsplash, please check status.unsplash.com and try again in a few minutes.' ],
 			[ 'test_418', 418, 'I\'m a teapot' ],
 			[ 'test_0', 0, 'There appears to be a communication issue with Unsplash, please check status.unsplash.com and try again in a few minutes.' ],
 			[ 'test_foo', 'foo', 'There appears to be a communication issue with Unsplash, please check status.unsplash.com and try again in a few minutes.' ],
