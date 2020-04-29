@@ -7,19 +7,17 @@
 
 namespace Unsplash;
 
-use WP_REST_Request;
-
 /**
  * Cache for api requests.
  */
 class Api_Cache {
 
 	/**
-	 * WP_REST_Request instance.
+	 * Args passed to url of cached response.
 	 *
-	 * @var WP_REST_Request
+	 * @var array
 	 */
-	public $request;
+	protected $query_args = [];
 
 	/**
 	 * Is it cached.
@@ -35,12 +33,12 @@ class Api_Cache {
 	protected $key = '';
 
 	/**
-	 * __construct method.
+	 * Api_Cache constructor.
 	 *
-	 * @param WP_REST_Request $request WP_REST_Request Object.
+	 * @param array $query_args Args passed to url of cached response.
 	 */
-	public function __construct( WP_REST_Request $request ) {
-		$this->request = $request;
+	public function __construct( array $query_args = [] ) {
+		$this->query_args = $query_args;
 		$this->generate_key();
 	}
 
@@ -50,10 +48,8 @@ class Api_Cache {
 	 * @return bool Returns true.
 	 */
 	public function generate_key() {
-		$params          = (array) $this->request->get_params();
-		$params['route'] = (string) $this->request->get_route();
-		$params_encoded  = wp_json_encode( $params );
-		$this->key       = 'unsplash_cache_' . md5( $params_encoded );
+		$params_encoded = wp_json_encode( $this->query_args );
+		$this->key      = 'unsplash_cache_v1_' . md5( $params_encoded );
 
 		return true;
 	}
@@ -64,13 +60,7 @@ class Api_Cache {
 	 * @return mixed Value of transient.
 	 */
 	public function get_cache() {
-		/*
-		 * TODO: Remove once API solution is in place.
-		 *
-		 * This is intentional. It will be removed once we have our own API solution in place,
-		 * which will internally do caching.
-		 */
-		$transient       = false;
+		$transient       = get_transient( $this->key );
 		$this->is_cached = ! empty( $transient );
 
 		return $transient;

@@ -42,7 +42,7 @@ const ImagesQueryModel = wp.media.model.Query.extend(
 				options.context = this;
 				options.type = 'GET';
 				options.url = !! args.s
-					? addQueryArgs( `${ route }/search`, { search: args.s } )
+					? addQueryArgs( `${ route }`, { search: args.s } )
 					: route;
 				options.data = {
 					page: args.paged,

@@ -20,8 +20,12 @@ class Test_Api_Cache extends \WP_UnitTestCase {
 	 * @covers ::get_cache()
 	 */
 	public function test_get_cache() {
-		$request = new \WP_REST_Request( 'GET', '/unsplash/v1/photos' );
-		$cache   = new Api_Cache( $request );
+		$cache = new Api_Cache(
+			[
+				'/unsplash/v1/photos',
+				'page' => 1,
+			] 
+		);
 		$this->assertFalse( $cache->get_cache() );
 	}
 
@@ -29,15 +33,20 @@ class Test_Api_Cache extends \WP_UnitTestCase {
 	 * Test set_cache.
 	 *
 	 * @covers ::set_cache()
+	 * @covers ::get_is_cached()
 	 */
 	public function test_set_cache() {
-		$request = new \WP_REST_Request( 'GET', '/unsplash/v1/photos' );
-		$cache   = new Api_Cache( $request );
+		$cache = new Api_Cache(
+			[
+				'/unsplash/v1/photos',
+				'page' => 2,
+			] 
+		);
 		$this->assertFalse( $cache->get_cache() );
 		$this->assertEquals( $cache->get_is_cached(), 0 );
 		$value = [ 'foo' => 'bar' ];
 		$cache->set_cache( $value );
-		$this->assertFalse( $cache->get_cache() );
-		$this->assertEquals( $cache->get_is_cached(), 0 );
+		$this->assertEqualSets( $cache->get_cache(), $value );
+		$this->assertEquals( $cache->get_is_cached(), 1 );
 	}
 }

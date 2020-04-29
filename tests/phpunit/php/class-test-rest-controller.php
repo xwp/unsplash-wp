@@ -74,9 +74,6 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 
 		$this->assertArrayHasKey( $this->get_route( '/import/(?P<id>[\w-]+)' ), static::$routes );
 		$this->assertCount( 1, static::$routes[ $this->get_route( '/import/(?P<id>[\w-]+)' ) ] );
-
-		$this->assertArrayHasKey( $this->get_route( '/search' ), static::$routes );
-		$this->assertCount( 1, static::$routes[ $this->get_route( '/search' ) ] );
 	}
 
 	/**
@@ -90,6 +87,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 * Test get_items().
 	 *
 	 * @covers \Unsplash\Rest_Controller::get_items()
+	 * @covers \Unsplash\API::all()
 	 */
 	public function test_get_items() {
 		wp_set_current_user( self::$admin_id );
@@ -115,6 +113,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 * Test get_items() with AJAX request.
 	 *
 	 * @covers \Unsplash\Rest_Controller::get_items()
+	 * @covers \Unsplash\API::all()
 	 */
 	public function test_get_items_via_ajax() {
 		wp_set_current_user( self::$admin_id );
@@ -300,7 +299,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 */
 	public function test_get_items_args() {
 		$expected = [
-			'context'  => [
+			'context'     => [
 				'description'       => 'Scope under which the request is made; determines fields present in response.',
 				'type'              => 'string',
 				'sanitize_callback' => 'sanitize_key',
@@ -308,7 +307,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 				'enum'              => [ 'view', 'embed', 'edit' ],
 				'default'           => 'view',
 			],
-			'page'     => [
+			'page'        => [
 				'description'       => 'Current page of the collection.',
 				'type'              => 'integer',
 				'default'           => 1,
@@ -316,7 +315,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 				'validate_callback' => 'rest_validate_request_arg',
 				'minimum'           => 1,
 			],
-			'per_page' => [
+			'per_page'    => [
 				'description'       => 'Maximum number of items to be returned in result set.',
 				'type'              => 'integer',
 				'default'           => 10,
@@ -325,11 +324,29 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 				'validate_callback' => 'rest_validate_request_arg',
 				'minimum'           => 1,
 			],
-			'order_by' => [
+			'order_by'    => [
 				'description' => 'How to sort the photos.',
 				'type'        => 'string',
 				'default'     => 'latest',
 				'enum'        => [ 'latest', 'oldest', 'popular' ],
+			],
+			'search'      => [
+				'description'       => 'Limit results to those matching a string.',
+				'type'              => 'string',
+				'sanitize_callback' => 'sanitize_text_field',
+				'validate_callback' => 'rest_validate_request_arg',
+			],
+			'orientation' => [
+				'enum'        => [ 'landscape', 'portrait', 'squarish' ],
+				'description' => 'Filter search results by photo orientation.',
+				'type'        => 'string',
+				'default'     => null,
+			],
+			'collections' => [
+				'description'       => 'Collection ID(‘s) to narrow search. If multiple, comma-separated.',
+				'type'              => 'string',
+				'default'           => null,
+				'validate_callback' => [ 'Unsplash\\Rest_Controller', 'validate_get_search_param' ],
 			],
 		];
 
@@ -340,6 +357,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 * Test get_item().
 	 *
 	 * @covers \Unsplash\Rest_Controller::get_item()
+	 * @covers \Unsplash\API::get()
 	 */
 	public function test_get_item() {
 		wp_set_current_user( self::$admin_id );
@@ -493,6 +511,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 *
 	 * @covers \Unsplash\Rest_Controller::get_item()
 	 * @covers \Unsplash\Rest_Controller::get_item_permissions_check()
+	 * @covers \Unsplash\API::get()
 	 */
 	public function test_get_item_auth() {
 		wp_set_current_user( self::$subscriber_id );
@@ -506,6 +525,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 *
 	 * @covers \Unsplash\Rest_Controller::get_items()
 	 * @covers \Unsplash\Rest_Controller::get_items_permissions_check()
+	 * @covers \Unsplash\API::all()
 	 */
 	public function test_get_items_auth() {
 		wp_set_current_user( self::$subscriber_id );
@@ -519,6 +539,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 *
 	 * @covers \Unsplash\Rest_Controller::get_import()
 	 * @covers \Unsplash\Rest_Controller::create_item_permissions_check()
+	 * @covers \Unsplash\API::get()
 	 */
 	public function test_get_import_auth() {
 		wp_set_current_user( self::$subscriber_id );
@@ -573,11 +594,12 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	/**
 	 * Test get_search().
 	 *
-	 * @covers \Unsplash\Rest_Controller::get_search()
+	 * @covers \Unsplash\Rest_Controller::get_items()
+	 * @covers \Unsplash\API::search()
 	 */
 	public function test_get_search() {
 		wp_set_current_user( self::$admin_id );
-		$request = new WP_REST_Request( 'GET', $this->get_route( '/search' ) );
+		$request = new WP_REST_Request( 'GET', $this->get_route( '' ) );
 		$request->set_param( 'search', 'motorcycle' );
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
@@ -607,11 +629,12 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	/**
 	 * Test get_search() with spaces.
 	 *
-	 * @covers \Unsplash\Rest_Controller::get_search()
+	 * @covers \Unsplash\Rest_Controller::get_items()
+	 * @covers \Unsplash\API::search()
 	 */
 	public function test_get_search_with_spaces() {
 		wp_set_current_user( self::$admin_id );
-		$request = new WP_REST_Request( 'GET', $this->get_route( '/search' ) );
+		$request = new WP_REST_Request( 'GET', $this->get_route( '' ) );
 		$request->set_param( 'search', 'star wars' );
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
@@ -673,7 +696,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	}
 
 	/**
-	 * Test `collections` parameter for `get_search()`.
+	 * Test `collections` parameter for search.
 	 *
 	 * @dataProvider data_test_get_search
 	 *
@@ -682,7 +705,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 */
 	public function test_get_search_collections_param( $query_param, $status_code ) {
 		wp_set_current_user( self::$admin_id );
-		$request = new WP_REST_Request( 'GET', $this->get_route( '/search' ) );
+		$request = new WP_REST_Request( 'GET', $this->get_route( '' ) );
 		$request->set_query_params(
 			[
 				'search'      => 'motorcycle',
@@ -695,58 +718,6 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		if ( 400 === $status_code ) {
 			$this->assertEquals( 'rest_invalid_param', $response->data['code'] );
 		}
-	}
-
-	/**
-	 * Test arguments for get_search().
-	 */
-	public function test_get_search_args() {
-		$expected = [
-			'context'     => [
-				'default'           => 'view',
-				'enum'              => [ 'view', 'embed', 'edit' ],
-				'description'       => 'Scope under which the request is made; determines fields present in response.',
-				'type'              => 'string',
-				'sanitize_callback' => 'sanitize_key',
-				'validate_callback' => 'rest_validate_request_arg',
-			],
-			'page'        => [
-				'default'           => 1,
-				'description'       => 'Current page of the collection.',
-				'type'              => 'integer',
-				'sanitize_callback' => 'absint',
-				'validate_callback' => 'rest_validate_request_arg',
-				'minimum'           => 1,
-			],
-			'per_page'    => [
-				'default'           => 10,
-				'description'       => 'Maximum number of items to be returned in result set.',
-				'type'              => 'integer',
-				'maximum'           => 30,
-				'sanitize_callback' => 'absint',
-				'validate_callback' => 'rest_validate_request_arg',
-				'minimum'           => 1,
-			],
-			'search'      => [
-				'description' => 'Limit results to those matching a string.',
-				'type'        => 'string',
-				'required'    => true,
-			],
-			'orientation' => [
-				'enum'        => [ 'landscape', 'portrait', 'squarish' ],
-				'description' => 'Filter search results by photo orientation.',
-				'type'        => 'string',
-				'default'     => null,
-			],
-			'collections' => [
-				'description'       => 'Collection ID(‘s) to narrow search. If multiple, comma-separated.',
-				'type'              => 'string',
-				'default'           => null,
-				'validate_callback' => [ 'Unsplash\\Rest_Controller', 'validate_get_search_param' ],
-			],
-		];
-
-		$this->assertEquals( $expected, static::$routes[ $this->get_route( '/search' ) ][0]['args'] );
 	}
 
 	/**
@@ -783,10 +754,11 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 * @covers \Unsplash\Rest_Controller::get_item_schema()
 	 */
 	public function test_get_item_schema() {
-		$request    = new WP_REST_Request( 'OPTIONS', $this->get_route() );
-		$response   = rest_get_server()->dispatch( $request );
-		$data       = $response->get_data();
-		$properties = $data['schema']['properties'];
+		$plugin = new Plugin();
+		$plugin->init();
+		$rest_controller = new Rest_Controller( $plugin );
+		$schema          = $rest_controller->get_item_schema();
+		$properties      = $schema['properties'];
 
 		$this->assertCount( 9, $properties );
 		$this->assertArrayHasKey( 'id', $properties );
@@ -798,6 +770,17 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		$this->assertArrayHasKey( 'height', $properties );
 		$this->assertArrayHasKey( 'width', $properties );
 		$this->assertArrayHasKey( 'urls', $properties );
+
+		$this->assertSame( 'string', $properties['id']['type'] );
+		$this->assertSame( 'date-time', $properties['created_at']['format'] );
+		$this->assertSame( 'string', $properties['updated_at']['type'] );
+		$this->assertSame( 'date-time', $properties['updated_at']['format'] );
+		$this->assertSame( 'string', $properties['alt_description']['type'] );
+		$this->assertSame( 'string', $properties['description']['type'] );
+		$this->assertSame( 'string', $properties['color']['type'] );
+		$this->assertSame( 'integer', $properties['height']['type'] );
+		$this->assertSame( 'integer', $properties['width']['type'] );
+		$this->assertSame( 'object', $properties['urls']['type'] );
 	}
 
 	/**
@@ -840,7 +823,9 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 * @param bool            $expected Expected.
 	 */
 	public function test_is_ajax_request( $request, $expected ) {
-		$rest_controller = new Rest_Controller( new Plugin() );
+		$plugin = new Plugin();
+		$plugin->init();
+		$rest_controller = new Rest_Controller( $plugin );
 		$actual          = $rest_controller->is_ajax_request( $request );
 		$this->assertEquals( $expected, $actual );
 	}
@@ -855,8 +840,9 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		$index    = 3;
 		$page     = 3;
 		$per_page = 10;
-
-		$rest_controller = new Rest_Controller( new Plugin() );
+		$plugin   = new Plugin();
+		$plugin->init();
+		$rest_controller = new Rest_Controller( $plugin );
 		$actual          = $rest_controller->set_unique_media_id( $photo, $index, $page, $per_page );
 		$this->assertEquals( '23', $actual['unsplash_order'] );
 	}
@@ -1107,41 +1093,6 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 				],
 			],
 		];
-	}
-
-	/**
-	 * Data provider for format_exception.
-	 *
-	 * @return array
-	 */
-	public function data_test_format_exception() {
-		return [
-			[ 'test_500', 500, 'There appears to be a communication issue with Unsplash, please check status.unsplash.com and try again in a few minutes.' ],
-			[ 'test_401', 401, 'The Unsplash API credentials supplied are not authorized. Please visit the Unsplash settings page to reconnect to Unsplash now.' ],
-			[ 'test_403', 403, 'The Unsplash API credentials supplied are not authorized for this request. Please visit the Unsplash settings page to reconnect to Unsplash now.' ],
-			[ 'test_418', 418, 'I\'m a teapot' ],
-			[ 'test_0', 0, 'There appears to be a communication issue with Unsplash, please check status.unsplash.com and try again in a few minutes.' ],
-			[ 'test_foo', 'foo', 'There appears to be a communication issue with Unsplash, please check status.unsplash.com and try again in a few minutes.' ],
-		];
-	}
-
-	/**
-	 * Test format_exception().
-	 *
-	 * @dataProvider data_test_format_exception
-	 * @covers       \Unsplash\Rest_Controller::format_exception()
-	 *
-	 * @param string|int $code Error code.
-	 * @param int        $error_status HTTP error state code.
-	 * @param string     $message Message.
-	 */
-	public function test_format_exception( $code, $error_status, $message ) {
-		$plugin = new Plugin();
-		$plugin->init();
-		$rest_controller = new Rest_Controller( $plugin );
-		$wp_error        = $rest_controller->format_exception( $code, $error_status );
-		$this->assertEquals( $wp_error->get_error_code(), $code );
-		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), $message );
 	}
 
 	/**

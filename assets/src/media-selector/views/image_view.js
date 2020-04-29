@@ -54,9 +54,14 @@ const ImageView = wp.media.view.Attachment.extend( {
 		this.views.detach();
 
 		this.$el.html( this.template( options ) );
-
 		const img = this.$el.find( '.centered img' );
-		if ( 1 === img.length ) {
+		if (
+			1 === img.length &&
+			options.size &&
+			options.size.width &&
+			options.size.height &&
+			options.color
+		) {
 			img[ 0 ].width = options.size.width;
 			img[ 0 ].height = options.size.height;
 			img[ 0 ].style.backgroundColor = options.color;
