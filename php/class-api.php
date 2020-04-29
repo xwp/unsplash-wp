@@ -36,7 +36,7 @@ class API {
 	 * Retrieve the a photo object from the ID specified.
 	 *
 	 * @param string $id ID of the photo.
-	 * @param bool   $trigger_download If a request is fired to count a donwload.
+	 * @param bool   $trigger_download If a request is fired to count a download.
 	 *
 	 * @return array|Api_Response|WP_Error
 	 */
@@ -120,7 +120,7 @@ class API {
 	 * @param string $path Path of the Unsplash API.
 	 * @param array  $args Args passed to the url.
 	 *
-	 * @return Array|WP_Error
+	 * @return array|WP_Error
 	 */
 	public function send_request( $path, array $args = [] ) {
 		$url               = 'https://api.unsplash.com' . $path;
@@ -177,7 +177,7 @@ class API {
 		$headers = [
 			'ratelimit-remaining' => (int) $raw_headers['x-ratelimit-remaining'],
 		];
-		if ( isset( $raw_headers['x-total'] ) && isset( $raw_headers['x-per-page'] ) ) {
+		if ( isset( $raw_headers['x-total'], $raw_headers['x-per-page'] ) ) {
 			$headers['total']       = (int) $raw_headers['x-total'];
 			$headers['total_pages'] = (int) ceil( $raw_headers['x-total'] / $raw_headers['x-per-page'] );
 		}
@@ -254,4 +254,3 @@ class API {
 		return new WP_Error( $code, $message, [ 'status' => $error_status ] );
 	}
 }
-
