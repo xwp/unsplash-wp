@@ -36,7 +36,7 @@ class API {
 	 * Retrieve the a photo object from the ID specified.
 	 *
 	 * @param string $id ID of the photo.
-	 * @param bool   $trigger_download If a request is fired to count a donwload.
+	 * @param bool   $trigger_download If a request is fired to count a download.
 	 *
 	 * @return array|Api_Response|WP_Error
 	 */
@@ -255,4 +255,3 @@ class API {
 		return new WP_Error( $code, $message, [ 'status' => $error_status ] );
 	}
 }
-
