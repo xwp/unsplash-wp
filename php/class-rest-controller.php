@@ -248,7 +248,7 @@ class Rest_Controller extends WP_REST_Controller {
 		$response = $this->prepare_item_for_response( $results, $request );
 		$response = rest_ensure_response( $response );
 		$response->set_status( 301 );
-		$response->header( 'Location', rest_url( sprintf( '%s/%s/%d', 'wp/v2', 'media', $attachment_id ) ) );
+		$response->header( 'Location', add_query_arg( 'context', 'edit', rest_url( sprintf( '%s/%s/%d', 'wp/v2', 'media', $attachment_id ) ) ) );
 
 		return $this->rest_ensure_response( $response, $request );
 	}
