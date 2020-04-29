@@ -175,7 +175,7 @@ class API {
 		$headers = [
 			'ratelimit-remaining' => (int) $raw_headers['x-ratelimit-remaining'],
 		];
-		if ( isset( $raw_headers['x-total'] ) && isset( $raw_headers['x-per-page'] ) ) {
+		if ( isset( $raw_headers['x-total'], $raw_headers['x-per-page'] ) ) {
 			$headers['total']       = (int) $raw_headers['x-total'];
 			$headers['total_pages'] = (int) ceil( $raw_headers['x-total'] / $raw_headers['x-per-page'] );
 		}
