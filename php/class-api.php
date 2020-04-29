@@ -120,7 +120,7 @@ class API {
 	 * @param string $path Path of the Unsplash API.
 	 * @param array  $args Args passed to the url.
 	 *
-	 * @return Array|WP_Error
+	 * @return array|WP_Error
 	 */
 	public function send_request( $path, array $args = [] ) {
 		$url               = 'https://api.unsplash.com' . $path;
