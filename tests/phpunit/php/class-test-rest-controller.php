@@ -1202,23 +1202,30 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		$results = $rest_controller->intermediate_image_sizes_advanced(
 			$sizes,
 			[
-				'height' => 120,
+				'height' => 1200,
 				'width'  => 1600,
 			]
 		);
 
 		$expected = [
-			'post-thumbnail' => [
+			'post-thumbnail'          => [
 				'width'  => 1200,
 				'height' => 800,
 				'crop'   => false,
 			],
-			'medium'         => [
+
+			'twentytwenty-fullscreen' => [
+				'width'  => 1980,
+				'height' => 1200,
+				'crop'   => false,
+			],
+			'medium'                  => [
 				'width'  => 300,
 				'height' => 300,
 				'crop'   => false,
 			],
 		];
+
 		$this->assertEqualSets( $expected, $results );
 	}
 
