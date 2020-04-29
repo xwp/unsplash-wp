@@ -270,6 +270,8 @@ class Rest_Controller extends WP_REST_Controller {
 				require_once ABSPATH . 'wp-admin/includes/image.php';
 			}
 			// @codeCoverageIgnoreEnd
+			add_filter( 'intermediate_image_sizes_advanced', [ $this, 'intermediate_image_sizes_advanced' ], 10, 2 );
+			add_filter( 'big_image_size_threshold', '__return_zero' );
 			$meta     = (array) get_post_meta( $attachment_id, 'unsplash_attachment_metadata', true );
 			$file     = get_attached_file( $attachment_id );
 			$new_meta = wp_generate_attachment_metadata( $attachment_id, $file );
@@ -277,6 +279,8 @@ class Rest_Controller extends WP_REST_Controller {
 			$new_meta  = wp_parse_args( $new_meta, $meta );
 			$processed = wp_update_attachment_metadata( $attachment_id, $new_meta );
 			$data      = [ 'processed' => $processed ];
+			remove_filter( 'intermediate_image_sizes_advanced', [ $this, 'intermediate_image_sizes_advanced' ], 10 );
+			remove_filter( 'big_image_size_threshold', '__return_zero' );
 		} catch ( \Exception $e ) {
 			$response = new WP_Error(
 				'single-photo-process',
@@ -292,6 +296,24 @@ class Rest_Controller extends WP_REST_Controller {
 		}
 
 		return $this->rest_ensure_response( $data, $request );
+	}
+
+	/**
+	 * Override image sizes to fix cropping issue. Image sizes that are bigger than real image size, fail.
+	 *
+	 * @param array $size Current image sizes.
+	 * @param array $image_meta Image meta.
+	 *
+	 * @return array
+	 */
+	public function intermediate_image_sizes_advanced( $size, $image_meta ) {
+		$new_sizes = [];
+		foreach ( $size as $key => $value ) {
+			$value['height']  = min( $image_meta['height'], $value['height']);
+			$new_sizes[ $key ] = $value;
+		}
+
+		return $new_sizes;
 	}
 
 	/**

@@ -1172,6 +1172,57 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	}
 
 	/**
+	 * Test intermediate_image_sizes_advanced().
+	 *
+	 * @covers       \Unsplash\Rest_Controller::intermediate_image_sizes_advanced()
+	 */
+	public function test_intermediate_image_sizes_advanced() {
+		$plugin = new Plugin();
+		$plugin->init();
+		$rest_controller = new Rest_Controller( $plugin );
+		$sizes           = [
+			'post-thumbnail'          => [
+				'width'  => 1200,
+				'height' => 800,
+				'crop'   => false,
+			],
+
+			'twentytwenty-fullscreen' => [
+				'width'  => 1980,
+				'height' => 9999,
+				'crop'   => false,
+			],
+			'medium'                  => [
+				'width'  => 300,
+				'height' => 300,
+				'crop'   => false,
+			],
+		];
+
+		$results = $rest_controller->intermediate_image_sizes_advanced(
+			$sizes,
+			[
+				'height' => 120,
+				'width'  => 1600,
+			]
+		);
+
+		$expected = [
+			'post-thumbnail' => [
+				'width'  => 1200,
+				'height' => 800,
+				'crop'   => false,
+			],
+			'medium'         => [
+				'width'  => 300,
+				'height' => 300,
+				'crop'   => false,
+			],
+		];
+		$this->assertEqualSets( $expected, $results );
+	}
+
+	/**
 	 * Test rest_ensure_response().
 	 *
 	 * @covers       \Unsplash\Rest_Controller::rest_ensure_response()
