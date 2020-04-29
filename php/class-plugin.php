@@ -158,9 +158,9 @@ class Plugin extends Plugin_Base {
 			'unsplash-media-selector',
 			'unsplash',
 			[
-				'tabTitle'  => __( 'Unsplash', 'unsplash' ),
-				'route'     => rest_url( 'unsplash/v1/photos' ),
-				'toolbar'   => [
+				'tabTitle'      => __( 'Unsplash', 'unsplash' ),
+				'route'         => rest_url( 'unsplash/v1/photos' ),
+				'toolbar'       => [
 					'filters' => [
 						'search' => [
 							'label'       => __( 'Search', 'unsplash' ),
@@ -168,10 +168,10 @@ class Plugin extends Plugin_Base {
 						],
 					],
 				],
-				'noResults' => [
-					'noMedia' => __( 'No items found.', 'unsplash' ),
+				'errorMessages' => [
+					'postProcess' => __( 'Post-processing of the Unsplash image "<%- filename %>" failed. This was likely because the server is busy or does not have enough resources. Selecting Unsplash images one at a time may help.', 'unsplash' ),
+					'noMedia'     => __( 'No items found.', 'unsplash' ),
 				],
-
 			]
 		);
 

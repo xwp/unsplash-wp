@@ -91,7 +91,7 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 	},
 
 	createAttachments() {
-		const noResults = getConfig( 'noResults' );
+		const errorMessages = getConfig( 'errorMessages' );
 
 		this.attachments = new ImageViews( {
 			controller: this.controller,
@@ -125,7 +125,9 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 		} );
 
 		this.attachmentsNoResults.$el.addClass( 'hidden no-media' );
-		this.attachmentsNoResults.$el.append( `<h2>${ noResults.noMedia }</h2>` );
+		this.attachmentsNoResults.$el.append(
+			`<h2>${ errorMessages.noMedia }</h2>`
+		);
 
 		this.views.add( this.attachmentsNoResults );
 

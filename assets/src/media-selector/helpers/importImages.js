@@ -3,6 +3,7 @@
  */
 import isUnsplashImage from './isUnsplashImage';
 import getConfig from './getConfig';
+import isBlockEditor from './isBlockEditor';
 
 /**
  * Import selected Unsplash images.
@@ -29,7 +30,6 @@ export default selections => {
 const importImage = image => {
 	const { id } = image.attributes;
 	const importUrl = getConfig( 'route' ) + `/import/${ id }`;
-	const processUrl = getConfig( 'route' ) + '/post-process/';
 
 	return wp
 		.apiRequest( { url: importUrl } )
@@ -44,8 +44,31 @@ const importImage = image => {
 					nonces: attachmentData.nonces,
 				},
 			} );
-			wp.apiRequest( { url: processUrl + attachmentData.id } );
+			postProcessImage( attachmentData.id, image.attributes.filename );
 			return attachmentData;
 		} )
 		.fail( error => jQuery.Deferred().reject( { ...error, ...{ image } } ) );
+};
+
+const postProcessImage = ( attachmentId, imageFileName ) => {
+	const processUrl = getConfig( 'route' ) + `/post-process/${ attachmentId }`;
+
+	wp.apiRequest( { url: processUrl } ).fail( () => {
+		const errorMessage = _.template(
+			getConfig( 'errorMessages' ).postProcess
+		)( { filename: imageFileName } );
+
+		if ( isBlockEditor() ) {
+			wp.data.dispatch( 'core/notices' ).createNotice( 'error', errorMessage, {
+				isDismissible: true,
+			} );
+		} else {
+			jQuery(
+				`<div class="notice notice-error is-dismissible"><p>${ errorMessage }</p></div>`
+			).insertAfter( '.notice' );
+
+			// Let WordPress add a dismissible button to the new notice.
+			jQuery( document ).trigger( 'wp-updates-notice-added' );
+		}
+	} );
 };
