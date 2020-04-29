@@ -7,19 +7,11 @@
 
 namespace Unsplash;
 
-use WP_REST_Request;
-
 /**
  * Cache for api requests.
  */
 class Api_Cache {
 
-	/**
-	 * Path of cached response.
-	 *
-	 * @var string
-	 */
-	protected $path = '';
 	/**
 	 * Args passed to url of cached response.
 	 *
@@ -43,11 +35,9 @@ class Api_Cache {
 	/**
 	 * Api_Cache constructor.
 	 *
-	 * @param string $path  Path of cached response.
-	 * @param array  $query_args Args passed to url of cached response.
+	 * @param array $query_args Args passed to url of cached response.
 	 */
-	public function __construct( $path = '', array $query_args = [] ) {
-		$this->path       = $path;
+	public function __construct( array $query_args = [] ) {
 		$this->query_args = $query_args;
 		$this->generate_key();
 	}
@@ -58,10 +48,8 @@ class Api_Cache {
 	 * @return bool Returns true.
 	 */
 	public function generate_key() {
-		$params          = (array) $this->query_args;
-		$params['route'] = (string) $this->path;
-		$params_encoded  = wp_json_encode( $params );
-		$this->key       = 'unsplash_cache_' . md5( $params_encoded );
+		$params_encoded = wp_json_encode( $this->query_args );
+		$this->key      = 'unsplash_cache_v1_' . md5( $params_encoded );
 
 		return true;
 	}

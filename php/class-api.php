@@ -126,7 +126,9 @@ class API {
 		$url               = 'https://api.unsplash.com' . $path;
 		$credentials       = $this->plugin->settings->get_credentials();
 		$args['client_id'] = $credentials['applicationId'];
-		$cache             = new Api_Cache( $path, $args );
+		$cache_key         = $args;
+		$cache_key['path'] = $path;
+		$cache             = new Api_Cache( $cache_key );
 		$cache_value       = $cache->get_cache();
 
 		if ( is_array( $cache_value ) ) {
@@ -219,10 +221,6 @@ class API {
 	public function format_exception( $code, $error_status = 500 ) {
 		if ( is_numeric( $error_status ) ) {
 			switch ( $error_status ) {
-				case 400:
-					/* translators: %s: Link to status page. */
-					$message = sprintf( __( 'There appears to be a communication issue with Unsplash, please check <a href="%s">status.unsplash.com</a> and try again in a few minutes.', 'unsplash' ), 'https://status.unsplash.com' );
-					break;
 				case 401:
 					/* translators: %s: Link to settings page. */
 					$message = sprintf( __( 'The Unsplash API credentials supplied are not authorized. Please visit the <a href="%s">Unsplash settings page</a> to reconnect to Unsplash now.', 'unsplash' ), get_admin_url( null, 'options-general.php?page=unsplash' ) );
@@ -237,6 +235,7 @@ class API {
 				case 429:
 					$message = __( 'The Unsplash API credentials supplied have been flagged for exceeding the permitted rate limit and have been temporarily disabled.', 'unsplash' );
 					break;
+				case 400:
 				case 500:
 					/* translators: %s: Link to status page. */
 					$message = sprintf( __( 'There appears to be a communication issue with Unsplash, please check <a href="%s">status.unsplash.com</a> and try again in a few minutes.', 'unsplash' ), 'https://status.unsplash.com' );

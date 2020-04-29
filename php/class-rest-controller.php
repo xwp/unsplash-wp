@@ -33,6 +33,13 @@ class Rest_Controller extends WP_REST_Controller {
 	protected $post_type;
 
 	/**
+	 * API instance.
+	 *
+	 * @var API
+	 */
+	public $api;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Plugin $plugin Instance of the plugin abstraction.
@@ -42,8 +49,7 @@ class Rest_Controller extends WP_REST_Controller {
 		$this->namespace = 'unsplash/v1';
 		$this->rest_base = 'photos';
 		$this->post_type = 'attachment';
-
-		$this->api = new API( $this->plugin );
+		$this->api       = new API( $this->plugin );
 	}
 
 	/**
