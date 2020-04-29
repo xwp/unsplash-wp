@@ -114,11 +114,13 @@ class Import {
 	 * @return array|string|WP_Error
 	 */
 	public function import_image() {
+		// @codeCoverageIgnoreStart
 		if ( ! function_exists( 'download_url' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/media.php';
 			require_once ABSPATH . 'wp-admin/includes/file.php';
 			require_once ABSPATH . 'wp-admin/includes/image.php';
 		}
+		// @codeCoverageIgnoreEnd
 
 		$file_array = [];
 		$file       = $this->image->get_image_url( 'full' );
@@ -278,6 +280,8 @@ class Import {
 	 * Determine if uploaded file exceeds space quota on multisite.
 	 *
 	 * Replicates check_upload_size().
+	 *
+	 * @codeCoverageIgnore
 	 *
 	 * @see https://github.com/WordPress/WordPress/blob/12709269c19d435de019b54d2bda7e4bd1ad664e/wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php#L959-L1012
 	 *

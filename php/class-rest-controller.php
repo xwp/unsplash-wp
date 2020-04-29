@@ -263,11 +263,13 @@ class Rest_Controller extends WP_REST_Controller {
 	public function post_process( $request ) {
 		$attachment_id = $request->get_param( 'id' );
 		try {
+			// @codeCoverageIgnoreStart
 			if ( ! function_exists( 'wp_generate_attachment_metadata' ) ) {
 				require_once ABSPATH . 'wp-admin/includes/media.php';
 				require_once ABSPATH . 'wp-admin/includes/file.php';
 				require_once ABSPATH . 'wp-admin/includes/image.php';
 			}
+			// @codeCoverageIgnoreEnd
 			$meta     = (array) get_post_meta( $attachment_id, 'unsplash_attachment_metadata', true );
 			$file     = get_attached_file( $attachment_id );
 			$new_meta = wp_generate_attachment_metadata( $attachment_id, $file );
