@@ -3,6 +3,7 @@
  */
 import isUnsplashImage from './isUnsplashImage';
 import getConfig from './getConfig';
+import preloadImage from './preloadImage';
 
 /**
  * Import selected Unsplash images.
@@ -13,9 +14,11 @@ import getConfig from './getConfig';
 export default selections => {
 	const imports = [];
 
-	selections
-		.filter( attachment => isUnsplashImage( attachment ) )
-		.forEach( image => imports.push( importImage( image ) ) );
+	const unsplashImages = selections.filter( attachment =>
+		isUnsplashImage( attachment )
+	);
+	unsplashImages.forEach( image => imports.push( importImage( image ) ) );
+	unsplashImages.forEach( image => imports.push( preloadImageWp( image ) ) );
 
 	return Promise.all( imports );
 };
@@ -45,7 +48,27 @@ const importImage = image => {
 				},
 			} );
 			wp.apiRequest( { url: processUrl + attachmentData.id } );
+
 			return attachmentData;
 		} )
 		.fail( error => jQuery.Deferred().reject( { ...error, ...{ image } } ) );
+};
+
+/**
+ * Preload image before inserting.
+ *
+ * @param { wp.media.model.Attachment } image Image model.
+ *
+ * @return {Promise} Promise if image size exists.
+ */
+const preloadImageWp = image => {
+	const defaultProps = wp.media.view.settings.defaultProps;
+	const imageSize =
+		window.getUserSetting( 'imgsize', defaultProps.size ) || 'medium';
+	const { sizes } = image.attributes;
+	if ( sizes && sizes[ imageSize ] && sizes[ imageSize ].url ) {
+		return preloadImage( sizes[ imageSize ].url );
+	}
+
+	return null;
 };
