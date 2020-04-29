@@ -309,7 +309,7 @@ class Rest_Controller extends WP_REST_Controller {
 	public function intermediate_image_sizes_advanced( $size, $image_meta ) {
 		$new_sizes = [];
 		foreach ( $size as $key => $value ) {
-			$value['height']  = min( $image_meta['height'], $value['height']);
+			$value['height']   = min( $image_meta['height'], $value['height'] );
 			$new_sizes[ $key ] = $value;
 		}
 
