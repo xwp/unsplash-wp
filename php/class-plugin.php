@@ -247,7 +247,7 @@ class Plugin extends Plugin_Base {
 			'mime'           => $image->get_field( 'mime_type' ),
 			'type'           => 'image',
 			'subtype'        => $image->get_field( 'ext' ),
-			'icon'           => ! empty( $image->get_image_url( 'thumb' ) ) ? $this->get_original_url_with_size( $image->get_image_url( 'thumb' ), 150, 150, $this->default_img_attrs ) : null,
+			'icon'           => ! empty( $image->get_image_url( 'thumb' ) ) ? $this->get_original_url_with_size( $image->get_image_url( 'thumb' ), 150, 150 ) : null,
 			'dateFormatted'  => mysql2date( __( 'F j, Y', 'unsplash' ), $image->get_field( 'created_at' ) ),
 			'nonces'         => [
 				'update' => false,
@@ -275,7 +275,7 @@ class Plugin extends Plugin_Base {
 	public function add_image_sizes( $url, $width, $height ) {
 		$width_medium  = 400;
 		$height_medium = $this->get_image_height( $width, $height, $width_medium );
-		$url_medium    = $this->get_original_url_with_size( $url, $width_medium, $height_medium, $this->default_img_attrs );
+		$url_medium    = $this->get_original_url_with_size( $url, $width_medium, $height_medium );
 		$sizes         = [
 			'full'   => [
 				'url'         => $url,
@@ -296,7 +296,7 @@ class Plugin extends Plugin_Base {
 				continue;
 			}
 			$_height = $this->get_image_height( $width, $height, absint( $size['width'] ), absint( $size['height'] ) );
-			$_url    = $this->get_original_url_with_size( $url, $size['width'], $_height, $this->default_img_attrs );
+			$_url    = $this->get_original_url_with_size( $url, $size['width'], $_height );
 
 			$sizes[ $name ] = [
 				'url'         => $_url,
@@ -338,7 +338,8 @@ class Plugin extends Plugin_Base {
 	 * @return string Format image url.
 	 */
 	public function get_original_url_with_size( $url, $width, $height, $attr = [] ) {
-		$attr = wp_parse_args(
+		$attr = array_merge(
+			$this->default_img_attrs,
 			$attr,
 			[
 				'w' => absint( $width ),
