@@ -13,12 +13,17 @@ import preloadImage from './preloadImage';
  */
 export default selections => {
 	const imports = [];
+	const toLoad = [];
 
-	const unsplashImages = selections.filter( attachment =>
-		isUnsplashImage( attachment )
-	);
-	unsplashImages.forEach( image => imports.push( importImage( image ) ) );
-	unsplashImages.forEach( image => imports.push( preloadImageWp( image ) ) );
+	selections
+		.filter( attachment => isUnsplashImage( attachment ) )
+		.forEach( image => {
+			imports.push( importImage( image ) );
+			toLoad.push( preloadImageWp( image ) );
+		} );
+
+	// Force all selected image to preload. Doesn't matter is this promise is not resolved.
+	Promise.all( toLoad );
 
 	return Promise.all( imports );
 };

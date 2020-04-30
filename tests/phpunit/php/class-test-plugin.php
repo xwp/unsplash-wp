@@ -257,12 +257,12 @@ class Test_Plugin extends \WP_UnitTestCase {
 	 */
 	public function get_url_with_size_data() {
 		return [
-			[ 'http://www.example.com/test.jpg', 222, 444, [], 'http://www.example.com/test.jpg?w=222&h=444' ],
-			[ 'http://www.example.com/test.jpg', 100, 100, [], 'http://www.example.com/test.jpg?w=100&h=100' ],
-			[ 'http://www.example.com/test.jpg', -1, -1, [], 'http://www.example.com/test.jpg?w=1&h=1' ],
-			[ 'http://www.example.com/test.jpg', 'invalid', 'invalid', [], 'http://www.example.com/test.jpg?w=0&h=0' ],
-			[ 'http://www.example.com/test.jpg', 100, 100, [ 'crop' => true ], 'http://www.example.com/test.jpg?w=100&h=100&crop=1' ],
-			[ 'http://www.example.com/test.jpg?crop=1', 100, 100, [], 'http://www.example.com/test.jpg?crop=1&w=100&h=100' ],
+			[ 'http://www.example.com/test.jpg', 222, 444, [], 'http://www.example.com/test.jpg?fm=jpg&q=85&fit=crop&w=222&h=444' ],
+			[ 'http://www.example.com/test.jpg', 100, 100, [], 'http://www.example.com/test.jpg?fm=jpg&q=85&fit=crop&w=100&h=100' ],
+			[ 'http://www.example.com/test.jpg', -1, -1, [], 'http://www.example.com/test.jpg?fm=jpg&q=85&fit=crop&w=1&h=1' ],
+			[ 'http://www.example.com/test.jpg', 'invalid', 'invalid', [], 'http://www.example.com/test.jpg?fm=jpg&q=85&fit=crop&w=0&h=0' ],
+			[ 'http://www.example.com/test.jpg', 100, 100, [ 'crop' => true ], 'http://www.example.com/test.jpg?fm=jpg&q=85&fit=crop&crop=1&w=100&h=100' ],
+			[ 'http://www.example.com/test.jpg?crop=1', 100, 100, [], 'http://www.example.com/test.jpg?crop=1&fm=jpg&q=85&fit=crop&w=100&h=100' ],
 		];
 	}
 
