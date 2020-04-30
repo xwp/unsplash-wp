@@ -10,7 +10,11 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 			arguments
 		);
 
-		this.collection.on( 'add remove reset', this.focusInput, this );
+		this.controller.on(
+			'open content:activate:unsplash',
+			this.focusInput,
+			this
+		);
 
 		// Update masonry layout only when a set of images (new page) is loaded.
 		this.collection.on( 'attachments:received remove', () =>
