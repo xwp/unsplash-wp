@@ -262,6 +262,7 @@ class Rest_Controller extends WP_REST_Controller {
 	 */
 	public function post_process( $request ) {
 		$attachment_id = $request->get_param( 'id' );
+		$retry         = (bool) $request->get_param( 'retry' );
 		try {
 			// @codeCoverageIgnoreStart
 			if ( ! function_exists( 'wp_generate_attachment_metadata' ) ) {
@@ -270,17 +271,27 @@ class Rest_Controller extends WP_REST_Controller {
 				require_once ABSPATH . 'wp-admin/includes/image.php';
 			}
 			// @codeCoverageIgnoreEnd
-			add_filter( 'intermediate_image_sizes_advanced', [ $this, 'intermediate_image_sizes_advanced' ], 10, 2 );
-			add_filter( 'big_image_size_threshold', '__return_zero' );
+
+			if ( $retry ) {
+				// On retry, try to scale back images generated.
+				add_filter( 'intermediate_image_sizes_advanced', [ $this, 'intermediate_image_sizes_advanced' ], 10, 2 );
+				add_filter( 'big_image_size_threshold', '__return_zero' );
+			}
 			$meta     = (array) get_post_meta( $attachment_id, 'unsplash_attachment_metadata', true );
 			$file     = get_attached_file( $attachment_id );
 			$new_meta = wp_generate_attachment_metadata( $attachment_id, $file );
 			unset( $meta['sizes'], $new_meta['image_meta'] );
 			$new_meta  = wp_parse_args( $new_meta, $meta );
 			$processed = wp_update_attachment_metadata( $attachment_id, $new_meta );
-			$data      = [ 'processed' => $processed ];
-			remove_filter( 'intermediate_image_sizes_advanced', [ $this, 'intermediate_image_sizes_advanced' ], 10 );
-			remove_filter( 'big_image_size_threshold', '__return_zero' );
+			$data      = [
+				'processed' => $processed,
+				'retry'     => $retry,
+			];
+			if ( $retry ) {
+				// Return filters.
+				remove_filter( 'intermediate_image_sizes_advanced', [ $this, 'intermediate_image_sizes_advanced' ], 10 );
+				remove_filter( 'big_image_size_threshold', '__return_zero' );
+			}
 		} catch ( \Exception $e ) {
 			$response = new WP_Error(
 				'single-photo-process',
@@ -309,10 +320,11 @@ class Rest_Controller extends WP_REST_Controller {
 	public function intermediate_image_sizes_advanced( $size, $image_meta ) {
 		$new_sizes = [];
 		foreach ( $size as $key => $value ) {
-			$value['height']   = min( $image_meta['height'], $value['height'] );
-			$new_sizes[ $key ] = $value;
+			if ( $value['width'] < $image_meta['width'] && $value['height'] < $image_meta['height'] ) {
+				$new_sizes[ $key ] = $value;
+			}
 		}
-
+	
 		return $new_sizes;
 	}
 
