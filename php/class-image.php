@@ -79,7 +79,6 @@ class Image {
 		$this->process_data['tags']              = wp_list_pluck( $this->get_image_field( 'tags', [] ), 'title' );
 		$this->process_data['mime_type']         = self::MIME;
 		$this->process_data['ext']               = self::EXT;
-		$this->process_data['file']              = $this->process_data['original_id'] . '.' . $this->process_data['ext'];
 		$this->process_data['height']            = $this->get_image_field( 'height', 0 );
 		$this->process_data['width']             = $this->get_image_field( 'width', 0 );
 		$this->process_data['created_at']        = $this->get_image_field( 'created_at', current_time( 'mysql' ) );
@@ -94,6 +93,9 @@ class Image {
 				'bio'  => '',
 			]
 		);
+		$this->process_data['file']              = sanitize_title_with_dashes(
+			sprintf( '%s %s %s', $this->process_data['user']['name'], $this->process_data['original_id'], 'unsplash' )
+		) . '.' . self::EXT;
 		$this->process_data['sizes']             = [
 			'full' => [
 				'height'    => $this->process_data['height'],
