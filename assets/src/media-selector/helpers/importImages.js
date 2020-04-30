@@ -44,8 +44,27 @@ const importImage = image => {
 					nonces: attachmentData.nonces,
 				},
 			} );
-			wp.apiRequest( { url: processUrl + attachmentData.id } );
+			processImage( {
+				url: processUrl + attachmentData.id,
+				retries: 5,
+				retryInterval: 500,
+			} );
 			return attachmentData;
 		} )
 		.fail( error => jQuery.Deferred().reject( { ...error, ...{ image } } ) );
+};
+
+/**
+ * Process image after imported with retries.
+ *
+ * @param {Object} options Object of settings passed to wp.apiRequest.
+ * @return {Promise} Promise.
+ */
+const processImage = options => {
+	const onFail = () => {
+		if ( options.retries-- > 0 ) {
+			setTimeout( () => processImage( options ), options.retryInterval );
+		}
+	};
+	return wp.apiRequest( options ).fail( onFail );
 };
