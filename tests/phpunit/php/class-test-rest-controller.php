@@ -456,15 +456,16 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 			]
 		);
 		wp_set_current_user( self::$admin_id );
-		$request  = new WP_REST_Request( 'GET', $this->get_route( '/post-process/' . $second_id ) );
+		$request = new WP_REST_Request( 'GET', $this->get_route( '/post-process/' . $second_id ) );
+		$request->set_param( 'retry', '2' );
 		$response = rest_get_server()->dispatch( $request );
 		$this->assertEquals( 200, $response->get_status() );
 		$this->assertEqualSets(
 			$response->get_data(),
 			[
 				'processed' => true,
-				'retry'     => false,
-			] 
+				'retry'     => true,
+			]
 		);
 		$meta = wp_get_attachment_metadata( $second_id );
 		$this->assertArrayHasKey( 'foo', $meta );
