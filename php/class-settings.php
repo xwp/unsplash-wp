@@ -199,16 +199,20 @@ class Settings {
 		foreach ( $settings as $key => $value ) {
 			$should_encrypt = (
 				in_array( $key, [ 'access_key', 'secret_key' ], true )
-				&& ! empty( $settings[ $key ] )
+				&& ! empty( $value )
 				&& (
 					! isset( $options[ $key ] )
-					|| $options[ $key ] !== $settings[ $key ]
+					|| $options[ $key ] !== $value
 				)
 			);
 
 			if ( $should_encrypt ) {
 				$settings[ $key ] = $this->encrypt( $value );
 			} else {
+				// If the setting is empty, default to the saved setting if it already exists.
+				if ( empty( $value ) && isset( $options[ $key ] ) && ! empty( $options[ $key ] ) ) {
+					$value = $options[ $key ];
+				}
 				$settings[ $key ] = sanitize_text_field( $value );
 			}
 		}

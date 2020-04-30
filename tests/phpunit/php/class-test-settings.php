@@ -132,24 +132,20 @@ class Test_Settings extends \WP_UnitTestCase {
 				[
 					'access_key' => '',
 					'secret_key' => '',
-					'utm_source' => '',
 				],
 				[
 					'access_key' => '',
 					'secret_key' => '',
-					'utm_source' => '',
 				],
 			],
 			'encrypted settings' => [
 				[
 					'access_key' => 'foo',
 					'secret_key' => 'bar',
-					'utm_source' => 'baz',
 				],
 				[
 					'access_key' => 'foo',
 					'secret_key' => 'bar',
-					'utm_source' => 'baz',
 				],
 			],
 		];
@@ -174,6 +170,58 @@ class Test_Settings extends \WP_UnitTestCase {
 			}
 		}
 		$this->assertEquals( $expected, $sanitized_settings );
+	}
+
+	/**
+	 * Test that setting value is retained when an empty value is passed.
+	 *
+	 * @covers ::sanitize_settings()
+	 */
+	public function test_sanitize_settings_not_update_vale_when_empty() {
+		$settings = [
+			'access_key' => 'foo',
+			'secret_key' => 'bar',
+		];
+
+		add_filter( 'pre_option_unsplash_settings', [ $this, 'get_mocked_settings' ], 10, 3 );
+
+		$new_settings = $this->settings->sanitize_settings(
+			[
+				'access_key' => 'foo',
+				'secret_key' => '',
+			]
+		);
+
+		// We have to test the decrypted vales because the encrypted values will never match.
+		foreach ( $new_settings as $key => $value ) {
+			if ( ! empty( $value ) && in_array( $key, [ 'access_key', 'secret_key' ], true ) ) {
+				$new_settings[ $key ] = $this->settings->decrypt( $value );
+			}
+		}
+
+		$this->assertEquals( $new_settings, $settings );
+
+		remove_filter( 'pre_option_unsplash_settings', [ $this, 'get_mocked_settings' ], 10 );
+	}
+
+	/**
+	 * Return a mocked version of settings.
+	 *
+	 * @return array Mocked settings.
+	 */
+	public function get_mocked_settings() {
+		remove_filter( 'pre_option_unsplash_settings', [ $this, 'get_mocked_settings' ], 10 );
+
+		$settings = $this->settings->sanitize_settings(
+			[
+				'access_key' => 'foo',
+				'secret_key' => 'bar',
+			]
+		);
+
+		add_filter( 'pre_option_unsplash_settings', [ $this, 'get_mocked_settings' ], 10, 3 );
+
+		return $settings;
 	}
 
 	/**
