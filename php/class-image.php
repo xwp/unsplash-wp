@@ -94,8 +94,8 @@ class Image {
 			]
 		);
 		$this->process_data['file']              = sanitize_title_with_dashes(
-			sprintf( '%s %s %s.%s', $this->process_data['user']['name'], $this->process_data['original_id'], 'unsplash', self::EXT )
-		);
+			sprintf( '%s %s %s', $this->process_data['user']['name'], $this->process_data['original_id'], 'unsplash' )
+		) . '.' . self::EXT;
 		$this->process_data['sizes']             = [
 			'full' => [
 				'height'    => $this->process_data['height'],
