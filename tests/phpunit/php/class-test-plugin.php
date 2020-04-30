@@ -242,12 +242,12 @@ class Test_Plugin extends \WP_UnitTestCase {
 		$this->assertEquals( $output['id'], $image['id'] );
 		$this->assertEquals( $output['alt'], $image['alt_description'] );
 		$this->assertEquals( $output['description'], $image['description'] );
-		$this->assertEquals( $output['icon'], 'http://www.example.com/thumb.jpg?w=150&h=150&fm=jpg&q=85&fit=crop' );
 		$this->assertEquals( $output['sizes']['full']['height'], $image['height'] );
 		$this->assertEquals( $output['sizes']['full']['width'], $image['width'] );
 		$this->assertEquals( $output['sizes']['full']['url'], $image['urls']['raw'] );
-		$this->assertEquals( $output['sizes']['thumbnail']['url'], 'http://www.example.com/test.jpg?w=150&h=40&fm=jpg&q=85&fit=crop' );
-		$this->assertEquals( $output['sizes']['medium_large']['url'], 'http://www.example.com/test.jpg?w=768&h=207&fm=jpg&q=85&fit=crop' );
+		$this->assertEquals( $output['sizes']['thumbnail']['url'], 'http://www.example.com/test.jpg?fm=jpg&q=85&fit=crop&w=150&h=40' );
+		$this->assertEquals( $output['sizes']['medium_large']['url'], 'http://www.example.com/test.jpg?fm=jpg&q=85&fit=crop&w=768&h=207' );
+		$this->assertEquals( $output['icon'], 'http://www.example.com/thumb.jpg?fm=jpg&q=85&fit=crop&w=150&h=150' );
 	}
 
 	/**
@@ -257,12 +257,13 @@ class Test_Plugin extends \WP_UnitTestCase {
 	 */
 	public function get_url_with_size_data() {
 		return [
-			[ 'http://www.example.com/test.jpg', 222, 444, [], 'http://www.example.com/test.jpg?w=222&h=444' ],
-			[ 'http://www.example.com/test.jpg', 100, 100, [], 'http://www.example.com/test.jpg?w=100&h=100' ],
-			[ 'http://www.example.com/test.jpg', -1, -1, [], 'http://www.example.com/test.jpg?w=1&h=1' ],
-			[ 'http://www.example.com/test.jpg', 'invalid', 'invalid', [], 'http://www.example.com/test.jpg?w=0&h=0' ],
-			[ 'http://www.example.com/test.jpg', 100, 100, [ 'crop' => true ], 'http://www.example.com/test.jpg?w=100&h=100&crop=1' ],
-			[ 'http://www.example.com/test.jpg?crop=1', 100, 100, [], 'http://www.example.com/test.jpg?crop=1&w=100&h=100' ],
+			[ 'http://www.example.com/test.jpg', 222, 444, [], 'http://www.example.com/test.jpg?fm=jpg&q=85&fit=crop&w=222&h=444' ],
+			[ 'http://www.example.com/test.jpg', 100, 100, [], 'http://www.example.com/test.jpg?fm=jpg&q=85&fit=crop&w=100&h=100' ],
+			[ 'http://www.example.com/test.jpg', -1, -1, [], 'http://www.example.com/test.jpg?fm=jpg&q=85&fit=crop&w=1&h=1' ],
+			[ 'http://www.example.com/test.jpg', 'invalid', 'invalid', [], 'http://www.example.com/test.jpg?fm=jpg&q=85&fit=crop&w=0&h=0' ],
+			[ 'http://www.example.com/test.jpg', 100, 100, [ 'crop' => true ], 'http://www.example.com/test.jpg?fm=jpg&q=85&fit=crop&crop=1&w=100&h=100' ],
+			[ 'http://www.example.com/test.jpg', 100, 100, [ 'crop' => 0 ], 'http://www.example.com/test.jpg?fm=jpg&q=85&fit=crop&crop=0&w=100&h=100' ],
+			[ 'http://www.example.com/test.jpg?crop=1', 100, 100, [], 'http://www.example.com/test.jpg?crop=1&fm=jpg&q=85&fit=crop&w=100&h=100' ],
 		];
 	}
 

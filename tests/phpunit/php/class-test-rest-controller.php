@@ -244,25 +244,25 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 					'orientation' => 0,
 				],
 				'thumbnail'    => [
-					'url'         => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=150&h=104&fm=jpg&q=85&fit=crop',
+					'url'         => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0&fm=jpg&q=85&fit=crop&w=150&h=104',
 					'height'      => 104,
 					'width'       => 150,
 					'orientation' => 0,
 				],
 				'medium'       => [
-					'url'         => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=400&h=278&fm=jpg&q=85&fit=crop',
+					'url'         => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0&fm=jpg&q=85&fit=crop&w=400&h=278',
 					'height'      => 278,
 					'width'       => 400,
 					'orientation' => 0,
 				],
 				'medium_large' => [
-					'url'         => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=768&h=534&fm=jpg&q=85&fit=crop',
+					'url'         => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0&fm=jpg&q=85&fit=crop&w=768&h=534',
 					'height'      => 534,
 					'width'       => 768,
 					'orientation' => 0,
 				],
 				'large'        => [
-					'url'         => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=1024&h=713&fm=jpg&q=85&fit=crop',
+					'url'         => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0&fm=jpg&q=85&fit=crop&w=1024&h=713',
 					'height'      => 713,
 					'width'       => 1024,
 					'orientation' => 0,
@@ -274,14 +274,14 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 
 		if ( version_compare( '5.2', get_bloginfo( 'version' ), '<' ) ) {
 			$expected['sizes']['1536x1536'] = [
-				'url'         => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=1536&h=1069&fm=jpg&q=85&fit=crop',
+				'url'         => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0&fm=jpg&q=85&fit=crop&w=1536&h=1069',
 				'height'      => 1069,
 				'width'       => 1536,
 				'orientation' => 0,
 			];
 
 			$expected['sizes']['2048x2048'] = [
-				'url'         => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0&w=2048&h=1426&fm=jpg&q=85&fit=crop',
+				'url'         => 'https://images.unsplash.com/photo-1557668364-d0aa79a798f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEwMjU2NX0&fm=jpg&q=85&fit=crop&w=2048&h=1426',
 				'height'      => 1426,
 				'width'       => 2048,
 				'orientation' => 0,

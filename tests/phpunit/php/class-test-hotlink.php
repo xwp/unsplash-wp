@@ -144,7 +144,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	public function test_wp_get_attachment_image_src() {
 		$image = image_downsize( self::$attachment_id );
 		$this->assertInternalType( 'array', $image );
-		$this->assertEquals( $image[0], 'https://images.unsplash.com/test.jpg?w=300&h=300' );
+		$this->assertEquals( $image[0], 'https://images.unsplash.com/test.jpg?fm=jpg&q=85&fit=crop&w=300&h=300' );
 	}
 
 	/**
@@ -349,7 +349,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 
 		$post    = get_post( $test_page );
 		$content = $this->hotlink->hotlink_images_in_content( $post->post_content );
-		$this->assertContains( 'src="https://images.unsplash.com/test.jpg?w=300&h=300"', $content );
+		$this->assertContains( 'src="https://images.unsplash.com/test.jpg?fm=jpg&q=85&fit=crop&w=300&h=300"', $content );
 		$this->assertContains( '/tmp/melon.jpg', $content );
 	}
 
@@ -592,7 +592,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		);
 		$expected = [
 			[
-				'url'        => 'https://images.unsplash.com/test.jpg?w=300&h=300&fm=jpg&q=85&fit=crop',
+				'url'        => 'https://images.unsplash.com/test.jpg?fm=jpg&q=85&fit=crop&w=300&h=300',
 				'descriptor' => 'w',
 				'value'      => 300,
 			],

@@ -393,7 +393,7 @@ class Hotlink {
 				$new_width                 = absint( $value['width'] );
 				$_height                   = $this->plugin->get_image_height( $width, $height, $new_width, $new_height );
 				$new_sources[ $new_width ] = [
-					'url'        => $this->plugin->get_original_url_with_size( $unsplash_url, $new_width, $_height, $this->plugin->default_img_attrs ),
+					'url'        => $this->plugin->get_original_url_with_size( $unsplash_url, $new_width, $_height ),
 					'descriptor' => 'w',
 					'value'      => $new_width,
 				];

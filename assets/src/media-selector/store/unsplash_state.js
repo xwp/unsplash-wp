@@ -16,7 +16,7 @@ const UnsplashState = State.extend( {
 		router: false,
 		priority: -60,
 		filterable: 'uploaded',
-		multiple: false,
+		multiple: 'add',
 		editable: false,
 	},
 
