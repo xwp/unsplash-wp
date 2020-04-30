@@ -1213,12 +1213,6 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 				'height' => 800,
 				'crop'   => false,
 			],
-
-			'twentytwenty-fullscreen' => [
-				'width'  => 1980,
-				'height' => 1200,
-				'crop'   => false,
-			],
 			'medium'                  => [
 				'width'  => 300,
 				'height' => 300,
