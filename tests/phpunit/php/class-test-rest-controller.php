@@ -1208,12 +1208,12 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		);
 
 		$expected = [
-			'post-thumbnail'          => [
+			'post-thumbnail' => [
 				'width'  => 1200,
 				'height' => 800,
 				'crop'   => false,
 			],
-			'medium'                  => [
+			'medium'         => [
 				'width'  => 300,
 				'height' => 300,
 				'crop'   => false,

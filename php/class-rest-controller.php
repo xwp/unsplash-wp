@@ -324,7 +324,7 @@ class Rest_Controller extends WP_REST_Controller {
 				$new_sizes[ $key ] = $value;
 			}
 		}
-	
+
 		return $new_sizes;
 	}
 
