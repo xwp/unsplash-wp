@@ -36,9 +36,39 @@ if ( wp.media && wp.media.view && wp.media.view.MediaFrame ) {
 	}
 }
 
-/**
- * Work around that defaults the current media library to the 'Upload files' tab. This resolves the issue of the
- * Unsplash tab not being available in some media libraries, and instead showing a blank screen in the media selector.
- */
-wp.media.controller.Library.prototype.defaults.contentUserSetting = false;
-wp.media.controller.FeaturedImage.prototype.defaults.contentUserSetting = false;
+// Ensure we don't mess the user's default media library.
+if ( wp.media && wp.media.controller && wp.media.controller.Library ) {
+	wp.media.controller.Library = wp.media.controller.Library.extend( {
+		saveContentMode() {
+			if ( 'browse' !== this.get( 'router' ) ) {
+				return;
+			}
+
+			const mode = this.frame.content.mode(),
+				view = this.frame.router.get();
+
+			// Prevent persisting Unsplash as the default media tab for the user.
+			if ( 'unsplash' !== mode && view && view.get( mode ) ) {
+				window.setUserSetting( 'libraryContent', mode );
+			}
+		},
+
+		activate() {
+			this.syncSelection();
+
+			wp.Uploader.queue.on( 'add', this.uploading, this );
+
+			this.get( 'selection' ).on(
+				'add remove reset',
+				this.refreshContent,
+				this
+			);
+
+			if ( this.get( 'router' ) && this.get( 'contentUserSetting' ) ) {
+				this.frame.on( 'content:activate', this.saveContentMode, this );
+				// Always default to the Unsplash tab.
+				this.set( 'content', 'unsplash' );
+			}
+		},
+	} );
+}
