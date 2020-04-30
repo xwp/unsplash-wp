@@ -59,14 +59,6 @@ class Image {
 	 * Process image and format data in the correct format.
 	 */
 	public function process_fields() {
-		$user_name = isset( $this->get_image_field( 'user' )['name'] )
-			? $this->get_image_field( 'user' )['name']
-			: '';
-
-		$filename = sanitize_title_with_dashes(
-			sprintf( '%s %s %s', $user_name, $this->get_image_field( 'id' ), 'unsplash' )
-		) . '.' . self::EXT;
-
 		$this->process_data['original_id']       = strtolower( $this->get_image_field( 'id' ) );
 		$this->process_data['description']       = $this->get_image_field( 'description', $this->get_image_field( 'alt_description' ) );
 		$this->process_data['alt']               = $this->get_image_field( 'alt_description', $this->get_image_field( 'description' ) );
@@ -87,7 +79,6 @@ class Image {
 		$this->process_data['tags']              = wp_list_pluck( $this->get_image_field( 'tags', [] ), 'title' );
 		$this->process_data['mime_type']         = self::MIME;
 		$this->process_data['ext']               = self::EXT;
-		$this->process_data['file']              = $filename;
 		$this->process_data['height']            = $this->get_image_field( 'height', 0 );
 		$this->process_data['width']             = $this->get_image_field( 'width', 0 );
 		$this->process_data['created_at']        = $this->get_image_field( 'created_at', current_time( 'mysql' ) );
@@ -101,6 +92,9 @@ class Image {
 				'id'   => '',
 				'bio'  => '',
 			]
+		);
+		$this->process_data['file']              = sanitize_title_with_dashes(
+			sprintf( '%s %s %s.%s', $this->process_data['user']['name'], $this->process_data['original_id'], 'unsplash', self::EXT )
 		);
 		$this->process_data['sizes']             = [
 			'full' => [
