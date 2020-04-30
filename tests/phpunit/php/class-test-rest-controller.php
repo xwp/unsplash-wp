@@ -459,7 +459,13 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		$request  = new WP_REST_Request( 'GET', $this->get_route( '/post-process/' . $second_id ) );
 		$response = rest_get_server()->dispatch( $request );
 		$this->assertEquals( 200, $response->get_status() );
-		$this->assertEqualSets( $response->get_data(), [ 'processed' => true, 'retry' => false ] );
+		$this->assertEqualSets(
+			$response->get_data(),
+			[
+				'processed' => true,
+				'retry'     => false,
+			] 
+		);
 		$meta = wp_get_attachment_metadata( $second_id );
 		$this->assertArrayHasKey( 'foo', $meta );
 		$this->assertArrayHasKey( 'sizes', $meta );
