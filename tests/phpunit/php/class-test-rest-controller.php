@@ -456,10 +456,17 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 			]
 		);
 		wp_set_current_user( self::$admin_id );
-		$request  = new WP_REST_Request( 'GET', $this->get_route( '/post-process/' . $second_id ) );
+		$request = new WP_REST_Request( 'GET', $this->get_route( '/post-process/' . $second_id ) );
+		$request->set_param( 'retry', '2' );
 		$response = rest_get_server()->dispatch( $request );
 		$this->assertEquals( 200, $response->get_status() );
-		$this->assertEquals( $response->get_data(), [ 'processed' => true ] );
+		$this->assertEqualSets(
+			$response->get_data(),
+			[
+				'processed' => true,
+				'retry'     => true,
+			]
+		);
 		$meta = wp_get_attachment_metadata( $second_id );
 		$this->assertArrayHasKey( 'foo', $meta );
 		$this->assertArrayHasKey( 'sizes', $meta );
@@ -1169,6 +1176,53 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		$response = $rest_controller->rest_ensure_response( [ 'foo' => 'bar' ], $request );
 		$data     = $response->get_data();
 		$this->assertEqualSets( $data, [ 'foo' => 'bar' ] );
+	}
+
+	/**
+	 * Test intermediate_image_sizes_advanced().
+	 *
+	 * @covers       \Unsplash\Rest_Controller::intermediate_image_sizes_advanced()
+	 */
+	public function test_intermediate_image_sizes_advanced() {
+		$plugin = new Plugin();
+		$plugin->init();
+		$rest_controller = new Rest_Controller( $plugin );
+		$sizes           = [
+			'post-thumbnail'          => [
+				'width'  => 1200,
+				'height' => 800,
+				'crop'   => false,
+			],
+
+			'twentytwenty-fullscreen' => [
+				'width'  => 1980,
+				'height' => 9999,
+				'crop'   => false,
+			],
+			'medium'                  => [
+				'width'  => 300,
+				'height' => 300,
+				'crop'   => false,
+			],
+		];
+
+		$results = $rest_controller->intermediate_image_sizes_advanced(
+			$sizes,
+			[
+				'height' => 1200,
+				'width'  => 1600,
+			]
+		);
+
+		$expected = [
+			'medium' => [
+				'width'  => 300,
+				'height' => 300,
+				'crop'   => false,
+			],
+		];
+
+		$this->assertEqualSets( $expected, $results );
 	}
 
 	/**

@@ -1,4 +1,9 @@
 /**
+ * WordPress dependencies
+ */
+import { addQueryArgs } from '@wordpress/url';
+
+/**
  * Internal dependencies
  */
 import isUnsplashImage from './isUnsplashImage';
@@ -52,11 +57,39 @@ const importImage = image => {
 					nonces: attachmentData.nonces,
 				},
 			} );
-			wp.apiRequest( { url: processUrl + attachmentData.id } );
-
+			processImage( {
+				url: addQueryArgs( processUrl + attachmentData.id, { retry: 0 } ),
+				retries: 5,
+				retryInterval: 500,
+			} );
 			return attachmentData;
 		} )
 		.fail( error => jQuery.Deferred().reject( { ...error, ...{ image } } ) );
+};
+
+/**
+ * Process image after imported with retries.
+ *
+ * @param {Object} options Object of settings passed to wp.apiRequest.
+ * @return {Promise} Promise.
+ */
+const processImage = options => {
+	if ( ! options.counter ) {
+		options.counter = 0;
+	}
+	const onFail = () => {
+		if ( options.counter++ < options.retries ) {
+			setTimeout(
+				() =>
+					processImage( {
+						...options,
+						url: addQueryArgs( options.url, { retry: options.counter } ),
+					} ),
+				options.retryInterval
+			);
+		}
+	};
+	return wp.apiRequest( options ).fail( onFail );
 };
 
 /**

@@ -262,6 +262,7 @@ class Rest_Controller extends WP_REST_Controller {
 	 */
 	public function post_process( $request ) {
 		$attachment_id = $request->get_param( 'id' );
+		$retry         = (bool) $request->get_param( 'retry' );
 		try {
 			// @codeCoverageIgnoreStart
 			if ( ! function_exists( 'wp_generate_attachment_metadata' ) ) {
@@ -270,13 +271,27 @@ class Rest_Controller extends WP_REST_Controller {
 				require_once ABSPATH . 'wp-admin/includes/image.php';
 			}
 			// @codeCoverageIgnoreEnd
+
+			if ( $retry ) {
+				// On retry, try to scale back images generated.
+				add_filter( 'intermediate_image_sizes_advanced', [ $this, 'intermediate_image_sizes_advanced' ] );
+				add_filter( 'big_image_size_threshold', '__return_zero' );
+			}
 			$meta     = (array) get_post_meta( $attachment_id, 'unsplash_attachment_metadata', true );
 			$file     = get_attached_file( $attachment_id );
 			$new_meta = wp_generate_attachment_metadata( $attachment_id, $file );
 			unset( $meta['sizes'], $new_meta['image_meta'] );
 			$new_meta  = wp_parse_args( $new_meta, $meta );
 			$processed = wp_update_attachment_metadata( $attachment_id, $new_meta );
-			$data      = [ 'processed' => $processed ];
+			$data      = [
+				'processed' => $processed,
+				'retry'     => $retry,
+			];
+			if ( $retry ) {
+				// Return filters.
+				remove_filter( 'intermediate_image_sizes_advanced', [ $this, 'intermediate_image_sizes_advanced' ] );
+				remove_filter( 'big_image_size_threshold', '__return_zero' );
+			}
 		} catch ( \Exception $e ) {
 			$response = new WP_Error(
 				'single-photo-process',
@@ -292,6 +307,17 @@ class Rest_Controller extends WP_REST_Controller {
 		}
 
 		return $this->rest_ensure_response( $data, $request );
+	}
+
+	/**
+	 * If enable to generate all image sizes, just try and generate core default image sizes.
+	 *
+	 * @param array $sizes Current image sizes.
+	 *
+	 * @return array
+	 */
+	public function intermediate_image_sizes_advanced( $sizes ) {
+		return array_intersect_key( $sizes, array_flip( [ 'thumbnail', 'medium', 'medium_large', 'large' ] ) );
 	}
 
 	/**
