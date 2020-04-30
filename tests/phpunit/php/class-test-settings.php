@@ -173,14 +173,11 @@ class Test_Settings extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Test sanitize_settings.
+	 * Test that setting value is retained when an empty value is passed.
 	 *
 	 * @covers ::sanitize_settings()
-	 *
-	 * @param array $given Given array of raw values.
-	 * @param array $expected Expected array of decrypted values.
 	 */
-	public function test_sanitize_settings_1() {
+	public function test_sanitize_settings_not_update_vale_when_empty() {
 		$settings = [
 			'access_key' => 'foo',
 			'secret_key' => 'bar',
