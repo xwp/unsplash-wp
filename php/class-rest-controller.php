@@ -274,7 +274,7 @@ class Rest_Controller extends WP_REST_Controller {
 
 			if ( $retry ) {
 				// On retry, try to scale back images generated.
-				add_filter( 'intermediate_image_sizes_advanced', [ $this, 'intermediate_image_sizes_advanced' ], 10, 2 );
+				add_filter( 'intermediate_image_sizes_advanced', [ $this, 'intermediate_image_sizes_advanced' ] );
 				add_filter( 'big_image_size_threshold', '__return_zero' );
 			}
 			$meta     = (array) get_post_meta( $attachment_id, 'unsplash_attachment_metadata', true );
@@ -289,7 +289,7 @@ class Rest_Controller extends WP_REST_Controller {
 			];
 			if ( $retry ) {
 				// Return filters.
-				remove_filter( 'intermediate_image_sizes_advanced', [ $this, 'intermediate_image_sizes_advanced' ], 10 );
+				remove_filter( 'intermediate_image_sizes_advanced', [ $this, 'intermediate_image_sizes_advanced' ] );
 				remove_filter( 'big_image_size_threshold', '__return_zero' );
 			}
 		} catch ( \Exception $e ) {
@@ -310,22 +310,14 @@ class Rest_Controller extends WP_REST_Controller {
 	}
 
 	/**
-	 * Override image sizes to fix cropping issue. Image sizes that are bigger than real image size, fail.
+	 * If enable to generate all image sizes, just try and generate core default image sizes.
 	 *
-	 * @param array $size Current image sizes.
-	 * @param array $image_meta Image meta.
+	 * @param array $sizes Current image sizes.
 	 *
 	 * @return array
 	 */
-	public function intermediate_image_sizes_advanced( $size, $image_meta ) {
-		$new_sizes = [];
-		foreach ( $size as $key => $value ) {
-			if ( $value['width'] < $image_meta['width'] && $value['height'] < $image_meta['height'] ) {
-				$new_sizes[ $key ] = $value;
-			}
-		}
-
-		return $new_sizes;
+	public function intermediate_image_sizes_advanced( $sizes ) {
+		return array_intersect_key( $sizes, array_flip( [ 'thumbnail', 'medium', 'medium_large', 'large' ] ) );
 	}
 
 	/**
