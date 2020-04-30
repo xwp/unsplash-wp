@@ -132,24 +132,20 @@ class Test_Settings extends \WP_UnitTestCase {
 				[
 					'access_key' => '',
 					'secret_key' => '',
-					'utm_source' => '',
 				],
 				[
 					'access_key' => '',
 					'secret_key' => '',
-					'utm_source' => '',
 				],
 			],
 			'encrypted settings' => [
 				[
 					'access_key' => 'foo',
 					'secret_key' => 'bar',
-					'utm_source' => 'baz',
 				],
 				[
 					'access_key' => 'foo',
 					'secret_key' => 'bar',
-					'utm_source' => 'baz',
 				],
 			],
 		];
@@ -174,6 +170,48 @@ class Test_Settings extends \WP_UnitTestCase {
 			}
 		}
 		$this->assertEquals( $expected, $sanitized_settings );
+	}
+
+	/**
+	 * Test sanitize_settings.
+	 *
+	 * @covers ::sanitize_settings()
+	 *
+	 * @param array $given Given array of raw values.
+	 * @param array $expected Expected array of decrypted values.
+	 */
+	public function test_sanitize_settings_1() {
+		$settings = [
+			'access_key' => 'foo',
+			'secret_key' => 'bar',
+		];
+
+		$encrypted_settings = $this->settings->sanitize_settings( $settings );
+
+		add_filter(
+			'pre_option_unsplash_settings',
+			static function () use ( $encrypted_settings ) {
+				return $encrypted_settings;
+			},
+			10,
+			2
+		);
+
+		$new_settings = $this->settings->sanitize_settings(
+			[
+				'access_key' => 'foo',
+				'secret_key' => '',
+			]
+		);
+
+		// We have to test the decrypted vales because the encrypted values will never match.
+		foreach ( $new_settings as $key => $value ) {
+			if ( in_array( $key, [ 'access_key', 'secret_key' ], true ) && ! empty( $value ) ) {
+				$new_settings[ $key ] = $this->settings->decrypt( $value );
+			}
+		}
+
+		$this->assertEquals( $new_settings, $settings );
 	}
 
 	/**
