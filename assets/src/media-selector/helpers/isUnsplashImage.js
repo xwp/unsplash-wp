@@ -6,6 +6,6 @@
  */
 export default attachment => {
 	return (
-		attachment.attributes && undefined !== attachment.attributes.unsplash_order
+		attachment.attributes && undefined !== attachment.attributes.unsplash_order && typeof attachment.attributes.id === 'string'
 	);
 };
