@@ -360,26 +360,50 @@ class Plugin extends Plugin_Base {
 	 * @return array
 	 */
 	public function image_sizes() {
-		global $_wp_additional_image_sizes;
-
-		$sizes = [];
-
+		$sizes       = [];
 		$image_sizes = get_intermediate_image_sizes(); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_intermediate_image_sizes_get_intermediate_image_sizes
 		if ( 0 === count( $image_sizes ) ) {
-			return $sizes;
+			$image_sizes = array( 'thumbnail', 'medium', 'medium_large', 'large' );
 		}
 
-		$default_sizes = [ 'thumbnail', 'medium', 'medium_large', 'large' ];
-		foreach ( $image_sizes as $s ) {
-			if ( in_array( $s, $default_sizes, true ) ) {
-				$sizes[ $s ]['width']  = get_option( $s . '_size_w' );
-				$sizes[ $s ]['height'] = get_option( $s . '_size_h' );
+		$additional_sizes = wp_get_additional_image_sizes();
+		foreach ( $image_sizes as $size_name ) {
+			$size_data = array(
+				'width'  => 0,
+				'height' => 0,
+				'crop'   => false,
+			);
+
+			if ( isset( $additional_sizes[ $size_name ]['width'] ) ) {
+				// For sizes added by plugins and themes.
+				$size_data['width'] = intval( $additional_sizes[ $size_name ]['width'] );
 			} else {
-				if ( isset( $_wp_additional_image_sizes, $_wp_additional_image_sizes[ $s ] ) ) {
-					$sizes[ $s ]['height'] = $_wp_additional_image_sizes[ $s ]['height'];
-				}
-				$sizes[ $s ]['width'] = $_wp_additional_image_sizes[ $s ]['width'];
+				// For default sizes set in options.
+				$size_data['width'] = intval( get_option( "{$size_name}_size_w" ) );
 			}
+
+			if ( isset( $additional_sizes[ $size_name ]['height'] ) ) {
+				$size_data['height'] = intval( $additional_sizes[ $size_name ]['height'] );
+			} else {
+				$size_data['height'] = intval( get_option( "{$size_name}_size_h" ) );
+			}
+
+			if ( empty( $size_data['width'] ) && empty( $size_data['height'] ) ) {
+				// This size isn't set.
+				continue;
+			}
+
+			if ( isset( $additional_sizes[ $size_name ]['crop'] ) ) {
+				$size_data['crop'] = $additional_sizes[ $size_name ]['crop'];
+			} else {
+				$size_data['crop'] = get_option( "{$size_name}_crop" );
+			}
+
+			if ( ! is_array( $size_data['crop'] ) || empty( $size_data['crop'] ) ) {
+				$size_data['crop'] = (bool) $size_data['crop'];
+			}
+
+			$sizes[ $size_name ] = $size_data;
 		}
 
 		return $sizes;

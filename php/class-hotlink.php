@@ -213,7 +213,7 @@ class Hotlink {
 		$image_meta = wp_get_attachment_metadata( $id );
 		$image_size = ( isset( $image_meta['sizes'] ) ) ? $image_meta['sizes'] : [];
 		$sizes      = $this->plugin->image_sizes();
-
+		$fit        = 'crop';
 		if ( is_array( $size ) ) {
 			// If array is passed, just use height and width.
 			list( $width, $height ) = $size;
@@ -223,19 +223,21 @@ class Hotlink {
 			$width  = isset( $image_size[ $size ]['width'] ) ? $image_size[ $size ]['width'] : 0;
 		} elseif ( isset( $sizes[ $size ] ) ) {
 			// Get defined size.
-			list( $width, $height ) = array_values( $sizes[ $size ] );
+			list( $width, $height, $crop ) = array_values( $sizes[ $size ] );
+			if ( ! $crop ) {
+				$fit = false;
+			}
 		} else {
 			// If can't find image size, then use full size.
 			$height = isset( $image_meta['height'] ) ? $image_meta['height'] : 0;
 			$width  = isset( $image_meta['width'] ) ? $image_meta['width'] : 0;
-
 		}
 
 		if ( ! $width || ! $height ) {
 			return $should_resize;
 		}
 
-		$unsplash_url = $this->plugin->get_original_url_with_size( $unsplash_url, $width, $height );
+		$unsplash_url = $this->plugin->get_original_url_with_size( $unsplash_url, $width, $height, [ 'fit' => $fit ] );
 
 		return [ $unsplash_url, $width, $height, false ];
 	}
