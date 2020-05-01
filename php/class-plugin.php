@@ -363,16 +363,16 @@ class Plugin extends Plugin_Base {
 		$sizes       = [];
 		$image_sizes = get_intermediate_image_sizes(); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_intermediate_image_sizes_get_intermediate_image_sizes
 		if ( 0 === count( $image_sizes ) ) {
-			$image_sizes = array( 'thumbnail', 'medium', 'medium_large', 'large' );
+			$image_sizes = [ 'thumbnail', 'medium', 'medium_large', 'large' ];
 		}
 
 		$additional_sizes = wp_get_additional_image_sizes();
 		foreach ( $image_sizes as $size_name ) {
-			$size_data = array(
+			$size_data = [
 				'width'  => 0,
 				'height' => 0,
 				'crop'   => false,
-			);
+			];
 
 			if ( isset( $additional_sizes[ $size_name ]['width'] ) ) {
 				// For sizes added by plugins and themes.
