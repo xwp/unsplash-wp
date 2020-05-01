@@ -396,6 +396,8 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 * Test get_download().
 	 *
 	 * @covers \Unsplash\Rest_Controller::get_import()
+	 * @covers \Unsplash\API::get()
+	 * @covers \Unsplash\API::download()
 	 */
 	public function test_get_import() {
 		wp_set_current_user( self::$admin_id );
