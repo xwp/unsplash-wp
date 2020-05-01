@@ -206,7 +206,9 @@ class API {
 	 */
 	public function get_remote( $url, $args = [] ) {
 		if ( $this->plugin->is_wpcom_vip_prod() && function_exists( 'vip_safe_wp_remote_get' ) ) {
+			// @codeCoverageIgnoreStart
 			$response = vip_safe_wp_remote_get( $url, '', 3, 3, 20, $args );
+			// @codeCoverageIgnoreEnd
 		} else {
 			$response = wp_remote_get( $url, $args ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
 		}

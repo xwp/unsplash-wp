@@ -166,6 +166,8 @@ class Test_Api extends \WP_UnitTestCase {
 	 * Test check_api_credentials().
 	 *
 	 * @covers       \Unsplash\API::check_api_credentials()
+	 * @covers       \Unsplash\API::get()
+	 * @covers       \Unsplash\API::send_request()
 	 */
 	public function test_no_check_api_credentials_again() {
 		add_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
