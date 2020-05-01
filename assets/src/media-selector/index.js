@@ -40,7 +40,9 @@ if ( wp.media && wp.media.view && wp.media.view.MediaFrame ) {
 // Ensure we don't mess the user's default media library.
 if ( wp.media && wp.media.controller ) {
 	if ( wp.media.controller.Library ) {
-		wp.media.controller.Library = unsetUnsplashLibrary( wp.media.controller.Library );
+		wp.media.controller.Library = unsetUnsplashLibrary(
+			wp.media.controller.Library
+		);
 	}
 
 	if ( wp.media.controller.FeaturedImage ) {
