@@ -134,6 +134,53 @@ class Test_Api extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Test check_api_credentials().
+	 *
+	 * @covers       \Unsplash\API::check_api_credentials()
+	 */
+	public function test_check_api_credentials() {
+		$plugin = new Plugin();
+		$plugin->init();
+		$api    = new API( $plugin );
+		$result = $api->check_api_credentials();
+		$this->assertTrue( $result );
+	}
+
+	/**
+	 * Test check_api_credentials().
+	 *
+	 * @covers       \Unsplash\API::check_api_credentials()
+	 */
+	public function test_no_check_api_credentials() {
+		add_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
+		$plugin = new Plugin();
+		$plugin->init();
+		$api      = new API( $plugin );
+		$wp_error = $api->check_api_credentials();
+		$this->assertEquals( $wp_error->get_error_code(), 'missing_api_credential' );
+		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), 'The Unsplash plugin has not been provided with API credentials. Please visit the Unsplash settings page and confirm that the API key/secret has been provided.' );
+		remove_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
+	}
+
+	/**
+	 * Test check_api_credentials().
+	 *
+	 * @covers       \Unsplash\API::check_api_credentials()
+	 * @covers       \Unsplash\API::get()
+	 * @covers       \Unsplash\API::send_request()
+	 */
+	public function test_no_check_api_credentials_again() {
+		add_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
+		$plugin = new Plugin();
+		$plugin->init();
+		$api      = new API( $plugin );
+		$wp_error = $api->get( 'uYpOYyJdhRE' );
+		$this->assertEquals( $wp_error->get_error_code(), 'missing_api_credential' );
+		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), 'The Unsplash plugin has not been provided with API credentials. Please visit the Unsplash settings page and confirm that the API key/secret has been provided.' );
+		remove_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
+	}
+
+	/**
 	 * Return a valid url but not the correct one.
 	 *
 	 * @return string
@@ -161,5 +208,20 @@ class Test_Api extends \WP_UnitTestCase {
 	public function fake_http_response( $response ) {
 		$response['body'] = 'Rate Limit Exceeded';
 		return $response;
+	}
+
+	/**
+	 * Disable unsplash api details.
+	 *
+	 * @param array $unused Unused variable.
+	 *
+	 * @return array
+	 */
+	public function disable_unsplash_api_credentials( $unused ) { //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+		return [
+			'applicationId' => '',
+			'secret'        => '',
+			'utmSource'     => '',
+		];
 	}
 }

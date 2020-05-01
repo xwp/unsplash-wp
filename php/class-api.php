@@ -135,6 +135,10 @@ class API {
 	 * @return array|WP_Error
 	 */
 	public function send_request( $path, array $args = [] ) {
+		$api_check = $this->check_api_credentials();
+		if ( is_wp_error( $api_check ) ) {
+			return $api_check;
+		}
 		$url               = 'https://api.unsplash.com' . $path;
 		$credentials       = $this->plugin->settings->get_credentials();
 		$args['client_id'] = $credentials['applicationId'];
@@ -214,12 +218,40 @@ class API {
 	 */
 	public function get_remote( $url, $args = [] ) {
 		if ( $this->plugin->is_wpcom_vip_prod() && function_exists( 'vip_safe_wp_remote_get' ) ) {
+			// @codeCoverageIgnoreStart
 			$response = vip_safe_wp_remote_get( $url, '', 3, 3, 20, $args );
+			// @codeCoverageIgnoreEnd
 		} else {
 			$response = wp_remote_get( $url, $args ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
 		}
 
 		return $response;
+	}
+
+	/**
+	 * Check API credentials.
+	 *
+	 * @return bool|WP_Error
+	 */
+	public function check_api_credentials() {
+		foreach ( $this->plugin->settings->get_credentials() as $key => $value ) {
+			if ( empty( $value ) ) {
+				return new WP_Error(
+					'missing_api_credential',
+					sprintf(
+					/* translators: %s: Link to settings page. */
+						__( 'The Unsplash plugin has not been provided with API credentials. Please visit the <a href="%s">Unsplash settings page</a> and confirm that the API key/secret has been provided.', 'unsplash' ),
+						get_admin_url( null, 'options-general.php?page=unsplash' )
+					),
+					[
+						'status' => rest_authorization_required_code(),
+						'data'   => $key,
+					]
+				);
+			}
+		}
+
+		return true;
 	}
 
 	/**

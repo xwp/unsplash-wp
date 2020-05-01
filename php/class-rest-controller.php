@@ -348,33 +348,6 @@ class Rest_Controller extends WP_REST_Controller {
 		return rest_ensure_response( $response );
 	}
 
-
-	/**
-	 * Check API credentials.
-	 *
-	 * @return bool|WP_Error
-	 */
-	public function check_api_credentials() {
-		foreach ( $this->plugin->settings->get_credentials() as $key => $value ) {
-			if ( empty( $value ) ) {
-				return new WP_Error(
-					'missing_api_credential',
-					sprintf(
-						/* translators: %s: Link to settings page. */
-						__( 'The Unsplash plugin has not been provided with API credentials. Please visit the <a href="%s">Unsplash settings page</a> and confirm that the API key/secret has been provided.', 'unsplash' ),
-						get_admin_url( null, 'options-general.php?page=unsplash' )
-					),
-					[
-						'status' => rest_authorization_required_code(),
-						'data'   => $key,
-					]
-				);
-			}
-		}
-
-		return true;
-	}
-
 	/**
 	 * Checks if a given request has access to get a specific item.
 	 *

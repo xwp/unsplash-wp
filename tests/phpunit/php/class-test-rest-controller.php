@@ -1105,35 +1105,6 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	}
 
 	/**
-	 * Test check_api_credentials().
-	 *
-	 * @covers       \Unsplash\Rest_Controller::check_api_credentials()
-	 */
-	public function test_check_api_credentials() {
-		$plugin = new Plugin();
-		$plugin->init();
-		$rest_controller = new Rest_Controller( $plugin );
-		$result          = $rest_controller->check_api_credentials();
-		$this->assertTrue( $result );
-	}
-
-	/**
-	 * Test check_api_credentials().
-	 *
-	 * @covers       \Unsplash\Rest_Controller::check_api_credentials()
-	 */
-	public function test_no_check_api_credentials() {
-		add_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
-		$plugin = new Plugin();
-		$plugin->init();
-		$rest_controller = new Rest_Controller( $plugin );
-		$wp_error        = $rest_controller->check_api_credentials();
-		$this->assertEquals( $wp_error->get_error_code(), 'missing_api_credential' );
-		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), 'The Unsplash plugin has not been provided with API credentials. Please visit the Unsplash settings page and confirm that the API key/secret has been provided.' );
-		remove_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
-	}
-
-	/**
 	 * Test rest_ensure_response().
 	 *
 	 * @covers       \Unsplash\Rest_Controller::rest_ensure_response()
@@ -1254,20 +1225,5 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 				],
 			]
 		);
-	}
-
-	/**
-	 * Disable unsplash api details.
-	 *
-	 * @param array $unused Unused variable.
-	 *
-	 * @return array
-	 */
-	public function disable_unsplash_api_credentials( $unused ) { //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
-		return [
-			'applicationId' => '',
-			'secret'        => '',
-			'utmSource'     => '',
-		];
 	}
 }
