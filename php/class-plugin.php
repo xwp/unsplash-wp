@@ -144,6 +144,7 @@ class Plugin extends Plugin_Base {
 
 		$dependencies   = isset( $asset['dependencies'] ) ? $asset['dependencies'] : [];
 		$dependencies[] = 'media-views';
+		$dependencies[] = 'wp-api-request';
 
 		wp_enqueue_script(
 			'unsplash-media-selector',
