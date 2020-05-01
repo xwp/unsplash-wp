@@ -193,9 +193,10 @@ class Test_Plugin extends \WP_UnitTestCase {
 	 * @see Plugin::image_sizes()
 	 */
 	public function test_no_image_sizes() {
-		$plugin = get_plugin_instance();
+		$plugin   = get_plugin_instance();
+		$expected = [ 'large', 'medium', 'medium_large', 'thumbnail' ];
 		add_filter( 'intermediate_image_sizes', '__return_empty_array' );
-		$this->assertEqualSets( $plugin->image_sizes(), [] );
+		$this->assertEqualSets( array_keys( $plugin->image_sizes() ), $expected );
 		remove_filter( 'intermediate_image_sizes', '__return_empty_array' );
 	}
 

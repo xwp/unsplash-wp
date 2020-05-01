@@ -142,9 +142,13 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	 * @covers ::image_downsize()
 	 */
 	public function test_wp_get_attachment_image_src() {
-		$image = image_downsize( self::$attachment_id );
+		$image = image_downsize( self::$attachment_id, 'thumbnail' );
 		$this->assertInternalType( 'array', $image );
-		$this->assertEquals( $image[0], 'https://images.unsplash.com/test.jpg?fm=jpg&q=85&fit=crop&w=300&h=300' );
+		$this->assertEquals( $image[0], 'https://images.unsplash.com/test.jpg?fm=jpg&q=85&fit=crop&w=150&h=150' );
+
+		$image = image_downsize( self::$attachment_id, 'medium' );
+		$this->assertInternalType( 'array', $image );
+		$this->assertEquals( $image[0], 'https://images.unsplash.com/test.jpg?fm=jpg&q=85&w=300&h=300' );
 	}
 
 	/**
