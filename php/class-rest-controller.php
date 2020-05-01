@@ -230,11 +230,10 @@ class Rest_Controller extends WP_REST_Controller {
 	public function get_import( $request ) {
 		$id = $request->get_param( 'id' );
 
-		$api_response = $this->api->get( $id, true );
+		$api_response = $this->api->get( $id );
 		if ( is_wp_error( $api_response ) ) {
 			return $this->rest_ensure_response( $api_response, $request );
 		}
-
 		$results       = $api_response->get_results();
 		$credentials   = $this->plugin->settings->get_credentials();
 		$utm_source    = $credentials['utmSource'];
@@ -244,7 +243,7 @@ class Rest_Controller extends WP_REST_Controller {
 		if ( is_wp_error( $attachment_id ) ) {
 			return $this->rest_ensure_response( $attachment_id, $request );
 		}
-
+		$this->api->download( $id );
 		$response = $this->prepare_item_for_response( $results, $request );
 		$response = rest_ensure_response( $response );
 		$response->set_status( 301 );

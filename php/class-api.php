@@ -32,27 +32,39 @@ class API {
 	}
 
 	/**
-	/**
 	 * Retrieve the a photo object from the ID specified.
 	 *
 	 * @param string $id ID of the photo.
-	 * @param bool   $trigger_download If a request is fired to count a download.
 	 *
 	 * @return array|Api_Response|WP_Error
 	 */
-	public function get( $id, $trigger_download = false ) {
+	public function get( $id ) {
 		$request = $this->send_request( "/photos/{$id}", [] );
 
 		if ( is_wp_error( $request ) ) {
 			return $request;
 		}
 
-		if ( $trigger_download ) {
-			// Make a remote, uncached and unblocking call to the download endpoint.
-			$this->get_remote( $request['body']['links']['download_location'], [ 'blocking' => false ] );
-		}
 		return new Api_Response( $request['body'], 1, 1, $request['cached'] );
 	}
+
+	/**
+	 * Retrieve the a photo object from the ID specified.
+	 *
+	 * @param string $id ID of the photo.
+	 *
+	 * @return array|Api_Response|WP_Error
+	 */
+	public function download( $id ) {
+		$request = $this->send_request( "/photos/{$id}/download", [ 'cb' => microtime() ] );
+		if ( is_wp_error( $request ) ) {
+			return $request;
+		}
+
+		return new Api_Response( $request['body'], 1, 1, $request['cached'] );
+	}
+
+
 
 	/**
 	 * Retrieve all the photos on a specific page.
