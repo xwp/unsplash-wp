@@ -475,7 +475,7 @@ class Hotlink {
 			return $original_image;
 		}
 
-		return __( 'Unsplash', 'unsplash' );
+		return esc_html__( 'Unsplash', 'unsplash' );
 	}
 
 	/**

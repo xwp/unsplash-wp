@@ -163,14 +163,14 @@ class Settings {
 
 		add_settings_section(
 			'unsplash_section',
-			__( 'API Authenication', 'unsplash' ),
+			esc_html__( 'API Authenication', 'unsplash' ),
 			[ $this, 'settings_section_render' ],
 			'unsplash'
 		);
 
 		add_settings_field(
 			'access_key',
-			__( 'Access Key', 'unsplash' ),
+			esc_html__( 'Access Key', 'unsplash' ),
 			[ $this, 'access_key_render' ],
 			'unsplash',
 			'unsplash_section'
@@ -178,7 +178,7 @@ class Settings {
 
 		add_settings_field(
 			'secret_key',
-			__( 'Secret Key', 'unsplash' ),
+			esc_html__( 'Secret Key', 'unsplash' ),
 			[ $this, 'secret_key_render' ],
 			'unsplash',
 			'unsplash_section'

@@ -183,15 +183,19 @@ class Image {
 			return '';
 		}
 
-		$url = add_query_arg(
+		$referral_url = add_query_arg(
 			[
 				'utm_source' => $this->utm_source,
 				'utm_medium' => 'referral',
 			],
 			'https://unsplash.com/'
 		);
+
+		$user_link     = '<a href="' . esc_url( $user_url ) . '" rel="nofollow">' . esc_html( $user_name ) . '</a>';
+		$referral_link = '<a href="' . esc_url( $referral_url ) . '" rel="nofollow">' . esc_html__( 'Unsplash', 'unsplash' ) . '</a>';
+
 		// Whitespace at end of caption is required.
-		/* translators: 1: User URL, 2: User's name, 3: Unsplash URL */
-		return sprintf( __( 'Photo by <a href="%1$s">%2$s</a> on <a href="%3$s">Unsplash</a> ', 'unsplash' ), esc_url( $user_url ), $user_name, esc_url( $url ) );
+		/* translators: 1: Unsplash User URL, 2: Unsplash Referral URL */
+		return sprintf( esc_html__( 'Photo by %1$s on %2$s ', 'unsplash' ), $user_link, $referral_link );
 	}
 }

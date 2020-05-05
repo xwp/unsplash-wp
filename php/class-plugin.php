@@ -141,18 +141,18 @@ class Plugin extends Plugin_Base {
 			'unsplash-media-selector',
 			'unsplash',
 			[
-				'tabTitle'  => __( 'Unsplash', 'unsplash' ),
+				'tabTitle'  => esc_html__( 'Unsplash', 'unsplash' ),
 				'route'     => rest_url( 'unsplash/v1/photos' ),
 				'toolbar'   => [
 					'filters' => [
 						'search' => [
-							'label'       => __( 'Search', 'unsplash' ),
-							'placeholder' => __( 'Search free high-resolution photos', 'unsplash' ),
+							'label'       => esc_html__( 'Search', 'unsplash' ),
+							'placeholder' => esc_html__( 'Search free high-resolution photos', 'unsplash' ),
 						],
 					],
 				],
 				'noResults' => [
-					'noMedia' => __( 'No items found.', 'unsplash' ),
+					'noMedia' => esc_html__( 'No items found.', 'unsplash' ),
 				],
 
 			]
@@ -231,7 +231,7 @@ class Plugin extends Plugin_Base {
 			'type'           => 'image',
 			'subtype'        => $image->get_field( 'ext' ),
 			'icon'           => ! empty( $image->get_image_url( 'thumb' ) ) ? $this->get_original_url_with_size( $image->get_image_url( 'thumb' ), 150, 150 ) : null,
-			'dateFormatted'  => mysql2date( __( 'F j, Y', 'unsplash' ), $image->get_field( 'created_at' ) ),
+			'dateFormatted'  => mysql2date( 'F j, Y', $image->get_field( 'created_at' ) ),
 			'nonces'         => [
 				'update' => false,
 				'delete' => false,
