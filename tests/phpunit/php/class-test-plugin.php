@@ -72,54 +72,6 @@ class Test_Plugin extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Test for register_meta() method.
-	 *
-	 * @see Plugin::register_meta()
-	 */
-	public function test_register_meta() {
-		$plugin = get_plugin_instance();
-		$plugin->register_meta();
-		$keys = get_registered_meta_keys( 'post', 'attachment' );
-
-		$this->assertArrayHasKey( 'original_id', $keys );
-		$this->assertArrayHasKey( 'original_url', $keys );
-		$this->assertArrayHasKey( 'color', $keys );
-		$this->assertArrayHasKey( 'unsplash_location', $keys );
-		$this->assertArrayHasKey( 'unsplash_sponsor', $keys );
-		$this->assertArrayHasKey( 'unsplash_exif', $keys );
-	}
-
-	/**
-	 * Test for register_taxonomy() method.
-	 *
-	 * @see Plugin::register_taxonomy()
-	 */
-	public function test_register_taxonomy() {
-		$plugin = get_plugin_instance();
-		$plugin->register_taxonomy();
-
-		$this->assertTrue( taxonomy_exists( 'media_tag' ) );
-		$this->assertTrue( taxonomy_exists( 'media_source' ) );
-		$this->assertTrue( taxonomy_exists( 'unsplash_user' ) );
-	}
-
-	/**
-	 * Test for enqueue_media_scripts() method.
-	 *
-	 * @see Plugin::enqueue_media_scripts()
-	 */
-	public function test_enqueue_media_scripts() {
-		wp_set_current_user( self::$admin_id );
-		set_current_screen( 'post.php' );
-		$plugin = get_plugin_instance();
-		$plugin->enqueue_media_scripts();
-		$this->assertTrue( wp_script_is( 'unsplash-media-selector', 'enqueued' ) );
-
-		$featured_image_script_loads = version_compare( '5.0', get_bloginfo( 'version' ), '<=' );
-		$this->assertEquals( $featured_image_script_loads, wp_script_is( 'unsplash-featured-image-selector', 'enqueued' ) );
-	}
-
-	/**
 	 * Test for register_polyfill_scripts() method.
 	 *
 	 * @see Plugin::register_polyfill_scripts()
@@ -142,7 +94,23 @@ class Test_Plugin extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Test for enqueue_media_scripts() method doeesn't load on widget
+	 * Test for enqueue_media_scripts() method.
+	 *
+	 * @see Plugin::enqueue_media_scripts()
+	 */
+	public function test_enqueue_media_scripts() {
+		wp_set_current_user( self::$admin_id );
+		set_current_screen( 'post.php' );
+		$plugin = get_plugin_instance();
+		$plugin->enqueue_media_scripts();
+		$this->assertTrue( wp_script_is( 'unsplash-media-selector', 'enqueued' ) );
+
+		$featured_image_script_loads = version_compare( '5.0', get_bloginfo( 'version' ), '<=' );
+		$this->assertEquals( $featured_image_script_loads, wp_script_is( 'unsplash-featured-image-selector', 'enqueued' ) );
+	}
+
+	/**
+	 * Test for enqueue_media_scripts() method doesn't load on other pages.
 	 *
 	 * @see Plugin::enqueue_media_scripts()
 	 */
@@ -154,7 +122,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Test for enqueue_media_scripts() method doeesn't load on widget
+	 * Test for enqueue_media_scripts() method doesn't load on widget
 	 *
 	 * @see Plugin::enqueue_media_scripts()
 	 */
@@ -176,36 +144,6 @@ class Test_Plugin extends \WP_UnitTestCase {
 		set_current_screen( 'unsplash.php' );
 		$plugin = get_plugin_instance();
 		$this->assertFalse( $plugin->enqueue_media_scripts() );
-	}
-
-	/**
-	 * Test for image_sizes()
-	 *
-	 * @see Plugin::image_sizes()
-	 */
-	public function test_no_image_sizes() {
-		$plugin   = get_plugin_instance();
-		$expected = [ 'large', 'medium', 'medium_large', 'thumbnail' ];
-		add_filter( 'intermediate_image_sizes', '__return_empty_array' );
-		$this->assertEqualSets( array_keys( $plugin->image_sizes() ), $expected );
-		remove_filter( 'intermediate_image_sizes', '__return_empty_array' );
-	}
-
-	/**
-	 * Test for image_sizes()
-	 *
-	 * @see Plugin::image_sizes()
-	 */
-	public function test_image_sizes() {
-		$plugin   = get_plugin_instance();
-		$expected = [ 'large', 'medium', 'medium_large', 'thumbnail' ];
-
-		if ( version_compare( '5.2', get_bloginfo( 'version' ), '<' ) ) {
-			$expected[] = '1536x1536';
-			$expected[] = '2048x2048';
-		}
-
-		$this->assertEqualSets( array_keys( $plugin->image_sizes() ), $expected );
 	}
 
 	/**
@@ -243,6 +181,36 @@ class Test_Plugin extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Test for image_sizes()
+	 *
+	 * @see Plugin::image_sizes()
+	 */
+	public function test_no_image_sizes() {
+		$plugin   = get_plugin_instance();
+		$expected = [ 'large', 'medium', 'medium_large', 'thumbnail' ];
+		add_filter( 'intermediate_image_sizes', '__return_empty_array' );
+		$this->assertEqualSets( array_keys( $plugin->image_sizes() ), $expected );
+		remove_filter( 'intermediate_image_sizes', '__return_empty_array' );
+	}
+
+	/**
+	 * Test for image_sizes()
+	 *
+	 * @see Plugin::image_sizes()
+	 */
+	public function test_image_sizes() {
+		$plugin   = get_plugin_instance();
+		$expected = [ 'large', 'medium', 'medium_large', 'thumbnail' ];
+
+		if ( version_compare( '5.2', get_bloginfo( 'version' ), '<' ) ) {
+			$expected[] = '1536x1536';
+			$expected[] = '2048x2048';
+		}
+
+		$this->assertEqualSets( array_keys( $plugin->image_sizes() ), $expected );
+	}
+
+	/**
 	 * Data provider for test_get_original_url_with_size.
 	 *
 	 * @return array
@@ -274,6 +242,38 @@ class Test_Plugin extends \WP_UnitTestCase {
 	public function test_get_original_url_with_size( $url, $width, $height, $attr, $expected ) {
 		$plugin = get_plugin_instance();
 		$this->assertSame( $plugin->get_original_url_with_size( $url, $width, $height, $attr ), $expected );
+	}
+
+	/**
+	 * Test for register_meta() method.
+	 *
+	 * @see Plugin::register_meta()
+	 */
+	public function test_register_meta() {
+		$plugin = get_plugin_instance();
+		$plugin->register_meta();
+		$keys = get_registered_meta_keys( 'post', 'attachment' );
+
+		$this->assertArrayHasKey( 'original_id', $keys );
+		$this->assertArrayHasKey( 'original_url', $keys );
+		$this->assertArrayHasKey( 'color', $keys );
+		$this->assertArrayHasKey( 'unsplash_location', $keys );
+		$this->assertArrayHasKey( 'unsplash_sponsor', $keys );
+		$this->assertArrayHasKey( 'unsplash_exif', $keys );
+	}
+
+	/**
+	 * Test for register_taxonomy() method.
+	 *
+	 * @see Plugin::register_taxonomy()
+	 */
+	public function test_register_taxonomy() {
+		$plugin = get_plugin_instance();
+		$plugin->register_taxonomy();
+
+		$this->assertTrue( taxonomy_exists( 'media_tag' ) );
+		$this->assertTrue( taxonomy_exists( 'media_source' ) );
+		$this->assertTrue( taxonomy_exists( 'unsplash_user' ) );
 	}
 
 	/**
