@@ -65,7 +65,7 @@ jobs:
       script:
         - source "$DEV_LIB_PATH/travis.script.sh"
         - npm run lint
-      
+
     - stage: unit-test
       name: PHP unit tests (7.4, WordPress latest, with code coverage)
       php: "7.4"
@@ -117,7 +117,7 @@ jobs:
       script:
         - npm run build:js
         - npm run test:js
-        -
+
     - stage: e2e-test
       name: E2E tests with Docker (7.4, WordPress latest)
       php: "7.4"
