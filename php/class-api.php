@@ -135,7 +135,7 @@ class API {
 	 * @return array|WP_Error
 	 */
 	public function send_request( $path, array $args = [] ) {
-		$api_check = $this->check_api_credentials();
+		$api_check = $this->check_api_credentials( false );
 		if ( is_wp_error( $api_check ) ) {
 			return $api_check;
 		}
@@ -231,10 +231,13 @@ class API {
 	/**
 	 * Check API credentials.
 	 *
+	 * @param bool $check_code Whether or not to check the API response code. Default: true.
 	 * @return bool|WP_Error
 	 */
-	public function check_api_credentials() {
-		foreach ( $this->plugin->settings->get_credentials() as $key => $value ) {
+	public function check_api_credentials( $check_code = true ) {
+		$credentials = $this->plugin->settings->get_credentials();
+
+		foreach ( $credentials as $key => $value ) {
 			if ( empty( $value ) ) {
 				return new WP_Error(
 					'missing_api_credential',
@@ -251,7 +254,26 @@ class API {
 			}
 		}
 
-		return true;
+		if ( ! $check_code ) {
+			return true;
+		}
+
+		if ( empty( $credentials['applicationId'] ) ) {
+			return false;
+		}
+
+		$args = [
+			'client_id' => $credentials['applicationId'],
+			'page'      => 1,
+		];
+
+		$response = $this->get_remote( add_query_arg( $args, 'https://api.unsplash.com/photos' ) );
+
+		if ( ! is_wp_error( $response ) && 200 === wp_remote_retrieve_response_code( $response ) ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**

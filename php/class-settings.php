@@ -269,7 +269,7 @@ class Settings {
 	/**
 	 * Format the API credentials in an array and filter.
 	 *
-	 * @return mixed|void
+	 * @return mixed|array
 	 */
 	public function get_credentials() {
 		$options        = get_option( 'unsplash_settings' );
