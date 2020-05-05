@@ -12,8 +12,6 @@ use WP_Query;
 
 /**
  * Class Import
- *
- * @package XWP\Unsplash
  */
 class Import {
 
@@ -23,24 +21,28 @@ class Import {
 	 * @var string
 	 */
 	protected $id = 0;
+
 	/**
 	 * Unsplash image object.
 	 *
 	 * @var Image
 	 */
 	protected $image;
+
 	/**
 	 * Post ID.
 	 *
 	 * @var int
 	 */
 	protected $parent = 0;
+
 	/**
 	 * Attachment ID.
 	 *
 	 * @var int
 	 */
 	protected $attachment_id = 0;
+
 	/**
 	 * Import constructor.
 	 *

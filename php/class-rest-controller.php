@@ -59,7 +59,6 @@ class Rest_Controller extends WP_REST_Controller {
 		$this->plugin->add_doc_hooks( $this );
 	}
 
-
 	/**
 	 * Registers the routes for the Unsplash API.
 	 *
@@ -418,7 +417,8 @@ class Rest_Controller extends WP_REST_Controller {
 	 * @param array|Object    $photo Photo object.
 	 * @param WP_REST_Request $request Request object.
 	 *
-	 * @return array|WP_Error|WP_REST_Response Array if its an AJAX request, WP_Error if an error occurs, otherwise a REST response object.
+	 * @return array|WP_Error|WP_REST_Response Array if its an AJAX request,
+	 * WP_Error if an error occurs, otherwise a REST response object.
 	 */
 	public function prepare_item_for_response( $photo, $request ) {
 		if ( $this->is_ajax_request( $request ) ) {
@@ -538,7 +538,7 @@ class Rest_Controller extends WP_REST_Controller {
 		if ( property_exists( self::class, 'schema' ) && null !== $this->schema ) {
 			return $this->add_additional_fields_schema( $this->schema );
 		}
-		// TODO Add in all required fields.
+		// @todo Add in all required fields.
 
 		$schema = [
 			'$schema'    => 'http://json-schema.org/draft-04/schema#',
@@ -627,6 +627,7 @@ class Rest_Controller extends WP_REST_Controller {
 	 * @param int   $index    Index of $photo in current page.
 	 * @param int   $page     Current page.
 	 * @param int   $per_page Number of photos per page.
+	 *
 	 * @return array Photo with updated ID.
 	 */
 	public function set_unique_media_id( $photo, $index, $page, $per_page ) {

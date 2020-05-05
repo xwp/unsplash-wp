@@ -22,7 +22,6 @@ class Settings {
 	/**
 	 * Key to use for encryption.
 	 *
-	 * @since 1.0.0
 	 * @var string
 	 */
 	private $key;
@@ -30,7 +29,6 @@ class Settings {
 	/**
 	 * Salt to use for encryption.
 	 *
-	 * @since 1.0.0
 	 * @var string
 	 */
 	private $salt;

@@ -8,9 +8,7 @@
 namespace Unsplash;
 
 /**
- * Class Image
- *
- * @package Unsplash
+ * Class Image.
  */
 class Image {
 
@@ -20,6 +18,7 @@ class Image {
 	 * @var Image
 	 */
 	protected $image;
+
 	/**
 	 * Processed fields.
 	 *
@@ -33,13 +32,18 @@ class Image {
 	 * @var string
 	 */
 	protected $utm_source = '';
+
 	/**
 	 * Hardcoded file ext.
+	 *
+	 * @var string
 	 */
 	const EXT = 'jpeg';
 
 	/**
 	 * Hardcoded MINE type.
+	 *
+	 * @var string
 	 */
 	const MIME = 'image/jpeg';
 

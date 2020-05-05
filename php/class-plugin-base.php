@@ -8,9 +8,7 @@
 namespace Unsplash;
 
 /**
- * Class Plugin_Base
- *
- * @package Unsplash
+ * Class Plugin_Base.
  */
 abstract class Plugin_Base {
 

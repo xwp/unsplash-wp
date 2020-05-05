@@ -10,11 +10,10 @@ namespace Unsplash;
 use WP_Error;
 
 /**
- * Class API
- *
- * @package Unsplash
+ * Class API.
  */
 class API {
+
 	/**
 	 * Plugin instance.
 	 *
