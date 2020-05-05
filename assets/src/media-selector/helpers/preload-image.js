@@ -4,7 +4,7 @@
  * @param {string} src Image source.
  * @return {Promise} Image object.
  */
-const preloadImage = src => {
+export default src => {
 	return new Promise( ( resolve, reject ) => {
 		const image = new window.Image();
 		image.onload = () => resolve( image );
@@ -13,5 +13,3 @@ const preloadImage = src => {
 		image.src = src;
 	} );
 };
-
-export default preloadImage;

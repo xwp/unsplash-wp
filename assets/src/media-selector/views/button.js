@@ -1,5 +1,8 @@
-import isUnsplashImage from '../helpers/isUnsplashImage';
-import importImages from '../helpers/importImages';
+/**
+ * Internal dependencies
+ */
+import isUnsplashImage from '../helpers/is-unsplash-image';
+import importImages from '../helpers/import-images';
 
 const Button = wp.media.view.Button.extend( {
 	/**

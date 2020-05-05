@@ -1,9 +1,12 @@
-import UnsplashState from '../store/unsplash_state';
-import ImagesBrowser from '../views/images_browser';
-import ImageView from '../views/image_view';
+/**
+ * Internal dependencies
+ */
+import UnsplashState from '../store/unsplash-state';
+import ImagesBrowser from '../views/images-browser';
+import ImageView from '../views/image-view';
 import Toolbar from '../views/toolbar';
-import ToolbarSelect from '../views/toolbar_select';
-import getConfig from './getConfig';
+import ToolbarSelect from '../views/toolbar-select';
+import getConfig from './get-config';
 
 export default View => {
 	return View.extend( {

@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import ImagesQueryModel from '../models/images_query_model';
+import ImagesQueryModel from '../models/images-query-model';
 
 const ImagesCollection = wp.media.model.Attachments.extend( {
 	/**
@@ -18,6 +18,7 @@ const ImagesCollection = wp.media.model.Attachments.extend( {
 			this.mirror( ImagesQueryModel.get( props ) );
 		}
 	},
+
 	/**
 	 * Get value of respSuccess from mirrored object.
 	 *
@@ -26,6 +27,7 @@ const ImagesCollection = wp.media.model.Attachments.extend( {
 	respSuccess() {
 		return this.mirroring ? this.mirroring.respSuccess() : true;
 	},
+
 	/**
 	 * Get value of respErrorMessage from mirrored object.
 	 *

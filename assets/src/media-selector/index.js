@@ -2,9 +2,9 @@
  * Internal dependencies
  */
 import './style.css';
-import withUnsplashTab from './helpers/withUnsplashTab';
-import unsetUnsplashLibrary from './helpers/unsetUnsplashLibrary';
-import PostFrame from './views/post_frame';
+import withUnsplashTab from './helpers/with-unsplash-tab';
+import unsetUnsplashLibrary from './helpers/unset-unsplash-library';
+import PostFrame from './views/post-frame';
 
 // Override media frames in the respective editors to add the Unsplash tab.
 if ( wp.media && wp.media.view && wp.media.view.MediaFrame ) {
