@@ -36,22 +36,6 @@ class Plugin extends Plugin_Base {
 	public $rest_controller;
 
 	/**
-	 * Post Type to add fields to.
-	 */
-	const POST_TYPE = 'attachment';
-
-	/**
-	 * Default image args.
-	 *
-	 * @var array
-	 */
-	public $default_img_attrs = [
-		'fm'  => 'jpg',
-		'q'   => '85',
-		'fit' => 'crop',
-	];
-
-	/**
 	 * Initiate the plugin resources.
 	 *
 	 * @action plugins_loaded
@@ -68,52 +52,51 @@ class Plugin extends Plugin_Base {
 	}
 
 	/**
-	 * Polyfill dependencies needed to enqueue our assets on WordPress 4.9.
+	 * Polyfill dependencies needed to enqueue our assets on WordPress 4.9 and below.
 	 *
 	 * @action wp_default_scripts
 	 *
-	 * @param WP_Scripts $wp_scripts Scripts.
+	 * @param /WP_Scripts $wp_scripts Scripts.
 	 */
-	public function register_default_scripts( $wp_scripts ) {
-		// Nothing to do if we're on WP 5.0+.
-		if ( version_compare( '5.0', get_bloginfo( 'version' ), '<=' ) ) {
-			return false;
-		}
+	public function register_polyfill_scripts( $wp_scripts ) {
 
-		// Polyfill dependencies that are registered in WordPress 4.9.
-		$handles = [
-			'wp-i18n',
-			'wp-polyfill',
-			'wp-url',
-		];
+		// Only load assets if we're NOT on WP 5.0+.
+		if ( version_compare( '5.0', get_bloginfo( 'version' ), '>' ) ) {
+			$handles = [
+				'wp-i18n',
+				'wp-polyfill',
+				'wp-url',
+			];
 
-		foreach ( $handles as $handle ) {
-			if ( ! isset( $wp_scripts->registered[ $handle ] ) ) {
-				$asset_file   = $this->dir_path . '/assets/js/' . $handle . '.asset.php';
-				$asset        = require $asset_file;
-				$dependencies = $asset['dependencies'];
-				$version      = $asset['version'];
+			foreach ( $handles as $handle ) {
+				if ( ! isset( $wp_scripts->registered[ $handle ] ) ) {
+					$asset_file   = $this->dir_path . '/assets/js/' . $handle . '.asset.php';
+					$asset        = require $asset_file;
+					$dependencies = $asset['dependencies'];
+					$version      = $asset['version'];
 
-				$wp_scripts->add(
-					$handle,
-					$this->asset_url( sprintf( 'assets/js/%s.js', $handle ) ),
-					$dependencies,
-					$version
-				);
+					$wp_scripts->add(
+						$handle,
+						$this->asset_url( sprintf( 'assets/js/%s.js', $handle ) ),
+						$dependencies,
+						$version
+					);
+				}
 			}
-		}
 
-		$vendor_scripts = [
-			'lodash' => [
-				'dependencies' => [],
-				'version'      => '4.17.15',
-			],
-		];
-		foreach ( $vendor_scripts as $handle => $handle_data ) {
-			if ( ! isset( $wp_scripts->registered[ $handle ] ) ) {
-				$path = $this->asset_url( sprintf( 'assets/js/vendor/%s.js', $handle ) );
+			$vendor_scripts = [
+				'lodash' => [
+					'dependencies' => [],
+					'version'      => '4.17.15',
+				],
+			];
 
-				$wp_scripts->add( $handle, $path, $handle_data['dependencies'], $handle_data['version'], 1 );
+			foreach ( $vendor_scripts as $handle => $handle_data ) {
+				if ( ! isset( $wp_scripts->registered[ $handle ] ) ) {
+					$path = $this->asset_url( sprintf( 'assets/js/vendor/%s.js', $handle ) );
+
+					$wp_scripts->add( $handle, $path, $handle_data['dependencies'], $handle_data['version'], 1 );
+				}
 			}
 		}
 	}
@@ -339,7 +322,11 @@ class Plugin extends Plugin_Base {
 	 */
 	public function get_original_url_with_size( $url, $width, $height, $attr = [] ) {
 		$attr = array_merge(
-			$this->default_img_attrs,
+			[
+				'fm'  => 'jpg',
+				'q'   => '85',
+				'fit' => 'crop',
+			],
 			$attr,
 			[
 				'w' => absint( $width ),
@@ -418,7 +405,7 @@ class Plugin extends Plugin_Base {
 		$default_args = [
 			'single'         => true,
 			'show_in_rest'   => true,
-			'object_subtype' => self::POST_TYPE,
+			'object_subtype' => 'attachment',
 		];
 
 		$default_object_schema = [
@@ -508,12 +495,12 @@ class Plugin extends Plugin_Base {
 
 		foreach ( $tax_args as $name => $args ) {
 			$args = wp_parse_args( $args, $default_args );
-			register_taxonomy( $name, self::POST_TYPE, $args );
+			register_taxonomy( $name, 'attachment', $args );
 		}
 	}
 
 	/**
-	 * Add an admin notice on if credntials not setup.
+	 * Add an admin notice on if credentials not setup.
 	 *
 	 * @action admin_notices
 	 */
