@@ -20,7 +20,7 @@ Project maintainers are regularly monitoring issues and aim to fix open bugs qui
 
 ## Product and code contributions
 
-We'd love to have your help contributing code and features to the Unsplash Plugin! Head to the [Engineering guidelines](contributing/engineering.md) for details on the process you can use to contribute.
+We'd love to have your help contributing code and features to the Unsplash Plugin! Head to the [Project Management guidelines](contributing/project-management.md) as well as [Engineering guidelines](contributing/engineering.md) for details on the process you can use to contribute.
 
 ## Contributors list policy
 
