@@ -1,8 +1,8 @@
 /**
- * Preload image using a promise.
+ * Unset the Unsplash library tab.
  *
- * @param {wp.media.controller} Controller Image source.
- * @return {Promise} Image object.
+ * @param {wp.media.controller} Controller
+ * @return {wp.media.controller} Extended controller.
  */
 export default Controller => {
 	return Controller.extend( {
