@@ -54,6 +54,8 @@ class Plugin extends Plugin_Base {
 	/**
 	 * Polyfill dependencies needed to enqueue our assets on WordPress 4.9 and below.
 	 *
+	 * @codeCoverageIgnore
+	 *
 	 * @action wp_default_scripts
 	 *
 	 * @param /WP_Scripts $wp_scripts Scripts.
