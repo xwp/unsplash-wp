@@ -279,6 +279,7 @@ class API {
 		$args = [
 			'client_id' => $credentials['applicationId'],
 			'page'      => 1,
+			'per_page'  => 1,
 		];
 
 		$response = $this->get_remote( add_query_arg( $args, 'https://api.unsplash.com/photos' ) );
