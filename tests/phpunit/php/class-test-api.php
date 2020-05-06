@@ -181,21 +181,6 @@ class Test_Api extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Test check_api_credentials().
-	 *
-	 * @covers \Unsplash\API::check_api_credentials()
-	 */
-	public function test_check_api_credentials_response_failed() {
-		$plugin = new Plugin();
-		$plugin->init();
-		$api = new API( $plugin );
-		add_filter( 'http_response', '__return_false' );
-		$result = $api->check_api_credentials();
-		remove_filter( 'http_response', '__return_false' );
-		$this->assertFalse( $result );
-	}
-
-	/**
 	 * Test check_api_status().
 	 *
 	 * @covers \Unsplash\API::check_api_status()

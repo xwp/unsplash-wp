@@ -524,6 +524,7 @@ class Plugin extends Plugin_Base {
 			! empty( $credentials['applicationId'] )
 			&& ! empty( $credentials['secret'] )
 			&& $this->rest_controller->api->check_api_credentials()
+			&& $this->rest_controller->api->check_api_status( $credentials )
 		) {
 			return false;
 		}

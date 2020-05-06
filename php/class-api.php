@@ -134,7 +134,7 @@ class API {
 	 * @return array|WP_Error
 	 */
 	public function send_request( $path, array $args = [] ) {
-		$api_check = $this->check_api_credentials( false );
+		$api_check = $this->check_api_credentials();
 		if ( is_wp_error( $api_check ) ) {
 			return $api_check;
 		}
@@ -230,10 +230,9 @@ class API {
 	/**
 	 * Check API credentials.
 	 *
-	 * @param bool $check_code Whether or not to check the API response code. Default: true.
 	 * @return bool|WP_Error
 	 */
-	public function check_api_credentials( $check_code = true ) {
+	public function check_api_credentials() {
 		$credentials = $this->plugin->settings->get_credentials();
 
 		// @todo should we support network activation?
@@ -254,11 +253,6 @@ class API {
 					]
 				);
 			}
-		}
-
-		// Check if the API is responding with a 200 HTTP code.
-		if ( $check_code ) {
-			return $this->check_api_status( $credentials );
 		}
 
 		return true;
