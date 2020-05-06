@@ -74,7 +74,7 @@ class Api_Cache {
 	 * @return False if value was not set and true if value was set.
 	 */
 	public function set_cache( $value ) {
-		return set_transient( $this->key, $value, MINUTE_IN_SECONDS * 5 );
+		return set_transient( $this->key, $value, MINUTE_IN_SECONDS * 15 );
 	}
 
 	/**
