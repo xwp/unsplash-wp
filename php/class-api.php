@@ -256,8 +256,23 @@ class API {
 			}
 		}
 
-		if ( ! $check_code ) {
-			return true;
+		// Check if the API is responding with a 200 HTTP code.
+		if ( $check_code ) {
+			return $this->check_api_status( $credentials );
+		}
+
+		return true;
+	}
+
+	/**
+	 * Check the API status.
+	 *
+	 * @param array $credentials The API credentials.
+	 * @return bool|WP_Error
+	 */
+	public function check_api_status( $credentials = [] ) {
+		if ( empty( $credentials ) ) {
+			$credentials = $this->plugin->settings->get_credentials();
 		}
 
 		if ( empty( $credentials['applicationId'] ) ) {
