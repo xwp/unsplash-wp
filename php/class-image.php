@@ -191,8 +191,17 @@ class Image {
 			'https://unsplash.com/'
 		);
 
-		$user_link     = '<a href="' . esc_url( $user_url ) . '" rel="nofollow">' . esc_html( $user_name ) . '</a>';
-		$referral_link = '<a href="' . esc_url( $referral_url ) . '" rel="nofollow">' . esc_html__( 'Unsplash', 'unsplash' ) . '</a>';
+		$format_link   = '<a href="%1$s" rel="nofollow">%2$s</a>';
+		$user_link     = sprintf(
+			$format_link,
+			esc_url( $user_url ),
+			esc_html( $user_name )
+		);
+		$referral_link = sprintf(
+			$format_link,
+			esc_url( $referral_url ),
+			esc_html__( 'Unsplash', 'unsplash' )
+		);
 
 		// Whitespace at end of caption is required.
 		/* translators: 1: Unsplash User URL, 2: Unsplash Referral URL */
