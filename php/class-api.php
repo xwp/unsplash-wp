@@ -235,8 +235,11 @@ class API {
 	public function check_api_credentials() {
 		$credentials = $this->plugin->settings->get_credentials();
 
-		// @todo should we support network activation?
-		$settings_link = '<a href="' . get_admin_url( null, 'options-general.php?page=unsplash' ) . '">' . esc_html__( 'Unsplash', 'unsplash' ) . '</a>';
+		$settings_link = sprintf(
+			'<a href="%1$s">%2$s</a>',
+			esc_url( get_admin_url( null, 'options-general.php?page=unsplash' ) ),
+			esc_html__( 'Unsplash', 'unsplash' )
+		);
 
 		foreach ( $credentials as $key => $value ) {
 			if ( empty( $value ) ) {
@@ -298,8 +301,12 @@ class API {
 	public function format_exception( $code, $error_status = 500 ) {
 		if ( is_numeric( $error_status ) ) {
 
-			// @todo should we support network activation?
-			$settings_link = '<a href="' . get_admin_url( null, 'options-general.php?page=unsplash' ) . '">' . esc_html__( 'Unsplash', 'unsplash' ) . '</a>';
+			// @todo should we support network activation, or at least point to the right blog_id in multi-site?
+			$settings_link = sprintf(
+				'<a href="%1$s">%2$s</a>',
+				esc_url( get_admin_url( null, 'options-general.php?page=unsplash' ) ),
+				esc_html__( 'Unsplash', 'unsplash' )
+			);
 			$status_link   = '<a href="https://status.unsplash.com">status.unsplash.com</a>';
 
 			switch ( $error_status ) {
