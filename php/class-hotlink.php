@@ -36,15 +36,12 @@ class Hotlink {
 	 */
 	public function init() {
 		$this->plugin->add_doc_hooks( $this );
-
-		// @todo this makes no sense and should be removed.
-		// Hook these filters this way to make them unhookable.
-		add_filter( 'wp_get_attachment_url', [ $this, 'wp_get_attachment_url' ], 10, 2 );
-		add_filter( 'image_downsize', [ $this, 'image_downsize' ], 10, 3 );
 	}
 
 	/**
 	 * Filter wp_get_attachment_url
+	 *
+	 * @filter wp_get_attachment_url, 10, 2
 	 *
 	 * @param string $url Original URL.
 	 * @param int    $id Attachment ID.
@@ -199,6 +196,8 @@ class Hotlink {
 
 	/**
 	 * Filter image downsize.
+	 *
+	 * @filter image_downsize, 10, 3
 	 *
 	 * @param array        $should_resize Array.
 	 * @param int          $id Attachment ID.
