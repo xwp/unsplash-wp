@@ -3,7 +3,7 @@
 source ./bin/includes.sh
 
 # Grab full name of wordpress container
-WORDPRESS_CONTAINER=$(docker ps | grep wordpress | awk '{print $1}')
+WORDPRESS_CONTAINER=$(docker ps | grep _wordpress | awk '{print $1}')
 
 if [[ '' == $WORDPRESS_CONTAINER ]]; then
 	echo -e "$(error_message "The WordPress Docker container must be running!")"
