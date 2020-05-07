@@ -51,7 +51,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 	public function test_construct() {
 		$plugin = new Plugin();
 		$this->assertEquals( 10, has_action( 'plugins_loaded', [ $plugin, 'init' ] ) );
-		$this->assertEquals( 10, has_action( 'wp_default_scripts', [ $plugin, 'register_default_scripts' ] ) );
+		$this->assertEquals( 10, has_action( 'wp_default_scripts', [ $plugin, 'register_polyfill_scripts' ] ) );
 		$this->assertEquals( 10, has_action( 'wp_enqueue_media', [ $plugin, 'enqueue_media_scripts' ] ) );
 		$this->assertEquals( 10, has_action( 'init', [ $plugin, 'register_taxonomy' ] ) );
 		$this->assertEquals( 10, has_action( 'init', [ $plugin, 'register_meta' ] ) );
@@ -72,35 +72,25 @@ class Test_Plugin extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Test for register_meta() method.
+	 * Test for register_polyfill_scripts() method.
 	 *
-	 * @see Plugin::register_meta()
+	 * @see Plugin::register_polyfill_scripts()
 	 */
-	public function test_register_meta() {
-		$plugin = get_plugin_instance();
-		$plugin->register_meta();
-		$keys = get_registered_meta_keys( 'post', 'attachment' );
+	public function test_register_polyfill_scripts() {
+		if ( version_compare( '5.0', get_bloginfo( 'version' ), '>' ) ) {
+			get_plugin_instance()->register_polyfill_scripts( wp_scripts() );
+		}
 
-		$this->assertArrayHasKey( 'original_id', $keys );
-		$this->assertArrayHasKey( 'original_url', $keys );
-		$this->assertArrayHasKey( 'color', $keys );
-		$this->assertArrayHasKey( 'unsplash_location', $keys );
-		$this->assertArrayHasKey( 'unsplash_sponsor', $keys );
-		$this->assertArrayHasKey( 'unsplash_exif', $keys );
-	}
+		$expected_handles = [
+			'wp-i18n',
+			'wp-polyfill',
+			'wp-url',
+			'lodash',
+		];
 
-	/**
-	 * Test for register_taxonomy() method.
-	 *
-	 * @see Plugin::register_taxonomy()
-	 */
-	public function test_register_taxonomy() {
-		$plugin = get_plugin_instance();
-		$plugin->register_taxonomy();
-
-		$this->assertTrue( taxonomy_exists( 'media_tag' ) );
-		$this->assertTrue( taxonomy_exists( 'media_source' ) );
-		$this->assertTrue( taxonomy_exists( 'unsplash_user' ) );
+		foreach ( $expected_handles as $expected_handle ) {
+			$this->assertTrue( wp_script_is( $expected_handle, 'registered' ) );
+		}
 	}
 
 	/**
@@ -120,38 +110,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Test for register_default_scripts() method.
-	 *
-	 * @see Plugin::register_default_scripts()
-	 */
-	public function test_register_default_scripts() {
-		$wp_scripts = new \WP_Scripts();
-
-		$plugin           = get_plugin_instance();
-		$plugin_asset_url = $plugin->asset_url();
-
-		$result = $plugin->register_default_scripts( $wp_scripts );
-
-		if ( version_compare( '5.0', get_bloginfo( 'version' ), '<=' ) ) {
-			$this->assertFalse( $result );
-			return;
-		}
-
-		$expected_handles = [
-			'wp-i18n',
-			'wp-polyfill',
-			'wp-url',
-			'lodash',
-		];
-
-		foreach ( $expected_handles as $expected_handle ) {
-			$this->assertContains( $expected_handle, array_keys( $wp_scripts->registered ) );
-			$this->assertContains( $plugin_asset_url, $wp_scripts->registered[ $expected_handle ]->src );
-		}
-	}
-
-	/**
-	 * Test for enqueue_media_scripts() method doeesn't load on widget
+	 * Test for enqueue_media_scripts() method doesn't load on other pages.
 	 *
 	 * @see Plugin::enqueue_media_scripts()
 	 */
@@ -163,7 +122,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Test for enqueue_media_scripts() method doeesn't load on widget
+	 * Test for enqueue_media_scripts() method doesn't load on widget
 	 *
 	 * @see Plugin::enqueue_media_scripts()
 	 */
@@ -185,36 +144,6 @@ class Test_Plugin extends \WP_UnitTestCase {
 		set_current_screen( 'unsplash.php' );
 		$plugin = get_plugin_instance();
 		$this->assertFalse( $plugin->enqueue_media_scripts() );
-	}
-
-	/**
-	 * Test for image_sizes()
-	 *
-	 * @see Plugin::image_sizes()
-	 */
-	public function test_no_image_sizes() {
-		$plugin   = get_plugin_instance();
-		$expected = [ 'large', 'medium', 'medium_large', 'thumbnail' ];
-		add_filter( 'intermediate_image_sizes', '__return_empty_array' );
-		$this->assertEqualSets( array_keys( $plugin->image_sizes() ), $expected );
-		remove_filter( 'intermediate_image_sizes', '__return_empty_array' );
-	}
-
-	/**
-	 * Test for image_sizes()
-	 *
-	 * @see Plugin::image_sizes()
-	 */
-	public function test_image_sizes() {
-		$plugin   = get_plugin_instance();
-		$expected = [ 'large', 'medium', 'medium_large', 'thumbnail' ];
-
-		if ( version_compare( '5.2', get_bloginfo( 'version' ), '<' ) ) {
-			$expected[] = '1536x1536';
-			$expected[] = '2048x2048';
-		}
-
-		$this->assertEqualSets( array_keys( $plugin->image_sizes() ), $expected );
 	}
 
 	/**
@@ -252,6 +181,36 @@ class Test_Plugin extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Test for image_sizes()
+	 *
+	 * @see Plugin::image_sizes()
+	 */
+	public function test_no_image_sizes() {
+		$plugin   = get_plugin_instance();
+		$expected = [ 'large', 'medium', 'medium_large', 'thumbnail' ];
+		add_filter( 'intermediate_image_sizes', '__return_empty_array' );
+		$this->assertEqualSets( array_keys( $plugin->image_sizes() ), $expected );
+		remove_filter( 'intermediate_image_sizes', '__return_empty_array' );
+	}
+
+	/**
+	 * Test for image_sizes()
+	 *
+	 * @see Plugin::image_sizes()
+	 */
+	public function test_image_sizes() {
+		$plugin   = get_plugin_instance();
+		$expected = [ 'large', 'medium', 'medium_large', 'thumbnail' ];
+
+		if ( version_compare( '5.2', get_bloginfo( 'version' ), '<' ) ) {
+			$expected[] = '1536x1536';
+			$expected[] = '2048x2048';
+		}
+
+		$this->assertEqualSets( array_keys( $plugin->image_sizes() ), $expected );
+	}
+
+	/**
 	 * Data provider for test_get_original_url_with_size.
 	 *
 	 * @return array
@@ -286,6 +245,38 @@ class Test_Plugin extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Test for register_meta() method.
+	 *
+	 * @see Plugin::register_meta()
+	 */
+	public function test_register_meta() {
+		$plugin = get_plugin_instance();
+		$plugin->register_meta();
+		$keys = get_registered_meta_keys( 'post', 'attachment' );
+
+		$this->assertArrayHasKey( 'original_id', $keys );
+		$this->assertArrayHasKey( 'original_url', $keys );
+		$this->assertArrayHasKey( 'color', $keys );
+		$this->assertArrayHasKey( 'unsplash_location', $keys );
+		$this->assertArrayHasKey( 'unsplash_sponsor', $keys );
+		$this->assertArrayHasKey( 'unsplash_exif', $keys );
+	}
+
+	/**
+	 * Test for register_taxonomy() method.
+	 *
+	 * @see Plugin::register_taxonomy()
+	 */
+	public function test_register_taxonomy() {
+		$plugin = get_plugin_instance();
+		$plugin->register_taxonomy();
+
+		$this->assertTrue( taxonomy_exists( 'media_tag' ) );
+		$this->assertTrue( taxonomy_exists( 'media_source' ) );
+		$this->assertTrue( taxonomy_exists( 'unsplash_user' ) );
+	}
+
+	/**
 	 * Test for admin_notice()
 	 *
 	 * @see Plugin::admin_notice()
@@ -296,9 +287,8 @@ class Test_Plugin extends \WP_UnitTestCase {
 		set_current_screen( 'post.php' );
 		$plugin = get_plugin_instance();
 		ob_start();
-		$notice = $plugin->admin_notice();
+		$plugin->admin_notice();
 		$output = ob_get_clean();
-		$this->assertTrue( $notice );
 		$this->assertContains( 'To complete set up of the Unsplash plugin you’ll need to add the API key/secret.', $output );
 		remove_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
 	}
@@ -308,13 +298,11 @@ class Test_Plugin extends \WP_UnitTestCase {
 	 *
 	 * @see Plugin::admin_notice()
 	 */
-	public function test_no_admin_notice_1() {
-		add_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
+	public function test_admin_notice_no_manage_options_perms() {
 		wp_set_current_user( self::$subscriber_id );
 		set_current_screen( 'post.php' );
 		$plugin = get_plugin_instance();
 		$this->assertFalse( $plugin->admin_notice() );
-		remove_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
 	}
 
 	/**
@@ -322,13 +310,22 @@ class Test_Plugin extends \WP_UnitTestCase {
 	 *
 	 * @see Plugin::admin_notice()
 	 */
-	public function test_no_admin_notice_2() {
-		add_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
+	public function test_no_admin_notice_no_screen_object() {
+		wp_set_current_user( self::$admin_id );
+		$plugin = get_plugin_instance();
+		$this->assertFalse( $plugin->admin_notice() );
+	}
+
+	/**
+	 * Test for admin_notice()
+	 *
+	 * @see Plugin::admin_notice()
+	 */
+	public function test_admin_notice_not_on_settings_page() {
 		wp_set_current_user( self::$admin_id );
 		set_current_screen( 'settings_page_unsplash' );
 		$plugin = get_plugin_instance();
 		$this->assertFalse( $plugin->admin_notice() );
-		remove_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
 	}
 
 	/**
@@ -336,7 +333,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 	 *
 	 * @see Plugin::admin_notice()
 	 */
-	public function test_no_admin_notice_3() {
+	public function test_admin_notice_has_credentials() {
 		wp_set_current_user( self::$admin_id );
 		set_current_screen( 'post.php' );
 		$plugin = get_plugin_instance();
@@ -344,13 +341,11 @@ class Test_Plugin extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Disable unsplash api details.
-	 *
-	 * @param array $unused Unused variable.
+	 * Disable Unsplash api details.
 	 *
 	 * @return array
 	 */
-	public function disable_unsplash_api_credentials( $unused ) { //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+	public function disable_unsplash_api_credentials() {
 		return [
 			'applicationId' => '',
 			'secret'        => '',

@@ -2,12 +2,13 @@
  * WordPress dependencies
  */
 import { addQueryArgs } from '@wordpress/url';
+
 /**
  * Internal dependencies
  */
-import ImagesCollection from '../collections/images_collection';
-import getConfig from '../helpers/getConfig';
-import preloadImage from '../helpers/preloadImage';
+import ImagesCollection from '../collections/images-collection';
+import getConfig from '../helpers/get-config';
+import preloadImage from '../helpers/preload-image';
 
 const ImagesQueryModel = wp.media.model.Query.extend(
 	{

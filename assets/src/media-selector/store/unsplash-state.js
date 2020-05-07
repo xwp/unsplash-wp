@@ -1,8 +1,8 @@
 /**
  * Internal dependencies
  */
-import ImagesCollection from '../collections/images_collection';
-import getConfig from '../helpers/getConfig';
+import ImagesCollection from '../collections/images-collection';
+import getConfig from '../helpers/get-config';
 
 const State = wp.media.controller.State;
 

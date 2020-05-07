@@ -6,7 +6,7 @@ import { MediaUpload } from '@wordpress/media-utils';
 /**
  * Internal dependencies
  */
-import UnsplashState from '../store/unsplash_state';
+import UnsplashState from '../store/unsplash-state';
 
 /**
  * Copied from Gutenberg and adapted to initialize the Unsplash state.
@@ -93,7 +93,7 @@ const getAttachmentsCollection = ids => {
 	} );
 };
 
-class MediaUploadWithUnsplashState extends MediaUpload {
+class UnsplashMediaUpload extends MediaUpload {
 	/**
 	 * Initializes the Media Library requirements for the featured image flow.
 	 *
@@ -116,4 +116,4 @@ class MediaUploadWithUnsplashState extends MediaUpload {
 	}
 }
 
-export default MediaUploadWithUnsplashState;
+export default UnsplashMediaUpload;

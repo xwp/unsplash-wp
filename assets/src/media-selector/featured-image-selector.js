@@ -6,7 +6,7 @@ import { addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import MediaUploadWithUnsplashState from './components/MediaUploadWithUnsplashState.js';
+import UnsplashMediaUpload from './components/unsplash-media-upload.js';
 
 /**
  * We can't override the featured image media frame Gutenberg by extending Backbone views, meaning we can't initialize
@@ -16,5 +16,5 @@ import MediaUploadWithUnsplashState from './components/MediaUploadWithUnsplashSt
 addFilter(
 	'editor.MediaUpload',
 	'unsplash/extend-featured-image',
-	() => MediaUploadWithUnsplashState
+	() => UnsplashMediaUpload
 );

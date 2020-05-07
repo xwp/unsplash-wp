@@ -9,28 +9,30 @@ namespace Unsplash;
 
 /**
  * Class Api_Response.
- *
- * @package Unsplash
  */
 class Api_Response {
+
 	/**
 	 * Is cached.
 	 *
 	 * @var bool
 	 */
 	protected $cached = false;
+
 	/**
 	 * Total pages.
 	 *
 	 * @var int
 	 */
 	protected $total_pages = 0;
+
 	/**
 	 * Total objects.
 	 *
 	 * @var int
 	 */
 	protected $total_objects = 0;
+
 	/**
 	 * Results.
 	 *
@@ -47,6 +49,7 @@ class Api_Response {
 	 * @param bool  $cached Is cached.
 	 */
 	public function __construct( $results, $total_pages = 0, $total_objects = 0, $cached = false ) {
+		// @todo handle bad/missing `$results` and add test coverage.
 		$this->results       = $results;
 		$this->total_pages   = $total_pages;
 		$this->total_objects = $total_objects;

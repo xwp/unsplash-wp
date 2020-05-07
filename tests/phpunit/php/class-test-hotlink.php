@@ -49,7 +49,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	 * @param object $factory Factory object.
 	 */
 	public static function wpSetUpBeforeClass( $factory ) {
-		self::$test_file     = '/tmp/canola.jpg';
+		self::$test_file     = 'canola.jpg';
 		self::$attachment_id = $factory->attachment->create_object(
 			self::$test_file,
 			0,
@@ -89,6 +89,19 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Test get_attachment_url.
+	 *
+	 * @covers ::get_attachment_url()
+	 */
+	public function test_get_attachment_url() {
+		$upload_url   = $this->hotlink->get_attachment_url( self::$attachment_id );
+		$unsplash_url = $this->hotlink->wp_get_attachment_url( $upload_url, self::$attachment_id );
+
+		$this->assertEquals( 'http://example.org/wp-content/uploads/canola.jpg', $upload_url );
+		$this->assertEquals( 'https://images.unsplash.com/test.jpg', $unsplash_url );
+	}
+
+	/**
 	 * Test wp_get_attachment_url.
 	 *
 	 * @covers ::wp_get_attachment_url()
@@ -108,7 +121,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$this->assertEquals( $first, 'https://images.unsplash.com/test.jpg' );
 		update_post_meta( self::$attachment_id, '_wp_attachment_backup_sizes', [ 'foo' => 'bar' ] );
 		$second = wp_get_attachment_url( self::$attachment_id );
-		$this->assertEquals( $second, 'http://example.org/wp-content/uploads//tmp/canola.jpg' );
+		$this->assertEquals( $second, 'http://example.org/wp-content/uploads/canola.jpg' );
 		$this->assertNotEquals( $first, $second );
 		delete_post_meta( self::$attachment_id, '_wp_attachment_backup_sizes' );
 		$third = wp_get_attachment_url( self::$attachment_id );
@@ -129,7 +142,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$this->assertContains( 'https://images.unsplash.com/test.jpg', $first );
 		update_post_meta( self::$attachment_id, '_wp_attachment_backup_sizes', [ 'foo' => 'bar' ] );
 		$second = get_image_tag( self::$attachment_id, $alt, $title, $align );
-		$this->assertContains( 'http://example.org/wp-content/uploads//tmp/canola.jpg', $second );
+		$this->assertContains( 'http://example.org/wp-content/uploads/canola.jpg', $second );
 		$this->assertNotEquals( $first, $second );
 		delete_post_meta( self::$attachment_id, '_wp_attachment_backup_sizes' );
 		$third = get_image_tag( self::$attachment_id, $alt, $title, $align );
@@ -253,7 +266,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$post    = get_post( $test_page );
 		$content = $this->hotlink->replace_hotlinked_images_in_content( $post->post_content );
 		$this->assertNotContains( 'https://images.unsplash.com', $content );
-		$this->assertContains( 'http://example.org/wp-content/uploads//tmp/canola.jpg', $content );
+		$this->assertContains( 'http://example.org/wp-content/uploads/canola.jpg', $content );
 		$this->assertContains( 'http://example.org/wp-content/uploads/melon.jpg', $content );
 	}
 
@@ -544,7 +557,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$request = new WP_REST_Request();
 		$result  = $this->hotlink->rest_prepare_attachment( $reponse, $image, $request );
 		$data    = $result->get_data();
-		$this->assertEquals( $data['source_url'], 'http://example.org/wp-content/uploads//tmp/canola.jpg' );
+		$this->assertEquals( $data['source_url'], 'http://example.org/wp-content/uploads/canola.jpg' );
 	}
 
 	/**

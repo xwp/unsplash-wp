@@ -131,6 +131,7 @@ async function runAxeTestsForBlockEditor() {
 			'duplicate-id',
 			'label',
 			'link-name',
+			'list',
 			'listitem',
 			'page-has-heading-one',
 			'region',

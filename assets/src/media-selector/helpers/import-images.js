@@ -6,9 +6,9 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import isUnsplashImage from './isUnsplashImage';
-import getConfig from './getConfig';
-import preloadImage from './preloadImage';
+import isUnsplashImage from './is-unsplash-image';
+import getConfig from './get-config';
+import preloadImage from './preload-image';
 
 /**
  * Import selected Unsplash images.

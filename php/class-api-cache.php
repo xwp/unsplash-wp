@@ -25,6 +25,7 @@ class Api_Cache {
 	 * @var bool
 	 */
 	protected $is_cached = false;
+
 	/**
 	 * Cache key.
 	 *
@@ -73,7 +74,7 @@ class Api_Cache {
 	 * @return False if value was not set and true if value was set.
 	 */
 	public function set_cache( $value ) {
-		return set_transient( $this->key, $value, HOUR_IN_SECONDS );
+		return set_transient( $this->key, $value, MINUTE_IN_SECONDS * 15 );
 	}
 
 	/**
@@ -84,5 +85,4 @@ class Api_Cache {
 	public function get_is_cached() {
 		return (int) $this->is_cached;
 	}
-
 }

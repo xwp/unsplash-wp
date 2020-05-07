@@ -36,22 +36,6 @@ class Plugin extends Plugin_Base {
 	public $rest_controller;
 
 	/**
-	 * Post Type to add fields to.
-	 */
-	const POST_TYPE = 'attachment';
-
-	/**
-	 * Default image args.
-	 *
-	 * @var array
-	 */
-	public $default_img_attrs = [
-		'fm'  => 'jpg',
-		'q'   => '85',
-		'fit' => 'crop',
-	];
-
-	/**
 	 * Initiate the plugin resources.
 	 *
 	 * @action plugins_loaded
@@ -68,52 +52,53 @@ class Plugin extends Plugin_Base {
 	}
 
 	/**
-	 * Polyfill dependencies needed to enqueue our assets on WordPress 4.9.
+	 * Polyfill dependencies needed to enqueue our assets on WordPress 4.9 and below.
+	 *
+	 * @codeCoverageIgnore
 	 *
 	 * @action wp_default_scripts
 	 *
-	 * @param WP_Scripts $wp_scripts Scripts.
+	 * @param /WP_Scripts $wp_scripts Scripts.
 	 */
-	public function register_default_scripts( $wp_scripts ) {
-		// Nothing to do if we're on WP 5.0+.
-		if ( version_compare( '5.0', get_bloginfo( 'version' ), '<=' ) ) {
-			return false;
-		}
+	public function register_polyfill_scripts( $wp_scripts ) {
 
-		// Polyfill dependencies that are registered in WordPress 4.9.
-		$handles = [
-			'wp-i18n',
-			'wp-polyfill',
-			'wp-url',
-		];
+		// Only load assets if we're NOT on WP 5.0+.
+		if ( version_compare( '5.0', get_bloginfo( 'version' ), '>' ) ) {
+			$handles = [
+				'wp-i18n',
+				'wp-polyfill',
+				'wp-url',
+			];
 
-		foreach ( $handles as $handle ) {
-			if ( ! isset( $wp_scripts->registered[ $handle ] ) ) {
-				$asset_file   = $this->dir_path . '/assets/js/' . $handle . '.asset.php';
-				$asset        = require $asset_file;
-				$dependencies = $asset['dependencies'];
-				$version      = $asset['version'];
+			foreach ( $handles as $handle ) {
+				if ( ! isset( $wp_scripts->registered[ $handle ] ) ) {
+					$asset_file   = $this->dir_path . '/assets/js/' . $handle . '.asset.php';
+					$asset        = require $asset_file;
+					$dependencies = $asset['dependencies'];
+					$version      = $asset['version'];
 
-				$wp_scripts->add(
-					$handle,
-					$this->asset_url( sprintf( 'assets/js/%s.js', $handle ) ),
-					$dependencies,
-					$version
-				);
+					$wp_scripts->add(
+						$handle,
+						$this->asset_url( sprintf( 'assets/js/%s.js', $handle ) ),
+						$dependencies,
+						$version
+					);
+				}
 			}
-		}
 
-		$vendor_scripts = [
-			'lodash' => [
-				'dependencies' => [],
-				'version'      => '4.17.15',
-			],
-		];
-		foreach ( $vendor_scripts as $handle => $handle_data ) {
-			if ( ! isset( $wp_scripts->registered[ $handle ] ) ) {
-				$path = $this->asset_url( sprintf( 'assets/js/vendor/%s.js', $handle ) );
+			$vendor_scripts = [
+				'lodash' => [
+					'dependencies' => [],
+					'version'      => '4.17.15',
+				],
+			];
 
-				$wp_scripts->add( $handle, $path, $handle_data['dependencies'], $handle_data['version'], 1 );
+			foreach ( $vendor_scripts as $handle => $handle_data ) {
+				if ( ! isset( $wp_scripts->registered[ $handle ] ) ) {
+					$path = $this->asset_url( sprintf( 'assets/js/vendor/%s.js', $handle ) );
+
+					$wp_scripts->add( $handle, $path, $handle_data['dependencies'], $handle_data['version'], 1 );
+				}
 			}
 		}
 	}
@@ -158,18 +143,18 @@ class Plugin extends Plugin_Base {
 			'unsplash-media-selector',
 			'unsplash',
 			[
-				'tabTitle'  => __( 'Unsplash', 'unsplash' ),
+				'tabTitle'  => esc_html__( 'Unsplash', 'unsplash' ),
 				'route'     => rest_url( 'unsplash/v1/photos' ),
 				'toolbar'   => [
 					'filters' => [
 						'search' => [
-							'label'       => __( 'Search', 'unsplash' ),
-							'placeholder' => __( 'Search free high-resolution photos', 'unsplash' ),
+							'label'       => esc_html__( 'Search', 'unsplash' ),
+							'placeholder' => esc_html__( 'Search free high-resolution photos', 'unsplash' ),
 						],
 					],
 				],
 				'noResults' => [
-					'noMedia' => __( 'No items found.', 'unsplash' ),
+					'noMedia' => esc_html__( 'No items found.', 'unsplash' ),
 				],
 
 			]
@@ -248,7 +233,7 @@ class Plugin extends Plugin_Base {
 			'type'           => 'image',
 			'subtype'        => $image->get_field( 'ext' ),
 			'icon'           => ! empty( $image->get_image_url( 'thumb' ) ) ? $this->get_original_url_with_size( $image->get_image_url( 'thumb' ), 150, 150 ) : null,
-			'dateFormatted'  => mysql2date( __( 'F j, Y', 'unsplash' ), $image->get_field( 'created_at' ) ),
+			'dateFormatted'  => mysql2date( 'F j, Y', $image->get_field( 'created_at' ) ),
 			'nonces'         => [
 				'update' => false,
 				'delete' => false,
@@ -339,7 +324,11 @@ class Plugin extends Plugin_Base {
 	 */
 	public function get_original_url_with_size( $url, $width, $height, $attr = [] ) {
 		$attr = array_merge(
-			$this->default_img_attrs,
+			[
+				'fm'  => 'jpg',
+				'q'   => '85',
+				'fit' => 'crop',
+			],
 			$attr,
 			[
 				'w' => absint( $width ),
@@ -418,7 +407,7 @@ class Plugin extends Plugin_Base {
 		$default_args = [
 			'single'         => true,
 			'show_in_rest'   => true,
-			'object_subtype' => self::POST_TYPE,
+			'object_subtype' => 'attachment',
 		];
 
 		$default_object_schema = [
@@ -508,21 +497,16 @@ class Plugin extends Plugin_Base {
 
 		foreach ( $tax_args as $name => $args ) {
 			$args = wp_parse_args( $args, $default_args );
-			register_taxonomy( $name, self::POST_TYPE, $args );
+			register_taxonomy( $name, 'attachment', $args );
 		}
 	}
 
 	/**
-	 * Add an admin notice on if credntials not setup.
+	 * Add an admin notice on if credentials not setup.
 	 *
 	 * @action admin_notices
 	 */
 	public function admin_notice() {
-		$credentials = $this->settings->get_credentials();
-		if ( ! empty( $credentials['applicationId'] ) && ! empty( $credentials['secret'] ) ) {
-			return false;
-		}
-
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return false;
 		}
@@ -537,15 +521,23 @@ class Plugin extends Plugin_Base {
 			return false;
 		}
 
+		$credentials = $this->settings->get_credentials();
+		if (
+			! empty( $credentials['applicationId'] )
+			&& ! empty( $credentials['secret'] )
+			&& $this->rest_controller->api->check_api_credentials()
+			&& $this->rest_controller->api->check_api_status( $credentials )
+		) {
+			return false;
+		}
+
 		$class   = 'notice notice-warning is-dismissible';
 		$logo    = $this->asset_url( 'assets/images/logo.png' );
-		$title   = __( 'Unsplash', 'unsplash' );
-		$message = __( 'To complete set up of the Unsplash plugin you’ll need to add the API key/secret.', 'unsplash' );
-		$button  = __( 'Complete setup', 'unsplash' );
+		$title   = esc_html__( 'Unsplash', 'unsplash' );
+		$message = esc_html__( 'To complete set up of the Unsplash plugin you’ll need to add the API key/secret.', 'unsplash' );
+		$button  = esc_html__( 'Complete setup', 'unsplash' );
 		$url     = get_admin_url( null, 'options-general.php?page=unsplash' );
 
 		printf( '<div class="%1$s"><h3><img src="%2$s" height="14" "/>   %3$s</h3><p>%4$s</p><p><a href="%5$s" class="button button-primary button-large">%6$s</a></p></div>', esc_attr( $class ), esc_url( $logo ), esc_html( $title ), esc_html( $message ), esc_url( $url ), esc_html( $button ) );
-
-		return true;
 	}
 }

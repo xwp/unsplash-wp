@@ -4,9 +4,9 @@ module.exports = {
 	preset: '@wordpress/jest-preset-default',
 	collectCoverageFrom: [ 'assets/src/**/*.js' ],
 	testPathIgnorePatterns: [
-		'/node_modules/',
-		'/vendor/',
 		'/bin/',
+		'/node_modules/',
 		'/tests/e2e/',
+		'/vendor/',
 	],
 };

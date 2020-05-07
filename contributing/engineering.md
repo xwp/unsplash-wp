@@ -107,19 +107,21 @@ Build of the JavaScript files:
 npm run build:js
 ```
 
-Lastly, to get the plugin running in your WordPress install, activate the plugin via the WordPress dashboard, or the following `wp-cli` command:
+Lastly, we need to setup WordPress and get the plugin running, you can follow the setup wizard and activate the plugin via the WordPress dashboard, or run the following command using the `wp-cli`:
 
 ```bash
+wp core install --title='Unsplash Demo' --admin_user=admin --admin_password=password --admin_email=admin@example.com --skip-email --url=http://localhost:8088
 wp plugin activate unsplash
 ```
 
 If running this from the included Docker environment:
 
 ```bash
+npm run wp -- wp core install --title='Unsplash Demo' --admin_user=admin --admin_password=password --admin_email=admin@example.com --skip-email --url=http://localhost:8088
 npm run wp -- wp plugin activate unsplash
 ```
 
-_This command assumes you went through the WordPress install process already_
+_These commands assume you have already successfully started the environment with `npm run env:start`_
 
 Visit [localhost:8025](http://localhost:8025) to check all emails sent by WordPress.
 

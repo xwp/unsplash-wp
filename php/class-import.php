@@ -12,8 +12,6 @@ use WP_Query;
 
 /**
  * Class Import
- *
- * @package XWP\Unsplash
  */
 class Import {
 
@@ -23,24 +21,28 @@ class Import {
 	 * @var string
 	 */
 	protected $id = 0;
+
 	/**
 	 * Unsplash image object.
 	 *
 	 * @var Image
 	 */
 	protected $image;
+
 	/**
 	 * Post ID.
 	 *
 	 * @var int
 	 */
 	protected $parent = 0;
+
 	/**
 	 * Attachment ID.
 	 *
 	 * @var int
 	 */
 	protected $attachment_id = 0;
+
 	/**
 	 * Import constructor.
 	 *
@@ -177,7 +179,7 @@ class Import {
 		}
 
 		if ( empty( $file ) || ! is_array( $file ) ) {
-			return new WP_Error( 'no_file_found', __( 'No file found', 'unsplash' ), [ 'status' => 500 ] );
+			return new WP_Error( 'no_file_found', esc_html__( 'No file found', 'unsplash' ), [ 'status' => 500 ] );
 		}
 
 		$url  = $file['url'];
@@ -305,7 +307,7 @@ class Import {
 			return new WP_Error(
 				'rest_upload_limited_space',
 				/* translators: %s: Required disk space in kilobytes. */
-				sprintf( __( 'Not enough space to upload. %s KB needed.', 'unsplash' ), number_format( ( $file_size - $space_left ) / 1024 ) ),
+				sprintf( esc_html__( 'Not enough space to upload. %s KB needed.', 'unsplash' ), number_format( ( $file_size - $space_left ) / 1024 ) ),
 				[ 'status' => 400 ]
 			);
 		}
@@ -314,7 +316,7 @@ class Import {
 			return new WP_Error(
 				'rest_upload_file_too_big',
 				/* translators: %s: Maximum allowed file size in kilobytes. */
-				sprintf( __( 'This file is too big. Files must be less than %s KB in size.', 'unsplash' ), get_site_option( 'fileupload_maxk', 1500 ) ),
+				sprintf( esc_html__( 'This file is too big. Files must be less than %s KB in size.', 'unsplash' ), get_site_option( 'fileupload_maxk', 1500 ) ),
 				[ 'status' => 400 ]
 			);
 		}
@@ -327,7 +329,7 @@ class Import {
 		if ( upload_is_user_over_quota( false ) ) {
 			return new WP_Error(
 				'rest_upload_user_quota_exceeded',
-				__( 'You have used your space quota. Please delete files before uploading.', 'unsplash' ),
+				esc_html__( 'You have used your space quota. Please delete files before uploading.', 'unsplash' ),
 				[ 'status' => 400 ]
 			);
 		}

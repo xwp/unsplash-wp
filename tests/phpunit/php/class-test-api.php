@@ -136,7 +136,7 @@ class Test_Api extends \WP_UnitTestCase {
 	/**
 	 * Test check_api_credentials().
 	 *
-	 * @covers       \Unsplash\API::check_api_credentials()
+	 * @covers \Unsplash\API::check_api_credentials()
 	 */
 	public function test_check_api_credentials() {
 		$plugin = new Plugin();
@@ -149,7 +149,7 @@ class Test_Api extends \WP_UnitTestCase {
 	/**
 	 * Test check_api_credentials().
 	 *
-	 * @covers       \Unsplash\API::check_api_credentials()
+	 * @covers \Unsplash\API::check_api_credentials()
 	 */
 	public function test_no_check_api_credentials() {
 		add_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
@@ -165,9 +165,9 @@ class Test_Api extends \WP_UnitTestCase {
 	/**
 	 * Test check_api_credentials().
 	 *
-	 * @covers       \Unsplash\API::check_api_credentials()
-	 * @covers       \Unsplash\API::get()
-	 * @covers       \Unsplash\API::send_request()
+	 * @covers \Unsplash\API::check_api_credentials()
+	 * @covers \Unsplash\API::get()
+	 * @covers \Unsplash\API::send_request()
 	 */
 	public function test_no_check_api_credentials_again() {
 		add_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
@@ -178,6 +178,47 @@ class Test_Api extends \WP_UnitTestCase {
 		$this->assertEquals( $wp_error->get_error_code(), 'missing_api_credential' );
 		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), 'The Unsplash plugin has not been provided with API credentials. Please visit the Unsplash settings page and confirm that the API key/secret has been provided.' );
 		remove_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
+	}
+
+	/**
+	 * Test check_api_status().
+	 *
+	 * @covers \Unsplash\API::check_api_status()
+	 */
+	public function test_check_api_status() {
+		$plugin = new Plugin();
+		$plugin->init();
+		$api    = new API( $plugin );
+		$result = $api->check_api_status();
+		$this->assertTrue( $result );
+	}
+
+	/**
+	 * Test check_api_status().
+	 *
+	 * @covers \Unsplash\API::check_api_status()
+	 */
+	public function test_check_api_status_missing_credentials() {
+		$plugin = new Plugin();
+		$plugin->init();
+		$api    = new API( $plugin );
+		$result = $api->check_api_status( [ 'applicationId' => '' ] );
+		$this->assertFalse( $result );
+	}
+
+	/**
+	 * Test check_api_status().
+	 *
+	 * @covers \Unsplash\API::check_api_status()
+	 */
+	public function test_check_api_status_response_failed() {
+		$plugin = new Plugin();
+		$plugin->init();
+		$api = new API( $plugin );
+		add_filter( 'http_response', '__return_false' );
+		$result = $api->check_api_status();
+		remove_filter( 'http_response', '__return_false' );
+		$this->assertFalse( $result );
 	}
 
 	/**

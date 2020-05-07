@@ -1,3 +1,6 @@
+/**
+ * External dependencies
+ */
 import Macy from 'macy';
 
 const ImageViews = wp.media.view.Attachments.extend( {

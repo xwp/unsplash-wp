@@ -22,7 +22,6 @@ class Settings {
 	/**
 	 * Key to use for encryption.
 	 *
-	 * @since 1.0.0
 	 * @var string
 	 */
 	private $key;
@@ -30,7 +29,6 @@ class Settings {
 	/**
 	 * Salt to use for encryption.
 	 *
-	 * @since 1.0.0
 	 * @var string
 	 */
 	private $salt;
@@ -165,14 +163,14 @@ class Settings {
 
 		add_settings_section(
 			'unsplash_section',
-			__( 'API Authenication', 'unsplash' ),
+			esc_html__( 'API Authenication', 'unsplash' ),
 			[ $this, 'settings_section_render' ],
 			'unsplash'
 		);
 
 		add_settings_field(
 			'access_key',
-			__( 'Access Key', 'unsplash' ),
+			esc_html__( 'Access Key', 'unsplash' ),
 			[ $this, 'access_key_render' ],
 			'unsplash',
 			'unsplash_section'
@@ -180,7 +178,7 @@ class Settings {
 
 		add_settings_field(
 			'secret_key',
-			__( 'Secret Key', 'unsplash' ),
+			esc_html__( 'Secret Key', 'unsplash' ),
 			[ $this, 'secret_key_render' ],
 			'unsplash',
 			'unsplash_section'
@@ -269,7 +267,7 @@ class Settings {
 	/**
 	 * Format the API credentials in an array and filter.
 	 *
-	 * @return mixed|void
+	 * @return mixed|array
 	 */
 	public function get_credentials() {
 		$options        = get_option( 'unsplash_settings' );

@@ -10,11 +10,10 @@ namespace Unsplash;
 use WP_Error;
 
 /**
- * Class API
- *
- * @package Unsplash
+ * Class API.
  */
 class API {
+
 	/**
 	 * Plugin instance.
 	 *
@@ -234,14 +233,22 @@ class API {
 	 * @return bool|WP_Error
 	 */
 	public function check_api_credentials() {
-		foreach ( $this->plugin->settings->get_credentials() as $key => $value ) {
+		$credentials = $this->plugin->settings->get_credentials();
+
+		$settings_link = sprintf(
+			'<a href="%1$s">%2$s</a>',
+			esc_url( get_admin_url( null, 'options-general.php?page=unsplash' ) ),
+			esc_html__( 'Unsplash', 'unsplash' )
+		);
+
+		foreach ( $credentials as $key => $value ) {
 			if ( empty( $value ) ) {
 				return new WP_Error(
 					'missing_api_credential',
 					sprintf(
-					/* translators: %s: Link to settings page. */
-						__( 'The Unsplash plugin has not been provided with API credentials. Please visit the <a href="%s">Unsplash settings page</a> and confirm that the API key/secret has been provided.', 'unsplash' ),
-						get_admin_url( null, 'options-general.php?page=unsplash' )
+						/* translators: %s: Link to Unsplash settings page. */
+						esc_html__( 'The Unsplash plugin has not been provided with API credentials. Please visit the %s settings page and confirm that the API key/secret has been provided.', 'unsplash' ),
+						$settings_link
 					),
 					[
 						'status' => rest_authorization_required_code(),
@@ -255,6 +262,36 @@ class API {
 	}
 
 	/**
+	 * Check the API status.
+	 *
+	 * @param array $credentials The API credentials.
+	 * @return bool|WP_Error
+	 */
+	public function check_api_status( $credentials = [] ) {
+		if ( empty( $credentials ) ) {
+			$credentials = $this->plugin->settings->get_credentials();
+		}
+
+		if ( empty( $credentials['applicationId'] ) ) {
+			return false;
+		}
+
+		$args = [
+			'client_id' => $credentials['applicationId'],
+			'page'      => 1,
+			'per_page'  => 1,
+		];
+
+		$response = $this->get_remote( add_query_arg( $args, 'https://api.unsplash.com/photos' ) );
+
+		if ( ! is_wp_error( $response ) && 200 === wp_remote_retrieve_response_code( $response ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Format exception into usable WP_Error objects.
 	 *
 	 * @param string|int $code Error code.
@@ -264,25 +301,34 @@ class API {
 	 */
 	public function format_exception( $code, $error_status = 500 ) {
 		if ( is_numeric( $error_status ) ) {
+
+			// @todo should we support network activation, or at least point to the right blog_id in multi-site?
+			$settings_link = sprintf(
+				'<a href="%1$s">%2$s</a>',
+				esc_url( get_admin_url( null, 'options-general.php?page=unsplash' ) ),
+				esc_html__( 'Unsplash', 'unsplash' )
+			);
+			$status_link   = '<a href="https://status.unsplash.com">status.unsplash.com</a>';
+
 			switch ( $error_status ) {
 				case 401:
-					/* translators: %s: Link to settings page. */
-					$message = sprintf( __( 'The Unsplash API credentials supplied are not authorized. Please visit the <a href="%s">Unsplash settings page</a> to reconnect to Unsplash now.', 'unsplash' ), get_admin_url( null, 'options-general.php?page=unsplash' ) );
+					/* translators: %s: Link to Unsplash settings page. */
+					$message = sprintf( esc_html__( 'The Unsplash API credentials supplied are not authorized. Please visit the %s settings page to reconnect to Unsplash now.', 'unsplash' ), $settings_link );
 					break;
 				case 403:
-					/* translators: %s: Link to settings page. */
-					$message = sprintf( __( 'The Unsplash API credentials supplied are not authorized for this request. Please visit the <a href="%s">Unsplash settings page</a> to reconnect to Unsplash now.', 'unsplash' ), get_admin_url( null, 'options-general.php?page=unsplash' ) );
+					/* translators: %s: Link to Unsplash settings page. */
+					$message = sprintf( esc_html__( 'The Unsplash API credentials supplied are not authorized for this request. Please visit the %s settings page to reconnect to Unsplash now.', 'unsplash' ), $settings_link );
 					break;
 				case 404:
-					$message = __( 'Unable to find Unsplash resource.', 'unsplash' );
+					$message = esc_html__( 'Unable to find Unsplash resource.', 'unsplash' );
 					break;
 				case 429:
-					$message = __( 'The Unsplash API credentials supplied have been flagged for exceeding the permitted rate limit and have been temporarily disabled.', 'unsplash' );
+					$message = esc_html__( 'The Unsplash API credentials supplied have been flagged for exceeding the permitted rate limit and have been temporarily disabled.', 'unsplash' );
 					break;
 				case 400:
 				case 500:
 					/* translators: %s: Link to status page. */
-					$message = sprintf( __( 'There appears to be a communication issue with Unsplash, please check <a href="%s">status.unsplash.com</a> and try again in a few minutes.', 'unsplash' ), 'https://status.unsplash.com' );
+					$message = sprintf( esc_html__( 'There appears to be a communication issue with Unsplash, please check %s and try again in a few minutes.', 'unsplash' ), $status_link );
 					break;
 				default:
 					$message = get_status_header_desc( $error_status );

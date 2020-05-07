@@ -8,9 +8,7 @@
 namespace Unsplash;
 
 /**
- * Class Image
- *
- * @package Unsplash
+ * Class Image.
  */
 class Image {
 
@@ -20,6 +18,7 @@ class Image {
 	 * @var Image
 	 */
 	protected $image;
+
 	/**
 	 * Processed fields.
 	 *
@@ -33,13 +32,18 @@ class Image {
 	 * @var string
 	 */
 	protected $utm_source = '';
+
 	/**
 	 * Hardcoded file ext.
+	 *
+	 * @var string
 	 */
 	const EXT = 'jpeg';
 
 	/**
 	 * Hardcoded MINE type.
+	 *
+	 * @var string
 	 */
 	const MIME = 'image/jpeg';
 
@@ -179,15 +183,28 @@ class Image {
 			return '';
 		}
 
-		$url = add_query_arg(
+		$referral_url = add_query_arg(
 			[
 				'utm_source' => $this->utm_source,
 				'utm_medium' => 'referral',
 			],
 			'https://unsplash.com/'
 		);
+
+		$format_link   = '<a href="%1$s" rel="nofollow">%2$s</a>';
+		$user_link     = sprintf(
+			$format_link,
+			esc_url( $user_url ),
+			esc_html( $user_name )
+		);
+		$referral_link = sprintf(
+			$format_link,
+			esc_url( $referral_url ),
+			esc_html__( 'Unsplash', 'unsplash' )
+		);
+
 		// Whitespace at end of caption is required.
-		/* translators: 1: User URL, 2: User's name, 3: Unsplash URL */
-		return sprintf( __( 'Photo by <a href="%1$s">%2$s</a> on <a href="%3$s">Unsplash</a> ', 'unsplash' ), esc_url( $user_url ), $user_name, esc_url( $url ) );
+		/* translators: 1: Unsplash User URL, 2: Unsplash Referral URL */
+		return sprintf( esc_html__( 'Photo by %1$s on %2$s ', 'unsplash' ), $user_link, $referral_link );
 	}
 }

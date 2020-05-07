@@ -59,7 +59,6 @@ class Rest_Controller extends WP_REST_Controller {
 		$this->plugin->add_doc_hooks( $this );
 	}
 
-
 	/**
 	 * Registers the routes for the Unsplash API.
 	 *
@@ -88,7 +87,7 @@ class Rest_Controller extends WP_REST_Controller {
 			[
 				'args'   => [
 					'id' => [
-						'description' => __( 'Unsplash image ID.', 'unsplash' ),
+						'description' => esc_html__( 'Unsplash image ID.', 'unsplash' ),
 						'type'        => 'string',
 					],
 				],
@@ -110,7 +109,7 @@ class Rest_Controller extends WP_REST_Controller {
 			[
 				'args'   => [
 					'id' => [
-						'description' => __( 'Unsplash image ID.', 'unsplash' ),
+						'description' => esc_html__( 'Unsplash image ID.', 'unsplash' ),
 						'type'        => 'string',
 					],
 				],
@@ -132,7 +131,7 @@ class Rest_Controller extends WP_REST_Controller {
 			[
 				'args'   => [
 					'id' => [
-						'description'       => __( 'WordPress attachment ID.', 'unsplash' ),
+						'description'       => esc_html__( 'WordPress attachment ID.', 'unsplash' ),
 						'type'              => 'integer',
 						'validate_callback' => [ $this, 'validate_get_attachment' ],
 					],
@@ -295,7 +294,7 @@ class Rest_Controller extends WP_REST_Controller {
 			$response = new WP_Error(
 				'single-photo-process',
 				/* translators: %d: attachment id */
-				sprintf( __( 'Unable to process image attachment %d.', 'unsplash' ), $attachment_id ),
+				sprintf( esc_html__( 'Unable to process image attachment %d.', 'unsplash' ), $attachment_id ),
 				[
 					'attachment_id' => $attachment_id,
 					'status'        => '400',
@@ -363,7 +362,7 @@ class Rest_Controller extends WP_REST_Controller {
 		if ( 'edit' === $request['context'] && ! current_user_can( $post_type->cap->edit_posts ) ) {
 			return new WP_Error(
 				'rest_forbidden_context',
-				__( 'Sorry, you are not allowed to edit posts in this post type.', 'unsplash' ),
+				esc_html__( 'Sorry, you are not allowed to edit posts in this post type.', 'unsplash' ),
 				[ 'status' => rest_authorization_required_code() ]
 			);
 		}
@@ -396,7 +395,7 @@ class Rest_Controller extends WP_REST_Controller {
 		if ( ! current_user_can( $post_type->cap->create_posts ) ) {
 			return new WP_Error(
 				'rest_cannot_create',
-				__( 'Sorry, you are not allowed to create posts as this user.', 'unsplash' ),
+				esc_html__( 'Sorry, you are not allowed to create posts as this user.', 'unsplash' ),
 				[ 'status' => rest_authorization_required_code() ]
 			);
 		}
@@ -404,7 +403,7 @@ class Rest_Controller extends WP_REST_Controller {
 		if ( ! current_user_can( 'upload_files' ) ) {
 			return new WP_Error(
 				'rest_cannot_create',
-				__( 'Sorry, you are not allowed to upload media on this site.', 'unsplash' ),
+				esc_html__( 'Sorry, you are not allowed to upload media on this site.', 'unsplash' ),
 				[ 'status' => 400 ]
 			);
 		}
@@ -418,7 +417,8 @@ class Rest_Controller extends WP_REST_Controller {
 	 * @param array|Object    $photo Photo object.
 	 * @param WP_REST_Request $request Request object.
 	 *
-	 * @return array|WP_Error|WP_REST_Response Array if its an AJAX request, WP_Error if an error occurs, otherwise a REST response object.
+	 * @return array|WP_Error|WP_REST_Response Array if its an AJAX request,
+	 * WP_Error if an error occurs, otherwise a REST response object.
 	 */
 	public function prepare_item_for_response( $photo, $request ) {
 		if ( $this->is_ajax_request( $request ) ) {
@@ -461,7 +461,7 @@ class Rest_Controller extends WP_REST_Controller {
 		$query_params['per_page']['maximum'] = 30;
 
 		$query_params['order_by'] = [
-			'description' => __( 'How to sort the photos.', 'unsplash' ),
+			'description' => esc_html__( 'How to sort the photos.', 'unsplash' ),
 			'type'        => 'string',
 			'default'     => 'latest',
 			'enum'        => [ 'latest', 'oldest', 'popular' ],
@@ -470,14 +470,14 @@ class Rest_Controller extends WP_REST_Controller {
 		$query_params['orientation'] = [
 			'default'     => null,
 			'enum'        => [ 'landscape', 'portrait', 'squarish' ],
-			'description' => __( 'Filter search results by photo orientation.', 'unsplash' ),
+			'description' => esc_html__( 'Filter search results by photo orientation.', 'unsplash' ),
 			'type'        => 'string',
 		];
 
 		$query_params['collections'] = [
 			'default'           => null,
 			'type'              => 'string',
-			'description'       => __( 'Collection ID(‘s) to narrow search. If multiple, comma-separated.', 'unsplash' ),
+			'description'       => esc_html__( 'Collection ID(‘s) to narrow search. If multiple, comma-separated.', 'unsplash' ),
 			'validate_callback' => [ static::class, 'validate_get_search_param' ],
 		];
 
@@ -513,7 +513,7 @@ class Rest_Controller extends WP_REST_Controller {
 		if ( empty( $attachment ) ) {
 			return new WP_Error(
 				'rest_post_invalid_id',
-				__( 'Invalid attachment ID.', 'unsplash' ),
+				esc_html__( 'Invalid attachment ID.', 'unsplash' ),
 				array( 'status' => 400 )
 			);
 		}
@@ -521,7 +521,7 @@ class Rest_Controller extends WP_REST_Controller {
 		if ( get_post_type( $attachment ) !== $this->post_type ) {
 			return new WP_Error(
 				'rest_invalid_post_type_id',
-				__( 'Invalid attachment ID.', 'unsplash' ),
+				esc_html__( 'Invalid attachment ID.', 'unsplash' ),
 				array( 'status' => 400 )
 			);
 		}
@@ -538,7 +538,7 @@ class Rest_Controller extends WP_REST_Controller {
 		if ( property_exists( self::class, 'schema' ) && null !== $this->schema ) {
 			return $this->add_additional_fields_schema( $this->schema );
 		}
-		// TODO Add in all required fields.
+		// @todo Add in all required fields.
 
 		$schema = [
 			'$schema'    => 'http://json-schema.org/draft-04/schema#',
@@ -546,57 +546,57 @@ class Rest_Controller extends WP_REST_Controller {
 			'type'       => 'photo',
 			'properties' => [
 				'id'              => [
-					'description' => __( 'Unique identifier for the object.', 'unsplash' ),
+					'description' => esc_html__( 'Unique identifier for the object.', 'unsplash' ),
 					'type'        => 'string',
 					'context'     => [ 'view', 'edit', 'embed' ],
 					'readonly'    => true,
 				],
 				'created_at'      => [
-					'description' => __( 'The date the object was published.', 'unsplash' ),
+					'description' => esc_html__( 'The date the object was published.', 'unsplash' ),
 					'type'        => [ 'string', 'null' ],
 					'format'      => 'date-time',
 					'context'     => [ 'view', 'edit', 'embed' ],
 					'readonly'    => true,
 				],
 				'updated_at'      => [
-					'description' => __( 'The date the object was last modified.', 'unsplash' ),
+					'description' => esc_html__( 'The date the object was last modified.', 'unsplash' ),
 					'type'        => 'string',
 					'format'      => 'date-time',
 					'context'     => [ 'view', 'edit', 'embed' ],
 					'readonly'    => true,
 				],
 				'alt_description' => [
-					'description' => __( 'Alternative text to display when attachment is not displayed.', 'unsplash' ),
+					'description' => esc_html__( 'Alternative text to display when attachment is not displayed.', 'unsplash' ),
 					'type'        => 'string',
 					'context'     => [ 'view', 'edit', 'embed' ],
 					'readonly'    => true,
 				],
 				'description'     => [
-					'description' => __( 'Description for the object, as it exists in the database.', 'unsplash' ),
+					'description' => esc_html__( 'Description for the object, as it exists in the database.', 'unsplash' ),
 					'type'        => 'string',
 					'context'     => [ 'view', 'edit', 'embed' ],
 					'readonly'    => true,
 				],
 				'color'           => [
-					'description' => __( 'Color for the object, as it exists in the database.', 'unsplash' ),
+					'description' => esc_html__( 'Color for the object, as it exists in the database.', 'unsplash' ),
 					'type'        => 'string',
 					'context'     => [ 'view', 'edit', 'embed' ],
 					'readonly'    => true,
 				],
 				'height'          => [
-					'description' => __( 'Height for the object.', 'unsplash' ),
+					'description' => esc_html__( 'Height for the object.', 'unsplash' ),
 					'type'        => 'integer',
 					'context'     => [ 'view', 'edit', 'embed' ],
 					'readonly'    => true,
 				],
 				'width'           => [
-					'description' => __( 'Width for the object.', 'unsplash' ),
+					'description' => esc_html__( 'Width for the object.', 'unsplash' ),
 					'type'        => 'integer',
 					'context'     => [ 'view', 'edit', 'embed' ],
 					'readonly'    => true,
 				],
 				'urls'            => [
-					'description' => __( 'List of url for default image sizes for the object.', 'unsplash' ),
+					'description' => esc_html__( 'List of url for default image sizes for the object.', 'unsplash' ),
 					'type'        => 'object',
 					'properties'  => [],
 					'context'     => [ 'view', 'edit', 'embed' ],
@@ -627,6 +627,7 @@ class Rest_Controller extends WP_REST_Controller {
 	 * @param int   $index    Index of $photo in current page.
 	 * @param int   $page     Current page.
 	 * @param int   $per_page Number of photos per page.
+	 *
 	 * @return array Photo with updated ID.
 	 */
 	public function set_unique_media_id( $photo, $index, $page, $per_page ) {

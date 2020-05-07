@@ -36,13 +36,12 @@ class Hotlink {
 	 */
 	public function init() {
 		$this->plugin->add_doc_hooks( $this );
-		// Hook these filters this way to make them unhookable.
-		add_filter( 'wp_get_attachment_url', [ $this, 'wp_get_attachment_url' ], 10, 2 );
-		add_filter( 'image_downsize', [ $this, 'image_downsize' ], 10, 3 );
 	}
 
 	/**
 	 * Filter wp_get_attachment_url
+	 *
+	 * @filter wp_get_attachment_url, 10, 2
 	 *
 	 * @param string $url Original URL.
 	 * @param int    $id Attachment ID.
@@ -197,6 +196,8 @@ class Hotlink {
 
 	/**
 	 * Filter image downsize.
+	 *
+	 * @filter image_downsize, 10, 3
 	 *
 	 * @param array        $should_resize Array.
 	 * @param int          $id Attachment ID.
@@ -356,6 +357,7 @@ class Hotlink {
 	 * Filter source sets to give hotlink images.
 	 *
 	 * @filter wp_calculate_image_srcset, 99, 5
+	 *
 	 * @param array  $sources {
 	 *     One or more arrays of source data to include in the 'srcset'.
 	 *
@@ -367,8 +369,8 @@ class Hotlink {
 	 *                                  pixel density value if paired with an 'x' descriptor.
 	 *     }
 	 * }
-	 * @param array  $size_array     {
-	 *      An array of requested width and height values.
+	 * @param array  $size_array {
+	 *     An array of requested width and height values.
 	 *
 	 *     @type int $0 The width in pixels.
 	 *     @type int $1 The height in pixels.
@@ -376,9 +378,12 @@ class Hotlink {
 	 * @param string $image_src     The 'src' of the image.
 	 * @param array  $image_meta    The image meta data as returned by 'wp_get_attachment_metadata()'.
 	 * @param int    $attachment_id Image attachment ID or 0.
+	 *
 	 * @return array Converted images url in an array.
 	 */
 	public function wp_calculate_image_srcset( $sources, $size_array, $image_src, $image_meta, $attachment_id ) {
+		unset( $size_array, $image_src );
+
 		$unsplash_url = $this->get_unsplash_url( $attachment_id );
 		$cropped      = $this->is_cropped_image( $attachment_id );
 		if ( ! $unsplash_url || $cropped ) {
@@ -434,12 +439,14 @@ class Hotlink {
 	}
 
 	/**
-	 * Filters the URL to the original unsplash URL.
+	 * Filters the URL to the original Unsplash URL.
 	 *
 	 * @filter wp_get_original_image_url, 10, 2
 	 *
 	 * @param string $original_image_url URL to original image.
 	 * @param int    $attachment_id      Attachment ID.
+	 *
+	 * @return string
 	 */
 	public function wp_get_original_image_url( $original_image_url, $attachment_id ) {
 		$link = get_post_meta( $attachment_id, 'original_link', true );
@@ -452,12 +459,14 @@ class Hotlink {
 	}
 
 	/**
-	 * Filters the path the word unsplash.
+	 * Filters the path the word Unsplash.
 	 *
 	 * @filter wp_get_original_image_path, 10, 2
 	 *
-	 * @param string $original_image     Image path.
-	 * @param int    $attachment_id      Attachment ID.
+	 * @param string $original_image Image path.
+	 * @param int    $attachment_id  Attachment ID.
+	 *
+	 * @return string
 	 */
 	public function wp_get_original_image_path( $original_image, $attachment_id ) {
 		$link = get_post_meta( $attachment_id, 'original_link', true );
@@ -465,15 +474,14 @@ class Hotlink {
 			return $original_image;
 		}
 
-		return __( 'Unsplash', 'unsplash' );
+		return esc_html__( 'Unsplash', 'unsplash' );
 	}
-
 
 	/**
 	 * Get image size.
 	 *
-	 * @param string $img_tag An HTML 'img' element to be filtered.
-	 * @param string $img_src Image URL.
+	 * @param string $img_tag       An HTML 'img' element to be filtered.
+	 * @param string $img_src       Image URL.
 	 * @param int    $attachment_id Image attachment ID.
 	 *
 	 * @return array Array with width and height.
@@ -557,7 +565,7 @@ class Hotlink {
 	 *
 	 * @param int $id Attachment ID.
 	 *
-	 * @return boolean    Is cropped image.
+	 * @return boolean Is cropped image.
 	 */
 	public function is_cropped_image( $id ) {
 		return (bool) get_post_meta( $id, '_wp_attachment_backup_sizes', true );
@@ -626,9 +634,10 @@ class Hotlink {
 	 *
 	 * @filter wp_get_attachment_caption, 10, 2
 	 *
-	 * @param string $caption Caption for the given attachment.
+	 * @param string $caption       Caption for the given attachment.
 	 * @param int    $attachment_id Attachment ID.
-	 * @return string  Caption for the given attachment with html removed.
+	 *
+	 * @return string Caption for the given attachment with html removed.
 	 */
 	public function wp_get_attachment_caption( $caption, $attachment_id ) {
 		$unsplash_url = $this->get_unsplash_url( $attachment_id );
@@ -646,7 +655,7 @@ class Hotlink {
 	 * @filter render_block, 10, 2
 	 *
 	 * @param string $block_content The block content about to be appended.
-	 * @param array  $block The full block, including name and attributes.
+	 * @param array  $block         The full block, including name and attributes.
 	 *
 	 * @return string $block_content Filtered block content.
 	 */
