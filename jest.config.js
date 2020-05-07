@@ -5,7 +5,6 @@ module.exports = {
 	collectCoverageFrom: [ 'assets/src/**/*.js' ],
 	testPathIgnorePatterns: [
 		'/bin/',
-		'/build',
 		'/node_modules/',
 		'/tests/e2e/',
 		'/vendor/',
