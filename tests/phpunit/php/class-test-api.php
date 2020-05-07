@@ -158,7 +158,7 @@ class Test_Api extends \WP_UnitTestCase {
 		$api      = new API( $plugin );
 		$wp_error = $api->check_api_credentials();
 		$this->assertEquals( $wp_error->get_error_code(), 'missing_api_credential' );
-		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), 'The Unsplash plugin has not been provided with API credentials. Please visit the Unsplash settings page and confirm that the API key/secret has been provided.' );
+		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), 'The Unsplash plugin has not been provided the API access key. Please visit the Unsplash settings page and confirm that the API access key has been provided.' );
 		remove_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
 	}
 
@@ -176,7 +176,7 @@ class Test_Api extends \WP_UnitTestCase {
 		$api      = new API( $plugin );
 		$wp_error = $api->get( 'uYpOYyJdhRE' );
 		$this->assertEquals( $wp_error->get_error_code(), 'missing_api_credential' );
-		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), 'The Unsplash plugin has not been provided with API credentials. Please visit the Unsplash settings page and confirm that the API key/secret has been provided.' );
+		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), 'The Unsplash plugin has not been provided the API access key. Please visit the Unsplash settings page and confirm that the API access key has been provided.' );
 		remove_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
 	}
 
@@ -254,14 +254,11 @@ class Test_Api extends \WP_UnitTestCase {
 	/**
 	 * Disable unsplash api details.
 	 *
-	 * @param array $unused Unused variable.
-	 *
 	 * @return array
 	 */
-	public function disable_unsplash_api_credentials( $unused ) { //phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+	public function disable_unsplash_api_credentials() {
 		return [
 			'applicationId' => '',
-			'secret'        => '',
 			'utmSource'     => '',
 		];
 	}

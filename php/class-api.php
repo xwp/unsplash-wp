@@ -247,7 +247,7 @@ class API {
 					'missing_api_credential',
 					sprintf(
 						/* translators: %s: Link to Unsplash settings page. */
-						esc_html__( 'The Unsplash plugin has not been provided with API credentials. Please visit the %s settings page and confirm that the API key/secret has been provided.', 'unsplash' ),
+						esc_html__( 'The Unsplash plugin has not been provided the API access key. Please visit the %s settings page and confirm that the API access key has been provided.', 'unsplash' ),
 						$settings_link
 					),
 					[

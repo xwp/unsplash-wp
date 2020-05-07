@@ -524,7 +524,6 @@ class Plugin extends Plugin_Base {
 		$credentials = $this->settings->get_credentials();
 		if (
 			! empty( $credentials['applicationId'] )
-			&& ! empty( $credentials['secret'] )
 			&& $this->rest_controller->api->check_api_credentials()
 			&& $this->rest_controller->api->check_api_status( $credentials )
 		) {
@@ -534,7 +533,7 @@ class Plugin extends Plugin_Base {
 		$class   = 'notice notice-warning is-dismissible';
 		$logo    = $this->asset_url( 'assets/images/logo.png' );
 		$title   = esc_html__( 'Unsplash', 'unsplash' );
-		$message = esc_html__( 'To complete set up of the Unsplash plugin you’ll need to add the API key/secret.', 'unsplash' );
+		$message = esc_html__( 'To complete set up of the Unsplash plugin you’ll need to add the API access key.', 'unsplash' );
 		$button  = esc_html__( 'Complete setup', 'unsplash' );
 		$url     = get_admin_url( null, 'options-general.php?page=unsplash' );
 
