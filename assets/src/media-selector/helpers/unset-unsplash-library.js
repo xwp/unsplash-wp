@@ -4,7 +4,7 @@
 import isApplicableLibraries from './isApplicableLibraries';
 import isImageIncluded from './isImageIncluded';
 
-const settingName = 'libraryContentWithUnsplash';
+const { setUserSetting, getUserSetting } = window;
 
 /**
  * Unset the Unsplash library tab.
@@ -24,7 +24,7 @@ export default Controller => {
 
 			// Prevent persisting Unsplash as the default media tab for the user.
 			if ( 'unsplash' !== mode && view && view.get( mode ) ) {
-				window.setUserSetting( 'libraryContent', mode );
+				setUserSetting( 'libraryContent', mode );
 			}
 
 			// If current view supports the Unsplash tab save in user settings with different key.
@@ -42,7 +42,7 @@ export default Controller => {
 			) {
 				return;
 			}
-			window.setUserSetting( settingName, mode );
+			setUserSetting( 'libraryContentWithUnsplash', mode );
 		},
 		activate() {
 			this.syncSelection();
@@ -72,12 +72,15 @@ export default Controller => {
 				) {
 					this.set(
 						'content',
-						window.getUserSetting( 'libraryContent', this.get( 'content' ) )
+						getUserSetting( 'libraryContent', this.get( 'content' ) )
 					);
 				} else {
 					this.set(
 						'content',
-						window.getUserSetting( settingName, this.get( 'content' ) )
+						getUserSetting(
+							'libraryContentWithUnsplash',
+							this.get( 'content' )
+						)
 					);
 				}
 			}
