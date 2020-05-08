@@ -1,8 +1,8 @@
 /**
  * Internal dependencies
  */
-import isApplicableLibraries from './isApplicableLibraries';
-import isImageIncluded from './isImageIncluded';
+import isApplicableLibraries from './is-applicable-libraries';
+import isImageIncluded from './is-image-included';
 
 const { setUserSetting, getUserSetting } = window;
 

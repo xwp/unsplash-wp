@@ -7,8 +7,8 @@ import ImageView from '../views/image-view';
 import Toolbar from '../views/toolbar';
 import ToolbarSelect from '../views/toolbar-select';
 import getConfig from './get-config';
-import isImageIncluded from './isImageIncluded';
-import isApplicableLibraries from './isApplicableLibraries';
+import isImageIncluded from './is-image-included';
+import isApplicableLibraries from './is-applicable-libraries';
 
 export default View => {
 	return View.extend( {
