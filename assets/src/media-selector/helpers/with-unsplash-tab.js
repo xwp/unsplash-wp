@@ -7,6 +7,8 @@ import ImageView from '../views/image-view';
 import Toolbar from '../views/toolbar';
 import ToolbarSelect from '../views/toolbar-select';
 import getConfig from './get-config';
+import isImageIncluded from './is-image-included';
+import isApplicableLibraries from './is-applicable-libraries';
 
 export default View => {
 	return View.extend( {
@@ -21,21 +23,11 @@ export default View => {
 			const state = this.state();
 
 			// For the Classic Editor, only add the Unsplash tab to libraries that support images.
-			const applicableLibraries = [
-				'insert',
-				'featured-image',
-				'library',
-				'replace-image',
-			];
-			if ( state.id && ! applicableLibraries.includes( state.id ) ) {
+			if ( ! isApplicableLibraries( state.id ) ) {
 				return;
 			}
 
 			const { library, mimeType } = this.options;
-			const isImageIncluded = type => {
-				type = Array.isArray( type ) ? type : [ type ];
-				return type.includes( 'image' );
-			};
 
 			// For Gutenberg, hide the Unsplash tab if the library does not handle images.
 			if ( library && library.type && ! isImageIncluded( library.type ) ) {
