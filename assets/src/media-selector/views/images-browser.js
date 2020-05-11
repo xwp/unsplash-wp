@@ -23,6 +23,7 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 		this.collection.on( 'attachments:received remove', () =>
 			this.attachments.recalculateLayout()
 		);
+
 		this.collection.on(
 			'add remove reset attachments:received',
 			this.showError,
