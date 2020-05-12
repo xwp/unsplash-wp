@@ -34,6 +34,27 @@ class Settings {
 	private $salt;
 
 	/**
+	 * Global parent application redirect_uri.
+	 *
+	 * @var string
+	 */
+	private $auth_redirect_uri;
+
+	/**
+	 * Global parent application client_id.
+	 *
+	 * @var string
+	 */
+	private $auth_client_id = '38mSDjSiO3qXfUf_o8zHyww7e2UX-zeJV5DpWCJjHQE';
+
+	/**
+	 * Global parent application client_secret.
+	 *
+	 * @var string
+	 */
+	private $auth_client_secret = 'D-S-kaH92uWKfo956txd9zBmPz-YgmBETdo_xE3TwxA';
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Plugin $plugin Instance of the plugin abstraction.
@@ -42,6 +63,9 @@ class Settings {
 		$this->plugin = $plugin;
 		$this->key    = $this->get_default_key();
 		$this->salt   = $this->get_default_salt();
+
+		// Set the redirect_uri.
+		$this->auth_redirect_uri = get_admin_url( null, 'options-general.php?page=unsplash' );
 	}
 
 	/**
@@ -163,7 +187,7 @@ class Settings {
 
 		add_settings_section(
 			'unsplash_section',
-			esc_html__( 'API Authenication', 'unsplash' ),
+			esc_html__( 'API Authentication', 'unsplash' ),
 			[ $this, 'settings_section_render' ],
 			'unsplash'
 		);
@@ -172,14 +196,6 @@ class Settings {
 			'access_key',
 			esc_html__( 'Access Key', 'unsplash' ),
 			[ $this, 'access_key_render' ],
-			'unsplash',
-			'unsplash_section'
-		);
-
-		add_settings_field(
-			'secret_key',
-			esc_html__( 'Secret Key', 'unsplash' ),
-			[ $this, 'secret_key_render' ],
 			'unsplash',
 			'unsplash_section'
 		);
@@ -196,7 +212,7 @@ class Settings {
 
 		foreach ( $settings as $key => $value ) {
 			$should_encrypt = (
-				in_array( $key, [ 'access_key', 'secret_key' ], true )
+				'access_key' === $key
 				&& ! empty( $value )
 				&& (
 					! isset( $options[ $key ] )
@@ -207,10 +223,6 @@ class Settings {
 			if ( $should_encrypt ) {
 				$settings[ $key ] = $this->encrypt( $value );
 			} else {
-				// If the setting is empty, default to the saved setting if it already exists.
-				if ( empty( $value ) && isset( $options[ $key ] ) && ! empty( $options[ $key ] ) ) {
-					$value = $options[ $key ];
-				}
 				$settings[ $key ] = sanitize_text_field( $value );
 			}
 		}
@@ -222,10 +234,21 @@ class Settings {
 	 * Renders the entire settings page.
 	 */
 	public function settings_page_render() {
-		$logo = $this->plugin->asset_url( 'assets/images/logo.png' );
+		$logo    = $this->plugin->asset_url( 'assets/images/logo.png' );
+		$options = get_option( 'unsplash_auth' );
+
+		if ( ! empty( $options['message'] ) ) {
+			echo '<div class="' . esc_attr( $options['type'] ) . ' notice is-dismissible"><p>' . esc_html( $options['message'] ) . '</p></div>';
+			delete_option( 'unsplash_auth' );
+		}
 		?>
+		<style>
+			.notice, div.error, div.updated {
+				margin: 18px 18px 2px 0px;
+			}
+		</style>
+		<h1><img src="<?php echo esc_url( $logo ); ?>" height="20" />  <?php esc_html_e( 'Unsplash', 'unsplash' ); ?></h1><br />
 		<form action='options.php' method='post' style="max-width: 800px">
-			<h1><img src="<?php echo esc_url( $logo ); ?>" height="20" />  Unsplash</h1><br />
 			<?php
 			settings_fields( 'unsplash' );
 			do_settings_sections( 'unsplash' );
@@ -233,13 +256,199 @@ class Settings {
 			?>
 		</form>
 		<?php
+		$options = get_option( 'unsplash_settings' );
+
+		if ( empty( $options['access_key'] ) || true !== $this->plugin->rest_controller->api->check_api_status() ) {
+			$register = sprintf(
+				'<a href="https://unsplash.com/oauth/authorize?client_id=%1$s&response_type=code&scope=public&redirect_uri=%2$s" class="button">%3$s</a>',
+				esc_html( $this->auth_client_id ),
+				urlencode( wp_nonce_url( $this->auth_redirect_uri, 'auth' ) ),
+				esc_html__( 'Authorize', 'unsplash' )
+			);
+
+			/* translators: %s: Link to register Client Applications. */
+			echo '<p>' . sprintf( esc_html__( 'Clicking the following button will authorize your existing account, or allow you to create a new one, using OAuth to dynamically register a new Client Application. This will automatically add the required access key above. %s', 'unsplash' ), $register ) . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+	}
+
+	/**
+	 * Redirect page with wp_safe_redirect.
+	 *
+	 * @codeCoverageIgnore
+	 */
+	public function redirect() {
+		if ( wp_safe_redirect( $this->auth_redirect_uri ) ) {
+			exit;
+		}
+	}
+
+	/**
+	 * Update auth options and redirect.
+	 *
+	 * @param string $message The notice message.
+	 * @param string $type The notice type. Default: error.
+	 */
+	public function redirect_auth( $message = '', $type = 'error' ) {
+		update_option(
+			'unsplash_auth',
+			[
+				'message' => $message,
+				'type'    => $type,
+			]
+		);
+
+		$this->redirect();
+	}
+
+	/**
+	 * Handles the authentication flow for registering a dynamic client application.
+	 *
+	 * @action admin_init
+	 */
+	public function handle_auth_flow() {
+		$code = $this->get_code();
+
+		if ( $code ) {
+			$client_id = $this->get_client_id( $this->get_access_token( $code ) );
+
+			if ( $client_id ) {
+				remove_filter( 'sanitize_option_unsplash_settings', [ $this, 'sanitize_settings' ] );
+				update_option(
+					'unsplash_settings',
+					[
+						'access_key' => $this->encrypt( $client_id ),
+					]
+				);
+				add_filter( 'sanitize_option_unsplash_settings', [ $this, 'sanitize_settings' ] );
+
+				$credentials = [
+					'applicationId' => $client_id,
+					'utmSource'     => 'WordPress',
+				];
+
+				$api = $this->plugin->rest_controller->api;
+
+				if ( true !== $api->check_api_credentials() || true !== $api->check_api_status( $credentials ) ) {
+					$this->redirect_auth( esc_html__( 'Could not connect to the Unsplash API.', 'unsplash' ) );
+					return false;
+				}
+
+				$this->redirect_auth( esc_html__( 'Your Client Application was successfully created, and is now connected to the Unsplash API.', 'unsplash' ), 'updated' );
+			}
+		}
+	}
+
+	/**
+	 * Get the code during the auth flow.
+	 *
+	 * @return mixed
+	 */
+	public function get_code() {
+		$nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : '';
+		$code  = isset( $_REQUEST['code'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['code'] ) ) : '';
+
+		if ( $nonce && wp_verify_nonce( $nonce, 'auth' ) && ! empty( $code ) ) {
+			return $code;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get the access_token during the auth flow.
+	 *
+	 * @param string $code The auth code.
+	 * @return mixed
+	 */
+	public function get_access_token( $code ) {
+		$response = wp_remote_post(
+			'https://unsplash.com/oauth/token',
+			[
+				'body' => [
+					'client_id'     => $this->auth_client_id,
+					'client_secret' => $this->auth_client_secret,
+					'redirect_uri'  => wp_nonce_url( $this->auth_redirect_uri, 'auth' ),
+					'code'          => $code,
+					'grant_type'    => 'authorization_code',
+				],
+			]
+		);
+
+		$error = esc_html__( 'Could not generate an Unsplash API access_token.', 'unsplash' );
+
+		if ( ! is_array( $response ) || is_wp_error( $response ) ) {
+			$this->redirect_auth( $error );
+			return false;
+		}
+
+		// Setup the result from the response body.
+		$result = json_decode( wp_remote_retrieve_body( $response ), true );
+
+		if ( ! is_wp_error( $result ) && is_array( $result ) && isset( $result['access_token'] ) ) {
+			return $result['access_token'];
+		}
+
+		// Handle error message from API.
+		if ( is_array( $result ) && isset( $result['error_description'] ) ) {
+			$this->redirect_auth( esc_html( $result['error_description'] ) );
+			return false;
+		}
+
+		$this->redirect_auth( $error );
+		return false;
+	}
+
+	/**
+	 * Get the client_id during the auth flow.
+	 *
+	 * @param string $access_token The access token.
+	 * @return mixed
+	 */
+	public function get_client_id( $access_token ) {
+		$response = wp_remote_post(
+			'https://api.unsplash.com/clients',
+			[
+				'body'    => [
+					'name'        => 'WordPress OAuth',
+					'description' => 'Client application for ' . get_bloginfo( 'name' ) . ' - ' . get_home_url( null, '/' ),
+				],
+				'headers' => [
+					'Authorization' => 'Bearer ' . $access_token,
+				],
+			]
+		);
+
+		$error = esc_html__( 'Could not generate an Unsplash API client_id.', 'unsplash' );
+		$code  = wp_remote_retrieve_response_code( $response );
+
+		if ( ! is_array( $response ) || is_wp_error( $response ) || ! in_array( $code, [ 200, 201 ] ) ) {
+			$this->redirect_auth( $error );
+			return false;
+		}
+
+		// Setup the result from the response body.
+		$result = json_decode( wp_remote_retrieve_body( $response ), true );
+
+		if ( ! is_wp_error( $result ) && is_array( $result ) && isset( $result['client_id'] ) ) {
+			return $result['client_id'];
+		}
+
+		$this->redirect_auth( $error );
+		return false;
 	}
 
 	/**
 	 * Renders the settings section.
 	 */
 	public function settings_section_render() {
-		echo esc_html__( 'These settings are required to use the Unpslash plugin.', 'unsplash' );
+		$link = sprintf(
+			'<a href="%1$s" target="_blank">%2$s</a>',
+			'https://unsplash.com/oauth/applications',
+			esc_html__( 'OAuth Applications', 'unsplash' )
+		);
+
+		/* translators: %s: Link to OAuth Applications page. */
+		echo '<p>' . sprintf( esc_html__( 'An API access key is required to use the Unsplash plugin. If you have already registered a Client Application, enter the access key for it in the field below. You can find your application on the Unsplash %s page.', 'unsplash' ), $link ) . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
@@ -249,18 +458,7 @@ class Settings {
 		$options = get_option( 'unsplash_settings' );
 		?>
 		<input type='password' class="widefat" name='unsplash_settings[access_key]' aria-describedby="unsplash-key-description" value='<?php echo esc_attr( isset( $options['access_key'] ) ? $options['access_key'] : '' ); ?>'>
-		<p class="description" id="unsplash-key-description"><?php esc_html_e( 'The API key is a public unique identifier required for authentication.', 'unsplash' ); ?></p>
-		<?php
-	}
-
-	/**
-	 * Renders the Secret Key.
-	 */
-	public function secret_key_render() {
-		$options = get_option( 'unsplash_settings' );
-		?>
-		<input type='password' class="widefat" name='unsplash_settings[secret_key]' aria-describedby="unsplash-secret-description" value='<?php echo esc_attr( isset( $options['secret_key'] ) ? $options['secret_key'] : '' ); ?>'>
-		<p class="description" id="unsplash-secret-description"><?php esc_html_e( 'The secret shared between Unsplash and your plugin, required for authentication.', 'unsplash' ); ?></p>
+		<p class="description" id="unsplash-key-description"><?php esc_html_e( 'The API access key is a public unique identifier required for public API requests.', 'unsplash' ); ?></p>
 		<?php
 	}
 
@@ -275,7 +473,6 @@ class Settings {
 
 		$credentials = [
 			'applicationId' => ! empty( $options['access_key'] ) ? $this->decrypt( $options['access_key'] ) : getenv( 'UNSPLASH_ACCESS_KEY' ),
-			'secret'        => ! empty( $options['secret_key'] ) ? $this->decrypt( $options['secret_key'] ) : getenv( 'UNSPLASH_SECRET_KEY' ),
 			'utmSource'     => getenv( 'UNSPLASH_UTM_SOURCE' ) ? getenv( 'UNSPLASH_UTM_SOURCE' ) : $site_name_slug,
 		];
 

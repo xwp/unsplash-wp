@@ -112,6 +112,22 @@ class Test_Settings extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Test add_admin_menu.
+	 *
+	 * @covers ::add_admin_menu()
+	 * @covers ::add_settings()
+	 */
+	public function test_add_admin_menu_and_add_settings() {
+		$this->settings->add_admin_menu();
+		$this->settings->add_settings();
+
+		global $wp_settings_sections, $wp_settings_fields;
+
+		$this->assertTrue( ! empty( $wp_settings_sections['unsplash']['unsplash_section'] ) );
+		$this->assertTrue( ! empty( $wp_settings_fields['unsplash']['unsplash_section']['access_key'] ) );
+	}
+
+	/**
 	 * Data for test_sanitize_settings.
 	 *
 	 * @return array
@@ -131,21 +147,17 @@ class Test_Settings extends \WP_UnitTestCase {
 			'empty settings'     => [
 				[
 					'access_key' => '',
-					'secret_key' => '',
 				],
 				[
 					'access_key' => '',
-					'secret_key' => '',
 				],
 			],
 			'encrypted settings' => [
 				[
 					'access_key' => 'foo',
-					'secret_key' => 'bar',
 				],
 				[
 					'access_key' => 'foo',
-					'secret_key' => 'bar',
 				],
 			],
 		];
@@ -165,7 +177,7 @@ class Test_Settings extends \WP_UnitTestCase {
 
 		// We have to test the decrypted vales because the encrypted values will never match.
 		foreach ( $sanitized_settings as $key => $value ) {
-			if ( in_array( $key, [ 'access_key', 'secret_key' ], true ) ) {
+			if ( 'access_key' === $key ) {
 				$sanitized_settings[ $key ] = $this->settings->decrypt( $value );
 			}
 		}
@@ -180,7 +192,6 @@ class Test_Settings extends \WP_UnitTestCase {
 	public function test_sanitize_settings_not_update_vale_when_empty() {
 		$settings = [
 			'access_key' => 'foo',
-			'secret_key' => 'bar',
 		];
 
 		add_filter( 'pre_option_unsplash_settings', [ $this, 'get_mocked_settings' ], 10, 3 );
@@ -188,13 +199,12 @@ class Test_Settings extends \WP_UnitTestCase {
 		$new_settings = $this->settings->sanitize_settings(
 			[
 				'access_key' => 'foo',
-				'secret_key' => '',
 			]
 		);
 
 		// We have to test the decrypted vales because the encrypted values will never match.
 		foreach ( $new_settings as $key => $value ) {
-			if ( ! empty( $value ) && in_array( $key, [ 'access_key', 'secret_key' ], true ) ) {
+			if ( ! empty( $value ) && 'access_key' === $key ) {
 				$new_settings[ $key ] = $this->settings->decrypt( $value );
 			}
 		}
@@ -215,13 +225,338 @@ class Test_Settings extends \WP_UnitTestCase {
 		$settings = $this->settings->sanitize_settings(
 			[
 				'access_key' => 'foo',
-				'secret_key' => 'bar',
 			]
 		);
 
 		add_filter( 'pre_option_unsplash_settings', [ $this, 'get_mocked_settings' ], 10, 3 );
 
 		return $settings;
+	}
+
+	/**
+	 * Test settings_page_render.
+	 *
+	 * @covers ::settings_page_render()
+	 * @covers ::redirect_auth()
+	 */
+	public function test_settings_page_render() {
+		$mock = $this->getMockBuilder( '\\Unsplash\Settings' )
+			->setConstructorArgs( [ new Plugin() ] )
+			->setMethods(
+				[
+					'redirect',
+				]
+			)
+			->getMock();
+
+		$mock->expects( $this->any() )
+			->method( 'redirect' )
+			->will( $this->returnValue( true ) );
+
+		$mock->init();
+		$mock->redirect_auth( 'foo-is-notice', 'updated' );
+
+		ob_start();
+		$mock->settings_page_render();
+		$page = ob_get_clean();
+		$this->assertContains( 'Authorize', $page );
+		$this->assertContains( 'foo-is-notice', $page );
+	}
+
+	/**
+	 * Test handle_auth_flow.
+	 *
+	 * @covers ::handle_auth_flow()
+	 */
+	public function test_handle_auth_flow() {
+		$plugin = get_plugin_instance();
+
+		$mock = $this->getMockBuilder( '\\Unsplash\Settings' )
+			->setConstructorArgs( [ $plugin ] )
+			->setMethods(
+				[
+					'redirect',
+					'get_code',
+					'get_client_id',
+					'get_access_token',
+				]
+			)
+			->getMock();
+
+		$mock->expects( $this->once() )
+			->method( 'redirect' )
+			->will( $this->returnValue( true ) );
+
+		$mock->expects( $this->once() )
+			->method( 'get_code' )
+			->will( $this->returnValue( true ) );
+
+		$mock->expects( $this->once() )
+			->method( 'get_client_id' )
+			->will( $this->returnValue( getenv( 'UNSPLASH_ACCESS_KEY' ) ) );
+
+		$mock->expects( $this->once() )
+			->method( 'get_access_token' )
+			->will( $this->returnValue( true ) );
+
+		$mock->init();
+		$mock->handle_auth_flow();
+
+		$options = get_option( 'unsplash_auth' );
+		$this->assertEquals( 'updated', $options['type'] );
+	}
+
+	/**
+	 * Test handle_auth_flow.
+	 *
+	 * @covers ::handle_auth_flow()
+	 */
+	public function test_handle_auth_flow_error() {
+		$plugin = get_plugin_instance();
+
+		$mock = $this->getMockBuilder( '\\Unsplash\Settings' )
+			->setConstructorArgs( [ $plugin ] )
+			->setMethods(
+				[
+					'redirect',
+					'get_code',
+					'get_client_id',
+					'get_access_token',
+				]
+			)
+			->getMock();
+
+		$mock->expects( $this->once() )
+			->method( 'redirect' )
+			->will( $this->returnValue( true ) );
+
+		$mock->expects( $this->once() )
+			->method( 'get_code' )
+			->will( $this->returnValue( true ) );
+
+		$mock->expects( $this->once() )
+			->method( 'get_client_id' )
+			->will( $this->returnValue( '12345' ) );
+
+		$mock->expects( $this->once() )
+			->method( 'get_access_token' )
+			->will( $this->returnValue( true ) );
+
+		$mock->init();
+		$mock->handle_auth_flow();
+
+		$options = get_option( 'unsplash_auth' );
+		$this->assertEquals( 'error', $options['type'] );
+	}
+
+	/**
+	 * Test get_code.
+	 *
+	 * @covers ::get_code()
+	 */
+	public function test_get_code() {
+		$_REQUEST['_wpnonce'] = wp_create_nonce( 'auth' );
+		$_REQUEST['code']     = 12345;
+		$this->assertEquals( 12345, $this->settings->get_code() );
+	}
+
+	/**
+	 * Test get_code.
+	 *
+	 * @covers ::get_code()
+	 */
+	public function test_get_code_failed() {
+		$_REQUEST['_wpnonce'] = 12345;
+		$_REQUEST['code']     = 12345;
+		$this->assertFalse( $this->settings->get_code() );
+	}
+
+	/**
+	 * Test get_access_token.
+	 *
+	 * @covers ::get_access_token()
+	 */
+	public function test_get_access_token() {
+		$filter = function() {
+			return [
+				'body' => wp_json_encode(
+					[
+						'access_token' => 54321,
+					]
+				),
+			];
+		};
+		add_filter( 'http_response', $filter );
+		$this->assertEquals( 54321, $this->settings->get_access_token( 12345 ) );
+		remove_filter( 'http_response', $filter );
+	}
+
+	/**
+	 * Test get_access_token.
+	 *
+	 * @covers ::get_access_token()
+	 */
+	public function test_get_access_token_error() {
+		$mock = $this->getMockBuilder( '\\Unsplash\Settings' )
+			->setConstructorArgs( [ get_plugin_instance() ] )
+			->setMethods(
+				[
+					'redirect',
+				]
+			)
+			->getMock();
+
+		$mock->expects( $this->once() )
+			->method( 'redirect' )
+			->will( $this->returnValue( true ) );
+
+		add_filter( 'http_response', '__return_false' );
+		$this->assertFalse( $mock->get_access_token( 12345 ) );
+		remove_filter( 'http_response', '__return_false' );
+	}
+
+	/**
+	 * Test get_access_token.
+	 *
+	 * @covers ::get_access_token()
+	 */
+	public function test_get_access_token_error_description() {
+		$mock = $this->getMockBuilder( '\\Unsplash\Settings' )
+			->setConstructorArgs( [ get_plugin_instance() ] )
+			->setMethods(
+				[
+					'redirect',
+				]
+			)
+			->getMock();
+
+		$mock->expects( $this->once() )
+			->method( 'redirect' )
+			->will( $this->returnValue( true ) );
+
+		$filter = function() {
+			return [
+				'body' => wp_json_encode(
+					[
+						'error_description' => 'Error msg',
+					]
+				),
+			];
+		};
+
+		add_filter( 'http_response', $filter );
+		$this->assertFalse( $mock->get_access_token( 12345 ) );
+		remove_filter( 'http_response', $filter );
+	}
+
+	/**
+	 * Test get_access_token.
+	 *
+	 * @covers ::get_access_token()
+	 */
+	public function test_get_access_token_error_fallthrough() {
+		$mock = $this->getMockBuilder( '\\Unsplash\Settings' )
+			->setConstructorArgs( [ get_plugin_instance() ] )
+			->setMethods(
+				[
+					'redirect',
+				]
+			)
+			->getMock();
+
+		$mock->expects( $this->once() )
+			->method( 'redirect' )
+			->will( $this->returnValue( true ) );
+
+		$filter = function() {
+			return [
+				'body' => '',
+			];
+		};
+
+		add_filter( 'http_response', $filter );
+		$this->assertFalse( $mock->get_access_token( 12345 ) );
+		remove_filter( 'http_response', $filter );
+	}
+
+	/**
+	 * Test get_client_id.
+	 *
+	 * @covers ::get_client_id()
+	 */
+	public function test_get_client_id() {
+		$filter = function() {
+			return [
+				'body'     => wp_json_encode(
+					[
+						'client_id' => 54321,
+					]
+				),
+				'response' => [
+					'code' => 201,
+				],
+			];
+		};
+		add_filter( 'http_response', $filter );
+		$this->assertEquals( 54321, $this->settings->get_client_id( 12345 ) );
+		remove_filter( 'http_response', $filter );
+	}
+
+	/**
+	 * Test get_client_id.
+	 *
+	 * @covers ::get_client_id()
+	 */
+	public function test_get_client_id_error() {
+		$mock = $this->getMockBuilder( '\\Unsplash\Settings' )
+			->setConstructorArgs( [ get_plugin_instance() ] )
+			->setMethods(
+				[
+					'redirect',
+				]
+			)
+			->getMock();
+
+		$mock->expects( $this->once() )
+			->method( 'redirect' )
+			->will( $this->returnValue( true ) );
+
+		add_filter( 'http_response', '__return_false' );
+		$this->assertFalse( $mock->get_client_id( 12345 ) );
+		remove_filter( 'http_response', '__return_false' );
+	}
+
+	/**
+	 * Test get_client_id.
+	 *
+	 * @covers ::get_client_id()
+	 */
+	public function test_get_client_id_error_fallthrough() {
+		$mock = $this->getMockBuilder( '\\Unsplash\Settings' )
+			->setConstructorArgs( [ get_plugin_instance() ] )
+			->setMethods(
+				[
+					'redirect',
+				]
+			)
+			->getMock();
+
+		$mock->expects( $this->once() )
+			->method( 'redirect' )
+			->will( $this->returnValue( true ) );
+
+		$filter = function() {
+			return [
+				'body'     => '',
+				'response' => [
+					'code' => 201,
+				],
+			];
+		};
+
+		add_filter( 'http_response', $filter );
+		$this->assertFalse( $mock->get_client_id( 12345 ) );
+		remove_filter( 'http_response', $filter );
 	}
 
 	/**
@@ -233,7 +568,7 @@ class Test_Settings extends \WP_UnitTestCase {
 		ob_start();
 		$this->settings->settings_section_render();
 		$section = ob_get_clean();
-		$this->assertEquals( 'These settings are required to use the Unpslash plugin.', $section );
+		$this->assertContains( 'An API access key is required to use the Unsplash plugin.', $section );
 	}
 
 	/**
@@ -252,21 +587,6 @@ class Test_Settings extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Test secret_key_render.
-	 *
-	 * @covers ::secret_key_render()
-	 */
-	public function test_secret_key_render() {
-		ob_start();
-		$this->settings->secret_key_render();
-		$input = ob_get_clean();
-
-		$expected = "\t\t<input type='password' class=\"widefat\" name='unsplash_settings[secret_key]' aria-describedby=\"unsplash-secret-description\" value=''>\n\t\t";
-
-		$this->assertContains( $expected, $input );
-	}
-
-	/**
 	 *
 	 * Test get_credentials.
 	 *
@@ -275,7 +595,7 @@ class Test_Settings extends \WP_UnitTestCase {
 	public function test_get_credentials() {
 		$credentials = $this->settings->get_credentials();
 
-		$this->assertEquals( [ 'applicationId', 'secret', 'utmSource' ], array_keys( $credentials ) );
+		$this->assertEquals( [ 'applicationId', 'utmSource' ], array_keys( $credentials ) );
 
 		// Test UTM source.
 		$expected_utm = sanitize_title_with_dashes( get_bloginfo( 'name' ) );
