@@ -420,6 +420,40 @@ class Test_Settings extends \WP_UnitTestCase {
 	 *
 	 * @covers ::get_access_token()
 	 */
+	public function test_get_access_token_error_description() {
+		$mock = $this->getMockBuilder( '\\Unsplash\Settings' )
+			->setConstructorArgs( [ get_plugin_instance() ] )
+			->setMethods(
+				[
+					'redirect',
+				]
+			)
+			->getMock();
+
+		$mock->expects( $this->once() )
+			->method( 'redirect' )
+			->will( $this->returnValue( true ) );
+
+		$filter = function() {
+			return [
+				'body' => wp_json_encode(
+					[
+						'error_description' => 'Error msg',
+					]
+				),
+			];
+		};
+
+		add_filter( 'http_response', $filter );
+		$this->assertFalse( $mock->get_access_token( 12345 ) );
+		remove_filter( 'http_response', $filter );
+	}
+
+	/**
+	 * Test get_access_token.
+	 *
+	 * @covers ::get_access_token()
+	 */
 	public function test_get_access_token_error_fallthrough() {
 		$mock = $this->getMockBuilder( '\\Unsplash\Settings' )
 			->setConstructorArgs( [ get_plugin_instance() ] )
@@ -453,11 +487,14 @@ class Test_Settings extends \WP_UnitTestCase {
 	public function test_get_client_id() {
 		$filter = function() {
 			return [
-				'body' => wp_json_encode(
+				'body'     => wp_json_encode(
 					[
 						'client_id' => 54321,
 					]
 				),
+				'response' => [
+					'code' => 201,
+				],
 			];
 		};
 		add_filter( 'http_response', $filter );
@@ -510,7 +547,10 @@ class Test_Settings extends \WP_UnitTestCase {
 
 		$filter = function() {
 			return [
-				'body' => '',
+				'body'     => '',
+				'response' => [
+					'code' => 201,
+				],
 			];
 		};
 

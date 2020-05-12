@@ -388,6 +388,12 @@ class Settings {
 			return $result['access_token'];
 		}
 
+		// Handle error message from API.
+		if ( is_array( $result ) && isset( $result['error_description'] ) ) {
+			$this->redirect_auth( esc_html( $result['error_description'] ) );
+			return false;
+		}
+
 		$this->redirect_auth( $error );
 		return false;
 	}
@@ -399,7 +405,7 @@ class Settings {
 	 * @return mixed
 	 */
 	public function get_client_id( $access_token ) {
-		$response_client = wp_remote_post(
+		$response = wp_remote_post(
 			'https://api.unsplash.com/clients',
 			[
 				'body'    => [
@@ -413,17 +419,18 @@ class Settings {
 		);
 
 		$error = esc_html__( 'Could not generate an Unsplash API client_id.', 'unsplash' );
+		$code  = wp_remote_retrieve_response_code( $response );
 
-		if ( ! is_array( $response_client ) || is_wp_error( $response_client ) ) {
+		if ( ! is_array( $response ) || is_wp_error( $response ) || ! in_array( $code, [ 200, 201 ] ) ) {
 			$this->redirect_auth( $error );
 			return false;
 		}
 
 		// Setup the result from the response body.
-		$result_client = json_decode( wp_remote_retrieve_body( $response_client ), true );
+		$result = json_decode( wp_remote_retrieve_body( $response ), true );
 
-		if ( ! is_wp_error( $result_client ) && is_array( $result_client ) && isset( $result_client['client_id'] ) ) {
-			return $result_client['client_id'];
+		if ( ! is_wp_error( $result ) && is_array( $result ) && isset( $result['client_id'] ) ) {
+			return $result['client_id'];
 		}
 
 		$this->redirect_auth( $error );
