@@ -22,7 +22,6 @@ export default Controller => {
 			const mode = this.frame.content.mode(),
 				view = this.frame.router.get();
 
-			// @todo This needs to be improved.
 			// Prevent persisting Unsplash as the default media tab for the user.
 			if ( 'unsplash' !== mode && view && view.get( mode ) ) {
 				setUserSetting( 'libraryContent', mode );
