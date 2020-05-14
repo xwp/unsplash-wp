@@ -245,10 +245,14 @@ class Settings {
 			.notice, div.error, div.updated {
 				margin: 18px 18px 2px 0px;
 			}
+			p.submit{
+				margin-top: 0px;
+				margin-bottom: 20px;
+			}
 		</style>
 		<h1><img src="<?php echo esc_url( $logo ); ?>" height="20" />  <?php esc_html_e( 'Unsplash', 'unsplash' ); ?></h1>
 		<p><i><?php esc_html_e( 'Search the internet’s source of freely usable images.', 'unsplash' ); ?></i></p><br />
-		<h2><?php esc_html_e( 'General Settings', 'unsplash' ); ?></h2>
+		<h1><?php esc_html_e( 'General Settings', 'unsplash' ); ?></h1>
 		<?php
 
 		$settings = get_option( 'unsplash_settings' );
@@ -260,25 +264,30 @@ class Settings {
 		);
 		if ( empty( $settings['access_key'] ) ) {
 			?>
-			<h4><?php esc_html_e( 'Unsplash set up is incomplete', 'unsplash' ); ?> <span class="dashicons dashicons-warning"></span></h4>
-			<p><?php esc_html_e( 'To complete set up of the Unsplash plugin you will need to authenticate with an API key. Proceed to automatically set up authentication.', 'unsplash' ); ?></p>
-			<?php echo $register; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+			<div class="notice notice-warning">
+				<h3><?php esc_html_e( 'Unsplash set up is incomplete', 'unsplash' ); ?></h3>
+				<p><?php esc_html_e( 'To complete set up of the Unsplash plugin you will need to authenticate with an API key. Proceed to automatically set up authentication.', 'unsplash' ); ?></p>
+				<?php echo $register; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+			</div>
 			<?php
 		} elseif ( ! $this->plugin->rest_controller->api->check_api_status() ) {
 			?>
-				<h4><?php esc_html_e( 'Unable to connect to Unsplash', 'unsplash' ); ?> <span class="dashicons dashicons-no"></span> </h4>
-				<p><?php esc_html_e( 'Unsplash set up has failed. Please automatically set up authentication again.', 'unsplash' ); ?></p>
-				<?php echo $register; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+				<div class="notice notice-error">
+					<h3><?php esc_html_e( 'Unable to connect to Unsplash', 'unsplash' ); ?> <span class="dashicons dashicons-dismiss" style="color: #dc3232"></span> </h3>
+					<p><?php esc_html_e( 'Unsplash set up has failed. Please automatically set up authentication again.', 'unsplash' ); ?></p>
+					<?php echo $register; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+				</div>
 				<?php
 		} else {
 			?>
-			<h4><?php esc_html_e( 'Unsplash set up is complete', 'unsplash' ); ?> <span class="dashicons dashicons-yes-alt"></span></h4>
+			<br />
+			<h3><?php esc_html_e( 'Unsplash set up is complete', 'unsplash' ); ?> <span class="dashicons dashicons-yes-alt" style="color: #46b450"></span></h3>
 			<p><?php esc_html_e( 'If you want to change something, you can always deauthenticate your account and reauthenticate.', 'unsplash' ); ?></p>
 			<form action='options.php' method='post' style="max-width: 800px">
 				<input type='hidden' name='unsplash_settings[access_key]' value='' />
 				<?php
 				settings_fields( 'unsplash' );
-				submit_button( __( 'Deauthenticate', 'unsplash' ) );
+				submit_button( __( 'Deauthenticate', 'unsplash' ), '' );
 				?>
 			</form>
 			<?php
