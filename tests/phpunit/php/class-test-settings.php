@@ -264,6 +264,59 @@ class Test_Settings extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Test settings_page_render.
+	 *
+	 * @covers ::settings_page_render()
+	 * @covers ::redirect_auth()
+	 */
+	public function test_settings_page_render_not_connected() {
+		add_filter( 'pre_option_unsplash_settings', [ $this, 'get_mocked_settings' ], 10, 3 );
+		$mock = $this->getMockBuilder( '\\Unsplash\Settings' )
+			->setConstructorArgs( [ new Plugin() ] )
+			->setMethods(
+				[
+					'redirect',
+				]
+			)
+			->getMock();
+
+		ob_start();
+		$mock->settings_page_render();
+		$page = ob_get_clean();
+		$this->assertContains( 'Authenticate', $page );
+		$this->assertContains( 'Unable to connect to Unsplash', $page );
+		remove_filter( 'pre_option_unsplash_settings', [ $this, 'get_mocked_settings' ], 10 );
+	}
+
+	/**
+	 * Test settings_page_render.
+	 *
+	 * @covers ::settings_page_render()
+	 * @covers ::redirect_auth()
+	 */
+	public function test_settings_page_render_connected() {
+		add_filter( 'http_response', [ $this, 'fake_http_response' ] );
+		add_filter( 'pre_option_unsplash_settings', [ $this, 'get_mocked_settings' ], 10, 3 );
+		$mock = $this->getMockBuilder( '\\Unsplash\Settings' )
+					->setConstructorArgs( [ get_plugin_instance() ] )
+					->setMethods(
+						[
+							'redirect',
+						]
+					)
+					->getMock();
+
+
+		ob_start();
+		$mock->settings_page_render();
+		$page = ob_get_clean();
+		$this->assertContains( 'Deauthenticate', $page );
+		$this->assertContains( 'Unsplash set up is complete', $page );
+		remove_filter( 'http_response', [ $this, 'fake_http_response' ] );
+		remove_filter( 'pre_option_unsplash_settings', [ $this, 'get_mocked_settings' ], 10 );
+	}
+
+	/**
 	 * Test handle_auth_flow.
 	 *
 	 * @covers ::handle_auth_flow()
@@ -602,5 +655,17 @@ class Test_Settings extends \WP_UnitTestCase {
 		$actual_utm   = $credentials['utmSource'];
 
 		$this->assertEquals( $expected_utm, $actual_utm );
+	}
+
+	/**
+	 * Fake success.
+	 *
+	 * @param array $response Array from wp_remote_get.
+	 *
+	 * @return mixed
+	 */
+	public function fake_http_response( $response ) {
+		$response['response']['code'] = 200;
+		return $response;
 	}
 }
