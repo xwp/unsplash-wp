@@ -235,6 +235,11 @@ class Settings {
 	 */
 	public function settings_page_render() {
 		$logo = $this->plugin->asset_url( 'assets/images/logo.png' );
+		$auth = get_option( 'unsplash_auth' );
+		if ( ! empty( $auth['message'] ) ) {
+			printf( '<div class="%s notice is-dismissible"><p>%s</p></div>', esc_attr( $auth['type'] ), esc_html( $auth['message'] ) );
+			delete_option( 'unsplash_auth' );
+		}
 		?>
 		<style>
 			.notice, div.error, div.updated {
@@ -245,44 +250,41 @@ class Settings {
 		<p><i><?php esc_html_e( 'Search the internet’s source of freely usable images.', 'unsplash' ); ?></i></p><br />
 		<h2><?php esc_html_e( 'General Settings', 'unsplash' ); ?></h2>
 		<?php
-		$auth = get_option( 'unsplash_auth' );
 
-		if ( ! empty( $auth['message'] ) ) {
-			echo '<div class="' . esc_attr( $auth['type'] ) . ' notice is-dismissible"><p>' . esc_html( $auth['message'] ) . '</p></div>';
-			delete_option( 'unsplash_auth' );
-		}
 		$settings = get_option( 'unsplash_settings' );
 		$register = sprintf(
-			'<a href="https://unsplash.com/oauth/authorize?client_id=%1$s&response_type=code&scope=public&redirect_uri=%2$s" class="button button-primary">%3$s</a>',
+			'<p class="submit"><a href="https://unsplash.com/oauth/authorize?client_id=%1$s&response_type=code&scope=public&redirect_uri=%2$s" class="button button-primary">%3$s</a></p>',
 			esc_html( $this->auth_client_id ),
 			urlencode( wp_nonce_url( $this->auth_redirect_uri, 'auth' ) ),
 			esc_html__( 'Authenticate', 'unsplash' )
 		);
 		if ( empty( $settings['access_key'] ) ) {
 			?>
+			<h4><?php esc_html_e( 'Unsplash set up is incomplete', 'unsplash' ); ?> <span class="dashicons dashicons-warning"></span></h4>
 			<p><?php esc_html_e( 'To complete set up of the Unsplash plugin you will need to authenticate with an API key. Proceed to automatically set up authentication.', 'unsplash' ); ?></p>
-			<p><?php echo $register; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p><br />
+			<?php echo $register; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 			<?php
 		} elseif ( ! $this->plugin->rest_controller->api->check_api_status() ) {
 			?>
-				<h4><?php esc_html_e( 'Unable to connect to Unsplash', 'unsplash' ); ?></h4>
-				<p><?php esc_html_e( 'Unsplash set up has failed Please automatically set up authentication again.', 'unsplash' ); ?></p>
-				<p><?php echo $register; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p><br />
+				<h4><?php esc_html_e( 'Unable to connect to Unsplash', 'unsplash' ); ?> <span class="dashicons dashicons-no"></span> </h4>
+				<p><?php esc_html_e( 'Unsplash set up has failed. Please automatically set up authentication again.', 'unsplash' ); ?></p>
+				<?php echo $register; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				<?php
 		} else {
-			$register = sprintf(
-				'<a href="https://unsplash.com/oauth/authorize?client_id=%1$s&response_type=code&scope=public&redirect_uri=%2$s" class="button button-primary">%3$s</a>',
-				esc_html( $this->auth_client_id ),
-				urlencode( wp_nonce_url( $this->auth_redirect_uri, 'auth' ) ),
-				esc_html__( 'Deauthenticate', 'unsplash' )
-			);
 			?>
-			<h4><?php esc_html_e( 'Unsplash set up is complete', 'unsplash' ); ?></h4>
+			<h4><?php esc_html_e( 'Unsplash set up is complete', 'unsplash' ); ?> <span class="dashicons dashicons-yes-alt"></span></h4>
 			<p><?php esc_html_e( 'If you want to change something, you can always deauthenticate your account and reauthenticate.', 'unsplash' ); ?></p>
-			<p><?php echo $register; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p><br />
+			<form action='options.php' method='post' style="max-width: 800px">
+				<input type='hidden' name='unsplash_settings[access_key]' value='' />
+				<?php
+				settings_fields( 'unsplash' );
+				submit_button( __( 'Deauthenticate', 'unsplash' ) );
+				?>
+			</form>
 			<?php
 		}
 		?>
+		<br />
 		<form action='options.php' method='post' style="max-width: 800px">
 			<?php
 			settings_fields( 'unsplash' );
