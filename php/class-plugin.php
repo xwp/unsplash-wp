@@ -522,11 +522,11 @@ class Plugin extends Plugin_Base {
 		}
 
 		$credentials = $this->settings->get_credentials();
-		if (
-			! empty( $credentials['applicationId'] )
-			&& $this->rest_controller->api->check_api_credentials()
-			&& $this->rest_controller->api->check_api_status( $credentials )
-		) {
+		if ( ! empty( $credentials['applicationId'] ) && $this->rest_controller->api->check_api_credentials() ) {
+			return false;
+		}
+
+		if ( $this->rest_controller->api->check_api_status( $credentials, true ) ) {
 			return false;
 		}
 

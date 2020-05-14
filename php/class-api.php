@@ -134,13 +134,15 @@ class API {
 	 * @return array|WP_Error
 	 */
 	public function send_request( $path, array $args = [] ) {
-		$api_check = $this->check_api_credentials();
-		if ( is_wp_error( $api_check ) ) {
-			return $api_check;
+		if ( ! isset( $args['client_id'] ) ) {
+			$api_check = $this->check_api_credentials();
+			if ( is_wp_error( $api_check ) ) {
+				return $api_check;
+			}
+			$credentials       = $this->plugin->settings->get_credentials();
+			$args['client_id'] = $credentials['applicationId'];
 		}
 		$url               = 'https://api.unsplash.com' . $path;
-		$credentials       = $this->plugin->settings->get_credentials();
-		$args['client_id'] = $credentials['applicationId'];
 		$cache_key         = $args;
 		$cache_key['path'] = $path;
 		$cache             = new Api_Cache( $cache_key );
@@ -265,9 +267,10 @@ class API {
 	 * Check the API status.
 	 *
 	 * @param array $credentials The API credentials.
+	 * @param bool  $cached Optional. If the request should be cached or not. Default to false.
 	 * @return bool|WP_Error
 	 */
-	public function check_api_status( $credentials = [] ) {
+	public function check_api_status( $credentials = [], $cached = false ) {
 		if ( empty( $credentials ) ) {
 			$credentials = $this->plugin->settings->get_credentials();
 		}
@@ -281,10 +284,12 @@ class API {
 			'page'      => 1,
 			'per_page'  => 1,
 		];
+		if ( $cached ) {
+			$args['cb'] = microtime();
+		}
 
-		$response = $this->get_remote( add_query_arg( $args, 'https://api.unsplash.com/photos' ) );
-
-		if ( ! is_wp_error( $response ) && 200 === wp_remote_retrieve_response_code( $response ) ) {
+		$response = $this->send_request( '/photos', $args );
+		if ( ! is_wp_error( $response ) ) {
 			return true;
 		}
 

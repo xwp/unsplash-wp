@@ -189,7 +189,7 @@ class Test_Api extends \WP_UnitTestCase {
 		$plugin = new Plugin();
 		$plugin->init();
 		$api    = new API( $plugin );
-		$result = $api->check_api_status();
+		$result = $api->check_api_status([], false);
 		$this->assertTrue( $result );
 	}
 
@@ -202,7 +202,7 @@ class Test_Api extends \WP_UnitTestCase {
 		$plugin = new Plugin();
 		$plugin->init();
 		$api    = new API( $plugin );
-		$result = $api->check_api_status( [ 'applicationId' => '' ] );
+		$result = $api->check_api_status( [ 'applicationId' => '' ], false );
 		$this->assertFalse( $result );
 	}
 
@@ -216,7 +216,7 @@ class Test_Api extends \WP_UnitTestCase {
 		$plugin->init();
 		$api = new API( $plugin );
 		add_filter( 'http_response', '__return_false' );
-		$result = $api->check_api_status();
+		$result = $api->check_api_status([], false);
 		remove_filter( 'http_response', '__return_false' );
 		$this->assertFalse( $result );
 	}
