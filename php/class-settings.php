@@ -234,7 +234,7 @@ class Settings {
 	 * Renders the entire settings page.
 	 */
 	public function settings_page_render() {
-		$logo = $this->plugin->asset_url( 'assets/images/logo.png' );
+		$logo = $this->plugin->asset_url( 'assets/images/logo.svg' );
 		$auth = get_option( 'unsplash_auth' );
 		if ( ! empty( $auth['message'] ) ) {
 			printf( '<div class="%s notice is-dismissible"><p>%s</p></div>', esc_attr( $auth['type'] ), esc_html( $auth['message'] ) );
@@ -250,7 +250,7 @@ class Settings {
 				margin-bottom: 20px;
 			}
 		</style>
-		<h1><img src="<?php echo esc_url( $logo ); ?>" height="20" />  <?php esc_html_e( 'Unsplash', 'unsplash' ); ?></h1>
+		<h1><img src="<?php echo esc_url( $logo ); ?>" height="26" />  <?php esc_html_e( 'Unsplash', 'unsplash' ); ?></h1>
 		<p><i><?php esc_html_e( 'Search the internet’s source of freely usable images.', 'unsplash' ); ?></i></p><br />
 		<h1><?php esc_html_e( 'General Settings', 'unsplash' ); ?></h1>
 		<?php
