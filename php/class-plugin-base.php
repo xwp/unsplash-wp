@@ -41,6 +41,13 @@ abstract class Plugin_Base {
 	public $dir_url;
 
 	/**
+	 * Plugin main file.
+	 *
+	 * @var string
+	 */
+	public $file;
+
+	/**
 	 * Directory in plugin containing autoloaded classes.
 	 *
 	 * @var string
@@ -70,6 +77,8 @@ abstract class Plugin_Base {
 		$this->slug     = $location['dir_basename'];
 		$this->dir_path = $location['dir_path'];
 		$this->dir_url  = $location['dir_url'];
+		$this->file     = trailingslashit( basename( $this->dir_path ) ) . 'unsplash.php';
+
 		spl_autoload_register( [ $this, 'autoload' ] );
 		$this->add_doc_hooks();
 	}
