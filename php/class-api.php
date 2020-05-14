@@ -284,7 +284,7 @@ class API {
 			'page'      => 1,
 			'per_page'  => 1,
 		];
-		if ( $cached ) {
+		if ( ! $cached ) {
 			$args['cb'] = microtime();
 		}
 

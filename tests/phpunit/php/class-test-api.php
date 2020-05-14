@@ -222,6 +222,21 @@ class Test_Api extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Test check_api_status().
+	 *
+	 * @covers \Unsplash\API::check_api_status()
+	 */
+	public function test_check_api_cached() {
+		$plugin = new Plugin();
+		$plugin->init();
+		$api = new API( $plugin );
+		add_filter( 'http_response', '__return_false' );
+		$result1 = $api->check_api_status( [], true );
+		$result2 = $api->check_api_status( [], true );
+		remove_filter( 'http_response', '__return_false' );
+		$this->assertFalse( $result );
+	}
+	/**
 	 * Return a valid url but not the correct one.
 	 *
 	 * @return string
