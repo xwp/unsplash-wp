@@ -272,7 +272,7 @@ class Test_Settings extends \WP_UnitTestCase {
 	public function test_settings_page_render_not_connected() {
 		add_filter( 'pre_option_unsplash_settings', [ $this, 'get_mocked_settings' ], 10, 3 );
 		$mock = $this->getMockBuilder( '\\Unsplash\Settings' )
-			->setConstructorArgs( [ new Plugin() ] )
+			->setConstructorArgs( [ get_plugin_instance() ] )
 			->setMethods(
 				[
 					'redirect',
