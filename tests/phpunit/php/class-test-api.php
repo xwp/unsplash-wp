@@ -234,7 +234,7 @@ class Test_Api extends \WP_UnitTestCase {
 		$result1 = $api->check_api_status( [], true );
 		$result2 = $api->check_api_status( [], true );
 		remove_filter( 'http_response', '__return_false' );
-		$this->assertFalse( $result );
+		$this->assertSame( $result1, $result2 );
 	}
 	/**
 	 * Return a valid url but not the correct one.
