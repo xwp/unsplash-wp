@@ -259,7 +259,7 @@ class Test_Settings extends \WP_UnitTestCase {
 		ob_start();
 		$mock->settings_page_render();
 		$page = ob_get_clean();
-		$this->assertContains( 'Authorize', $page );
+		$this->assertContains( 'Authenticate', $page );
 		$this->assertContains( 'foo-is-notice', $page );
 	}
 
@@ -568,7 +568,7 @@ class Test_Settings extends \WP_UnitTestCase {
 		ob_start();
 		$this->settings->settings_section_render();
 		$section = ob_get_clean();
-		$this->assertContains( 'An API access key is required to use the Unsplash plugin.', $section );
+		$this->assertContains( 'Always use the default automated set up unless a manual authentication process is required.', $section );
 	}
 
 	/**
