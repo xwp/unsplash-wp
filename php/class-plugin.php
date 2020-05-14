@@ -536,9 +536,9 @@ class Plugin extends Plugin_Base {
 		}
 
 
-		$logo    = $this->asset_url( 'assets/images/logo.png' );
-		$title   = esc_html__( 'Unsplash', 'unsplash' );
-		$url     = get_admin_url( null, 'options-general.php?page=unsplash' );
+		$logo  = $this->asset_url( 'assets/images/logo.png' );
+		$title = esc_html__( 'Unsplash', 'unsplash' );
+		$url   = get_admin_url( null, 'options-general.php?page=unsplash' );
 
 		printf( '<div class="%1$s"><h3><img src="%2$s" height="14" "/>   %3$s</h3><p>%4$s</p><p><a href="%5$s" class="button button-primary button-large">%6$s</a></p></div>', esc_attr( $class ), esc_url( $logo ), esc_html( $title ), esc_html( $message ), esc_url( $url ), esc_html( $button ) );
 	}
