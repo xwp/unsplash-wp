@@ -69,6 +69,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 		$this->assertInstanceOf( Hotlink::class, $plugin->hotlink );
 		$this->assertInstanceOf( Settings::class, $plugin->settings );
 		$this->assertInstanceOf( REST_Controller::class, $plugin->rest_controller );
+		$this->assertEquals( true, has_filter( 'plugin_action_links_' . $plugin->file, [ $plugin, 'action_links' ] ) );
 	}
 
 	/**
@@ -338,6 +339,18 @@ class Test_Plugin extends \WP_UnitTestCase {
 		set_current_screen( 'post.php' );
 		$plugin = get_plugin_instance();
 		$this->assertFalse( $plugin->admin_notice() );
+	}
+
+	/**
+	 * Test for action_links()
+	 *
+	 * @see Plugin::action_links()
+	 */
+	public function test_action_links() {
+		$plugin = get_plugin_instance();
+		$links  = $plugin->action_links( [] );
+
+		$this->assertEquals( '<a href="http://example.org/wp-admin/options-general.php?page=unsplash">Settings</a>', array_pop( $links ) );
 	}
 
 	/**
