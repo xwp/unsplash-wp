@@ -7,6 +7,8 @@
 
 namespace Unsplash;
 
+use WP_Error;
+
 /**
  * Tests for the API class.
  *
