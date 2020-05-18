@@ -268,9 +268,10 @@ class API {
 	 *
 	 * @param array $credentials The API credentials.
 	 * @param bool  $cached Optional. If the request should be cached or not. Default to false.
+	 * @param bool  $wp_error Optional. Return WP_Error object. Default to false.
 	 * @return bool|WP_Error
 	 */
-	public function check_api_status( $credentials = [], $cached = false ) {
+	public function check_api_status( $credentials = [], $cached = false, $wp_error = false ) {
 		if ( empty( $credentials ) ) {
 			$credentials = $this->plugin->settings->get_credentials();
 		}
@@ -292,8 +293,11 @@ class API {
 		if ( ! is_wp_error( $response ) ) {
 			return true;
 		}
+		if ( ! $wp_error ) {
+			return false;
+		}
 
-		return false;
+		return $response;
 	}
 
 	/**
