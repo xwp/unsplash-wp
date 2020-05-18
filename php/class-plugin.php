@@ -521,28 +521,28 @@ class Plugin extends Plugin_Base {
 			return false;
 		}
 
-		$url  = get_admin_url( null, 'options-general.php?page=unsplash' );
-		$logo = $this->asset_url( 'assets/images/logo.png' );
-
-
 		$credentials = $this->settings->get_credentials();
 		if ( ! empty( $credentials['applicationId'] ) && $this->rest_controller->api->check_api_credentials() ) {
 			$status = $this->rest_controller->api->check_api_status( $credentials, true, true );
 			if ( ! is_wp_error( $status ) ) {
 				return false;
 			}
-			$class   = 'notice notice-error is-dismissible';
+
 			$message = $status->get_error_message();
-			printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), $message );
+			if ( $message ) {
+				printf( '<div class="notice notice-error is-dismissible"><p>%1$s</p></div>', $message );
+			}
 
 			return;
 		}
 
 		$class   = 'notice notice-warning is-dismissible';
+		$logo    = $this->asset_url( 'assets/images/logo.png' );
+		$title   = esc_html__( 'Unsplash', 'unsplash' );
 		$message = esc_html__( 'To complete set up of the Unsplash plugin you’ll need to add the API access key.', 'unsplash' );
 		$button  = esc_html__( 'Complete setup', 'unsplash' );
-		$title   = esc_html__( 'Unsplash', 'unsplash' );
+		$url     = get_admin_url( null, 'options-general.php?page=unsplash' );
 
-		printf( '<div class="%1$s"><h3><img src="%2$s" height="14" "/>   %3$s</h3><p>%4$s</p><p><a href="%5$s" class="button button-primary button-large">%6$s</a></p></div>', esc_attr( $class ), esc_url( $logo ), esc_html( $title ), $message, esc_url( $url ), esc_html( $button ) );
+		printf( '<div class="%1$s"><h3><img src="%2$s" height="14" "/>   %3$s</h3><p>%4$s</p><p><a href="%5$s" class="button button-primary button-large">%6$s</a></p></div>', esc_attr( $class ), esc_url( $logo ), esc_html( $title ), esc_html( $message ), esc_url( $url ), esc_html( $button ) );
 	}
 }
