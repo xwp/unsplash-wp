@@ -530,7 +530,7 @@ class Plugin extends Plugin_Base {
 
 			$message = $status->get_error_message();
 			if ( $message ) {
-				printf( '<div class="notice notice-error is-dismissible"><p>%1$s</p></div>', $message );
+				printf( '<div class="notice notice-error is-dismissible"><p>%1$s</p></div>', wp_kses_post( $message ) );
 			}
 
 			return;
