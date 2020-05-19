@@ -241,7 +241,7 @@ class Test_Settings extends \WP_UnitTestCase {
 	 */
 	public function test_settings_page_render() {
 		$mock = $this->getMockBuilder( '\\Unsplash\Settings' )
-			->setConstructorArgs( [ new Plugin() ] )
+			->setConstructorArgs( [ get_plugin_instance() ] )
 			->setMethods(
 				[
 					'redirect',
@@ -310,7 +310,7 @@ class Test_Settings extends \WP_UnitTestCase {
 		ob_start();
 		$mock->settings_page_render();
 		$page = ob_get_clean();
-		$this->assertContains( 'Deauthenticate', $page );
+		$this->assertContains( 'deauthenticate', $page );
 		$this->assertContains( 'Unsplash set up is complete', $page );
 		remove_filter( 'http_response', [ $this, 'fake_http_response' ] );
 		remove_filter( 'pre_option_unsplash_settings', [ $this, 'get_mocked_settings' ], 10 );
