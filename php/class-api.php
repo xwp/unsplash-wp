@@ -134,13 +134,15 @@ class API {
 	 * @return array|WP_Error
 	 */
 	public function send_request( $path, array $args = [] ) {
-		$api_check = $this->check_api_credentials();
-		if ( is_wp_error( $api_check ) ) {
-			return $api_check;
+		if ( ! isset( $args['client_id'] ) ) {
+			$api_check = $this->check_api_credentials();
+			if ( is_wp_error( $api_check ) ) {
+				return $api_check;
+			}
+			$credentials       = $this->plugin->settings->get_credentials();
+			$args['client_id'] = $credentials['applicationId'];
 		}
 		$url               = 'https://api.unsplash.com' . $path;
-		$credentials       = $this->plugin->settings->get_credentials();
-		$args['client_id'] = $credentials['applicationId'];
 		$cache_key         = $args;
 		$cache_key['path'] = $path;
 		$cache             = new Api_Cache( $cache_key );
@@ -265,15 +267,36 @@ class API {
 	 * Check the API status.
 	 *
 	 * @param array $credentials The API credentials.
+	 * @param bool  $cached Optional. If the request should be cached or not. Default to false.
+	 * @param bool  $wp_error Optional. Return WP_Error object. Default to false.
 	 * @return bool|WP_Error
 	 */
-	public function check_api_status( $credentials = [] ) {
+	public function check_api_status( $credentials = [], $cached = false, $wp_error = false ) {
 		if ( empty( $credentials ) ) {
 			$credentials = $this->plugin->settings->get_credentials();
 		}
 
 		if ( empty( $credentials['applicationId'] ) ) {
-			return false;
+			if ( ! $wp_error ) {
+				return false;
+			}
+			$settings_link = sprintf(
+				'<a href="%1$s">%2$s</a>',
+				esc_url( get_admin_url( null, 'options-general.php?page=unsplash' ) ),
+				esc_html__( 'Unsplash', 'unsplash' )
+			);
+
+			return new WP_Error(
+				'missing_api_credential',
+				sprintf(
+					/* translators: %s: Link to Unsplash settings page. */
+					esc_html__( 'The Unsplash plugin has not been provided the API access key. Please visit the %s settings page and confirm that the API access key has been provided.', 'unsplash' ),
+					$settings_link
+				),
+				[
+					'status' => rest_authorization_required_code(),
+				]
+			);
 		}
 
 		$args = [
@@ -281,14 +304,19 @@ class API {
 			'page'      => 1,
 			'per_page'  => 1,
 		];
-
-		$response = $this->get_remote( add_query_arg( $args, 'https://api.unsplash.com/photos' ) );
-
-		if ( ! is_wp_error( $response ) && 200 === wp_remote_retrieve_response_code( $response ) ) {
-			return true;
+		if ( ! $cached ) {
+			$args['cb'] = microtime();
 		}
 
-		return false;
+		$response = $this->send_request( '/photos', $args );
+		if ( ! is_wp_error( $response ) ) {
+			return true;
+		}
+		if ( ! $wp_error ) {
+			return false;
+		}
+
+		return $response;
 	}
 
 	/**

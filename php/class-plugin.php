@@ -525,12 +525,18 @@ class Plugin extends Plugin_Base {
 		}
 
 		$credentials = $this->settings->get_credentials();
-		if (
-			! empty( $credentials['applicationId'] )
-			&& $this->rest_controller->api->check_api_credentials()
-			&& $this->rest_controller->api->check_api_status( $credentials )
-		) {
-			return false;
+		if ( ! empty( $credentials['applicationId'] ) && $this->rest_controller->api->check_api_credentials() ) {
+			$status = $this->rest_controller->api->check_api_status( $credentials, true, true );
+			if ( ! is_wp_error( $status ) ) {
+				return false;
+			}
+
+			$message = $status->get_error_message();
+			if ( $message ) {
+				printf( '<div class="notice notice-error is-dismissible"><p>%1$s</p></div>', wp_kses_post( $message ) );
+			}
+
+			return;
 		}
 
 		$class   = 'notice notice-warning is-dismissible';

@@ -7,6 +7,8 @@
 
 namespace Unsplash;
 
+use WP_Error;
+
 /**
  * Tests for the API class.
  *
@@ -189,7 +191,7 @@ class Test_Api extends \WP_UnitTestCase {
 		$plugin = new Plugin();
 		$plugin->init();
 		$api    = new API( $plugin );
-		$result = $api->check_api_status();
+		$result = $api->check_api_status( [], false );
 		$this->assertTrue( $result );
 	}
 
@@ -201,9 +203,11 @@ class Test_Api extends \WP_UnitTestCase {
 	public function test_check_api_status_missing_credentials() {
 		$plugin = new Plugin();
 		$plugin->init();
-		$api    = new API( $plugin );
-		$result = $api->check_api_status( [ 'applicationId' => '' ] );
-		$this->assertFalse( $result );
+		$api     = new API( $plugin );
+		$result1 = $api->check_api_status( [ 'applicationId' => '' ], false );
+		$result2 = $api->check_api_status( [ 'applicationId' => '' ], false, true );
+		$this->assertFalse( $result1 );
+		$this->assertInstanceOf( WP_Error::class, $result2 );
 	}
 
 	/**
@@ -216,11 +220,28 @@ class Test_Api extends \WP_UnitTestCase {
 		$plugin->init();
 		$api = new API( $plugin );
 		add_filter( 'http_response', '__return_false' );
-		$result = $api->check_api_status();
+		$result1 = $api->check_api_status( [], false );
+		$result2 = $api->check_api_status( [], false, true );
 		remove_filter( 'http_response', '__return_false' );
-		$this->assertFalse( $result );
+		$this->assertFalse( $result1 );
+		$this->assertInstanceOf( WP_Error::class, $result2 );
 	}
 
+	/**
+	 * Test check_api_status().
+	 *
+	 * @covers \Unsplash\API::check_api_status()
+	 */
+	public function test_check_api_cached() {
+		$plugin = new Plugin();
+		$plugin->init();
+		$api = new API( $plugin );
+		add_filter( 'http_response', '__return_false' );
+		$result1 = $api->check_api_status( [], true );
+		$result2 = $api->check_api_status( [], true );
+		remove_filter( 'http_response', '__return_false' );
+		$this->assertSame( $result1, $result2 );
+	}
 	/**
 	 * Return a valid url but not the correct one.
 	 *

@@ -299,6 +299,23 @@ class Test_Plugin extends \WP_UnitTestCase {
 	 *
 	 * @see Plugin::admin_notice()
 	 */
+	public function test_admin_notice_connection() {
+		add_filter( 'unsplash_api_credentials', [ $this, 'invalid_unsplash_api_credentials' ] );
+		wp_set_current_user( self::$admin_id );
+		set_current_screen( 'post.php' );
+		$plugin = get_plugin_instance();
+		ob_start();
+		$plugin->admin_notice();
+		$output = ob_get_clean();
+		$this->assertContains( 'The Unsplash API credentials supplied are not authorized. Please visit the Unsplash settings page to reconnect to Unsplash now.', wp_strip_all_tags( $output ) );
+		remove_filter( 'unsplash_api_credentials', [ $this, 'invalid_unsplash_api_credentials' ] );
+	}
+
+	/**
+	 * Test for admin_notice()
+	 *
+	 * @see Plugin::admin_notice()
+	 */
 	public function test_admin_notice_no_manage_options_perms() {
 		wp_set_current_user( self::$subscriber_id );
 		set_current_screen( 'post.php' );
@@ -361,6 +378,19 @@ class Test_Plugin extends \WP_UnitTestCase {
 	public function disable_unsplash_api_credentials() {
 		return [
 			'applicationId' => '',
+			'secret'        => '',
+			'utmSource'     => '',
+		];
+	}
+
+	/**
+	 * Invalid Unsplash api details.
+	 *
+	 * @return array
+	 */
+	public function invalid_unsplash_api_credentials() {
+		return [
+			'applicationId' => 'foo-bar',
 			'secret'        => '',
 			'utmSource'     => '',
 		];
