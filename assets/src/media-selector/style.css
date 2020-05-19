@@ -81,6 +81,8 @@
 .media-frame .unsplash-browser .unsplash-error {
 	padding: 15px 20px;
 	font-size: 1.4em;
+	line-height: 1.75;
+	margin: 0 15px 0 0;
 	top: 20px;
 }
 
@@ -99,7 +101,10 @@
 
 @media only screen and (max-width: 900px) {
 
-	.media-frame .unsplash-browser .unsplash-error,
+	.media-frame .unsplash-browser .unsplash-error {
+		right: 282px;
+	}
+
 	.media-frame .unsplash-browser .no-media,
 	.media-frame .unsplash-browser .attachments {
 		right: 262px;
@@ -109,7 +114,10 @@
 
 @media only screen and (max-width: 640px), screen and (max-height: 400px) {
 
-	.media-frame .unsplash-browser .unsplash-error,
+	.media-frame .unsplash-browser .unsplash-error {
+		right: 20px;
+	}
+
 	.media-frame .unsplash-browser .no-media,
 	.media-frame .unsplash-browser .attachments {
 		right: 0;
