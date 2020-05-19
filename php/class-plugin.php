@@ -49,6 +49,9 @@ class Plugin extends Plugin_Base {
 
 		$this->rest_controller = new REST_Controller( $this );
 		$this->rest_controller->init();
+
+		// Manually add this filter as the plugin file name is dynamic.
+		add_filter( 'plugin_action_links_' . $this->file, [ $this, 'action_links' ] );
 	}
 
 	/**
@@ -522,12 +525,18 @@ class Plugin extends Plugin_Base {
 		}
 
 		$credentials = $this->settings->get_credentials();
-		if (
-			! empty( $credentials['applicationId'] )
-			&& $this->rest_controller->api->check_api_credentials()
-			&& $this->rest_controller->api->check_api_status( $credentials )
-		) {
-			return false;
+		if ( ! empty( $credentials['applicationId'] ) && $this->rest_controller->api->check_api_credentials() ) {
+			$status = $this->rest_controller->api->check_api_status( $credentials, true, true );
+			if ( ! is_wp_error( $status ) ) {
+				return false;
+			}
+
+			$message = $status->get_error_message();
+			if ( $message ) {
+				printf( '<div class="notice notice-error is-dismissible"><p>%1$s</p></div>', wp_kses_post( $message ) );
+			}
+
+			return;
 		}
 
 		$class   = 'notice notice-warning is-dismissible';
@@ -538,5 +547,23 @@ class Plugin extends Plugin_Base {
 		$url     = get_admin_url( null, 'options-general.php?page=unsplash' );
 
 		printf( '<div class="%1$s"><h3><img src="%2$s" height="18" "/>   %3$s</h3><p>%4$s</p><p><a href="%5$s" class="button button-primary button-large">%6$s</a></p></div>', esc_attr( $class ), esc_url( $logo ), esc_html( $title ), esc_html( $message ), esc_url( $url ), esc_html( $button ) );
+	}
+
+	/**
+	 * Add action link to plugin settings page.
+	 *
+	 * @param  array $links Plugin action links.
+	 *
+	 * @return array
+	 */
+	public function action_links( $links ) {
+		$url     = get_admin_url( null, 'options-general.php?page=unsplash' );
+		$links[] = sprintf(
+			'<a href="%s">%s</a>',
+			esc_url( $url ),
+			esc_html__( 'Settings', 'unsplash' )
+		);
+
+		return $links;
 	}
 }

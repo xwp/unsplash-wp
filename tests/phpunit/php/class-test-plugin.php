@@ -69,6 +69,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 		$this->assertInstanceOf( Hotlink::class, $plugin->hotlink );
 		$this->assertInstanceOf( Settings::class, $plugin->settings );
 		$this->assertInstanceOf( REST_Controller::class, $plugin->rest_controller );
+		$this->assertEquals( true, has_filter( 'plugin_action_links_' . $plugin->file, [ $plugin, 'action_links' ] ) );
 	}
 
 	/**
@@ -298,6 +299,23 @@ class Test_Plugin extends \WP_UnitTestCase {
 	 *
 	 * @see Plugin::admin_notice()
 	 */
+	public function test_admin_notice_connection() {
+		add_filter( 'unsplash_api_credentials', [ $this, 'invalid_unsplash_api_credentials' ] );
+		wp_set_current_user( self::$admin_id );
+		set_current_screen( 'post.php' );
+		$plugin = get_plugin_instance();
+		ob_start();
+		$plugin->admin_notice();
+		$output = ob_get_clean();
+		$this->assertContains( 'The Unsplash API credentials supplied are not authorized. Please visit the Unsplash settings page to reconnect to Unsplash now.', wp_strip_all_tags( $output ) );
+		remove_filter( 'unsplash_api_credentials', [ $this, 'invalid_unsplash_api_credentials' ] );
+	}
+
+	/**
+	 * Test for admin_notice()
+	 *
+	 * @see Plugin::admin_notice()
+	 */
 	public function test_admin_notice_no_manage_options_perms() {
 		wp_set_current_user( self::$subscriber_id );
 		set_current_screen( 'post.php' );
@@ -341,6 +359,18 @@ class Test_Plugin extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Test for action_links()
+	 *
+	 * @see Plugin::action_links()
+	 */
+	public function test_action_links() {
+		$plugin = get_plugin_instance();
+		$links  = $plugin->action_links( [] );
+
+		$this->assertEquals( '<a href="http://example.org/wp-admin/options-general.php?page=unsplash">Settings</a>', array_pop( $links ) );
+	}
+
+	/**
 	 * Disable Unsplash api details.
 	 *
 	 * @return array
@@ -348,6 +378,19 @@ class Test_Plugin extends \WP_UnitTestCase {
 	public function disable_unsplash_api_credentials() {
 		return [
 			'applicationId' => '',
+			'secret'        => '',
+			'utmSource'     => '',
+		];
+	}
+
+	/**
+	 * Invalid Unsplash api details.
+	 *
+	 * @return array
+	 */
+	public function invalid_unsplash_api_credentials() {
+		return [
+			'applicationId' => 'foo-bar',
 			'secret'        => '',
 			'utmSource'     => '',
 		];
