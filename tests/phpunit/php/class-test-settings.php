@@ -715,6 +715,16 @@ class Test_Settings extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Test for enqueue() method.
+	 *
+	 * @see ::enqueue()
+	 */
+	public function test_enqueue() {
+		$this->settings->enqueue();
+		$this->assertTrue( wp_style_is( 'unsplash-settings-page-style', 'enqueued' ) );
+	}
+
+	/**
 	 * Fake success.
 	 *
 	 * @param array $response Array from wp_remote_get.

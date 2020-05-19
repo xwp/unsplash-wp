@@ -316,7 +316,7 @@ class Settings {
 	 * Enqueue style for settings page.
 	 */
 	public function enqueue() {
-		// Enqueue media selector CSS.
+		// Enqueue setting page CSS.
 		wp_enqueue_style(
 			'unsplash-settings-page-style',
 			$this->plugin->asset_url( 'assets/css/settings-page-compiled.css' ),
