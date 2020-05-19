@@ -171,7 +171,8 @@ class Settings {
 	 * @action admin_menu
 	 */
 	public function add_admin_menu() {
-		add_options_page( 'Unsplash', 'Unsplash', 'manage_options', 'unsplash', [ $this, 'settings_page_render' ] );
+		$page_hook_suffix = add_options_page( 'Unsplash', 'Unsplash', 'manage_options', 'unsplash', [ $this, 'settings_page_render' ] );
+		add_action( 'admin_print_scripts-' . $page_hook_suffix, [ $this, 'enqueue' ] );
 	}
 
 	/**
@@ -212,12 +213,12 @@ class Settings {
 
 		foreach ( $settings as $key => $value ) {
 			$should_encrypt = (
-				'access_key' === $key
-				&& ! empty( $value )
-				&& (
-					! isset( $options[ $key ] )
-					|| $options[ $key ] !== $value
-				)
+			'access_key' === $key
+			&& ! empty( $value )
+			&& (
+				! isset( $options[ $key ] )
+				|| $options[ $key ] !== $value
+			)
 			);
 
 			if ( $should_encrypt ) {
@@ -241,67 +242,89 @@ class Settings {
 			delete_option( 'unsplash_auth' );
 		}
 		?>
-		<style>
-			.notice, div.error, div.updated {
-				margin: 18px 18px 2px 0px;
-			}
-			p.submit{
-				margin-top: 0px;
-				margin-bottom: 20px;
-			}
-		</style>
 		<h1><img src="<?php echo esc_url( $logo ); ?>" height="26" />  <?php esc_html_e( 'Unsplash', 'unsplash' ); ?></h1>
 		<p><i><?php esc_html_e( 'Search the internet’s source of freely usable images.', 'unsplash' ); ?></i></p><br />
 		<h1><?php esc_html_e( 'General Settings', 'unsplash' ); ?></h1>
 		<?php
 
-		$settings = get_option( 'unsplash_settings' );
-		$register = sprintf(
-			'<p class="submit"><a href="https://unsplash.com/oauth/authorize?client_id=%1$s&response_type=code&scope=public&redirect_uri=%2$s" class="button button-primary">%3$s</a></p>',
+		$credentials   = $this->get_credentials();
+		$status        = $this->plugin->rest_controller->api->check_api_status( [], false, true );
+		$register_link = sprintf(
+			'https://unsplash.com/oauth/authorize?client_id=%1$s&response_type=code&scope=public&redirect_uri=%2$s',
 			esc_html( $this->auth_client_id ),
-			urlencode( wp_nonce_url( $this->auth_redirect_uri, 'auth' ) ),
-			esc_html__( 'Authenticate', 'unsplash' )
+			urlencode( wp_nonce_url( $this->auth_redirect_uri, 'auth' ) )
 		);
-		if ( empty( $settings['access_key'] ) ) {
-			?>
-			<div class="notice notice-warning">
-				<h3><?php esc_html_e( 'Unsplash set up is incomplete', 'unsplash' ); ?></h3>
-				<p><?php esc_html_e( 'To complete set up of the Unsplash plugin you will need to authenticate with an API key. Proceed to automatically set up authentication.', 'unsplash' ); ?></p>
-				<?php echo $register; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-			</div>
-			<?php
-		} elseif ( ! $this->plugin->rest_controller->api->check_api_status() ) {
-			?>
-				<div class="notice notice-error">
-					<h3><?php esc_html_e( 'Unable to connect to Unsplash', 'unsplash' ); ?> <span class="dashicons dashicons-dismiss" style="color: #dc3232"></span> </h3>
-					<p><?php esc_html_e( 'Unsplash set up has failed. Please automatically set up authentication again.', 'unsplash' ); ?></p>
-					<?php echo $register; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-				</div>
-				<?php
+
+		if ( empty( $credentials['applicationId'] ) ) {
+			$register = sprintf(
+				'<p><a href="%1$s" class="button button-primary">%2$s</a></p>',
+				esc_url( $register_link ),
+				esc_html__( 'Start set up', 'unsplash' )
+			);
+			printf( '<div class="notice warning notice-unsplash"><p>%1$s</p> %2$s</div>', esc_html__( 'To complete set up of the Unsplash plugin you will need to authenticate with an API key.', 'unsplash' ), wp_kses_post( $register ) );
+		} elseif ( is_wp_error( $status ) ) {
+			$status_data = $status->get_error_data();
+			$status_code = ( isset( $status_data['status'] ) ) ? $status_data['status'] : 500;
+			if ( in_array( $status_code, [ 401, 403 ], true ) ) {
+				$register = sprintf(
+					'<p><a href="%1$s" class="button button-primary">%2$s</a></p>',
+					esc_url( $register_link ),
+					esc_html__( 'Restart set up', 'unsplash' )
+				);
+				printf( '<div class="notice notice-error notice-unsplash"><p>%1$s <span class="dashicons dashicons-dismiss" style="color: #dc3232"></span></p> %2$s</div>', esc_html__( 'Unable to authenticate due to an error with the access key.', 'unsplash' ), wp_kses_post( $register ) );
+			} else {
+				$message = $status->get_error_message();
+				printf( '<div class="notice notice-error"><p>%1$s</p></div>', wp_kses_post( $message ) );
+			}
 		} else {
-			?>
-			<br />
-			<h3><?php esc_html_e( 'Unsplash set up is complete', 'unsplash' ); ?> <span class="dashicons dashicons-yes-alt" style="color: #46b450"></span></h3>
-			<p><?php esc_html_e( 'If you want to change something, you can always deauthenticate your account and reauthenticate.', 'unsplash' ); ?></p>
-			<form action='options.php' method='post' style="max-width: 800px">
-				<input type='hidden' name='unsplash_settings[access_key]' value='' />
-				<?php
-				settings_fields( 'unsplash' );
-				submit_button( __( 'Deauthenticate', 'unsplash' ), '' );
+			printf( '<h3>%1$s <span class="dashicons dashicons-yes-alt" style="color: #46b450"></span></h3>', esc_html__( 'Unsplash set up is complete', 'unsplash' ) );
+			$settings = get_option( 'unsplash_settings' );
+			if ( ! empty( $settings['access_key'] ) ) {
 				?>
-			</form>
-			<?php
+					<form action='options.php' method='post'>
+					<?php settings_fields( 'unsplash' ); ?>
+						<input type='hidden' name='unsplash_settings[access_key]' value="">
+						<p>
+						<?php
+						printf(
+						/* translators: %s: Button to deauthenticate. */
+							esc_html__( 'If you need to change the Unsplash account that is associated with this plugin, you can always %1$s the connection and start over.', 'unsplash' ),
+							get_submit_button( esc_html__( 'deauthenticate', 'unsplash' ), 'button-link', 'submit', false, false ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						);
+						?>
+						<br />
+						<i><?php esc_html_e( 'Note: This action will break your current connection to Unsplash but will not remove any images previously published or imported to your media library.', 'unsplash' ); ?></i>
+						</p>
+					</form>
+					<?php
+			}
 		}
+
 		?>
 		<br />
 		<form action='options.php' method='post' style="max-width: 800px">
-			<?php
-			settings_fields( 'unsplash' );
-			do_settings_sections( 'unsplash' );
-			submit_button();
-			?>
+				<?php
+				settings_fields( 'unsplash' );
+				do_settings_sections( 'unsplash' );
+				submit_button();
+				?>
 		</form>
-		<?php
+				<?php
+	}
+
+	/**
+	 * Enqueue style for settings page.
+	 */
+	public function enqueue() {
+		// Enqueue media selector CSS.
+		wp_enqueue_style(
+			'unsplash-settings-page-style',
+			$this->plugin->asset_url( 'assets/css/settings-page-compiled.css' ),
+			[],
+			$this->plugin->asset_version()
+		);
+
+		wp_styles()->add_data( 'unsplash-settings-page-style', 'rtl', 'replace' );
 	}
 
 	/**
