@@ -1,11 +1,14 @@
-.notice, div.error, div.updated {
-	margin: 18px 18px 2px 0px;
+.notice,
+ div.error,
+ div.updated {
+	margin: 18px 18px 2px 0;
 }
-p.submit{
-	margin-top: 0px;
+
+p.submit {
+	margin-top: 0;
 	margin-bottom: 20px;
 }
 
-.notice-unsplash{
+.notice-unsplash {
 	padding: 12px;
 }
