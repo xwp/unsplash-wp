@@ -306,7 +306,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 		ob_start();
 		$plugin->admin_notice();
 		$output = ob_get_clean();
-		$this->assertContains( 'Unable to connect to the Unsplash API. Please visit the Unsplash settings page to reconnect now.', $output );
+		$this->assertContains( 'The Unsplash API credentials supplied are not authorized. Please visit the Unsplash settings page to reconnect to Unsplash now.', wp_strip_all_tags( $output ) );
 		remove_filter( 'unsplash_api_credentials', [ $this, 'invalid_unsplash_api_credentials' ] );
 	}
 

@@ -277,7 +277,26 @@ class API {
 		}
 
 		if ( empty( $credentials['applicationId'] ) ) {
-			return false;
+			if ( ! $wp_error ) {
+				return false;
+			}
+			$settings_link = sprintf(
+				'<a href="%1$s">%2$s</a>',
+				esc_url( get_admin_url( null, 'options-general.php?page=unsplash' ) ),
+				esc_html__( 'Unsplash', 'unsplash' )
+			);
+
+			return new WP_Error(
+				'missing_api_credential',
+				sprintf(
+					/* translators: %s: Link to Unsplash settings page. */
+					esc_html__( 'The Unsplash plugin has not been provided the API access key. Please visit the %s settings page and confirm that the API access key has been provided.', 'unsplash' ),
+					$settings_link
+				),
+				[
+					'status' => rest_authorization_required_code(),
+				]
+			);
 		}
 
 		$args = [
