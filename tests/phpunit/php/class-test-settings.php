@@ -7,6 +7,8 @@
 
 namespace Unsplash;
 
+use WP_Error;
+
 /**
  * Tests for the Settings class.
  *
@@ -240,6 +242,7 @@ class Test_Settings extends \WP_UnitTestCase {
 	 * @covers ::redirect_auth()
 	 */
 	public function test_settings_page_render() {
+		add_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
 		$mock = $this->getMockBuilder( '\\Unsplash\Settings' )
 			->setConstructorArgs( [ get_plugin_instance() ] )
 			->setMethods(
@@ -259,8 +262,9 @@ class Test_Settings extends \WP_UnitTestCase {
 		ob_start();
 		$mock->settings_page_render();
 		$page = ob_get_clean();
-		$this->assertContains( 'Authenticate', $page );
+		$this->assertContains( 'Start set up', $page );
 		$this->assertContains( 'foo-is-notice', $page );
+		remove_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
 	}
 
 	/**
@@ -270,7 +274,7 @@ class Test_Settings extends \WP_UnitTestCase {
 	 * @covers ::redirect_auth()
 	 */
 	public function test_settings_page_render_not_connected() {
-		add_filter( 'pre_option_unsplash_settings', [ $this, 'get_mocked_settings' ], 10, 3 );
+		add_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
 		$mock = $this->getMockBuilder( '\\Unsplash\Settings' )
 			->setConstructorArgs( [ get_plugin_instance() ] )
 			->setMethods(
@@ -283,9 +287,60 @@ class Test_Settings extends \WP_UnitTestCase {
 		ob_start();
 		$mock->settings_page_render();
 		$page = ob_get_clean();
-		$this->assertContains( 'Authenticate', $page );
-		$this->assertContains( 'Unable to connect to Unsplash', $page );
-		remove_filter( 'pre_option_unsplash_settings', [ $this, 'get_mocked_settings' ], 10 );
+		$this->assertContains( 'Start set up', $page );
+		remove_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
+	}
+
+	/**
+	 * Test settings_page_render.
+	 *
+	 * @covers ::settings_page_render()
+	 * @covers ::redirect_auth()
+	 */
+	public function test_settings_page_render_auth_error() {
+		add_filter( 'unsplash_api_credentials', [ $this, 'fake_unsplash_api_credentials' ] );
+		add_filter( 'pre_unsplash_check_api_status', [ $this, 'fake_403' ] );
+		$mock = $this->getMockBuilder( '\\Unsplash\Settings' )
+					->setConstructorArgs( [ get_plugin_instance() ] )
+					->setMethods(
+						[
+							'redirect',
+						]
+					)
+					->getMock();
+
+		ob_start();
+		$mock->settings_page_render();
+		$page = ob_get_clean();
+		$this->assertContains( 'Restart set up', $page );
+		remove_filter( 'unsplash_api_credentials', [ $this, 'fake_unsplash_api_credentials' ] );
+		remove_filter( 'pre_unsplash_check_api_status', [ $this, 'fake_403' ] );
+	}
+
+	/**
+	 * Test settings_page_render.
+	 *
+	 * @covers ::settings_page_render()
+	 * @covers ::redirect_auth()
+	 */
+	public function test_settings_page_render_api_error() {
+		add_filter( 'unsplash_api_credentials', [ $this, 'fake_unsplash_api_credentials' ] );
+		add_filter( 'pre_unsplash_check_api_status', [ $this, 'fake_500' ] );
+		$mock = $this->getMockBuilder( '\\Unsplash\Settings' )
+					->setConstructorArgs( [ get_plugin_instance() ] )
+					->setMethods(
+						[
+							'redirect',
+						]
+					)
+					->getMock();
+
+		ob_start();
+		$mock->settings_page_render();
+		$page = ob_get_clean();
+		$this->assertContains( 'Fake Message', $page );
+		remove_filter( 'unsplash_api_credentials', [ $this, 'fake_unsplash_api_credentials' ] );
+		remove_filter( 'pre_unsplash_check_api_status', [ $this, 'fake_500' ] );
 	}
 
 	/**
@@ -295,8 +350,9 @@ class Test_Settings extends \WP_UnitTestCase {
 	 * @covers ::redirect_auth()
 	 */
 	public function test_settings_page_render_connected() {
-		add_filter( 'http_response', [ $this, 'fake_http_response' ] );
+		add_filter( 'unsplash_api_credentials', [ $this, 'fake_unsplash_api_credentials' ] );
 		add_filter( 'pre_option_unsplash_settings', [ $this, 'get_mocked_settings' ], 10, 3 );
+		add_filter( 'pre_unsplash_check_api_status', '__return_true' );
 		$mock = $this->getMockBuilder( '\\Unsplash\Settings' )
 					->setConstructorArgs( [ get_plugin_instance() ] )
 					->setMethods(
@@ -312,8 +368,9 @@ class Test_Settings extends \WP_UnitTestCase {
 		$page = ob_get_clean();
 		$this->assertContains( 'deauthenticate', $page );
 		$this->assertContains( 'Unsplash set up is complete', $page );
-		remove_filter( 'http_response', [ $this, 'fake_http_response' ] );
-		remove_filter( 'pre_option_unsplash_settings', [ $this, 'get_mocked_settings' ], 10 );
+		remove_filter( 'pre_unsplash_check_api_status', '__return_true' );
+		remove_filter( 'unsplash_api_credentials', [ $this, 'fake_unsplash_api_credentials' ] );
+		remove_filter( 'pre_option_unsplash_settings', [ $this, 'get_mocked_settings' ], 10, 3 );
 	}
 
 	/**
@@ -666,6 +723,48 @@ class Test_Settings extends \WP_UnitTestCase {
 	 */
 	public function fake_http_response( $response ) {
 		$response['response']['code'] = 200;
+		$response['body']             = '';
 		return $response;
+	}
+
+	/**
+	 * Disable unsplash api details.
+	 *
+	 * @return array
+	 */
+	public function fake_unsplash_api_credentials() {
+		return [
+			'applicationId' => 'foo-bar',
+			'utmSource'     => '',
+		];
+	}
+	/**
+	 * Disable unsplash api details.
+	 *
+	 * @return array
+	 */
+	public function disable_unsplash_api_credentials() {
+		return [
+			'applicationId' => '',
+			'utmSource'     => '',
+		];
+	}
+
+	/**
+	 * Create a fake 403 error.
+	 *
+	 * @return WP_Error
+	 */
+	public function fake_403() {
+		return new WP_Error( 'fake_error_403', 'Fake Message', [ 'status' => 403 ] );
+	}
+
+	/**
+	 * Create a fake 500 error.
+	 *
+	 * @return WP_Error
+	 */
+	public function fake_500() {
+		return new WP_Error( 'fake_error_500', 'Fake Message', [ 'status' => 500 ] );
 	}
 }

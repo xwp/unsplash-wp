@@ -261,7 +261,7 @@ class Settings {
 				esc_url( $register_link ),
 				esc_html__( 'Start set up', 'unsplash' )
 			);
-			printf( '<div class="notice warning notice-unsplash"><p>%1$s</p> %2$s</div>', esc_html__( 'To complete set up of the Unsplash plugin you will need to authenticate with an API key.', 'unsplash' ), wp_kses_post( $register ) );
+			printf( '<div class="notice notice-warning notice-unsplash"><p>%1$s</p> %2$s</div>', esc_html__( 'To complete set up of the Unsplash plugin you will need to authenticate with an API key.', 'unsplash' ), wp_kses_post( $register ) );
 		} elseif ( is_wp_error( $status ) ) {
 			$status_data = $status->get_error_data();
 			$status_code = ( isset( $status_data['status'] ) ) ? $status_data['status'] : 500;
