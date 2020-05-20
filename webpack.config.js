@@ -85,6 +85,21 @@ const mediaSelector = {
 	],
 };
 
+const settingsPage = {
+	...defaultConfig,
+	...sharedConfig,
+	entry: {
+		'settings-page': [ './assets/src/settings-page/index.js' ],
+	},
+	plugins: [
+		...sharedConfig.plugins,
+		new WebpackBar( {
+			name: 'Settings page',
+			color: '#570576',
+		} ),
+	],
+};
+
 const wpPolyfills = {
 	...defaultConfig,
 	...sharedConfig,
@@ -133,4 +148,4 @@ const wpPolyfills = {
 	},
 };
 
-module.exports = [ mediaSelector, wpPolyfills ];
+module.exports = [ mediaSelector, wpPolyfills, settingsPage ];
