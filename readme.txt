@@ -35,7 +35,7 @@ Features
 == Installation ==
 1. Upload plugin folder to the `/wp-content/plugins/` directory.
 2. Activate the plugin through the "Plugins" menu in WordPress.
-3. Connect the plugin to the Unsplash plugin by logging into the unsplash.com service and authorizing your site.
+3. Connect the plugin to the Unsplash.com by logging in and authorizing your site.
 
 == Frequently Asked Questions ==
 = I can use these images for free? =
