@@ -36,8 +36,8 @@ Features
 * Caption support - For themes that support display of the caption this will be provided automatically.
 
 == Installation ==
-1. Upload plugin folder to the \\\"/wp-content/plugins/\\\" directory.
-1. Activate the plugin through the \\\"Plugins\\\" menu in WordPress.
+1. Upload plugin folder to the "/wp-content/plugins/" directory.
+1. Activate the plugin through the "Plugins" menu in WordPress.
 
 == Frequently Asked Questions ==
 = I can use these images for free? =
@@ -48,4 +48,4 @@ More precisely, Unsplash grants you an irrevocable, nonexclusive, worldwide copy
 For more details about our licensing please  [Read our FAQ](https://help.unsplash.com/en/collections/1463188-unsplash-license).
 
 = Do I need an Unsplash account ? =
-Yes, as part of the plugin\\\'s setup, you will be directed to the Unsplash website and be guided through the onboarding process, which will ask you to either sign up for a new account, or log in with your existing account. 
+Yes, as part of the plugin's setup, you will be directed to the Unsplash website and be guided through the onboarding process, which will ask you to either sign up for a new account, or log in with your existing account. 
