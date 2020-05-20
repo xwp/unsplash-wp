@@ -200,6 +200,21 @@ class Test_Api extends \WP_UnitTestCase {
 	 *
 	 * @covers \Unsplash\API::check_api_status()
 	 */
+	public function test_check_api_status_filter() {
+		$plugin = new Plugin();
+		$plugin->init();
+		$api = new API( $plugin );
+		add_filter( 'pre_unsplash_check_api_status', '__return_false' );
+		$result = $api->check_api_status( [], false );
+		$this->assertFalse( $result );
+		remove_filter( 'pre_unsplash_check_api_status', '__return_false' );
+	}
+
+	/**
+	 * Test check_api_status().
+	 *
+	 * @covers \Unsplash\API::check_api_status()
+	 */
 	public function test_check_api_status_missing_credentials() {
 		$plugin = new Plugin();
 		$plugin->init();

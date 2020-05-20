@@ -7,6 +7,8 @@
 
 namespace Unsplash;
 
+use WP_Error;
+
 /**
  * Tests for the Settings class.
  *
@@ -189,7 +191,7 @@ class Test_Settings extends \WP_UnitTestCase {
 	 *
 	 * @covers ::sanitize_settings()
 	 */
-	public function test_sanitize_settings_not_update_vale_when_empty() {
+	public function test_sanitize_settings_not_update_value_when_empty() {
 		$settings = [
 			'access_key' => 'foo',
 		];
@@ -240,8 +242,9 @@ class Test_Settings extends \WP_UnitTestCase {
 	 * @covers ::redirect_auth()
 	 */
 	public function test_settings_page_render() {
+		add_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
 		$mock = $this->getMockBuilder( '\\Unsplash\Settings' )
-			->setConstructorArgs( [ new Plugin() ] )
+			->setConstructorArgs( [ get_plugin_instance() ] )
 			->setMethods(
 				[
 					'redirect',
@@ -259,8 +262,118 @@ class Test_Settings extends \WP_UnitTestCase {
 		ob_start();
 		$mock->settings_page_render();
 		$page = ob_get_clean();
-		$this->assertContains( 'Authorize', $page );
+		$this->assertContains( 'Start set up', $page );
 		$this->assertContains( 'foo-is-notice', $page );
+		remove_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
+	}
+
+	/**
+	 * Test settings_page_render.
+	 *
+	 * @covers ::settings_page_render()
+	 * @covers ::redirect_auth()
+	 */
+	public function test_settings_page_render_not_connected() {
+		add_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
+		$mock = $this->getMockBuilder( '\\Unsplash\Settings' )
+			->setConstructorArgs( [ get_plugin_instance() ] )
+			->setMethods(
+				[
+					'redirect',
+				]
+			)
+			->getMock();
+
+		ob_start();
+		$mock->settings_page_render();
+		$page = ob_get_clean();
+		$this->assertContains( 'Start set up', $page );
+		remove_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
+	}
+
+	/**
+	 * Test settings_page_render.
+	 *
+	 * @covers ::settings_page_render()
+	 * @covers ::redirect_auth()
+	 */
+	public function test_settings_page_render_auth_error() {
+		add_filter( 'unsplash_api_credentials', [ $this, 'fake_unsplash_api_credentials' ] );
+		add_filter( 'pre_unsplash_check_api_status', [ $this, 'fake_403' ] );
+		add_filter( 'pre_option_unsplash_settings', [ $this, 'get_mocked_settings' ], 10, 3 );
+		$mock = $this->getMockBuilder( '\\Unsplash\Settings' )
+					->setConstructorArgs( [ get_plugin_instance() ] )
+					->setMethods(
+						[
+							'redirect',
+						]
+					)
+					->getMock();
+
+		ob_start();
+		$mock->settings_page_render();
+		$page = ob_get_clean();
+		$this->assertContains( 'Restart set up', $page );
+		remove_filter( 'unsplash_api_credentials', [ $this, 'fake_unsplash_api_credentials' ] );
+		remove_filter( 'pre_unsplash_check_api_status', [ $this, 'fake_403' ] );
+		remove_filter( 'pre_option_unsplash_settings', [ $this, 'get_mocked_settings' ], 10, 3 );
+	}
+
+	/**
+	 * Test settings_page_render.
+	 *
+	 * @covers ::settings_page_render()
+	 * @covers ::redirect_auth()
+	 */
+	public function test_settings_page_render_api_error() {
+		add_filter( 'unsplash_api_credentials', [ $this, 'fake_unsplash_api_credentials' ] );
+		add_filter( 'pre_unsplash_check_api_status', [ $this, 'fake_500' ] );
+		add_filter( 'pre_option_unsplash_settings', [ $this, 'get_mocked_settings' ], 10, 3 );
+		$mock = $this->getMockBuilder( '\\Unsplash\Settings' )
+					->setConstructorArgs( [ get_plugin_instance() ] )
+					->setMethods(
+						[
+							'redirect',
+						]
+					)
+					->getMock();
+
+		ob_start();
+		$mock->settings_page_render();
+		$page = ob_get_clean();
+		$this->assertContains( 'Fake Message', $page );
+		remove_filter( 'unsplash_api_credentials', [ $this, 'fake_unsplash_api_credentials' ] );
+		remove_filter( 'pre_unsplash_check_api_status', [ $this, 'fake_500' ] );
+		remove_filter( 'pre_option_unsplash_settings', [ $this, 'get_mocked_settings' ], 10, 3 );
+	}
+
+	/**
+	 * Test settings_page_render.
+	 *
+	 * @covers ::settings_page_render()
+	 * @covers ::redirect_auth()
+	 */
+	public function test_settings_page_render_connected() {
+		add_filter( 'unsplash_api_credentials', [ $this, 'fake_unsplash_api_credentials' ] );
+		add_filter( 'pre_option_unsplash_settings', [ $this, 'get_mocked_settings' ], 10, 3 );
+		add_filter( 'pre_unsplash_check_api_status', '__return_true' );
+		$mock = $this->getMockBuilder( '\\Unsplash\Settings' )
+					->setConstructorArgs( [ get_plugin_instance() ] )
+					->setMethods(
+						[
+							'redirect',
+						]
+					)
+					->getMock();
+
+		ob_start();
+		$mock->settings_page_render();
+		$page = ob_get_clean();
+		$this->assertContains( 'deauthenticate', $page );
+		$this->assertContains( 'Unsplash set up is complete', $page );
+		remove_filter( 'pre_unsplash_check_api_status', '__return_true' );
+		remove_filter( 'unsplash_api_credentials', [ $this, 'fake_unsplash_api_credentials' ] );
+		remove_filter( 'pre_option_unsplash_settings', [ $this, 'get_mocked_settings' ], 10, 3 );
 	}
 
 	/**
@@ -568,7 +681,7 @@ class Test_Settings extends \WP_UnitTestCase {
 		ob_start();
 		$this->settings->settings_section_render();
 		$section = ob_get_clean();
-		$this->assertContains( 'An API access key is required to use the Unsplash plugin.', $section );
+		$this->assertContains( 'Always use the default automated set up unless a manual authentication process is required.', $section );
 	}
 
 	/**
@@ -602,5 +715,69 @@ class Test_Settings extends \WP_UnitTestCase {
 		$actual_utm   = $credentials['utmSource'];
 
 		$this->assertEquals( $expected_utm, $actual_utm );
+	}
+
+	/**
+	 * Test for enqueue() method.
+	 *
+	 * @see ::enqueue()
+	 */
+	public function test_enqueue() {
+		$this->settings->enqueue();
+		$this->assertTrue( wp_style_is( 'unsplash-settings-page-style', 'enqueued' ) );
+	}
+
+	/**
+	 * Fake success.
+	 *
+	 * @param array $response Array from wp_remote_get.
+	 *
+	 * @return mixed
+	 */
+	public function fake_http_response( $response ) {
+		$response['response']['code'] = 200;
+		$response['body']             = '';
+		return $response;
+	}
+
+	/**
+	 * Disable unsplash api details.
+	 *
+	 * @return array
+	 */
+	public function fake_unsplash_api_credentials() {
+		return [
+			'applicationId' => 'foo-bar',
+			'utmSource'     => '',
+		];
+	}
+	/**
+	 * Disable unsplash api details.
+	 *
+	 * @return array
+	 */
+	public function disable_unsplash_api_credentials() {
+		return [
+			'applicationId' => '',
+			'utmSource'     => '',
+		];
+	}
+
+	/**
+	 * Create a fake 403 error.
+	 *
+	 * @return WP_Error
+	 */
+	public function fake_403() {
+		return new WP_Error( 'fake_error_403', 'Fake Message', [ 'status' => 403 ] );
+	}
+
+	/**
+	 * Create a fake 500 error.
+	 *
+	 * @return WP_Error
+	 */
+	public function fake_500() {
+		return new WP_Error( 'fake_error_500', 'Fake Message', [ 'status' => 500 ] );
 	}
 }

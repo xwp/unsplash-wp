@@ -276,6 +276,21 @@ class API {
 			$credentials = $this->plugin->settings->get_credentials();
 		}
 
+		/**
+		 * Filter the api status check.
+		 *
+		 * @param null|bool|WP_Error $pre_check_api_status Filterable variable.
+		 * @param array $credentials The API credentials.
+		 * @param bool  $cached Optional. If the request should be cached or not. Default to false.
+		 * @param bool  $wp_error Optional. Return WP_Error object. Default to false.
+		 *
+		 * @return null|bool|WP_Error $pre_check_api_status Filtered status.
+		 */
+		$pre_check_api_status = apply_filters( 'pre_unsplash_check_api_status', null, $credentials, $cached, $wp_error );
+		if ( ! is_null( $pre_check_api_status ) ) {
+			return $pre_check_api_status;
+		}
+
 		if ( empty( $credentials['applicationId'] ) ) {
 			if ( ! $wp_error ) {
 				return false;
