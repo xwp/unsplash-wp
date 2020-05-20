@@ -191,7 +191,7 @@ class Test_Settings extends \WP_UnitTestCase {
 	 *
 	 * @covers ::sanitize_settings()
 	 */
-	public function test_sanitize_settings_not_update_vale_when_empty() {
+	public function test_sanitize_settings_not_update_value_when_empty() {
 		$settings = [
 			'access_key' => 'foo',
 		];
@@ -300,6 +300,7 @@ class Test_Settings extends \WP_UnitTestCase {
 	public function test_settings_page_render_auth_error() {
 		add_filter( 'unsplash_api_credentials', [ $this, 'fake_unsplash_api_credentials' ] );
 		add_filter( 'pre_unsplash_check_api_status', [ $this, 'fake_403' ] );
+		add_filter( 'pre_option_unsplash_settings', [ $this, 'get_mocked_settings' ], 10, 3 );
 		$mock = $this->getMockBuilder( '\\Unsplash\Settings' )
 					->setConstructorArgs( [ get_plugin_instance() ] )
 					->setMethods(
@@ -315,6 +316,7 @@ class Test_Settings extends \WP_UnitTestCase {
 		$this->assertContains( 'Restart set up', $page );
 		remove_filter( 'unsplash_api_credentials', [ $this, 'fake_unsplash_api_credentials' ] );
 		remove_filter( 'pre_unsplash_check_api_status', [ $this, 'fake_403' ] );
+		remove_filter( 'pre_option_unsplash_settings', [ $this, 'get_mocked_settings' ], 10, 3 );
 	}
 
 	/**
@@ -326,6 +328,7 @@ class Test_Settings extends \WP_UnitTestCase {
 	public function test_settings_page_render_api_error() {
 		add_filter( 'unsplash_api_credentials', [ $this, 'fake_unsplash_api_credentials' ] );
 		add_filter( 'pre_unsplash_check_api_status', [ $this, 'fake_500' ] );
+		add_filter( 'pre_option_unsplash_settings', [ $this, 'get_mocked_settings' ], 10, 3 );
 		$mock = $this->getMockBuilder( '\\Unsplash\Settings' )
 					->setConstructorArgs( [ get_plugin_instance() ] )
 					->setMethods(
@@ -341,6 +344,7 @@ class Test_Settings extends \WP_UnitTestCase {
 		$this->assertContains( 'Fake Message', $page );
 		remove_filter( 'unsplash_api_credentials', [ $this, 'fake_unsplash_api_credentials' ] );
 		remove_filter( 'pre_unsplash_check_api_status', [ $this, 'fake_500' ] );
+		remove_filter( 'pre_option_unsplash_settings', [ $this, 'get_mocked_settings' ], 10, 3 );
 	}
 
 	/**
@@ -361,7 +365,6 @@ class Test_Settings extends \WP_UnitTestCase {
 						]
 					)
 					->getMock();
-
 
 		ob_start();
 		$mock->settings_page_render();

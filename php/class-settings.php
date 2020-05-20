@@ -254,8 +254,9 @@ class Settings {
 			esc_html( $this->auth_client_id ),
 			urlencode( wp_nonce_url( $this->auth_redirect_uri, 'auth' ) )
 		);
+		$settings      = get_option( 'unsplash_settings' );
 
-		if ( empty( $credentials['applicationId'] ) ) {
+		if ( empty( $credentials['applicationId'] ) || empty( $settings['access_key'] ) ) {
 			$register = sprintf(
 				'<p><a href="%1$s" class="button button-primary">%2$s</a></p>',
 				esc_url( $register_link ),
@@ -278,7 +279,6 @@ class Settings {
 			}
 		} else {
 			printf( '<h3>%1$s <span class="dashicons dashicons-yes-alt" style="color: #46b450"></span></h3>', esc_html__( 'Unsplash set up is complete', 'unsplash' ) );
-			$settings = get_option( 'unsplash_settings' );
 			if ( ! empty( $settings['access_key'] ) ) {
 				?>
 					<form action='options.php' method='post'>
@@ -309,7 +309,7 @@ class Settings {
 				submit_button();
 				?>
 		</form>
-				<?php
+		<?php
 	}
 
 	/**
