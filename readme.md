@@ -7,7 +7,7 @@ Search and use the internet’s largest library of freely usable images from [Un
 **Contributors:** [xwp](https://profiles.wordpress.org/xwp), [unsplash](https://profiles.wordpress.org/unsplash)  
 **Tags:** [Unsplash](https://wordpress.org/plugins/tags/Unsplash), [images](https://wordpress.org/plugins/tags/images), [media](https://wordpress.org/plugins/tags/media), [free](https://wordpress.org/plugins/tags/free), [photographs](https://wordpress.org/plugins/tags/photographs), [photos](https://wordpress.org/plugins/tags/photos)  
 **Requires at least:** 4.9  
-**Tested up to:** 5.3.2  
+**Tested up to:** 5.4.1
 **License:** [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)  
 **Requires PHP:** 5.6.20  
 
@@ -56,5 +56,4 @@ For more details about our licensing please  [Read our FAQ](https://help.unsplas
 
 ### Do I need an Unsplash account ? ###
 Yes, as part of the plugin's setup, you will be directed to the Unsplash website and be guided through the onboarding process, which will ask you to either sign up for a new account, or log in with your existing account.
-
 
