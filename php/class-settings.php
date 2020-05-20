@@ -256,7 +256,7 @@ class Settings {
 		);
 		$settings      = get_option( 'unsplash_settings' );
 
-		if ( empty( $credentials['applicationId'] ) || empty( $settings['access_key'] ) ) {
+		if ( empty( $credentials['applicationId'] ) && empty( $settings['access_key'] ) ) {
 			$register = sprintf(
 				'<p><a href="%1$s" class="button button-primary">%2$s</a></p>',
 				esc_url( $register_link ),
