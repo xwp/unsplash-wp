@@ -75,10 +75,12 @@ class Test_Import extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Test create attachment.
+	 * Test Process meta attachment.
 	 *
 	 * @covers \Unsplash\Import::create_attachment()
 	 * @covers \Unsplash\Import::process_meta()
+	 * @covers \Unsplash\Import::process_tags()
+	 * @covers \Unsplash\Import::process_source()
 	 */
 	public function test_process_meta() {
 		$file   = [
@@ -88,7 +90,14 @@ class Test_Import extends \WP_UnitTestCase {
 		$image  = new Image(
 			[
 				'id'              => 'eOvv4N6yNmk',
-				'tags'            => [],
+				'tags'            => [
+					[
+						'title' => 'wibble',
+					],
+					[
+						'title' => 'dibble',
+					],
+				],
 				'description'     => 'test description',
 				'alt_description' => 'test alt description',
 			]
@@ -118,7 +127,14 @@ class Test_Import extends \WP_UnitTestCase {
 		foreach ( $map as $key => $value ) {
 			$this->assertEquals( $image->get_field( $value ), get_post_meta( $attachment_id, $key, true ) );
 		}
-		$this->assertEquals( $attachment_id, $actual_id );
+		$import->process_tags();
+		$tags     = wp_get_post_terms( $attachment_id, 'media_tag' );
+		$tag_name = wp_list_pluck( $tags, 'name' );
+		$this->assertEqualSets( [ 'dibble', 'wibble' ], $tag_name );
+		$import->process_source();
+		$tags     = wp_get_post_terms( $attachment_id, 'media_source' );
+		$tag_name = wp_list_pluck( $tags, 'name' );
+		$this->assertEqualSets( [ 'Unsplash' ], $tag_name );
 	}
 
 	/**

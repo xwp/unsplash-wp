@@ -234,7 +234,7 @@ class Import {
 	 *
 	 * @return array|false|WP_Error
 	 */
-	protected function process_tags() {
+	public function process_tags() {
 		return wp_set_post_terms( $this->attachment_id, $this->image->get_field( 'tags' ), 'media_tag' );
 	}
 
@@ -243,7 +243,7 @@ class Import {
 	 *
 	 * @return array|false|WP_Error
 	 */
-	protected function process_source() {
+	public function process_source() {
 		return wp_set_post_terms( $this->attachment_id, [ 'Unsplash' ], 'media_source' );
 	}
 
