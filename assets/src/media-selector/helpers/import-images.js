@@ -40,12 +40,18 @@ export default selections => {
  * @return {Promise} Promise.
  */
 const importImage = image => {
-	const { id } = image.attributes;
+	const { id, alt, title, description, caption } = image.attributes;
 	const importUrl = getConfig( 'route' ) + `/import/${ id }`;
 	const processUrl = getConfig( 'route' ) + '/post-process/';
+	const data = {
+		alt,
+		title,
+		description,
+		caption,
+	};
 
 	return wp
-		.apiRequest( { url: importUrl } )
+		.apiRequest( { url: importUrl, data } )
 		.done( attachmentData => {
 			// Update image ID from imported attachment. This will be used to fetch the <img> tag.
 			// Note: `image.set()` is called rather than updating `image.id` directly so that potential Backbone event listeners can be fired.

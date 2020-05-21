@@ -144,6 +144,18 @@ class Image {
 	}
 
 	/**
+	 * Set field from process data.
+	 *
+	 * @param string $field Field in $process_data array.
+	 * @param string $value Defaults to ''.
+	 *
+	 * @return mixed|string
+	 */
+	public function set_field( $field, $value = '' ) {
+		$this->process_data[ $field ] = $value;
+	}
+
+	/**
 	 * Get field from image.
 	 *
 	 * @param string $field Field in $image array.
