@@ -171,8 +171,7 @@ class Settings {
 	 * @action admin_menu
 	 */
 	public function add_admin_menu() {
-		$page_hook_suffix = add_options_page( 'Unsplash', 'Unsplash', 'manage_options', 'unsplash', [ $this, 'settings_page_render' ] );
-		add_action( 'admin_print_scripts-' . $page_hook_suffix, [ $this, 'enqueue' ] );
+		add_options_page( 'Unsplash', 'Unsplash', 'manage_options', 'unsplash', [ $this, 'settings_page_render' ] );
 	}
 
 	/**
@@ -272,13 +271,13 @@ class Settings {
 					esc_url( $register_link ),
 					esc_html__( 'Restart setup', 'unsplash' )
 				);
-				printf( '<div class="notice notice-error notice-unsplash"><p>%1$s <span class="dashicons dashicons-dismiss" style="color: #dc3232"></span></p> %2$s</div>', esc_html__( 'Unable to authenticate due to an error with the access key.', 'unsplash' ), wp_kses_post( $register ) );
+				printf( '<div class="notice notice-error notice-unsplash"><p>%1$s <span class="dashicons dashicons-dismiss"></span></p> %2$s</div>', esc_html__( 'Unable to authenticate due to an error with the access key.', 'unsplash' ), wp_kses_post( $register ) );
 			} else {
 				$message = $status->get_error_message();
 				printf( '<div class="notice notice-error"><p>%1$s</p></div>', wp_kses_post( $message ) );
 			}
 		} else {
-			printf( '<h3>%1$s <span class="dashicons dashicons-yes-alt" style="color: #46b450"></span></h3>', esc_html__( 'Unsplash setup is complete', 'unsplash' ) );
+			printf( '<h3>%1$s <span class="dashicons dashicons-yes-alt"></span></h3>', esc_html__( 'Unsplash setup is complete', 'unsplash' ) );
 			if ( ! empty( $settings['access_key'] ) ) {
 				?>
 					<form action='options.php' method='post'>
@@ -302,7 +301,7 @@ class Settings {
 
 		?>
 		<br />
-		<form action='options.php' method='post' style="max-width: 800px">
+		<form action='options.php' method='post'>
 				<?php
 				settings_fields( 'unsplash' );
 				do_settings_sections( 'unsplash' );
@@ -310,21 +309,6 @@ class Settings {
 				?>
 		</form>
 		<?php
-	}
-
-	/**
-	 * Enqueue style for settings page.
-	 */
-	public function enqueue() {
-		// Enqueue setting page CSS.
-		wp_enqueue_style(
-			'unsplash-settings-page-style',
-			$this->plugin->asset_url( 'assets/css/settings-page-compiled.css' ),
-			[],
-			$this->plugin->asset_version()
-		);
-
-		wp_styles()->add_data( 'unsplash-settings-page-style', 'rtl', 'replace' );
 	}
 
 	/**

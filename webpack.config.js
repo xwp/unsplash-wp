@@ -85,16 +85,16 @@ const mediaSelector = {
 	],
 };
 
-const settingsPage = {
+const admin = {
 	...defaultConfig,
 	...sharedConfig,
 	entry: {
-		'settings-page': [ './assets/src/settings-page/index.js' ],
+		admin: [ './assets/src/admin/index.js' ],
 	},
 	plugins: [
 		...sharedConfig.plugins,
 		new WebpackBar( {
-			name: 'Settings page',
+			name: 'Admin',
 			color: '#570576',
 		} ),
 	],
@@ -148,4 +148,4 @@ const wpPolyfills = {
 	},
 };
 
-module.exports = [ mediaSelector, wpPolyfills, settingsPage ];
+module.exports = [ mediaSelector, wpPolyfills, admin ];

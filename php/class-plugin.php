@@ -199,6 +199,22 @@ class Plugin extends Plugin_Base {
 		return true;
 	}
 
+	/**
+	 * Load our admin assets.
+	 *
+	 * @action admin_enqueue_scripts
+	 */
+	public function enqueue_admin_scripts() {
+		wp_enqueue_style(
+			'unsplash-admin-style',
+			$this->asset_url( 'assets/css/admin-compiled.css' ),
+			[],
+			$this->asset_version()
+		);
+
+		wp_styles()->add_data( 'unsplash-admin-style', 'rtl', 'replace' );
+	}
+
 
 	/**
 	 * Custom wp_prepare_attachment_for_js copied from core.
@@ -546,7 +562,7 @@ class Plugin extends Plugin_Base {
 
 
 		printf(
-			'<div class="%1$s"><h3 style="margin-bottom: 0.3em;"><img src="%2$s" height="18" "/>   %3$s</h3><p style="margin-bottom: 1em">%4$s</p></div>',
+			'<div class="%1$s"><h3><img src="%2$s" height="18" "/>   %3$s</h3><p>%4$s</p></div>',
 			esc_attr( $class ),
 			esc_url( $logo ),
 			esc_html( $title ),

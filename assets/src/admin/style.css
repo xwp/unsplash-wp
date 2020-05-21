@@ -1,0 +1,42 @@
+
+.settings_page_unsplash {
+
+	& .notice,
+	& div.error,
+	& div.updated {
+		margin: 18px 18px 2px 0;
+	}
+
+	& p.submit {
+		margin-top: 0;
+		margin-bottom: 20px;
+	}
+
+	& .notice-unsplash {
+		padding: 12px;
+		margin-left: 0;
+	}
+
+	& form {
+		max-width: 800px;
+	}
+
+	& .dashicons-dismiss {
+		color: #dc3232;
+	}
+
+	& .dashicons-yes-alt {
+		color: #46b450;
+	}
+}
+
+.notice-unsplash-global {
+
+	& h3 {
+		margin-bottom: 0.3em;
+	}
+
+	& p {
+		margin-bottom: 1em;
+	}
+}
