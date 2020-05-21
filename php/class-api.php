@@ -240,18 +240,17 @@ class API {
 		$settings_link = sprintf(
 			'<a href="%1$s">%2$s</a>',
 			esc_url( get_admin_url( null, 'options-general.php?page=unsplash' ) ),
-			esc_html__( 'Unsplash', 'unsplash' )
+			esc_html__( 'Unsplash settings page', 'unsplash' )
 		);
+		$message       = esc_html__( 'The Unsplash plugin has not been provided the API access key.', 'unsplash' ) . '<br />';
+		/* translators: %s: Link to Unsplash settings page. */
+		$message .= sprintf( esc_html__( 'Please visit the %s and confirm that the API access key has been provided.', 'unsplash' ), $settings_link );
 
 		foreach ( $credentials as $key => $value ) {
 			if ( empty( $value ) ) {
 				return new WP_Error(
 					'missing_api_credential',
-					sprintf(
-						/* translators: %s: Link to Unsplash settings page. */
-						esc_html__( 'The Unsplash plugin has not been provided the API access key. Please visit the %s settings page and confirm that the API access key has been provided.', 'unsplash' ),
-						$settings_link
-					),
+					$message,
 					[
 						'status' => rest_authorization_required_code(),
 						'data'   => $key,
@@ -298,16 +297,16 @@ class API {
 			$settings_link = sprintf(
 				'<a href="%1$s">%2$s</a>',
 				esc_url( get_admin_url( null, 'options-general.php?page=unsplash' ) ),
-				esc_html__( 'Unsplash', 'unsplash' )
+				esc_html__( 'Unsplash settings page', 'unsplash' )
 			);
+
+			$message = esc_html__( 'The Unsplash plugin has not been provided the API access key.', 'unsplash' ) . '<br />';
+			/* translators: %s: Link to Unsplash settings page. */
+			$message .= sprintf( esc_html__( 'Please visit the %s and confirm that the API access key has been provided.', 'unsplash' ), $settings_link );
 
 			return new WP_Error(
 				'missing_api_credential',
-				sprintf(
-					/* translators: %s: Link to Unsplash settings page. */
-					esc_html__( 'The Unsplash plugin has not been provided the API access key. Please visit the %s settings page and confirm that the API access key has been provided.', 'unsplash' ),
-					$settings_link
-				),
+				$message,
 				[
 					'status' => rest_authorization_required_code(),
 				]
@@ -349,18 +348,20 @@ class API {
 			$settings_link = sprintf(
 				'<a href="%1$s">%2$s</a>',
 				esc_url( get_admin_url( null, 'options-general.php?page=unsplash' ) ),
-				esc_html__( 'Unsplash', 'unsplash' )
+				esc_html__( 'Unsplash settings page', 'unsplash' )
 			);
 			$status_link   = '<a href="https://status.unsplash.com">status.unsplash.com</a>';
 
 			switch ( $error_status ) {
 				case 401:
+					$message = esc_html__( 'The Unsplash API credentials supplied are not authorized.', 'unsplash' ) . '<br />';
 					/* translators: %s: Link to Unsplash settings page. */
-					$message = sprintf( esc_html__( 'The Unsplash API credentials supplied are not authorized. Please visit the %s settings page to reconnect to Unsplash now.', 'unsplash' ), $settings_link );
+					$message .= sprintf( esc_html__( 'Please visit the %s to reconnect to Unsplash now.', 'unsplash' ), $settings_link );
 					break;
 				case 403:
+					$message = esc_html__( 'The Unsplash API credentials supplied are not authorized for this request.', 'unsplash' ) . '<br />';
 					/* translators: %s: Link to Unsplash settings page. */
-					$message = sprintf( esc_html__( 'The Unsplash API credentials supplied are not authorized for this request. Please visit the %s settings page to reconnect to Unsplash now.', 'unsplash' ), $settings_link );
+					$message .= sprintf( esc_html__( 'Please visit the %s to reconnect to Unsplash now.', 'unsplash' ), $settings_link );
 					break;
 				case 404:
 					$message = esc_html__( 'Unable to find Unsplash resource.', 'unsplash' );
