@@ -114,7 +114,7 @@ class Rest_Controller extends WP_REST_Controller {
 					],
 				],
 				[
-					'methods'             => WP_REST_Server::READABLE,
+					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => [ $this, 'get_import' ],
 					'permission_callback' => [ $this, 'create_item_permissions_check' ],
 					'args'                => [
@@ -137,7 +137,7 @@ class Rest_Controller extends WP_REST_Controller {
 					],
 				],
 				[
-					'methods'             => WP_REST_Server::READABLE,
+					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => [ $this, 'post_process' ],
 					'permission_callback' => [ $this, 'create_item_permissions_check' ],
 					'args'                => [

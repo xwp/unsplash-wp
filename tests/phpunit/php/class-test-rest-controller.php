@@ -402,7 +402,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	public function test_get_import() {
 		wp_set_current_user( self::$admin_id );
 		add_filter( 'upload_dir', [ $this, 'upload_dir_patch' ] );
-		$request = new WP_REST_Request( 'GET', $this->get_route( '/import/uRuPYB0P8to' ) );
+		$request = new WP_REST_Request( 'POST', $this->get_route( '/import/uRuPYB0P8to' ) );
 		$request->set_param( 'alt', 'test alt' );
 		$request->set_param( 'title', 'test title' );
 		$request->set_param( 'description', 'test description' );
@@ -469,7 +469,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 			]
 		);
 		wp_set_current_user( self::$admin_id );
-		$request = new WP_REST_Request( 'GET', $this->get_route( '/post-process/' . $second_id ) );
+		$request = new WP_REST_Request( 'POST', $this->get_route( '/post-process/' . $second_id ) );
 		$request->set_param( 'retry', '2' );
 		$response = rest_get_server()->dispatch( $request );
 		$this->assertEquals( 200, $response->get_status() );
@@ -506,7 +506,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		);
 
 		wp_set_current_user( self::$admin_id );
-		$request  = new WP_REST_Request( 'GET', $this->get_route( '/post-process/' . $test_page ) );
+		$request  = new WP_REST_Request( 'POST', $this->get_route( '/post-process/' . $test_page ) );
 		$response = rest_get_server()->dispatch( $request );
 		$this->assertErrorResponse( 'rest_invalid_param', $response, 400 );
 	}
@@ -521,7 +521,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		$test_page = wp_rand();
 
 		wp_set_current_user( self::$admin_id );
-		$request  = new WP_REST_Request( 'GET', $this->get_route( '/post-process/' . $test_page ) );
+		$request  = new WP_REST_Request( 'POST', $this->get_route( '/post-process/' . $test_page ) );
 		$response = rest_get_server()->dispatch( $request );
 		$this->assertErrorResponse( 'rest_invalid_param', $response, 400 );
 	}
@@ -563,7 +563,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 */
 	public function test_get_import_auth() {
 		wp_set_current_user( self::$subscriber_id );
-		$request  = new WP_REST_Request( 'GET', $this->get_route( '/import/uRuPYB0P8to' ) );
+		$request  = new WP_REST_Request( 'POST', $this->get_route( '/import/uRuPYB0P8to' ) );
 		$response = rest_get_server()->dispatch( $request );
 		$this->assertErrorResponse( 'rest_cannot_create', $response, 403 );
 	}
@@ -584,7 +584,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 			]
 		);
 		wp_set_current_user( self::$subscriber_id );
-		$request  = new WP_REST_Request( 'GET', $this->get_route( '/post-process/' . $second_id ) );
+		$request  = new WP_REST_Request( 'POST', $this->get_route( '/post-process/' . $second_id ) );
 		$response = rest_get_server()->dispatch( $request );
 		$this->assertErrorResponse( 'rest_cannot_create', $response, 403 );
 	}

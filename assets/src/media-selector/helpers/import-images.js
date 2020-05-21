@@ -51,7 +51,7 @@ const importImage = image => {
 	};
 
 	return wp
-		.apiRequest( { url: importUrl, data } )
+		.apiRequest( { url: importUrl, data, type: 'POST' } )
 		.done( attachmentData => {
 			// Update image ID from imported attachment. This will be used to fetch the <img> tag.
 			// Note: `image.set()` is called rather than updating `image.id` directly so that potential Backbone event listeners can be fired.
@@ -67,6 +67,7 @@ const importImage = image => {
 				url: addQueryArgs( processUrl + attachmentData.id, { retry: 0 } ),
 				retries: 5,
 				retryInterval: 500,
+				type: 'POST',
 			} );
 			return attachmentData;
 		} )
