@@ -402,7 +402,11 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	public function test_get_import() {
 		wp_set_current_user( self::$admin_id );
 		add_filter( 'upload_dir', [ $this, 'upload_dir_patch' ] );
-		$request  = new WP_REST_Request( 'GET', $this->get_route( '/import/uRuPYB0P8to' ) );
+		$request = new WP_REST_Request( 'GET', $this->get_route( '/import/uRuPYB0P8to' ) );
+		$request->set_param( 'alt', 'test alt' );
+		$request->set_param( 'title', 'test title' );
+		$request->set_param( 'description', 'test description' );
+		$request->set_param( 'caption', 'test caption' );
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
 
@@ -425,6 +429,13 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 
 		$this->assertEquals( $expected, $data );
 		$this->assertEquals( 301, $response->get_status() );
+		$header        = $response->get_headers();
+		$attachment_id = $header['X-WP-Upload-Attachment-ID'];
+		$attachment    = get_post( $attachment_id );
+		$this->assertEquals( 'test alt', get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ) );
+		$this->assertEquals( 'test title', $attachment->post_title );
+		$this->assertEquals( 'test description', $attachment->post_content );
+		$this->assertEquals( 'test caption', $attachment->post_excerpt );
 		remove_filter( 'upload_dir', [ $this, 'upload_dir_patch' ] );
 	}
 
