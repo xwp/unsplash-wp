@@ -75,6 +75,54 @@ class Test_Import extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Test create attachment.
+	 *
+	 * @covers \Unsplash\Import::create_attachment()
+	 * @covers \Unsplash\Import::process_meta()
+	 */
+	public function test_process_meta() {
+		$file   = [
+			'file' => true,
+			'url'  => 'http://www.example.com/test.jpg',
+		];
+		$image  = new Image(
+			[
+				'id'              => 'eOvv4N6yNmk',
+				'tags'            => [],
+				'description'     => 'test description',
+				'alt_description' => 'test alt description',
+			]
+		);
+		$import = new Import(
+			'eOvv4N6yNmk',
+			$image
+		);
+
+		$attachment_id = $import->create_attachment( $file );
+		$actual_id     = get_page_by_path( 'eOvv4N6yNmk', ARRAY_A, 'attachment' )['ID'];
+
+		$this->assertEquals( $attachment_id, $actual_id );
+		$import->process_meta();
+		$map = [
+			'color'                        => 'color',
+			'original_id'                  => 'original_id',
+			'original_url'                 => 'original_url',
+			'original_link'                => 'original_link',
+			'unsplash_location'            => 'unsplash_location',
+			'unsplash_sponsor'             => 'unsplash_sponsor',
+			'unsplash_exif'                => 'unsplash_exif',
+			'_wp_attachment_metadata'      => 'meta',
+			'unsplash_attachment_metadata' => 'meta',
+			'_wp_attachment_image_alt'     => 'alt',
+		];
+		foreach ( $map as $key => $value ) {
+			$this->assertEquals( $image->get_field( $value ), get_post_meta( $attachment_id, $key, true ) );
+		}
+		$this->assertEqauls( $attachment_id, $actual_id );
+
+	}
+
+	/**
 	 * Test pass empty array to create_attachment.
 	 *
 	 * @covers \Unsplash\Import::create_attachment()

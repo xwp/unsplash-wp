@@ -149,7 +149,7 @@ class Image {
 	 * @param string $field Field in $process_data array.
 	 * @param string $value Defaults to ''.
 	 *
-	 * @return mixed|string
+	 * @return void
 	 */
 	public function set_field( $field, $value = '' ) {
 		$this->process_data[ $field ] = $value;
