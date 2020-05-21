@@ -118,8 +118,7 @@ class Test_Import extends \WP_UnitTestCase {
 		foreach ( $map as $key => $value ) {
 			$this->assertEquals( $image->get_field( $value ), get_post_meta( $attachment_id, $key, true ) );
 		}
-		$this->assertEqauls( $attachment_id, $actual_id );
-
+		$this->assertEquals( $attachment_id, $actual_id );
 	}
 
 	/**
