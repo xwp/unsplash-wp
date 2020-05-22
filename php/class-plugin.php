@@ -36,6 +36,13 @@ class Plugin extends Plugin_Base {
 	public $rest_controller;
 
 	/**
+	 * API instance.
+	 *
+	 * @var API
+	 */
+	public $api;
+
+	/**
 	 * Initiate the plugin resources.
 	 *
 	 * @action plugins_loaded
@@ -49,6 +56,8 @@ class Plugin extends Plugin_Base {
 
 		$this->rest_controller = new REST_Controller( $this );
 		$this->rest_controller->init();
+
+		$this->api = new API( $this );
 
 		// Manually add this filter as the plugin file name is dynamic.
 		add_filter( 'plugin_action_links_' . $this->file, [ $this, 'action_links' ] );
@@ -541,8 +550,8 @@ class Plugin extends Plugin_Base {
 		}
 
 		$credentials = $this->settings->get_credentials();
-		if ( ! empty( $credentials['applicationId'] ) && $this->rest_controller->api->check_api_credentials() ) {
-			$status = $this->rest_controller->api->check_api_status( $credentials, true, true );
+		if ( ! empty( $credentials['applicationId'] ) && $this->api->check_api_credentials() ) {
+			$status = $this->api->check_api_status( $credentials, true, true );
 			if ( ! is_wp_error( $status ) ) {
 				return false;
 			}
@@ -558,7 +567,7 @@ class Plugin extends Plugin_Base {
 		$class   = 'notice notice-warning is-dismissible notice-unsplash-global';
 		$logo    = $this->asset_url( 'assets/images/logo.svg' );
 		$title   = esc_html__( 'Unsplash', 'unsplash' );
-		$message = $this->rest_controller->api->get_missing_credentials_message();
+		$message = $this->api->get_missing_credentials_message();
 
 
 		printf(

@@ -247,7 +247,7 @@ class Settings {
 		<?php
 
 		$credentials   = $this->get_credentials();
-		$status        = $this->plugin->rest_controller->api->check_api_status( [], false, true );
+		$status        = $this->plugin->api->check_api_status( [], false, true );
 		$register_link = sprintf(
 			'https://unsplash.com/oauth/authorize?client_id=%1$s&response_type=code&scope=public&redirect_uri=%2$s',
 			esc_html( $this->auth_client_id ),
@@ -366,7 +366,7 @@ class Settings {
 					'utmSource'     => 'WordPress',
 				];
 
-				$api = $this->plugin->rest_controller->api;
+				$api = $this->plugin->api;
 
 				if ( true !== $api->check_api_credentials() || true !== $api->check_api_status( $credentials ) ) {
 					$this->redirect_auth( esc_html__( 'Unsplash setup has failed, could not connect to the Unsplash API.', 'unsplash' ) );
