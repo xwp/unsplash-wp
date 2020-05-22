@@ -199,6 +199,22 @@ class Plugin extends Plugin_Base {
 		return true;
 	}
 
+	/**
+	 * Load our admin assets.
+	 *
+	 * @action admin_enqueue_scripts
+	 */
+	public function enqueue_admin_scripts() {
+		wp_enqueue_style(
+			'unsplash-admin-style',
+			$this->asset_url( 'assets/css/admin-compiled.css' ),
+			[],
+			$this->asset_version()
+		);
+
+		wp_styles()->add_data( 'unsplash-admin-style', 'rtl', 'replace' );
+	}
+
 
 	/**
 	 * Custom wp_prepare_attachment_for_js copied from core.
@@ -539,14 +555,27 @@ class Plugin extends Plugin_Base {
 			return;
 		}
 
-		$class   = 'notice notice-warning is-dismissible';
+		$class   = 'notice notice-warning is-dismissible notice-unsplash-global';
 		$logo    = $this->asset_url( 'assets/images/logo.svg' );
 		$title   = esc_html__( 'Unsplash', 'unsplash' );
-		$message = esc_html__( 'To complete set up of the Unsplash plugin you’ll need to add the API access key.', 'unsplash' );
-		$button  = esc_html__( 'Complete setup', 'unsplash' );
-		$url     = get_admin_url( null, 'options-general.php?page=unsplash' );
+		$message = $this->rest_controller->api->get_missing_credentials_message();
 
-		printf( '<div class="%1$s"><h3><img src="%2$s" height="18" "/>   %3$s</h3><p>%4$s</p><p><a href="%5$s" class="button button-primary button-large">%6$s</a></p></div>', esc_attr( $class ), esc_url( $logo ), esc_html( $title ), esc_html( $message ), esc_url( $url ), esc_html( $button ) );
+
+		printf(
+			'<div class="%1$s"><h3><img src="%2$s" height="18" "/>   %3$s</h3><p>%4$s</p></div>',
+			esc_attr( $class ),
+			esc_url( $logo ),
+			esc_html( $title ),
+			wp_kses(
+				$message,
+				[
+					'a'  => [
+						'href' => [],
+					],
+					'br' => [],
+				]
+			)
+		);
 	}
 
 	/**

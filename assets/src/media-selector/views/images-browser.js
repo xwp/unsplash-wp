@@ -177,6 +177,10 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 		) {
 			const error = this.collection.respErrorMessage();
 			errorView.$el.html( error.message );
+			if ( [ 401, 403 ].includes( error.data?.status ) ) {
+				errorView.$el.removeClass( 'notice-error' );
+				errorView.$el.addClass( 'notice-warning' );
+			}
 			errorView.$el.removeClass( 'hidden' );
 			toolbarView.$el.addClass( 'hidden' );
 		}

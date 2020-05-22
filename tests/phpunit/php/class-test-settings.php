@@ -262,7 +262,7 @@ class Test_Settings extends \WP_UnitTestCase {
 		ob_start();
 		$mock->settings_page_render();
 		$page = ob_get_clean();
-		$this->assertContains( 'Start set up', $page );
+		$this->assertContains( 'Complete setup', $page );
 		$this->assertContains( 'foo-is-notice', $page );
 		remove_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
 	}
@@ -287,7 +287,7 @@ class Test_Settings extends \WP_UnitTestCase {
 		ob_start();
 		$mock->settings_page_render();
 		$page = ob_get_clean();
-		$this->assertContains( 'Start set up', $page );
+		$this->assertContains( 'Complete setup', $page );
 		remove_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
 	}
 
@@ -313,7 +313,7 @@ class Test_Settings extends \WP_UnitTestCase {
 		ob_start();
 		$mock->settings_page_render();
 		$page = ob_get_clean();
-		$this->assertContains( 'Restart set up', $page );
+		$this->assertContains( 'Restart setup', $page );
 		remove_filter( 'unsplash_api_credentials', [ $this, 'fake_unsplash_api_credentials' ] );
 		remove_filter( 'pre_unsplash_check_api_status', [ $this, 'fake_403' ] );
 		remove_filter( 'pre_option_unsplash_settings', [ $this, 'get_mocked_settings' ], 10, 3 );
@@ -370,7 +370,7 @@ class Test_Settings extends \WP_UnitTestCase {
 		$mock->settings_page_render();
 		$page = ob_get_clean();
 		$this->assertContains( 'deauthenticate', $page );
-		$this->assertContains( 'Unsplash set up is complete', $page );
+		$this->assertContains( 'Unsplash setup is complete', $page );
 		remove_filter( 'pre_unsplash_check_api_status', '__return_true' );
 		remove_filter( 'unsplash_api_credentials', [ $this, 'fake_unsplash_api_credentials' ] );
 		remove_filter( 'pre_option_unsplash_settings', [ $this, 'get_mocked_settings' ], 10, 3 );
@@ -681,7 +681,7 @@ class Test_Settings extends \WP_UnitTestCase {
 		ob_start();
 		$this->settings->settings_section_render();
 		$section = ob_get_clean();
-		$this->assertContains( 'Always use the default automated set up unless a manual authentication process is required.', $section );
+		$this->assertContains( 'Always use the default automated setup unless a manual authentication process is required.', $section );
 	}
 
 	/**
@@ -715,16 +715,6 @@ class Test_Settings extends \WP_UnitTestCase {
 		$actual_utm   = $credentials['utmSource'];
 
 		$this->assertEquals( $expected_utm, $actual_utm );
-	}
-
-	/**
-	 * Test for enqueue() method.
-	 *
-	 * @see ::enqueue()
-	 */
-	public function test_enqueue() {
-		$this->settings->enqueue();
-		$this->assertTrue( wp_style_is( 'unsplash-settings-page-style', 'enqueued' ) );
 	}
 
 	/**

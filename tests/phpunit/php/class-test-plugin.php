@@ -53,6 +53,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 		$this->assertEquals( 10, has_action( 'plugins_loaded', [ $plugin, 'init' ] ) );
 		$this->assertEquals( 10, has_action( 'wp_default_scripts', [ $plugin, 'register_polyfill_scripts' ] ) );
 		$this->assertEquals( 10, has_action( 'wp_enqueue_media', [ $plugin, 'enqueue_media_scripts' ] ) );
+		$this->assertEquals( 10, has_action( 'admin_enqueue_scripts', [ $plugin, 'enqueue_admin_scripts' ] ) );
 		$this->assertEquals( 10, has_action( 'init', [ $plugin, 'register_taxonomy' ] ) );
 		$this->assertEquals( 10, has_action( 'init', [ $plugin, 'register_meta' ] ) );
 	}
@@ -108,6 +109,17 @@ class Test_Plugin extends \WP_UnitTestCase {
 
 		$featured_image_script_loads = version_compare( '5.0', get_bloginfo( 'version' ), '<=' );
 		$this->assertEquals( $featured_image_script_loads, wp_script_is( 'unsplash-featured-image-selector', 'enqueued' ) );
+	}
+
+	/**
+	 * Test for test_enqueue_admin_scripts() method.
+	 *
+	 * @see Plugin::test_enqueue_admin_scripts()
+	 */
+	public function test_enqueue_admin_scripts() {
+		$plugin = get_plugin_instance();
+		$plugin->enqueue_admin_scripts();
+		$this->assertTrue( wp_style_is( 'unsplash-admin-style', 'enqueued' ) );
 	}
 
 	/**
@@ -290,7 +302,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 		ob_start();
 		$plugin->admin_notice();
 		$output = ob_get_clean();
-		$this->assertContains( 'To complete set up of the Unsplash plugin you’ll need to add the API access key.', $output );
+		$this->assertContains( 'To complete setup of the Unsplash plugin you’ll need to add the API access key.', $output );
 		remove_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
 	}
 
@@ -307,7 +319,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 		ob_start();
 		$plugin->admin_notice();
 		$output = ob_get_clean();
-		$this->assertContains( 'The Unsplash API credentials supplied are not authorized. Please visit the Unsplash settings page to reconnect to Unsplash now.', wp_strip_all_tags( $output ) );
+		$this->assertContains( 'The Unsplash API credentials supplied are not authorized.Please visit the Unsplash settings page to reconnect to Unsplash now.', wp_strip_all_tags( $output ) );
 		remove_filter( 'unsplash_api_credentials', [ $this, 'invalid_unsplash_api_credentials' ] );
 	}
 

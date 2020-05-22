@@ -105,8 +105,8 @@ class Test_Api extends \WP_UnitTestCase {
 	public function data_test_format_exception() {
 		return [
 			[ 'test_500', 500, 'There appears to be a communication issue with Unsplash, please check status.unsplash.com and try again in a few minutes.' ],
-			[ 'test_401', 401, 'The Unsplash API credentials supplied are not authorized. Please visit the Unsplash settings page to reconnect to Unsplash now.' ],
-			[ 'test_403', 403, 'The Unsplash API credentials supplied are not authorized for this request. Please visit the Unsplash settings page to reconnect to Unsplash now.' ],
+			[ 'test_401', 401, 'The Unsplash API credentials supplied are not authorized.Please visit the Unsplash settings page to reconnect to Unsplash now.' ],
+			[ 'test_403', 403, 'The Unsplash API credentials supplied are not authorized for this request.Please visit the Unsplash settings page to reconnect to Unsplash now.' ],
 			[ 'test_400', 400, 'There appears to be a communication issue with Unsplash, please check status.unsplash.com and try again in a few minutes.' ],
 			[ 'test_429', 429, 'The Unsplash API credentials supplied have been flagged for exceeding the permitted rate limit and have been temporarily disabled.' ],
 			[ 'test_404', 404, 'Unable to find Unsplash resource.' ],
@@ -160,7 +160,7 @@ class Test_Api extends \WP_UnitTestCase {
 		$api      = new API( $plugin );
 		$wp_error = $api->check_api_credentials();
 		$this->assertEquals( $wp_error->get_error_code(), 'missing_api_credential' );
-		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), 'The Unsplash plugin has not been provided the API access key. Please visit the Unsplash settings page and confirm that the API access key has been provided.' );
+		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), 'To complete setup of the Unsplash plugin you’ll need to add the API access key.Visit the Unspash settings page to complete the process.' );
 		remove_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
 	}
 
@@ -178,7 +178,7 @@ class Test_Api extends \WP_UnitTestCase {
 		$api      = new API( $plugin );
 		$wp_error = $api->get( 'uYpOYyJdhRE' );
 		$this->assertEquals( $wp_error->get_error_code(), 'missing_api_credential' );
-		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), 'The Unsplash plugin has not been provided the API access key. Please visit the Unsplash settings page and confirm that the API access key has been provided.' );
+		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), 'To complete setup of the Unsplash plugin you’ll need to add the API access key.Visit the Unspash settings page to complete the process.' );
 		remove_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
 	}
 

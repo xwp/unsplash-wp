@@ -171,8 +171,7 @@ class Settings {
 	 * @action admin_menu
 	 */
 	public function add_admin_menu() {
-		$page_hook_suffix = add_options_page( 'Unsplash', 'Unsplash', 'manage_options', 'unsplash', [ $this, 'settings_page_render' ] );
-		add_action( 'admin_print_scripts-' . $page_hook_suffix, [ $this, 'enqueue' ] );
+		add_options_page( 'Unsplash', 'Unsplash', 'manage_options', 'unsplash', [ $this, 'settings_page_render' ] );
 	}
 
 	/**
@@ -260,9 +259,9 @@ class Settings {
 			$register = sprintf(
 				'<p><a href="%1$s" class="button button-primary">%2$s</a></p>',
 				esc_url( $register_link ),
-				esc_html__( 'Start set up', 'unsplash' )
+				esc_html__( 'Complete setup', 'unsplash' )
 			);
-			printf( '<div class="notice notice-warning notice-unsplash"><p>%1$s</p> %2$s</div>', esc_html__( 'To complete set up of the Unsplash plugin you will need to authenticate with an API key.', 'unsplash' ), wp_kses_post( $register ) );
+			printf( '<div class="notice notice-warning notice-unsplash"><p>%1$s</p> %2$s</div>', esc_html__( 'To complete setup of the Unsplash plugin you will need to add the API access key.', 'unsplash' ), wp_kses_post( $register ) );
 		} elseif ( is_wp_error( $status ) ) {
 			$status_data = $status->get_error_data();
 			$status_code = ( isset( $status_data['status'] ) ) ? $status_data['status'] : 500;
@@ -270,15 +269,15 @@ class Settings {
 				$register = sprintf(
 					'<p><a href="%1$s" class="button button-primary">%2$s</a></p>',
 					esc_url( $register_link ),
-					esc_html__( 'Restart set up', 'unsplash' )
+					esc_html__( 'Restart setup', 'unsplash' )
 				);
-				printf( '<div class="notice notice-error notice-unsplash"><p>%1$s <span class="dashicons dashicons-dismiss" style="color: #dc3232"></span></p> %2$s</div>', esc_html__( 'Unable to authenticate due to an error with the access key.', 'unsplash' ), wp_kses_post( $register ) );
+				printf( '<div class="notice notice-error notice-unsplash"><p>%1$s <span class="dashicons dashicons-dismiss"></span></p> %2$s</div>', esc_html__( 'Unable to authenticate due to an error with the access key.', 'unsplash' ), wp_kses_post( $register ) );
 			} else {
 				$message = $status->get_error_message();
 				printf( '<div class="notice notice-error"><p>%1$s</p></div>', wp_kses_post( $message ) );
 			}
 		} else {
-			printf( '<h3>%1$s <span class="dashicons dashicons-yes-alt" style="color: #46b450"></span></h3>', esc_html__( 'Unsplash set up is complete', 'unsplash' ) );
+			printf( '<h3>%1$s <span class="dashicons dashicons-yes-alt"></span></h3>', esc_html__( 'Unsplash setup is complete', 'unsplash' ) );
 			if ( ! empty( $settings['access_key'] ) ) {
 				?>
 					<form action='options.php' method='post'>
@@ -302,7 +301,7 @@ class Settings {
 
 		?>
 		<br />
-		<form action='options.php' method='post' style="max-width: 800px">
+		<form action='options.php' method='post'>
 				<?php
 				settings_fields( 'unsplash' );
 				do_settings_sections( 'unsplash' );
@@ -310,21 +309,6 @@ class Settings {
 				?>
 		</form>
 		<?php
-	}
-
-	/**
-	 * Enqueue style for settings page.
-	 */
-	public function enqueue() {
-		// Enqueue setting page CSS.
-		wp_enqueue_style(
-			'unsplash-settings-page-style',
-			$this->plugin->asset_url( 'assets/css/settings-page-compiled.css' ),
-			[],
-			$this->plugin->asset_version()
-		);
-
-		wp_styles()->add_data( 'unsplash-settings-page-style', 'rtl', 'replace' );
 	}
 
 	/**
@@ -498,7 +482,7 @@ class Settings {
 	 */
 	public function settings_section_render() {
 		/* translators: %s: Link to OAuth Applications page. */
-		echo '<p>' . esc_html__( 'Always use the default automated set up unless a manual authentication process is required. ', 'unsplash' ) . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo '<p>' . esc_html__( 'Always use the default automated setup unless a manual authentication process is required. ', 'unsplash' ) . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
