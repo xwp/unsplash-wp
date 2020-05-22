@@ -157,9 +157,9 @@ class Rest_Controller extends WP_REST_Controller {
 		$collections = $request->get_param( 'collections' );
 		$photos      = [];
 		if ( $search ) {
-			$api_response = $this->api->search( $search, $page, $per_page, $orientation, $collections );
+			$api_response = $this->plugin->api->search( $search, $page, $per_page, $orientation, $collections );
 		} else {
-			$api_response = $this->api->all( $page, $per_page, $order_by );
+			$api_response = $this->plugin->api->all( $page, $per_page, $order_by );
 		}
 
 		if ( is_wp_error( $api_response ) ) {
@@ -197,7 +197,7 @@ class Rest_Controller extends WP_REST_Controller {
 	public function get_item( $request ) {
 		$id = $request->get_param( 'id' );
 
-		$api_response = $this->api->get( $id );
+		$api_response = $this->plugin->api->get( $id );
 		if ( is_wp_error( $api_response ) ) {
 			return $this->rest_ensure_response( $api_response, $request );
 		}
@@ -221,7 +221,7 @@ class Rest_Controller extends WP_REST_Controller {
 	public function get_import( $request ) {
 		$id = $request->get_param( 'id' );
 
-		$api_response = $this->api->get( $id );
+		$api_response = $this->plugin->api->get( $id );
 		if ( is_wp_error( $api_response ) ) {
 			return $this->rest_ensure_response( $api_response, $request );
 		}
@@ -239,7 +239,7 @@ class Rest_Controller extends WP_REST_Controller {
 		if ( is_wp_error( $attachment_id ) ) {
 			return $this->rest_ensure_response( $attachment_id, $request );
 		}
-		$this->api->download( $id );
+		$this->plugin->api->download( $id );
 		$response = $this->prepare_item_for_response( $results, $request );
 		$response = rest_ensure_response( $response );
 		$response->set_status( 301 );
