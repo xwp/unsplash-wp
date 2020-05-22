@@ -271,13 +271,15 @@ class Settings {
 					esc_url( $register_link ),
 					esc_html__( 'Restart setup', 'unsplash' )
 				);
-				printf( '<div class="notice notice-error notice-unsplash"><p>%1$s <span class="dashicons dashicons-dismiss"></span></p> %2$s</div>', esc_html__( 'Unable to authenticate due to an error with the access key.', 'unsplash' ), wp_kses_post( $register ) );
+				$dismiss  = $this->plugin->asset_url( 'assets/images/dismiss.svg' );
+				printf( '<div class="notice notice-error notice-unsplash"><p>%1$s <img src="%2$s" class="unsplash-icon unsplash-icon-dismiss" alt="%3$s" /></p> %4$s</div>', esc_html__( 'Unable to authenticate due to an error with the access key.', 'unsplash' ), esc_url( $dismiss ), esc_html__( 'Dismiss icon', 'unsplash' ), wp_kses_post( $register ) );
 			} else {
 				$message = $status->get_error_message();
 				printf( '<div class="notice notice-error"><p>%1$s</p></div>', wp_kses_post( $message ) );
 			}
 		} else {
-			printf( '<h3>%1$s <span class="dashicons dashicons-yes-alt"></span></h3>', esc_html__( 'Unsplash setup is complete', 'unsplash' ) );
+			$yes = $this->plugin->asset_url( 'assets/images/yes-alt.svg' );
+			printf( '<h3>%1$s <img src="%2$s" class="unsplash-icon unsplash-icon-yes-alt" alt="%3$s" /></h3>', esc_html__( 'Unsplash setup is complete', 'unsplash' ), esc_url( $yes ), esc_html__( 'Success icon', 'unsplash' ) );
 			if ( ! empty( $settings['access_key'] ) ) {
 				?>
 					<form action='options.php' method='post'>

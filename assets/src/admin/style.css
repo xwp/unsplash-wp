@@ -21,12 +21,11 @@
 		max-width: 800px;
 	}
 
-	& .dashicons-dismiss {
-		color: #dc3232;
-	}
-
-	& .dashicons-yes-alt {
-		color: #46b450;
+	& .unsplash-icon {
+		height: 1.5em;
+		padding-left: 0.3em;
+		vertical-align: sub;
+		width: 1.5em;
 	}
 }
 
