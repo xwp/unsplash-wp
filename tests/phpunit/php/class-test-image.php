@@ -84,6 +84,29 @@ class Test_Image extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Test process data.
+	 *
+	 * @covers \Unsplash\Image::__construct()
+	 * @covers \Unsplash\Image::process_fields()
+	 * @covers \Unsplash\Image::get_field()
+	 * @covers \Unsplash\Image::set_field()
+	 */
+	public function test_set_field() {
+		$test_data = $this->get_data();
+		$image     = new Image( $test_data );
+		$image->set_field( 'alt', 'Test alt' );
+		$image->set_field( 'title', 'Test title' );
+		$image->set_field( 'description', 'Test description' );
+		$image->set_field( 'caption', 'Test caption' );
+
+		$this->assertSame( strtolower( $test_data['id'] ), $image->get_field( 'original_id' ) );
+		$this->assertSame( 'Test description', $image->get_field( 'description' ) );
+		$this->assertSame( 'Test alt', $image->get_field( 'alt' ) );
+		$this->assertSame( 'Test title', $image->get_field( 'title' ) );
+		$this->assertSame( 'Test caption', $image->get_field( 'caption' ) );
+	}
+
+	/**
 	 * Test image url.
 	 *
 	 * @covers \Unsplash\Image::__construct()

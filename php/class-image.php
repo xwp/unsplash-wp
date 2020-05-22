@@ -66,6 +66,7 @@ class Image {
 		$this->process_data['original_id']       = strtolower( $this->get_image_field( 'id' ) );
 		$this->process_data['description']       = $this->get_image_field( 'description', $this->get_image_field( 'alt_description' ) );
 		$this->process_data['alt']               = $this->get_image_field( 'alt_description', $this->get_image_field( 'description' ) );
+		$this->process_data['title']             = $this->process_data['alt'];
 		$this->process_data['original_url']      = $this->get_image_url( 'raw' );
 		$this->process_data['caption']           = $this->get_caption();
 		$this->process_data['color']             = $this->get_image_field( 'color', '' );
@@ -141,6 +142,18 @@ class Image {
 	 */
 	public function get_field( $field, $default = '' ) {
 		return isset( $this->process_data[ $field ] ) ? $this->process_data[ $field ] : $default;
+	}
+
+	/**
+	 * Set field from process data.
+	 *
+	 * @param string $field Field in $process_data array.
+	 * @param string $value Defaults to ''.
+	 *
+	 * @return void
+	 */
+	public function set_field( $field, $value = '' ) {
+		$this->process_data[ $field ] = $value;
 	}
 
 	/**

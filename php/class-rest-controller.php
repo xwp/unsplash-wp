@@ -114,7 +114,7 @@ class Rest_Controller extends WP_REST_Controller {
 					],
 				],
 				[
-					'methods'             => WP_REST_Server::READABLE,
+					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => [ $this, 'get_import' ],
 					'permission_callback' => [ $this, 'create_item_permissions_check' ],
 					'args'                => [
@@ -137,7 +137,7 @@ class Rest_Controller extends WP_REST_Controller {
 					],
 				],
 				[
-					'methods'             => WP_REST_Server::READABLE,
+					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => [ $this, 'post_process' ],
 					'permission_callback' => [ $this, 'create_item_permissions_check' ],
 					'args'                => [
@@ -233,10 +233,15 @@ class Rest_Controller extends WP_REST_Controller {
 		if ( is_wp_error( $api_response ) ) {
 			return $this->rest_ensure_response( $api_response, $request );
 		}
-		$results       = $api_response->get_results();
-		$credentials   = $this->plugin->settings->get_credentials();
-		$utm_source    = $credentials['utmSource'];
-		$image         = new Image( $results, $utm_source );
+		$results     = $api_response->get_results();
+		$credentials = $this->plugin->settings->get_credentials();
+		$utm_source  = $credentials['utmSource'];
+		$image       = new Image( $results, $utm_source );
+		$image->set_field( 'alt', $request->get_param( 'alt' ) );
+		$image->set_field( 'title', $request->get_param( 'title' ) );
+		$image->set_field( 'description', $request->get_param( 'description' ) );
+		$image->set_field( 'caption', $request->get_param( 'caption' ) );
+
 		$importer      = new Import( $id, $image );
 		$attachment_id = $importer->process();
 		if ( is_wp_error( $attachment_id ) ) {
@@ -246,6 +251,7 @@ class Rest_Controller extends WP_REST_Controller {
 		$response = $this->prepare_item_for_response( $results, $request );
 		$response = rest_ensure_response( $response );
 		$response->set_status( 301 );
+		$response->header( 'X-WP-Upload-Attachment-ID', $attachment_id );
 		$response->header( 'Location', add_query_arg( 'context', 'edit', rest_url( sprintf( '%s/%s/%d', 'wp/v2', 'media', $attachment_id ) ) ) );
 
 		return $this->rest_ensure_response( $response, $request );

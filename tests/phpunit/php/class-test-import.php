@@ -75,6 +75,69 @@ class Test_Import extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Test Process meta attachment.
+	 *
+	 * @covers \Unsplash\Import::create_attachment()
+	 * @covers \Unsplash\Import::process_meta()
+	 * @covers \Unsplash\Import::process_tags()
+	 * @covers \Unsplash\Import::process_source()
+	 */
+	public function test_process_meta() {
+		$file   = [
+			'file' => true,
+			'url'  => 'http://www.example.com/test.jpg',
+		];
+		$image  = new Image(
+			[
+				'id'              => 'eOvv4N6yNmk',
+				'tags'            => [
+					[
+						'title' => 'wibble',
+					],
+					[
+						'title' => 'dibble',
+					],
+				],
+				'description'     => 'test description',
+				'alt_description' => 'test alt description',
+			]
+		);
+		$import = new Import(
+			'eOvv4N6yNmk',
+			$image
+		);
+
+		$attachment_id = $import->create_attachment( $file );
+		$actual_id     = get_page_by_path( 'eOvv4N6yNmk', ARRAY_A, 'attachment' )['ID'];
+
+		$this->assertEquals( $attachment_id, $actual_id );
+		$import->process_meta();
+		$map = [
+			'color'                        => 'color',
+			'original_id'                  => 'original_id',
+			'original_url'                 => 'original_url',
+			'original_link'                => 'original_link',
+			'unsplash_location'            => 'unsplash_location',
+			'unsplash_sponsor'             => 'unsplash_sponsor',
+			'unsplash_exif'                => 'unsplash_exif',
+			'_wp_attachment_metadata'      => 'meta',
+			'unsplash_attachment_metadata' => 'meta',
+			'_wp_attachment_image_alt'     => 'alt',
+		];
+		foreach ( $map as $key => $value ) {
+			$this->assertEquals( $image->get_field( $value ), get_post_meta( $attachment_id, $key, true ) );
+		}
+		$import->process_tags();
+		$tags     = wp_get_post_terms( $attachment_id, 'media_tag' );
+		$tag_name = wp_list_pluck( $tags, 'name' );
+		$this->assertEqualSets( [ 'dibble', 'wibble' ], $tag_name );
+		$import->process_source();
+		$tags     = wp_get_post_terms( $attachment_id, 'media_source' );
+		$tag_name = wp_list_pluck( $tags, 'name' );
+		$this->assertEqualSets( [ 'Unsplash' ], $tag_name );
+	}
+
+	/**
 	 * Test pass empty array to create_attachment.
 	 *
 	 * @covers \Unsplash\Import::create_attachment()
