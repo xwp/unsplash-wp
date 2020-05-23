@@ -37,6 +37,14 @@ Features
 2. Activate the plugin through the "Plugins" menu in WordPress.
 3. Connect the plugin to the Unsplash.com by logging in and authorizing your site.
 
+== Screenshots ==
+
+1. Unsplash for WordPress: The internet's source of freely usable images right inside the WordPress dashboard.
+2. Searchable: The entire Unsplash image library is keyword searchable.
+3. Auto-import: Published images are automatically downloaded to the Media Library.
+4. Classic and Block editor compatible: Add Unsplash images via the Block editor or using the Classic Media button.
+5. Performance and Accessibility: The right image size and alt-text automatically added for accessibility and SEO.
+
 == Frequently Asked Questions ==
 = I can use these images for free? =
 All photos published on Unsplash can be used for free. You can use them for commercial and noncommercial purposes. You do not need to ask permission from or provide credit to the photographer or Unsplash, although it is appreciated when possible.
@@ -44,4 +52,4 @@ All photos published on Unsplash can be used for free. You can use them for comm
 For more details about our licensing please [Read our FAQ](https://help.unsplash.com/en/collections/1463188-unsplash-license).
 
 = Do I need an Unsplash account ? =
-Yes, as part of the plugin's setup, you will be directed to the Unsplash website and be guided through the onboarding process, which will ask you to either sign up for a new account, or log in with your existing account. 
+Yes, as part of the plugin's setup, you will be directed to the Unsplash website and be guided through the onboarding process, which will ask you to either sign up for a new account, or log in with your existing account.
