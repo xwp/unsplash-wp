@@ -302,7 +302,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 		ob_start();
 		$plugin->admin_notice();
 		$output = ob_get_clean();
-		$this->assertContains( 'To complete setup of the Unsplash plugin you’ll need to add the API access key.', $output );
+		$this->assertContains( 'To complete setup of the Unsplash plugin you will need to add the API access key.', $output );
 		remove_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
 	}
 
