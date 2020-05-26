@@ -218,3 +218,9 @@
 .wp-core-ui .media-frame.mode-grid .attachment.selected .check:hover .media-modal-icon {
 	background-position: -60px 0;
 }
+
+.unsplash-media-frame {
+	.media-frame-content {
+		top: 50px;
+	}
+}

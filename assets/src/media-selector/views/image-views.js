@@ -35,7 +35,7 @@ const ImageViews = wp.media.view.Attachments.extend( {
 	 */
 	setColumns() {
 		const prev = this.columns;
-		this.columns = this.macy.rows.length;
+		this.columns = this.macy?.rows.length;
 
 		if ( ! prev || prev !== this.columns ) {
 			this.$el
