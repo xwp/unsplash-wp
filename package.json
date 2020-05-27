@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@wordpress/hooks": "^2.8.0",
-    "@wordpress/media-utils": "^1.9.1",
+    "@wordpress/media-utils": "^1.11.0",
     "macy": "^2.5.1"
   },
   "devDependencies": {
@@ -55,7 +55,7 @@
     "babel-plugin-transform-require-context": "0.1.1",
     "browserslist": "4.9.0",
     "copy-webpack-plugin": "^5.1.1",
-    "coveralls": "benpetty/node-coveralls#master",
+    "coveralls": "github:benpetty/node-coveralls#master",
     "cross-env": "7.0.0",
     "css-loader": "3.4.2",
     "cssnano": "4.1.10",
