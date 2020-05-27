@@ -24,7 +24,7 @@ const mergeAllReports = ( coverageMap, reports ) => {
 };
 
 const generateReport = ( coverageMap, type ) => {
-	// create a context for report generation
+	// create a context for report generation.
 	const context = libReport.createContext( {
 		dir: reportOut,
 		defaultSummarizer: 'nested',
