@@ -16,5 +16,6 @@ import UnsplashMediaUpload from './components/unsplash-media-upload.js';
 addFilter(
 	'editor.MediaUpload',
 	'unsplash/extend-featured-image',
-	() => UnsplashMediaUpload
+	() => UnsplashMediaUpload,
+	20
 );
