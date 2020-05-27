@@ -224,6 +224,28 @@ class Plugin extends Plugin_Base {
 		wp_styles()->add_data( 'unsplash-admin-style', 'rtl', 'replace' );
 	}
 
+	/**
+	 * Load Gutenberg assets.
+	 *
+	 * @action enqueue_block_editor_assets
+	 */
+	public function enqueue_block_editor_assets() {
+		wp_enqueue_script(
+			'unsplash-block-editor-js',
+			$this->asset_url( 'assets/js/block-editor.js' ),
+			[
+				'lodash',
+				'react',
+				'wp-block-editor',
+				'wp-editor',
+				'wp-date',
+				'wp-api-fetch',
+				'jquery',
+			],
+			$this->asset_version(),
+			false
+		);
+	}
 
 	/**
 	 * Custom wp_prepare_attachment_for_js copied from core.

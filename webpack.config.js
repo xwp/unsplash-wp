@@ -67,6 +67,24 @@ const sharedConfig = {
 	],
 };
 
+const blockEditor = {
+	...defaultConfig,
+	...sharedConfig,
+	entry: {
+		'block-editor': [
+			'./assets/src/block-editor/index.js',
+			// './assets/css/src/block-editor.css',
+		],
+	},
+	plugins: [
+		...sharedConfig.plugins,
+		new WebpackBar( {
+			name: 'Block Editor',
+			color: '#f27136',
+		} ),
+	],
+};
+
 const mediaSelector = {
 	...defaultConfig,
 	...sharedConfig,
@@ -148,4 +166,4 @@ const wpPolyfills = {
 	},
 };
 
-module.exports = [ mediaSelector, wpPolyfills, admin ];
+module.exports = [ blockEditor, mediaSelector, wpPolyfills, admin ];
