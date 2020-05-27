@@ -376,7 +376,7 @@ class API {
 	 * @return string
 	 */
 	public function get_missing_credentials_message() {
-		$message = esc_html__( 'To complete setup of the Unsplash plugin you’ll need to add the API access key.', 'unsplash' );
+		$message = esc_html__( 'To complete setup of the Unsplash plugin you will need to add the API access key.', 'unsplash' );
 		$url     = get_admin_url( null, 'options-general.php?page=unsplash' );
 
 		$cta_link = sprintf( '<a href="%s">%s</a>', esc_url( $url ), esc_html__( 'Unspash settings page', 'unsplash' ) );
