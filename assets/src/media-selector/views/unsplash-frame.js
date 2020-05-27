@@ -1,6 +1,12 @@
+/**
+ * Internal dependencies
+ */
 import getConfig from '../helpers/get-config';
+import unsetUnsplashLibrary from '../helpers/unset-unsplash-library';
 
 const Select = wp.media.view.MediaFrame.Select;
+let Library = wp.media.controller.Library;
+let EditImage = wp.media.controller.EditImage;
 
 /**
  * wp.media.view.MediaFrame.Unsplash
@@ -51,16 +57,20 @@ const Unsplash = Select.extend( {
 			return;
 		}
 
+		Library = unsetUnsplashLibrary( Library );
+		EditImage = unsetUnsplashLibrary( EditImage );
+
 		// Add the default states.
 		this.states.add( [
 			// Main states.
-			new wp.media.controller.Library( {
+			new Library( {
 				library: wp.media.query( options.library ),
 				multiple: options.multiple,
 				title: getConfig( 'tabTitle' ),
+				isUnsplash: true,
 				priority: 20,
 			} ),
-			new wp.media.controller.EditImage( { model: options.editImage } ),
+			new EditImage( { model: options.editImage } ),
 		] );
 	},
 } );
