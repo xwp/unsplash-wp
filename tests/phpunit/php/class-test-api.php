@@ -160,7 +160,7 @@ class Test_Api extends \WP_UnitTestCase {
 		$api      = new API( $plugin );
 		$wp_error = $api->check_api_credentials();
 		$this->assertEquals( $wp_error->get_error_code(), 'missing_api_credential' );
-		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), 'To complete setup of the Unsplash plugin you’ll need to add the API access key.Visit the Unspash settings page to complete the process.' );
+		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), 'To complete setup of the Unsplash plugin you will need to add the API access key.Visit the Unspash settings page to complete the process.' );
 		remove_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
 	}
 
@@ -178,7 +178,7 @@ class Test_Api extends \WP_UnitTestCase {
 		$api      = new API( $plugin );
 		$wp_error = $api->get( 'uYpOYyJdhRE' );
 		$this->assertEquals( $wp_error->get_error_code(), 'missing_api_credential' );
-		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), 'To complete setup of the Unsplash plugin you’ll need to add the API access key.Visit the Unspash settings page to complete the process.' );
+		$this->assertEquals( wp_strip_all_tags( $wp_error->get_error_message() ), 'To complete setup of the Unsplash plugin you will need to add the API access key.Visit the Unspash settings page to complete the process.' );
 		remove_filter( 'unsplash_api_credentials', [ $this, 'disable_unsplash_api_credentials' ] );
 	}
 
