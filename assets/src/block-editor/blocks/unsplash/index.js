@@ -7,6 +7,7 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import icon from './icon';
+import transforms from './transforms';
 import edit from './edit';
 import save from '@wordpress/block-library/build/image/save';
 
@@ -106,6 +107,7 @@ export const settings = {
 			attribute: 'target',
 		},
 	},
+	transforms,
 	edit,
 	save,
 };
