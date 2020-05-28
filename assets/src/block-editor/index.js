@@ -9,6 +9,6 @@ import { registerBlockType } from '@wordpress/blocks';
 import {
 	name as unsplashImageName,
 	settings as unsplashImageSettings,
-} from './blocks/unsplash';
+} from './blocks/image';
 
 registerBlockType( unsplashImageName, unsplashImageSettings );

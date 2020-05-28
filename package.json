@@ -32,6 +32,7 @@
     "@babel/plugin-proposal-optional-chaining": "7.8.3",
     "@babel/polyfill": "7.8.3",
     "@babel/preset-env": "^7.10.0",
+    "@testing-library/jest-dom": "5.9.0",
     "@testing-library/react": "9.4.1",
     "@wordpress/block-editor": "3.7.2",
     "@wordpress/block-library": "2.18.0",
