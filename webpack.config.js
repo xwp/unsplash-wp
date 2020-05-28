@@ -71,13 +71,29 @@ const blockEditor = {
 	...defaultConfig,
 	...sharedConfig,
 	entry: {
-		'block-editor': [
-			'./assets/src/block-editor/index.js',
-			// './assets/css/src/block-editor.css',
-		],
+		'block-editor': [ './assets/src/block-editor/index.js' ],
 	},
 	plugins: [
-		...sharedConfig.plugins,
+		...sharedConfig.plugins.filter(
+			// Remove the `DependencyExtractionWebpackPlugin` if it already exists.
+			plugin => ! ( plugin instanceof DependencyExtractionWebpackPlugin )
+		),
+		new DependencyExtractionWebpackPlugin( {
+			useDefaults: false,
+			requestToExternal( request ) {
+				// These packages need to be bundled and not extracted to `wp.*`.
+				const PACKAGES_TO_BUNDLE = [
+					'@wordpress/block-library/build/image/constants',
+					'@wordpress/block-library/build/image/utils',
+					'@wordpress/block-library/build/image/save',
+				];
+				if ( PACKAGES_TO_BUNDLE.includes( request ) ) {
+					return undefined;
+				}
+
+				return defaultRequestToExternal( request );
+			},
+		} ),
 		new WebpackBar( {
 			name: 'Block Editor',
 			color: '#f27136',

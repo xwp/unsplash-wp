@@ -245,6 +245,13 @@ class Plugin extends Plugin_Base {
 			$this->asset_version(),
 			false
 		);
+
+		wp_enqueue_style(
+			'unsplash-block-editor-css',
+			$this->asset_url( 'assets/css/block-editor-compiled.css' ),
+			[],
+			$this->asset_version()
+		);
 	}
 
 	/**

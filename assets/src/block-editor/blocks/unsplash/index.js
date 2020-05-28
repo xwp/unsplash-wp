@@ -1,14 +1,14 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import icon from './icon';
 import edit from './edit';
-// import save from './save';
+import save from '@wordpress/block-library/build/image/save';
 
 export const name = 'unsplash/image';
 
@@ -24,6 +24,18 @@ export const settings = {
 		'img', // "img" is not translated as it is intended to reflect the HTML <img> tag.
 		__( 'photo', 'unsplash' ),
 		__( 'image', 'unsplash' ),
+	],
+	supports: {
+		lightBlockWrapper: true,
+		align: true,
+	},
+	styles: [
+		{
+			name: 'default',
+			label: _x( 'Default', 'block style', 'unsplash' ),
+			isDefault: true,
+		},
+		{ name: 'rounded', label: _x( 'Rounded', 'block style', 'unsplash' ) },
 	],
 	attributes: {
 		align: {
@@ -95,5 +107,5 @@ export const settings = {
 		},
 	},
 	edit,
-	save: () => {},
+	save,
 };
