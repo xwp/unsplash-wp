@@ -448,12 +448,14 @@ class Settings {
 	 * @return mixed
 	 */
 	public function get_client_id( $access_token ) {
+		$url      = get_home_url( null, '/' );
+		$name     = get_bloginfo( 'name' );
 		$response = wp_remote_post(
 			'https://api.unsplash.com/clients',
 			[
 				'body'    => [
-					'name'        => 'WordPress OAuth',
-					'description' => 'Client application for ' . get_bloginfo( 'name' ) . ' - ' . get_home_url( null, '/' ),
+					'name'        => $name,
+					'description' => sprintf( 'Wordpress Oauth Client application for: %1$s - %2$s', $name, $url ),
 				],
 				'headers' => [
 					'Authorization' => 'Bearer ' . $access_token,
