@@ -130,6 +130,7 @@ async function runAxeTestsForBlockEditor() {
 			'button-name',
 			'color-contrast',
 			'dlitem',
+			'page-has-heading-one',
 			'duplicate-id',
 			'label',
 			'landmark-one-main',
