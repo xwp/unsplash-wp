@@ -41,6 +41,7 @@ describe( 'Classic editor', () => {
 
 	it( 'Search: results found', async () => {
 		await page.waitForSelector( UNSPLASH_LIBRARY_SEARCH_INPUT );
+		await page.focus( UNSPLASH_LIBRARY_SEARCH_INPUT );
 		await page.keyboard.type( 'WordPress' );
 		await page.waitForSelector( UNSPLASH_CONTRAINER );
 		await expect( page ).toMatchElement( UNSPLASH_CONTRAINER );
@@ -48,6 +49,7 @@ describe( 'Classic editor', () => {
 
 	it( 'Search: no results found', async () => {
 		await page.waitForSelector( UNSPLASH_LIBRARY_SEARCH_INPUT );
+		await page.focus( UNSPLASH_LIBRARY_SEARCH_INPUT );
 		await page.keyboard.type( 'dsfdsfs' );
 		await page.waitForSelector( UNSPLASH_NO_RESULTS );
 		await expect( page ).toMatchElement( UNSPLASH_NO_RESULTS );
@@ -65,7 +67,7 @@ describe( 'Classic editor', () => {
 		await page.evaluate( selector => {
 			document.querySelector( selector ).click();
 		}, btnSelect );
-		await page.waitFor( 2000 );
+		await page.waitFor( 5000 );
 		const imgClass = 'size-large';
 		// Switch to HTML mode
 		await expect( page ).toClick( '#content-html' );

@@ -46,6 +46,7 @@ describe( 'Classic editor', () => {
 			document.querySelector( selector ).click();
 		}, btnSelector );
 		await clickButton( 'Set featured image' );
+		await page.waitFor( 5000 );
 		const blockClass = '.size-post-thumbnail';
 		await page.waitForSelector( blockClass );
 		await expect( page ).toMatchElement( blockClass );
