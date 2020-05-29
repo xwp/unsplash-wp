@@ -2,7 +2,7 @@
  * WordPress dependencies
  */
 import { visitAdminPage } from '@wordpress/e2e-test-utils';
-import {clickSelector} from "../../utils";
+import { clickSelector } from '../../utils';
 
 const inputSelector = '#unsplash_access_key';
 const btnSelect = '#submit.button-primary';

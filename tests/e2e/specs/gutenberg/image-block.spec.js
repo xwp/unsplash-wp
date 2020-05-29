@@ -6,7 +6,7 @@ import { createNewPost, insertBlock } from '@wordpress/e2e-test-utils';
 /**
  * Internal dependencies
  */
-import { clickButton, clickSelector, deactivatePlugin} from '../../utils';
+import { clickButton, clickSelector, deactivatePlugin } from '../../utils';
 import {
 	UNSPLASH_LIBRARY_BUTTON,
 	UNSPLASH_CONTRAINER,

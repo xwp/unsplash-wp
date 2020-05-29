@@ -6,7 +6,12 @@ import { visitAdminPage } from '@wordpress/e2e-test-utils';
 /**
  * Internal dependencies
  */
-import { activatePlugin, clickButton, deactivatePlugin, clickSelector } from '../../utils';
+import {
+	activatePlugin,
+	clickButton,
+	deactivatePlugin,
+	clickSelector,
+} from '../../utils';
 import {
 	UNSPLASH_LIBRARY_BUTTON,
 	UNSPLASH_LIBRARY_SEARCH_INPUT,
