@@ -26,7 +26,7 @@ describe( 'Settings', () => {
 		await page.evaluate( selector => {
 			document.querySelector( selector ).click();
 		}, btnSelect );
-		await page.waitForNavigation()
+		await page.waitForNavigation();
 	} );
 
 	it( 'page input exist', async () => {
@@ -40,7 +40,7 @@ describe( 'Settings', () => {
 		await page.evaluate( selector => {
 			document.querySelector( selector ).click();
 		}, btnSelect );
-		await page.waitForNavigation()
+		await page.waitForNavigation();
 
 		const NO_RESULTS = '.notice-error.notice-unsplash';
 		await page.waitForSelector( NO_RESULTS );
