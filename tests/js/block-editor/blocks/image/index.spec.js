@@ -25,7 +25,7 @@ describe( 'blocks: unsplash/image', () => {
 	describe( 'description settings', () => {
 		it( "should equal `The internet's source of freely usable images.`", () => {
 			expect( settings.description ).toStrictEqual(
-				"The internet's source of freely usable images."
+				"Search and select from the internet's source of freely usable images."
 			);
 		} );
 	} );

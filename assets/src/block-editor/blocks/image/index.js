@@ -16,7 +16,7 @@ export const name = 'unsplash/image';
 export const settings = {
 	title: __( 'Unsplash', 'unsplash' ),
 	description: __(
-		"The internet's source of freely usable images.",
+		"Search and select from the internet's source of freely usable images.",
 		'unsplash'
 	),
 	category: 'common',
