@@ -32,7 +32,9 @@ describe( 'Classic editor', () => {
 	beforeEach( async () => {
 		await visitAdminPage( 'post-new.php', {} );
 		await clickButton( 'Add Media' );
-		await page.waitForSelector( UNSPLASH_MODAL );
+		await page.waitForSelector( UNSPLASH_MODAL, {
+			visible: true,
+		} );
 		await clickSelector( UNSPLASH_LIBRARY_BUTTON );
 	} );
 
@@ -53,18 +55,23 @@ describe( 'Classic editor', () => {
 		await page.waitForSelector( UNSPLASH_LIBRARY_SEARCH_INPUT );
 		await page.focus( UNSPLASH_LIBRARY_SEARCH_INPUT );
 		await page.keyboard.type( 'dsfdsfs' );
-		await page.waitForSelector( UNSPLASH_NO_RESULTS );
+		await page.waitForSelector( UNSPLASH_NO_RESULTS, {
+			visible: true,
+		} );
 		await expect( page ).toMatchElement( UNSPLASH_NO_RESULTS );
 	} );
 
 	it( 'insert image', async () => {
 		await page.waitForSelector( UNSPLASH_CONTRAINER );
 		const btnSelector =
-			'.unsplash-browser .attachments .unsplash-attachment:first-of-type';
+			UNSPLASH_CONTRAINER + ' .unsplash-attachment:first-of-type';
 		await clickSelector( btnSelector );
 		const btnSelect = '.media-button-insert';
 		await clickSelector( btnSelect );
-		await page.waitFor( 3000 );
+		await page.waitForSelector( UNSPLASH_MODAL, {
+			visible: false,
+		} );
+		await page.waitFor( 5000 );
 		const imgClass = 'size-large';
 		// Switch to HTML mode
 		await expect( page ).toClick( '#content-html' );

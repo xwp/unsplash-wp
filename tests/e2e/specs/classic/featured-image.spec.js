@@ -28,7 +28,9 @@ describe( 'Classic editor', () => {
 		await visitAdminPage( 'post-new.php', {} );
 		await page.waitForSelector( MEDIA_LIBRARY_BUTTON );
 		await page.click( MEDIA_LIBRARY_BUTTON );
-		await page.waitForSelector( UNSPLASH_MODAL );
+		await page.waitForSelector( UNSPLASH_MODAL, {
+			visible: true,
+		} );
 		await page.waitForSelector( UNSPLASH_LIBRARY_BUTTON );
 	} );
 
@@ -40,10 +42,13 @@ describe( 'Classic editor', () => {
 	it( 'select image', async () => {
 		await page.waitForSelector( UNSPLASH_CONTRAINER );
 		const btnSelector =
-			'.unsplash-browser .attachments .unsplash-attachment:first-of-type';
+			UNSPLASH_CONTRAINER + ' .unsplash-attachment:first-of-type';
 		await clickSelector( btnSelector );
 		const btnSelect = '.media-button-select';
 		await clickSelector( btnSelect );
+		await page.waitForSelector( UNSPLASH_MODAL, {
+			visible: false,
+		} );
 		const blockClass = '.size-post-thumbnail';
 		await page.waitForSelector( blockClass );
 		await expect( page ).toMatchElement( blockClass );

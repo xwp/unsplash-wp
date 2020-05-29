@@ -24,7 +24,9 @@ describe( 'Cover Block', () => {
 
 		// Click the media library button and wait for tab.
 		await clickButton( 'Media Library' );
-		await page.waitForSelector( UNSPLASH_MODAL );
+		await page.waitForSelector( UNSPLASH_MODAL, {
+			visible: true,
+		} );
 		await page.waitForSelector( UNSPLASH_LIBRARY_BUTTON );
 		await expect( page ).toMatchElement( UNSPLASH_LIBRARY_BUTTON );
 	} );

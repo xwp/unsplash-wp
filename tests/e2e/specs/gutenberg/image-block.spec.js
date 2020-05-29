@@ -28,7 +28,9 @@ describe( 'Image Block', () => {
 
 		// Click the media library button and wait for tab.
 		await clickButton( 'Media Library' );
-		await page.waitForSelector( UNSPLASH_MODAL );
+		await page.waitForSelector( UNSPLASH_MODAL, {
+			visible: true,
+		} );
 		await clickSelector( UNSPLASH_LIBRARY_BUTTON );
 	} );
 
@@ -40,7 +42,9 @@ describe( 'Image Block', () => {
 		await page.waitForSelector( UNSPLASH_LIBRARY_SEARCH_INPUT );
 		await page.focus( UNSPLASH_LIBRARY_SEARCH_INPUT );
 		await page.keyboard.type( 'WordPress' );
-		await page.waitForSelector( UNSPLASH_CONTRAINER );
+		await page.waitForSelector( UNSPLASH_CONTRAINER, {
+			visible: true,
+		} );
 		await expect( page ).toMatchElement( UNSPLASH_CONTRAINER );
 	} );
 
@@ -48,17 +52,22 @@ describe( 'Image Block', () => {
 		await page.waitForSelector( UNSPLASH_LIBRARY_SEARCH_INPUT );
 		await page.focus( UNSPLASH_LIBRARY_SEARCH_INPUT );
 		await page.keyboard.type( 'dsfdsfs' );
-		await page.waitForSelector( UNSPLASH_NO_RESULTS );
+		await page.waitForSelector( UNSPLASH_NO_RESULTS, {
+			visible: true,
+		} );
 		await expect( page ).toMatchElement( UNSPLASH_NO_RESULTS );
 	} );
 
 	it( 'insert image', async () => {
 		await page.waitForSelector( UNSPLASH_CONTRAINER );
 		const btnSelector =
-			'.unsplash-browser .attachments .unsplash-attachment:first-of-type';
+			UNSPLASH_CONTRAINER + ' .unsplash-attachment:first-of-type';
 		await clickSelector( btnSelector );
 		const btnSelect = '.media-button-select';
 		await clickSelector( btnSelect );
+		await page.waitForSelector( UNSPLASH_MODAL, {
+			visible: false,
+		} );
 		const blockClass = '.wp-block-image';
 		await page.waitForSelector( blockClass );
 		await expect( page ).toMatchElement( blockClass );

@@ -22,7 +22,9 @@ describe( 'Image Block', () => {
 
 		// Click the media library button and wait for tab.
 		await clickButton( 'Media Library' );
-		await page.waitForSelector( UNSPLASH_MODAL );
+		await page.waitForSelector( UNSPLASH_MODAL, {
+			visible: true,
+		} );
 	} );
 
 	it( 'should the tab not exist', async () => {
