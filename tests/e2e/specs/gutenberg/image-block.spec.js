@@ -2,11 +2,24 @@
  * WordPress dependencies
  */
 import { createNewPost, insertBlock } from '@wordpress/e2e-test-utils';
-import { clickButton } from '../../utils';
 
-const UNSPLASH_LIBRARY_BUTTON = '#menu-item-unsplash';
+/**
+ * Internal dependencies
+ */
+import { clickButton, deactivatePlugin } from '../../utils';
+import {
+	UNSPLASH_LIBRARY_BUTTON,
+	UNSPLASH_CONTRAINER,
+	UNSPLASH_LIBRARY_SEARCH_INPUT,
+	UNSPLASH_MODAL,
+	UNSPLASH_NO_RESULTS,
+} from '../../constants';
 
 describe( 'Image Block', () => {
+	beforeAll( async () => {
+		await deactivatePlugin( 'classic-editor' );
+	} );
+
 	beforeEach( async () => {
 		await createNewPost( {} );
 
@@ -15,8 +28,11 @@ describe( 'Image Block', () => {
 
 		// Click the media library button and wait for tab.
 		await clickButton( 'Media Library' );
-		await page.waitForSelector( '.media-modal' );
+		await page.waitForSelector( UNSPLASH_MODAL );
 		await page.waitForSelector( UNSPLASH_LIBRARY_BUTTON );
+		await page.evaluate( selector => {
+			document.querySelector( selector ).click();
+		}, UNSPLASH_LIBRARY_BUTTON );
 	} );
 
 	it( 'should the tab exist', async () => {
@@ -24,24 +40,21 @@ describe( 'Image Block', () => {
 	} );
 
 	it( 'Search: results found', async () => {
-		await page.waitForSelector( '#unsplash-search-input' );
+		await page.waitForSelector( UNSPLASH_LIBRARY_SEARCH_INPUT );
 		await page.keyboard.type( 'WordPress' );
-		const CONTAINER = '.unsplash-browser .attachments';
-		await page.waitForSelector( CONTAINER );
-		await expect( page ).toMatchElement( CONTAINER );
+		await page.waitForSelector( UNSPLASH_CONTRAINER );
+		await expect( page ).toMatchElement( UNSPLASH_CONTRAINER );
 	} );
 
 	it( 'Search: no results found', async () => {
-		await page.waitForSelector( '#unsplash-search-input' );
+		await page.waitForSelector( UNSPLASH_LIBRARY_SEARCH_INPUT );
 		await page.keyboard.type( 'dsfdsfs' );
-		const NO_RESULTS = '.unsplash-browser .show';
-		await page.waitForSelector( NO_RESULTS );
-		await expect( page ).toMatchElement( NO_RESULTS );
+		await page.waitForSelector( UNSPLASH_NO_RESULTS );
+		await expect( page ).toMatchElement( UNSPLASH_NO_RESULTS );
 	} );
 
 	it( 'insert image', async () => {
-		const CONTAINER = '.unsplash-browser .attachments';
-		await page.waitForSelector( CONTAINER );
+		await page.waitForSelector( UNSPLASH_CONTRAINER );
 		const btnSelector =
 			'.unsplash-browser .attachments .unsplash-attachment:first-of-type';
 		await page.waitForSelector( btnSelector );

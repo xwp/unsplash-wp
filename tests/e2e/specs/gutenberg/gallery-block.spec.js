@@ -2,11 +2,18 @@
  * WordPress dependencies
  */
 import { createNewPost, insertBlock } from '@wordpress/e2e-test-utils';
-import { clickButton } from '../../utils';
 
-const UNSPLASH_LIBRARY_BUTTON = '#menu-item-unsplash';
+/**
+ * Internal dependencies
+ */
+import { clickButton, deactivatePlugin } from '../../utils';
+import { UNSPLASH_LIBRARY_BUTTON, UNSPLASH_MODAL } from '../../constants';
 
 describe( 'Image Block', () => {
+	beforeAll( async () => {
+		await deactivatePlugin( 'classic-editor' );
+	} );
+
 	beforeEach( async () => {
 		await createNewPost( {} );
 
@@ -15,7 +22,7 @@ describe( 'Image Block', () => {
 
 		// Click the media library button and wait for tab.
 		await clickButton( 'Media Library' );
-		await page.waitForSelector( '.media-modal' );
+		await page.waitForSelector( UNSPLASH_MODAL );
 	} );
 
 	it( 'should the tab not exist', async () => {
