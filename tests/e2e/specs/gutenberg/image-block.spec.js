@@ -42,9 +42,7 @@ describe( 'Image Block', () => {
 		await page.waitForSelector( UNSPLASH_LIBRARY_SEARCH_INPUT );
 		await page.focus( UNSPLASH_LIBRARY_SEARCH_INPUT );
 		await page.keyboard.type( 'WordPress' );
-		await page.waitForSelector( UNSPLASH_CONTRAINER, {
-			visible: true,
-		} );
+		await page.waitForSelector( UNSPLASH_CONTRAINER );
 		await expect( page ).toMatchElement( UNSPLASH_CONTRAINER );
 	} );
 
@@ -64,12 +62,7 @@ describe( 'Image Block', () => {
 			UNSPLASH_CONTRAINER + ' .unsplash-attachment:first-of-type';
 		await clickSelector( btnSelector );
 		const btnSelect = '.media-button-select';
-		await clickSelector( btnSelect );
-		await page.waitForSelector( UNSPLASH_MODAL, {
-			visible: false,
-		} );
-		const blockClass = '.wp-block-image';
-		await page.waitForSelector( blockClass );
-		await expect( page ).toMatchElement( blockClass );
+		await page.waitForSelector( btnSelect );
+		await expect( page ).toClick( btnSelect );
 	} );
 } );

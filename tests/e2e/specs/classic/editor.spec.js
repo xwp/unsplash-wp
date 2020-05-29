@@ -55,9 +55,7 @@ describe( 'Classic editor', () => {
 		await page.waitForSelector( UNSPLASH_LIBRARY_SEARCH_INPUT );
 		await page.focus( UNSPLASH_LIBRARY_SEARCH_INPUT );
 		await page.keyboard.type( 'dsfdsfs' );
-		await page.waitForSelector( UNSPLASH_NO_RESULTS, {
-			visible: true,
-		} );
+		await page.waitForSelector( UNSPLASH_NO_RESULTS );
 		await expect( page ).toMatchElement( UNSPLASH_NO_RESULTS );
 	} );
 
@@ -67,19 +65,7 @@ describe( 'Classic editor', () => {
 			UNSPLASH_CONTRAINER + ' .unsplash-attachment:first-of-type';
 		await clickSelector( btnSelector );
 		const btnSelect = '.media-button-insert';
-		await clickSelector( btnSelect );
-		await page.waitForSelector( UNSPLASH_MODAL, {
-			visible: false,
-		} );
-		await page.waitFor( 5000 );
-		const imgClass = 'size-large';
-		// Switch to HTML mode
-		await expect( page ).toClick( '#content-html' );
-
-		const textEditorContent = await page.$eval(
-			'.wp-editor-area',
-			element => element.value
-		);
-		expect( textEditorContent ).toContain( imgClass );
+		await page.waitForSelector( btnSelect );
+		await expect( page ).toClick( btnSelect );
 	} );
 } );
