@@ -167,8 +167,8 @@ beforeAll( async () => {
 		width: 1680,
 		height: 948,
 	} );
-	await page.setDefaultNavigationTimeout( 10000 );
-	await page.setDefaultTimeout( 10000 );
+	await page.setDefaultNavigationTimeout( 15000 );
+	await page.setDefaultTimeout( 15000 );
 } );
 
 // eslint-disable-next-line jest/require-top-level-describe

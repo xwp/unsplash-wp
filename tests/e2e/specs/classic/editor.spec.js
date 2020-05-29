@@ -36,6 +36,7 @@ describe( 'Classic editor', () => {
 	it( 'Search: no results found', async () => {
 		await page.waitForSelector( '#unsplash-search-input' );
 		await page.keyboard.type( 'dsfdsfs' );
+
 		const NO_RESULTS = '.unsplash-browser .show';
 		await page.waitForSelector( NO_RESULTS );
 		await expect( page ).toMatchElement( NO_RESULTS );
