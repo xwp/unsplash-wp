@@ -50,7 +50,7 @@ const generateReport = ( coverageMap, type ) => {
 async function main() {
 	const coverageMap = istanbulCoverage.createCoverageMap( {} );
 
-	const reports = [ rootDir + '/e2e/coverage-puppeteer-istanbul.json' ];
+	const reports = [ rootDir + '/e2e/coverage-final.json' ];
 
 	if ( false !== args.js ) {
 		reports.push( rootDir + '/js/coverage-final.json' );
