@@ -6,7 +6,7 @@ import { createNewPost } from '@wordpress/e2e-test-utils';
 /**
  * Internal dependencies
  */
-import { clickButton, deactivatePlugin } from '../../utils';
+import { clickButton, deactivatePlugin, clickSelector } from '../../utils';
 import {
 	UNSPLASH_CONTRAINER,
 	UNSPLASH_LIBRARY_BUTTON,
@@ -30,20 +30,13 @@ describe( 'Featured Image', () => {
 	it( 'select image', async () => {
 		await page.waitForSelector( UNSPLASH_MODAL );
 		await page.waitForSelector( UNSPLASH_LIBRARY_BUTTON );
-		await page.evaluate( selector => {
-			document.querySelector( selector ).click();
-		}, UNSPLASH_LIBRARY_BUTTON );
+		await clickSelector( UNSPLASH_LIBRARY_BUTTON );
 		await page.waitForSelector( UNSPLASH_CONTRAINER );
 		const btnSelector =
 			'.unsplash-browser .attachments .unsplash-attachment:first-of-type';
-		await page.waitForSelector( btnSelector );
-		await page.evaluate( selector => {
-			document.querySelector( selector ).click();
-		}, btnSelector );
+		await clickSelector( btnSelector );
 		const btnSelect = '.media-button-select';
-		await page.evaluate( selector => {
-			document.querySelector( selector ).click();
-		}, btnSelect );
+		await clickSelector( btnSelect );
 		const blockClass = '.editor-post-featured-image__preview';
 		await page.waitForSelector( blockClass );
 		await expect( page ).toMatchElement( blockClass );

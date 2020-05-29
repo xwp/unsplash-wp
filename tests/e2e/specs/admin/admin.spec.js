@@ -2,6 +2,7 @@
  * WordPress dependencies
  */
 import { visitAdminPage } from '@wordpress/e2e-test-utils';
+import {clickSelector} from "../../utils";
 
 const inputSelector = '#unsplash_access_key';
 const btnSelect = '#submit.button-primary';
@@ -12,9 +13,7 @@ describe( 'Settings', () => {
 		await page.evaluate( selector => {
 			document.querySelector( selector ).value = '';
 		}, inputSelector );
-		await page.evaluate( selector => {
-			document.querySelector( selector ).click();
-		}, btnSelect );
+		await clickSelector( btnSelect );
 		await page.waitForNavigation();
 	} );
 
@@ -23,9 +22,7 @@ describe( 'Settings', () => {
 		await page.evaluate( selector => {
 			document.querySelector( selector ).value = '';
 		}, inputSelector );
-		await page.evaluate( selector => {
-			document.querySelector( selector ).click();
-		}, btnSelect );
+		await clickSelector( btnSelect );
 		await page.waitForNavigation();
 	} );
 
@@ -37,9 +34,7 @@ describe( 'Settings', () => {
 	it( 'Valid key the input exist', async () => {
 		await page.focus( inputSelector );
 		await page.keyboard.type( 'valid-key' );
-		await page.evaluate( selector => {
-			document.querySelector( selector ).click();
-		}, btnSelect );
+		await clickSelector( btnSelect );
 		await page.waitForNavigation();
 
 		const NO_RESULTS = '.notice-error.notice-unsplash';

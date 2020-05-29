@@ -6,7 +6,7 @@ import { visitAdminPage } from '@wordpress/e2e-test-utils';
 /**
  * Internal dependencies
  */
-import { activatePlugin, clickButton, deactivatePlugin } from '../../utils';
+import { activatePlugin, clickButton, deactivatePlugin, clickSelector } from '../../utils';
 import {
 	UNSPLASH_LIBRARY_BUTTON,
 	UNSPLASH_LIBRARY_SEARCH_INPUT,
@@ -28,10 +28,7 @@ describe( 'Classic editor', () => {
 		await visitAdminPage( 'post-new.php', {} );
 		await clickButton( 'Add Media' );
 		await page.waitForSelector( UNSPLASH_MODAL );
-		await page.waitForSelector( UNSPLASH_LIBRARY_BUTTON );
-		await page.evaluate( selector => {
-			document.querySelector( selector ).click();
-		}, UNSPLASH_LIBRARY_BUTTON );
+		await clickSelector( UNSPLASH_LIBRARY_BUTTON );
 	} );
 
 	it( 'should the tab exist', async () => {
@@ -59,15 +56,10 @@ describe( 'Classic editor', () => {
 		await page.waitForSelector( UNSPLASH_CONTRAINER );
 		const btnSelector =
 			'.unsplash-browser .attachments .unsplash-attachment:first-of-type';
-		await page.waitForSelector( btnSelector );
-		await page.evaluate( selector => {
-			document.querySelector( selector ).click();
-		}, btnSelector );
+		await clickSelector( btnSelector );
 		const btnSelect = '.media-button-insert';
-		await page.evaluate( selector => {
-			document.querySelector( selector ).click();
-		}, btnSelect );
-		await page.waitFor( 5000 );
+		await clickSelector( btnSelect );
+		await page.waitFor( 3000 );
 		const imgClass = 'size-large';
 		// Switch to HTML mode
 		await expect( page ).toClick( '#content-html' );

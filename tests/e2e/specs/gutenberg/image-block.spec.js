@@ -6,7 +6,7 @@ import { createNewPost, insertBlock } from '@wordpress/e2e-test-utils';
 /**
  * Internal dependencies
  */
-import { clickButton, deactivatePlugin } from '../../utils';
+import { clickButton, clickSelector, deactivatePlugin} from '../../utils';
 import {
 	UNSPLASH_LIBRARY_BUTTON,
 	UNSPLASH_CONTRAINER,
@@ -29,10 +29,7 @@ describe( 'Image Block', () => {
 		// Click the media library button and wait for tab.
 		await clickButton( 'Media Library' );
 		await page.waitForSelector( UNSPLASH_MODAL );
-		await page.waitForSelector( UNSPLASH_LIBRARY_BUTTON );
-		await page.evaluate( selector => {
-			document.querySelector( selector ).click();
-		}, UNSPLASH_LIBRARY_BUTTON );
+		await clickSelector( UNSPLASH_LIBRARY_BUTTON );
 	} );
 
 	it( 'should the tab exist', async () => {
@@ -59,15 +56,9 @@ describe( 'Image Block', () => {
 		await page.waitForSelector( UNSPLASH_CONTRAINER );
 		const btnSelector =
 			'.unsplash-browser .attachments .unsplash-attachment:first-of-type';
-		await page.waitForSelector( btnSelector );
-		await page.evaluate( selector => {
-			document.querySelector( selector ).click();
-		}, btnSelector );
+		await clickSelector( btnSelector );
 		const btnSelect = '.media-button-select';
-		await page.evaluate( selector => {
-			document.querySelector( selector ).click();
-		}, btnSelect );
-		await page.waitFor( 5000 );
+		await clickSelector( btnSelect );
 		const blockClass = '.wp-block-image';
 		await page.waitForSelector( blockClass );
 		await expect( page ).toMatchElement( blockClass );
