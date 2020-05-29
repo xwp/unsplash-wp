@@ -12,7 +12,7 @@ import {
 	UNSPLASH_LIBRARY_SEARCH_INPUT,
 	UNSPLASH_CONTRAINER,
 	UNSPLASH_MODAL,
-	UNSPLASH_NO_RESULTS
+	UNSPLASH_NO_RESULTS,
 } from '../../constants';
 
 describe( 'Classic editor', () => {

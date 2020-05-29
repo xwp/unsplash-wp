@@ -7,7 +7,11 @@ import { createNewPost } from '@wordpress/e2e-test-utils';
  * Internal dependencies
  */
 import { clickButton, deactivatePlugin } from '../../utils';
-import { UNSPLASH_CONTRAINER, UNSPLASH_LIBRARY_BUTTON, UNSPLASH_MODAL } from '../../constants';
+import {
+	UNSPLASH_CONTRAINER,
+	UNSPLASH_LIBRARY_BUTTON,
+	UNSPLASH_MODAL,
+} from '../../constants';
 /**
  * Tests the notices for the featured image.
  */

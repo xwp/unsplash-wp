@@ -6,8 +6,12 @@ import { visitAdminPage } from '@wordpress/e2e-test-utils';
 /**
  * Internal dependencies
  */
-import {activatePlugin, clickButton, deactivatePlugin} from '../../utils';
-import {UNSPLASH_CONTRAINER, UNSPLASH_LIBRARY_BUTTON, UNSPLASH_MODAL} from '../../constants';
+import { activatePlugin, clickButton, deactivatePlugin } from '../../utils';
+import {
+	UNSPLASH_CONTRAINER,
+	UNSPLASH_LIBRARY_BUTTON,
+	UNSPLASH_MODAL,
+} from '../../constants';
 
 const MEDIA_LIBRARY_BUTTON = '#set-post-thumbnail';
 
