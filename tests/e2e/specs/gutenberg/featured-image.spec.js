@@ -40,12 +40,7 @@ describe( 'Featured Image', () => {
 			UNSPLASH_CONTRAINER + ' .unsplash-attachment:first-of-type';
 		await clickSelector( btnSelector );
 		const btnSelect = '.media-button-select';
-		await clickSelector( btnSelect );
-		await page.waitForSelector( UNSPLASH_MODAL, {
-			visible: false,
-		} );
-		const blockClass = '.editor-post-featured-image__preview';
-		await page.waitForSelector( blockClass );
-		await expect( page ).toMatchElement( blockClass );
+		await page.waitForSelector( btnSelect );
+		await expect( page ).toClick( btnSelect );
 	} );
 } );

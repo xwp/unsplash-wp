@@ -50,9 +50,7 @@ describe( 'Image Block', () => {
 		await page.waitForSelector( UNSPLASH_LIBRARY_SEARCH_INPUT );
 		await page.focus( UNSPLASH_LIBRARY_SEARCH_INPUT );
 		await page.keyboard.type( 'dsfdsfs' );
-		await page.waitForSelector( UNSPLASH_NO_RESULTS, {
-			visible: true,
-		} );
+		await page.waitForSelector( UNSPLASH_NO_RESULTS );
 		await expect( page ).toMatchElement( UNSPLASH_NO_RESULTS );
 	} );
 
