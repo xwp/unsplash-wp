@@ -146,7 +146,7 @@ async function runAxeTestsForBlockEditor() {
 			'.mce-container',
 			// These properties were not included in the 1.1 spec
 			// through error, they should be allowed on role="row":
-			// https://github.com/w3c/aria/issues/558
+			// See: https://github.com/w3c/aria/issues/558.
 			'[role="treegrid"] [aria-posinset]',
 			'[role="treegrid"] [aria-setsize]',
 		],
