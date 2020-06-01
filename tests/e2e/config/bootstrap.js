@@ -122,14 +122,17 @@ async function runAxeTestsForBlockEditor() {
 		// See: https://github.com/WordPress/gutenberg/pull/15018.
 		disabledRules: [
 			'aria-allowed-role',
+			'aria-allowed-attr',
 			'aria-hidden-focus',
 			'aria-input-field-name',
+			'aria-toggle-field-name',
 			'aria-valid-attr-value',
 			'button-name',
 			'color-contrast',
 			'dlitem',
 			'duplicate-id',
 			'label',
+			'landmark-one-main',
 			'link-name',
 			'list',
 			'listitem',
@@ -141,6 +144,11 @@ async function runAxeTestsForBlockEditor() {
 			'.edit-post-layout__metaboxes',
 			// Ignores elements created by TinyMCE.
 			'.mce-container',
+			// These properties were not included in the 1.1 spec
+			// through error, they should be allowed on role="row":
+			// https://github.com/w3c/aria/issues/558
+			'[role="treegrid"] [aria-posinset]',
+			'[role="treegrid"] [aria-setsize]',
 		],
 	} );
 }
