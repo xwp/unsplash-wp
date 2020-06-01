@@ -18,7 +18,7 @@ describe( 'Cover Block', () => {
 		await createNewPost( {} );
 	} );
 
-	it( 'should the tab exist', async () => {
+	it( 'should contain the Unsplash tab', async () => {
 		// Insert cover block.
 		await insertBlock( 'Cover' );
 

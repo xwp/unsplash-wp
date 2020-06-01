@@ -34,7 +34,7 @@ describe( 'Image Block', () => {
 		await clickSelector( UNSPLASH_LIBRARY_BUTTON );
 	} );
 
-	it( 'should the tab exist', async () => {
+	it( 'should contain the Unsplash tab', async () => {
 		await expect( page ).toMatchElement( UNSPLASH_LIBRARY_BUTTON );
 	} );
 

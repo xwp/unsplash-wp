@@ -34,7 +34,7 @@ describe( 'Classic editor', () => {
 		await page.waitForSelector( UNSPLASH_LIBRARY_BUTTON );
 	} );
 
-	it( 'should the tab exist', async () => {
+	it( 'should contain the Unsplash tab', async () => {
 		// Click the media library button and wait for tab.
 		await expect( page ).toMatchElement( UNSPLASH_LIBRARY_BUTTON );
 	} );

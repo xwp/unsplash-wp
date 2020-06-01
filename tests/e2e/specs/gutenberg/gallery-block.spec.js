@@ -27,7 +27,7 @@ describe( 'Image Block', () => {
 		} );
 	} );
 
-	it( 'should the tab not exist', async () => {
+	it( 'should not contain the Unsplash tab', async () => {
 		await expect( page ).not.toMatchElement( UNSPLASH_LIBRARY_BUTTON );
 	} );
 } );
