@@ -47,4 +47,25 @@ describe( 'Unsplash Image Block', () => {
 		// 30 images are loaded.
 		expect( await page.$$( '.unsplash-attachment' ) ).toHaveLength( 30 );
 	} );
+
+	it( 'should select and insert an image', async () => {
+		// Insert unsplash block.
+		await insertBlock( 'Unsplash' );
+
+		await clickButton( 'Search' );
+		await page.waitForSelector( '.media-modal' );
+
+		await page.waitForSelector( '.unsplash-attachment' );
+
+		const attachments = await page.$$( '.unsplash-attachment' );
+		attachments[ 0 ].click();
+
+		const button = await page.$$( '.media-button-select' );
+		button[ 0 ].click();
+
+		await page.waitForSelector( '.wp-block-unsplash-image' );
+
+		// Image is inserted.
+		expect( await page.$$( '.wp-block-unsplash-image' ) ).toHaveLength( 1 );
+	} );
 } );
