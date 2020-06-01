@@ -44,7 +44,7 @@ import useImageSize from './image-size';
 import icon from './icon';
 import './editor.css';
 
-const pickRelevantImageProps = image => {
+export const pickRelevantImageProps = image => {
 	const imageProps = pick( image, [ 'alt', 'id', 'link', 'caption' ] );
 	imageProps.url =
 		get( image, [ 'sizes', 'large', 'url' ] ) ||
@@ -53,7 +53,7 @@ const pickRelevantImageProps = image => {
 	return imageProps;
 };
 
-const getFilename = fileUrl => {
+export const getFilename = fileUrl => {
 	const path = getPath( fileUrl );
 	if ( path ) {
 		return last( path.split( '/' ) );

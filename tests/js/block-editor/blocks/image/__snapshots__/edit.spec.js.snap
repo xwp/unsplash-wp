@@ -139,6 +139,11 @@ Object {
                     Medium
                   </option>
                   <option
+                    value="large"
+                  >
+                    Large
+                  </option>
+                  <option
                     value="full"
                   >
                     Full Size
@@ -296,6 +301,11 @@ Object {
                   value="medium"
                 >
                   Medium
+                </option>
+                <option
+                  value="large"
+                >
+                  Large
                 </option>
                 <option
                   value="full"

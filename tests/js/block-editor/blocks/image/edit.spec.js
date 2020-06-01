@@ -13,7 +13,10 @@ import { registerStore } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import Edit from '../../../../../assets/src/block-editor/blocks/image/edit';
+import Edit, {
+	pickRelevantImageProps,
+	getFilename,
+} from '../../../../../assets/src/block-editor/blocks/image/edit';
 
 // Mock the <InspectorControls> component only, so that the other components in this package behave as usual.
 jest.mock( '@wordpress/block-editor', () => {
@@ -24,43 +27,53 @@ jest.mock( '@wordpress/block-editor', () => {
 	};
 } );
 
+const image = {
+	id: 2,
+	alt: 'Example',
+	link: 'http://example.com/image',
+	caption: 'Example Image',
+	media_details: {
+		width: 1000,
+		height: 1000,
+		file: 'example-photo.png',
+		sizes: {
+			medium: {
+				file: 'example-photo-300x240.png',
+				width: 300,
+				height: 240,
+				mime_type: 'image/png',
+				source_url: 'https://images.unsplash.com/example-photo-300x240.png',
+			},
+			thumbnail: {
+				file: 'example-photo-150x150.png',
+				width: 150,
+				height: 150,
+				mime_type: 'image/png',
+				source_url: 'https://images.unsplash.com/example-photo-150x150.png',
+			},
+			large: {
+				file: 'example-photo-large.png',
+				width: 587,
+				height: 469,
+				mime_type: 'image/png',
+				source_url: 'https://images.unsplash.com/example-photo-large.png',
+			},
+			full: {
+				file: 'example-photo.png',
+				width: 1000,
+				height: 1000,
+				mime_type: 'image/png',
+				source_url: 'https://images.unsplash.com/example-photo',
+			},
+		},
+	},
+};
+
 registerStore( 'core', {
 	reducer: jest.fn(),
 	selectors: {
 		getMedia: () => {
-			return {
-				id: 2,
-				media_details: {
-					width: 1000,
-					height: 1000,
-					file: 'example-photo.png',
-					sizes: {
-						medium: {
-							file: 'example-photo-300x240.png',
-							width: 300,
-							height: 240,
-							mime_type: 'image/png',
-							source_url:
-								'https://images.unsplash.com/example-photo-300x240.png',
-						},
-						thumbnail: {
-							file: 'example-photo-150x150.png',
-							width: 150,
-							height: 150,
-							mime_type: 'image/png',
-							source_url:
-								'https://images.unsplash.com/example-photo-150x150.png',
-						},
-						full: {
-							file: 'example-photo.png',
-							width: 587,
-							height: 469,
-							mime_type: 'image/png',
-							source_url: 'https://images.unsplash.com/example-photo',
-						},
-					},
-				},
-			};
+			return image;
 		},
 	},
 } );
@@ -105,6 +118,27 @@ describe( 'blocks: unspash/image: edit', () => {
 				},
 			},
 		};
+	} );
+
+	it( '`pickRelevantImageProps` picks the relevant props', () => {
+		const props = pickRelevantImageProps( image );
+
+		expect( Object.keys( props ) ).toHaveLength( 5 );
+		expect( props.id ).toStrictEqual( 2 );
+		expect( props.alt ).toStrictEqual( 'Example' );
+		expect( props.caption ).toStrictEqual( 'Example Image' );
+		expect( props.link ).toStrictEqual( 'http://example.com/image' );
+		expect( props.url ).toStrictEqual(
+			'https://images.unsplash.com/example-photo-large.png'
+		);
+	} );
+
+	it( '`getFilename` picks the relevant props', () => {
+		const name = getFilename(
+			'https://images.unsplash.com/example-photo-large.png'
+		);
+
+		expect( name ).toStrictEqual( 'example-photo-large.png' );
 	} );
 
 	it( 'matches snapshot when no image is selected', () => {
