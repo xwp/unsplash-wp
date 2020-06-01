@@ -44,8 +44,10 @@ describe( 'Unsplash Image Block', () => {
 
 		await page.waitForSelector( '.unsplash-attachment' );
 
-		// 30 images are loaded.
-		expect( await page.$$( '.unsplash-attachment' ) ).toHaveLength( 30 );
+		// Atleast one image is loaded.
+		expect(
+			( await page.$$( '.unsplash-attachment' ) ).length
+		).toBeGreaterThan( 1 );
 	} );
 
 	it( 'should select and insert an image', async () => {
