@@ -30,101 +30,12 @@ describe( 'blocks: unsplash/image', () => {
 		} );
 	} );
 
-	describe( 'category settings', () => {
-		it( 'should equal common', () => {
-			expect( settings.category ).toStrictEqual( 'common' );
-		} );
-	} );
-
-	describe( 'supports settings', () => {
-		it( 'should have lightBlockWrapper and align support', () => {
-			expect( settings.supports ).toStrictEqual( {
-				lightBlockWrapper: true,
-				align: true,
-			} );
-		} );
-	} );
-
 	describe( 'styles settings', () => {
 		it( 'should have default and rounded styles', () => {
 			expect( settings.styles.map( style => style.name ) ).toStrictEqual( [
 				'default',
 				'rounded',
 			] );
-		} );
-	} );
-
-	describe( 'attributes', () => {
-		it( 'should be a structured object', () => {
-			expect( settings.attributes ).toStrictEqual( {
-				align: {
-					type: 'string',
-				},
-				url: {
-					type: 'string',
-					source: 'attribute',
-					selector: 'img',
-					attribute: 'src',
-				},
-				alt: {
-					type: 'string',
-					source: 'attribute',
-					selector: 'img',
-					attribute: 'alt',
-					default: '',
-				},
-				caption: {
-					type: 'string',
-					source: 'html',
-					selector: 'figcaption',
-				},
-				title: {
-					type: 'string',
-					source: 'attribute',
-					selector: 'img',
-					attribute: 'title',
-				},
-				href: {
-					type: 'string',
-					source: 'attribute',
-					selector: 'figure > a',
-					attribute: 'href',
-				},
-				rel: {
-					type: 'string',
-					source: 'attribute',
-					selector: 'figure > a',
-					attribute: 'rel',
-				},
-				linkClass: {
-					type: 'string',
-					source: 'attribute',
-					selector: 'figure > a',
-					attribute: 'class',
-				},
-				id: {
-					type: 'number',
-				},
-				width: {
-					type: 'number',
-				},
-				height: {
-					type: 'number',
-				},
-				sizeSlug: {
-					type: 'string',
-				},
-				linkDestination: {
-					type: 'string',
-					default: 'none',
-				},
-				linkTarget: {
-					type: 'string',
-					source: 'attribute',
-					selector: 'figure > a',
-					attribute: 'target',
-				},
-			} );
 		} );
 	} );
 

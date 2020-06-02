@@ -462,10 +462,10 @@ Object {
           class="components-placeholder__fieldset"
         >
           <button
-            class="components-button is-primary"
+            class="components-button is-secondary"
             type="button"
           >
-            Search
+            Search Unsplash
           </button>
         </div>
       </div>
@@ -512,10 +512,10 @@ Object {
         class="components-placeholder__fieldset"
       >
         <button
-          class="components-button is-primary"
+          class="components-button is-secondary"
           type="button"
         >
-          Search
+          Search Unsplash
         </button>
       </div>
     </div>

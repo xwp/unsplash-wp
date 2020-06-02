@@ -59,7 +59,7 @@ class Block_Type {
 			$metadata['editor_script'] = 'unsplash-block-editor-js';
 			$metadata['editor_style']  = 'unsplash-block-editor-css';
 
-			$callback = "render_$block_name";
+			$callback = "render_{$block_name}_block";
 			if ( method_exists( $this, $callback ) ) {
 				$metadata['render_callback'] = [ $this, $callback ];
 			}
@@ -107,7 +107,7 @@ class Block_Type {
 	 *
 	 * @return string
 	 */
-	public function render_image( $attributes, $content ) {
+	public function render_image_block( $attributes, $content ) {
 		if ( empty( $attributes['id'] ) ) {
 			return '';
 		}
@@ -151,7 +151,7 @@ class Block_Type {
 		$image = sprintf(
 			'<img src="%1$s" alt="%2$s" class="%3$s" width="%4$s" height="%5$s" title="%6$s" srcset="%7$s" sizes="%8$s" />',
 			esc_url( $new_src ),
-			esc_attr( $attributes['alt'] ),
+			esc_attr( isset( $attributes['alt'] ) ? $attributes['alt'] : '' ),
 			esc_attr( 'wp-image-' . $id ),
 			esc_attr( $width ),
 			esc_attr( $height ),

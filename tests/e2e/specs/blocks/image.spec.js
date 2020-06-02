@@ -25,7 +25,7 @@ describe( 'Unsplash Image Block', () => {
 
 		// Show search button.
 		expect(
-			await page.$( '[data-type="unsplash/image"] .is-primary' )
+			await page.$( '[data-type="unsplash/image"] .is-secondary' )
 		).not.toBeNull();
 	} );
 
@@ -33,7 +33,7 @@ describe( 'Unsplash Image Block', () => {
 		// Insert unsplash block.
 		await insertBlock( 'Unsplash' );
 
-		await clickButton( 'Search' );
+		await clickButton( 'Search Unsplash' );
 		await page.waitForSelector( '.media-modal' );
 
 		// Unsplash modal is open.
@@ -54,7 +54,7 @@ describe( 'Unsplash Image Block', () => {
 		// Insert unsplash block.
 		await insertBlock( 'Unsplash' );
 
-		await clickButton( 'Search' );
+		await clickButton( 'Search Unsplash' );
 		await page.waitForSelector( '.media-modal' );
 
 		await page.waitForSelector( '.unsplash-attachment' );

@@ -54,7 +54,6 @@ class Test_Plugin extends \WP_UnitTestCase {
 		$this->assertEquals( 10, has_action( 'wp_default_scripts', [ $plugin, 'register_polyfill_scripts' ] ) );
 		$this->assertEquals( 10, has_action( 'wp_enqueue_media', [ $plugin, 'enqueue_media_scripts' ] ) );
 		$this->assertEquals( 10, has_action( 'admin_enqueue_scripts', [ $plugin, 'enqueue_admin_scripts' ] ) );
-		$this->assertEquals( 10, has_action( 'enqueue_block_editor_assets', [ $plugin, 'enqueue_block_editor_assets' ] ) );
 		$this->assertEquals( 10, has_action( 'init', [ $plugin, 'register_taxonomy' ] ) );
 		$this->assertEquals( 10, has_action( 'init', [ $plugin, 'register_meta' ] ) );
 	}
@@ -71,6 +70,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 		$this->assertInstanceOf( Hotlink::class, $plugin->hotlink );
 		$this->assertInstanceOf( Settings::class, $plugin->settings );
 		$this->assertInstanceOf( REST_Controller::class, $plugin->rest_controller );
+		$this->assertInstanceOf( Block_Type::class, $plugin->block_type );
 		$this->assertEquals( true, has_filter( 'plugin_action_links_' . $plugin->file, [ $plugin, 'action_links' ] ) );
 	}
 
@@ -158,18 +158,6 @@ class Test_Plugin extends \WP_UnitTestCase {
 		set_current_screen( 'unsplash.php' );
 		$plugin = get_plugin_instance();
 		$this->assertFalse( $plugin->enqueue_media_scripts() );
-	}
-
-	/**
-	 * Test for test_enqueue_block_editor_assets() method.
-	 *
-	 * @see Plugin::enqueue_block_editor_assets()
-	 */
-	public function test_enqueue_block_editor_assets() {
-		$plugin = get_plugin_instance();
-		$plugin->enqueue_block_editor_assets();
-		$this->assertTrue( wp_script_is( 'unsplash-block-editor-js', 'enqueued' ) );
-		$this->assertTrue( wp_style_is( 'unsplash-block-editor-css', 'enqueued' ) );
 	}
 
 	/**
