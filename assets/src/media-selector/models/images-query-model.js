@@ -7,8 +7,7 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import ImagesCollection from '../collections/images-collection';
-import getConfig from '../helpers/get-config';
-import preloadImage from '../helpers/preload-image';
+import { preloadImage, getConfig } from '../helpers';
 
 const ImagesQueryModel = wp.media.model.Query.extend(
 	{

@@ -2,8 +2,8 @@
  * Internal dependencies
  */
 import './style.css';
-import withUnsplashTab from './helpers/with-unsplash-tab';
-import unsetUnsplashLibrary from './helpers/unset-unsplash-library';
+import unsetUnsplashLibrary from './controllers/unset-unsplash-library';
+import withUnsplashTab from './views/with-unsplash-tab';
 import PostFrame from './views/post-frame';
 
 // Override media frames in the respective editors to add the Unsplash tab.

@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import checkImage from '../../../../assets/src/media-selector/helpers/is-unsplash-image';
+import { isUnsplashImage } from '../../../../assets/src/media-selector/helpers';
 
 describe( 'is-unsplash-image', () => {
 	it( 'valid attachment', () => {
@@ -11,7 +11,7 @@ describe( 'is-unsplash-image', () => {
 				id: 'fsfds',
 			},
 		};
-		expect( checkImage( attachment ) ).toBe( true );
+		expect( isUnsplashImage( attachment ) ).toBe( true );
 	} );
 	it( 'invalid attachment', () => {
 		const attachment = {
@@ -20,7 +20,7 @@ describe( 'is-unsplash-image', () => {
 				id: 22,
 			},
 		};
-		expect( checkImage( attachment ) ).toBe( false );
+		expect( isUnsplashImage( attachment ) ).toBe( false );
 	} );
 	it( 'no order attachment', () => {
 		const attachment = {
@@ -28,6 +28,6 @@ describe( 'is-unsplash-image', () => {
 				id: 22,
 			},
 		};
-		expect( checkImage( attachment ) ).toBe( false );
+		expect( isUnsplashImage( attachment ) ).toBe( false );
 	} );
 } );

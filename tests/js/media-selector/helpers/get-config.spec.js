@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import getConfig from '../../../../assets/src/media-selector/helpers/get-config';
+import { getConfig } from '../../../../assets/src/media-selector/helpers';
 
 describe( 'get-config', () => {
 	beforeEach( () => {
