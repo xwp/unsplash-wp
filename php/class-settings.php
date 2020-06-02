@@ -448,12 +448,14 @@ class Settings {
 	 * @return mixed
 	 */
 	public function get_client_id( $access_token ) {
+		$url      = get_home_url( null, '/' );
+		$name     = get_bloginfo( 'name' );
 		$response = wp_remote_post(
 			'https://api.unsplash.com/clients',
 			[
 				'body'    => [
-					'name'        => 'WordPress OAuth',
-					'description' => 'Client application for ' . get_bloginfo( 'name' ) . ' - ' . get_home_url( null, '/' ),
+					'name'        => $name,
+					'description' => sprintf( 'Wordpress Oauth Client application for: %1$s - %2$s', $name, $url ),
 				],
 				'headers' => [
 					'Authorization' => 'Bearer ' . $access_token,
@@ -494,7 +496,7 @@ class Settings {
 	public function access_key_render() {
 		$options = get_option( 'unsplash_settings' );
 		?>
-		<input type='password' class="widefat" name='unsplash_settings[access_key]' aria-describedby="unsplash-key-description" value='<?php echo esc_attr( isset( $options['access_key'] ) ? $options['access_key'] : '' ); ?>'>
+		<input type='password' class="widefat" id='unsplash_access_key' name='unsplash_settings[access_key]' aria-describedby="unsplash-key-description" value='<?php echo esc_attr( isset( $options['access_key'] ) ? $options['access_key'] : '' ); ?>'>
 		<p class="description" id="unsplash-key-description"><?php esc_html_e( 'Only use if you have an API key to manually enter for authentication.', 'unsplash' ); ?></p>
 		<?php
 	}
