@@ -158,12 +158,14 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 					noItemsView.$el.removeClass( 'hidden' );
 				} else {
 					noItemsView.$el.addClass( 'hidden' );
+					noItemsView.$el.addClass( 'show' );
 				}
 				view.toolbar.get( 'spinner' ).hide();
 				view.showError();
 			} );
 		} else {
 			noItemsView.$el.addClass( 'hidden' );
+			noItemsView.$el.addClass( 'show' );
 			view.toolbar.get( 'spinner' ).hide();
 			view.showError();
 		}
