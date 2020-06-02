@@ -2,26 +2,65 @@
  * WordPress dependencies
  */
 import { createNewPost, insertBlock } from '@wordpress/e2e-test-utils';
-import { clickButton } from '../../utils';
+
+/**
+ * Internal dependencies
+ */
+import { clickButton, clickSelector, deactivatePlugin } from '../../utils';
+import {
+	UNSPLASH_LIBRARY_BUTTON,
+	UNSPLASH_CONTRAINER,
+	UNSPLASH_LIBRARY_SEARCH_INPUT,
+	UNSPLASH_MODAL,
+	UNSPLASH_NO_RESULTS,
+} from '../../constants';
 
 describe( 'Image Block', () => {
-	beforeEach( async () => {
-		await createNewPost( {} );
+	beforeAll( async () => {
+		await deactivatePlugin( 'classic-editor' );
 	} );
 
-	it( 'should the tab exist', async () => {
-		const MEDIA_LIBRARY_BUTTON = '.wp-block-image .components-button';
-		const UNSPLASH_LIBRARY_BUTTON = '#menu-item-unsplash';
+	beforeEach( async () => {
+		await createNewPost( {} );
 
 		// Insert image block.
 		await insertBlock( 'Image' );
 
 		// Click the media library button and wait for tab.
-		await page.waitForSelector( MEDIA_LIBRARY_BUTTON );
-		await page.click( MEDIA_LIBRARY_BUTTON );
-		await clickButton( 'Library' );
-		await page.waitForSelector( '.media-modal' );
-		await page.waitForSelector( UNSPLASH_LIBRARY_BUTTON );
+		await clickButton( 'Media Library' );
+		await page.waitForSelector( UNSPLASH_MODAL, {
+			visible: true,
+		} );
+		await clickSelector( UNSPLASH_LIBRARY_BUTTON );
+	} );
+
+	it( 'should contain the Unsplash tab', async () => {
 		await expect( page ).toMatchElement( UNSPLASH_LIBRARY_BUTTON );
+	} );
+
+	it( 'Search: results found', async () => {
+		await page.waitForSelector( UNSPLASH_LIBRARY_SEARCH_INPUT );
+		await page.focus( UNSPLASH_LIBRARY_SEARCH_INPUT );
+		await page.keyboard.type( 'WordPress' );
+		await page.waitForSelector( UNSPLASH_CONTRAINER );
+		await expect( page ).toMatchElement( UNSPLASH_CONTRAINER );
+	} );
+
+	it( 'Search: no results found', async () => {
+		await page.waitForSelector( UNSPLASH_LIBRARY_SEARCH_INPUT );
+		await page.focus( UNSPLASH_LIBRARY_SEARCH_INPUT );
+		await page.keyboard.type( 'dsfdsfs' );
+		await page.waitForSelector( UNSPLASH_NO_RESULTS );
+		await expect( page ).toMatchElement( UNSPLASH_NO_RESULTS );
+	} );
+
+	it( 'insert image', async () => {
+		await page.waitForSelector( UNSPLASH_CONTRAINER );
+		const btnSelector =
+			UNSPLASH_CONTRAINER + ' .unsplash-attachment:first-of-type';
+		await clickSelector( btnSelector );
+		const btnSelect = '.media-button-select';
+		await page.waitForSelector( btnSelect );
+		await expect( page ).toClick( btnSelect );
 	} );
 } );

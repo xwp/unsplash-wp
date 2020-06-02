@@ -63,9 +63,7 @@ const ImagesCollection = wp.media.model.Attachments.extend( {
 		// checking if we're still mirroring that collection when
 		// the request resolves.
 		mirroring.more( options ).done( () => {
-			if ( this === attachments.mirroring ) {
-				deferred.resolveWith( this );
-			}
+			deferred.resolveWith( this );
 
 			// Used for the search results and unsplash view.
 			attachments.trigger( 'attachments:received', this );

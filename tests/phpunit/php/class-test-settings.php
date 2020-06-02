@@ -694,7 +694,7 @@ class Test_Settings extends \WP_UnitTestCase {
 		$this->settings->access_key_render();
 		$input = ob_get_clean();
 
-		$expected = "\t\t<input type='password' class=\"widefat\" name='unsplash_settings[access_key]' aria-describedby=\"unsplash-key-description\" value=''>\n\t\t";
+		$expected = "\t\t<input type='password' class=\"widefat\" id='unsplash_access_key' name='unsplash_settings[access_key]' aria-describedby=\"unsplash-key-description\" value=''>\n\t\t";
 
 		$this->assertContains( $expected, $input );
 	}

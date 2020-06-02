@@ -130,13 +130,12 @@ async function runAxeTestsForBlockEditor() {
 			'button-name',
 			'color-contrast',
 			'dlitem',
+			'page-has-heading-one',
 			'duplicate-id',
 			'label',
 			'landmark-one-main',
 			'link-name',
-			'list',
 			'listitem',
-			'page-has-heading-one',
 			'region',
 		],
 		exclude: [
@@ -149,6 +148,8 @@ async function runAxeTestsForBlockEditor() {
 			// See: https://github.com/w3c/aria/issues/558.
 			'[role="treegrid"] [aria-posinset]',
 			'[role="treegrid"] [aria-setsize]',
+			// Ignores Unsplash attachments.
+			'.unsplash-attachments',
 		],
 	} );
 }
