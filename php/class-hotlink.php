@@ -556,7 +556,7 @@ class Hotlink {
 	 *
 	 * @return string|bool URL or false is not found.
 	 */
-	protected function get_unsplash_url( $id ) {
+	public function get_unsplash_url( $id ) {
 		return get_post_meta( $id, 'original_url', true );
 	}
 

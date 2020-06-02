@@ -171,6 +171,10 @@ const ImageEdit = ( {
 			imageAttributes.href = media.link;
 		}
 
+		if ( media.link ) {
+			imageAttributes.unsplashId = getFilename( media.link );
+		}
+
 		setAttributes( {
 			...imageAttributes,
 			...additionalAttributes,
@@ -283,8 +287,8 @@ const ImageEdit = ( {
 					) }
 					className={ 'placeholderClassName' }
 				>
-					<Button isPrimary onClick={ onOpen }>
-						{ __( 'Search', 'unsplash' ) }
+					<Button isSecondary onClick={ onOpen }>
+						{ __( 'Search Unsplash', 'unsplash' ) }
 					</Button>
 				</Placeholder>
 			</>

@@ -8,6 +8,8 @@ const OptimizeCSSAssetsPlugin = require( 'optimize-css-assets-webpack-plugin' );
 const RtlCssPlugin = require( 'rtlcss-webpack-plugin' );
 const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
+const { escapeRegExp } = require( 'lodash' );
+const { sep } = require( 'path' );
 
 /**
  * WordPress dependencies
@@ -67,6 +69,13 @@ const sharedConfig = {
 	],
 };
 
+// These packages need to be bundled and not extracted to `wp.*`.
+const PACKAGES_TO_BUNDLE = [
+	'@wordpress/block-library/build/image/constants',
+	'@wordpress/block-library/build/image/utils',
+	'@wordpress/block-library/build/image/save',
+];
+
 const blockEditor = {
 	...defaultConfig,
 	...sharedConfig,
@@ -78,20 +87,28 @@ const blockEditor = {
 			// Remove the `DependencyExtractionWebpackPlugin` if it already exists.
 			plugin => ! ( plugin instanceof DependencyExtractionWebpackPlugin )
 		),
+		new CopyWebpackPlugin( [
+			{
+				from: './assets/src/block-editor/blocks/*/block.json',
+				test: new RegExp( `([\\w-]+)${ escapeRegExp( sep ) }block\\.json$` ),
+				to: './blocks/[1]/block.json',
+			},
+		] ),
 		new DependencyExtractionWebpackPlugin( {
 			useDefaults: false,
 			requestToExternal( request ) {
-				// These packages need to be bundled and not extracted to `wp.*`.
-				const PACKAGES_TO_BUNDLE = [
-					'@wordpress/block-library/build/image/constants',
-					'@wordpress/block-library/build/image/utils',
-					'@wordpress/block-library/build/image/save',
-				];
 				if ( PACKAGES_TO_BUNDLE.includes( request ) ) {
 					return undefined;
 				}
 
 				return defaultRequestToExternal( request );
+			},
+			requestToHandle( request ) {
+				if ( PACKAGES_TO_BUNDLE.includes( request ) ) {
+					return 'wp-block-editor'; // Return block-editor as a dep.
+				}
+
+				return defaultRequestToHandle( request );
 			},
 		} ),
 		new WebpackBar( {

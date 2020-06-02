@@ -1,0 +1,63 @@
+{
+  "name": "unsplash/image",
+  "category": "common",
+  "supports": {
+    "lightBlockWrapper": true,
+    "align": true
+  },
+  "attributes": {
+    "align": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string",
+      "source": "attribute",
+      "selector": "img",
+      "attribute": "src"
+    },
+    "alt": {
+      "type": "string",
+      "default": ""
+    },
+    "caption": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "href": {
+      "type": "string"
+    },
+    "rel": {
+      "type": "string"
+    },
+    "linkClass": {
+      "type": "string"
+    },
+    "id": {
+      "type": "number"
+    },
+    "unsplashId": {
+      "type": "string"
+    },
+    "width": {
+      "type": "number"
+    },
+    "height": {
+      "type": "number"
+    },
+    "sizeSlug": {
+      "type": "string"
+    },
+    "linkDestination": {
+      "type": "string",
+      "default": "none"
+    },
+    "linkTarget": {
+      "type": "string",
+      "source": "attribute",
+      "selector": "figure > a",
+      "attribute": "target"
+    }
+  }
+}

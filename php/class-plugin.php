@@ -43,6 +43,13 @@ class Plugin extends Plugin_Base {
 	public $api;
 
 	/**
+	 * API instance.
+	 *
+	 * @var Block_Type
+	 */
+	public $block_type;
+
+	/**
 	 * Initiate the plugin resources.
 	 *
 	 * @action plugins_loaded
@@ -58,6 +65,9 @@ class Plugin extends Plugin_Base {
 		$this->rest_controller->init();
 
 		$this->api = new API( $this );
+
+		$this->block_type = new Block_Type( $this );
+		$this->block_type->init();
 
 		// Manually add this filter as the plugin file name is dynamic.
 		add_filter( 'plugin_action_links_' . $this->file, [ $this, 'action_links' ] );
@@ -222,36 +232,6 @@ class Plugin extends Plugin_Base {
 		);
 
 		wp_styles()->add_data( 'unsplash-admin-style', 'rtl', 'replace' );
-	}
-
-	/**
-	 * Load Gutenberg assets.
-	 *
-	 * @action enqueue_block_editor_assets
-	 */
-	public function enqueue_block_editor_assets() {
-		wp_enqueue_script(
-			'unsplash-block-editor-js',
-			$this->asset_url( 'assets/js/block-editor.js' ),
-			[
-				'lodash',
-				'react',
-				'wp-block-editor',
-				'wp-editor',
-				'wp-date',
-				'wp-api-fetch',
-				'jquery',
-			],
-			$this->asset_version(),
-			false
-		);
-
-		wp_enqueue_style(
-			'unsplash-block-editor-css',
-			$this->asset_url( 'assets/css/block-editor-compiled.css' ),
-			[],
-			$this->asset_version()
-		);
 	}
 
 	/**
