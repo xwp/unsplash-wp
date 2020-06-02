@@ -4,7 +4,7 @@
 import getConfig from '../../../../assets/src/media-selector/helpers/get-config';
 
 describe( 'get-config', () => {
-	beforeAll( () => {
+	beforeEach( () => {
 		// Delete the existing
 		delete window.unsplash;
 		window.unsplash = {
@@ -22,6 +22,11 @@ describe( 'get-config', () => {
 	} );
 
 	it( 'invalid key', () => {
+		expect( getConfig( 'wordpress' ) ).toBeUndefined();
+	} );
+
+	it( 'not set on window', () => {
+		delete window.unsplash;
 		expect( getConfig( 'wordpress' ) ).toBeUndefined();
 	} );
 } );
