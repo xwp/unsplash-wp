@@ -4,6 +4,11 @@
 import { createNewPost, insertBlock } from '@wordpress/e2e-test-utils';
 import { clickButton } from '../../utils';
 
+/**
+ * Internal dependencies
+ */
+import { UNSPLASH_LIBRARY_SEARCH_INPUT, UNSPLASH_MODAL } from '../../constants';
+
 describe( 'Unsplash Image Block', () => {
 	beforeEach( async () => {
 		await createNewPost( {} );
@@ -34,10 +39,12 @@ describe( 'Unsplash Image Block', () => {
 		await insertBlock( 'Unsplash' );
 
 		await clickButton( 'Search Unsplash' );
-		await page.waitForSelector( '.media-modal' );
+		await page.waitForSelector( UNSPLASH_MODAL, {
+			visible: true,
+		} );
 
 		// Unsplash modal is open.
-		expect( await page.$( '.media-modal' ) ).not.toBeNull();
+		expect( await page.$( UNSPLASH_MODAL ) ).not.toBeNull();
 
 		// Search field exists.
 		expect( await page.$( '#unsplash-search-input' ) ).not.toBeNull();
@@ -51,16 +58,20 @@ describe( 'Unsplash Image Block', () => {
 	} );
 
 	it( 'should select and insert an image', async () => {
+		await page.setDefaultTimeout( 30000 );
+
 		// Insert unsplash block.
 		await insertBlock( 'Unsplash' );
 
 		await clickButton( 'Search Unsplash' );
-		await page.waitForSelector( '.media-modal' );
-		await page.waitForSelector( '#unsplash-search-input', { visible: true } );
 
-		const input = await page.$( '#unsplash-search-input' );
+		await page.waitForSelector( UNSPLASH_MODAL, {
+			visible: true,
+		} );
 
-		await input.click();
+		await page.waitForSelector( UNSPLASH_LIBRARY_SEARCH_INPUT );
+
+		await page.focus( UNSPLASH_LIBRARY_SEARCH_INPUT );
 
 		// These search terms should return the image with ID `ZkjvMnVz-7w`
 		await page.keyboard.type( 'jar bottle shaker outdoors lowkey' );
@@ -79,5 +90,7 @@ describe( 'Unsplash Image Block', () => {
 
 		// Image is inserted.
 		expect( await page.$( '.wp-block-unsplash-image' ) ).not.toBeNull();
+
+		await page.setDefaultTimeout( 10000 );
 	} );
 } );
