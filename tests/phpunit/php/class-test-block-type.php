@@ -52,7 +52,7 @@ class Test_Block_Type extends \WP_UnitTestCase {
 	/**
 	 * Test init.
 	 *
-	 * @covers Block_Type::init()
+	 * @see Block_Type::init()
 	 */
 	public function test_init() {
 		$this->assertEquals( 10, has_action( 'init', [ $this->block_type, 'register_blocks' ] ) );
@@ -62,7 +62,7 @@ class Test_Block_Type extends \WP_UnitTestCase {
 	/**
 	 * Test register_blocks.
 	 *
-	 * @covers Block_Type::register_blocks()
+	 * @see Block_Type::register_blocks()
 	 */
 	public function test_register_blocks() {
 		// Unregister the block if it's registered already.
@@ -93,7 +93,7 @@ class Test_Block_Type extends \WP_UnitTestCase {
 	/**
 	 * Test register_blocks when block.json does not exist.
 	 *
-	 * @covers Block_Type::register_blocks()
+	 * @see Block_Type::register_blocks()
 	 */
 	public function test_register_blocks_no_file() {
 		unregister_block_type( 'unsplash/image' );
