@@ -109,27 +109,45 @@ class Block_Type {
 	 */
 	public function render_image_block( $attributes, $content ) {
 		if ( empty( $attributes['id'] ) ) {
-			return '';
+			return $content;
 		}
 
-		$id = absint( $attributes['id'] );
+		$id        = absint( $attributes['id'] );
+		$size_slug = empty( $attributes['sizeSlug'] ) ? 'full' : $attributes['sizeSlug'];
+		$src       = '';
+		$width     = '100%';
+		$height    = '100%';
 
 		remove_filter( 'wp_get_attachment_url', [ $this->plugin->hotlink, 'wp_get_attachment_url' ], 10 );
 		remove_filter( 'image_downsize', [ $this->plugin->hotlink, 'image_downsize' ], 10 );
 
-		$image = wp_get_attachment_image_src( $id, $attributes['sizeSlug'] );
+		$image = wp_get_attachment_image_src( $id, $size_slug );
 
-		list( $src, $width, $height ) = $image;
+		if ( ! empty( $image ) ) {
+			list( $src, $width, $height ) = $image;
+		} elseif ( preg_match( '/src="([^"]+)"/', $content, $matches ) ) {
+			// Fallback and read the image source from saved block content.
+			$src = $matches[1];
+		}
 
 		add_filter( 'wp_get_attachment_url', [ $this->plugin->hotlink, 'wp_get_attachment_url' ], 10, 2 );
 		add_filter( 'image_downsize', [ $this->plugin->hotlink, 'image_downsize' ], 10, 3 );
 
+		// Bail out if we still don't have a valid image src.
+		if ( empty( $src ) ) {
+			return $content;
+		}
+
 		$image_meta = wp_get_attachment_metadata( $id );
 
-		// If sizes are set in image_meta use those.
-		if ( ! empty( $image_meta ) && ! empty( $image_meta['sizes'] ) ) {
+		if ( isset( $attributes['width'] ) && isset( $attributes['height'] ) && ! empty( absint( $attributes['width'] ) ) && ! empty( absint( $attributes['height'] ) ) ) {
+			// width and height are set in the block, use those.
+			$width  = absint( $attributes['width'] );
+			$height = absint( $attributes['height'] );
+		} elseif ( ! empty( $image_meta ) && ! empty( $image_meta['sizes'] ) ) {
+			// If sizes are set in image_meta use those.
 			foreach ( $image_meta['sizes'] as $size => $args ) {
-				if ( $size === $attributes['sizeSlug'] ) {
+				if ( $size === $size_slug ) {
 					$width  = $args['width'];
 					$height = $args['height'];
 				}
@@ -137,7 +155,12 @@ class Block_Type {
 		}
 
 		$unsplash_url = $this->plugin->hotlink->get_unsplash_url( $id );
-		$new_src      = $this->plugin->get_original_url_with_size( $unsplash_url, $width, $height );
+		$cropped      = $this->plugin->hotlink->is_cropped_image( $id );
+		if ( ! $unsplash_url || $cropped ) {
+			$new_src = $src;
+		} else {
+			$new_src = $this->plugin->get_original_url_with_size( $unsplash_url, $width, $height );
+		}
 
 		$srcset = '';
 		$sizes  = '';
@@ -181,13 +204,14 @@ class Block_Type {
 			: '';
 
 		$is_aligned = ! empty( $attributes['align'] ) && in_array( $attributes['align'], [ 'left', 'right', 'center' ], true );
+		$classes    = ! empty( $attributes['className'] ) ? $attributes['className'] : '';
 
-		$figure_class = $is_aligned ? [] : [ 'wp-block-unsplash-image' ];
+		$figure_class = $is_aligned ? [] : [ 'wp-block-unsplash-image', 'wp-block-image', $classes ];
 		if ( ! empty( $attributes['align'] ) ) {
 			$figure_class[] = 'align' . $attributes['align'];
 		}
-		if ( ! empty( $attributes['sizeSlug'] ) ) {
-			$figure_class[] = 'size-' . $attributes['sizeSlug'];
+		if ( ! empty( $size_slug ) ) {
+			$figure_class[] = 'size-' . $size_slug;
 		}
 		if ( ! empty( $attributes['width'] ) || ! empty( $attributes['height'] ) ) {
 			$figure_class[] = 'is-resized';
@@ -195,12 +219,16 @@ class Block_Type {
 
 		$figure = sprintf(
 			'<figure class="%1$s">%2$s</figure>',
-			esc_attr( implode( ' ', $figure_class ) ),
+			esc_attr( implode( ' ', array_filter( $figure_class ) ) ),
 			$figure . $caption
 		);
 
 		if ( $is_aligned ) {
-			return '<div class="wp-block-unsplash-image wp-block-image">' . $figure . '</div>';
+			return sprintf(
+				'<div class="%1$s">%2$s</div>',
+				esc_attr( implode( ' ', array_filter( [ 'wp-block-unsplash-image', 'wp-block-image', $classes ] ) ) ),
+				$figure
+			);
 		}
 
 		return $figure;

@@ -129,6 +129,8 @@ class Test_Block_Type extends \WP_UnitTestCase {
 	 * @see Block_Type::render_image_block()
 	 */
 	public function test_render_image_block() {
+		$default = '<div class="wp-block-unsplash-image wp-block-image aligncenter is-style-default"><figure class="aligncenter size-large"><img src="http://unsplash.com/example.jpg" alt="example image" class="wp-image-1000" title="an example image"/><figcaption>Photo by <a href="https://unsplash.com/@example" rel="nofollow">Example User</a> on <a href="https://unsplash.com/?utm_source=unsplash&#038;utm_medium=referral" rel="nofollow">Unsplash</a> </figcaption></figure></div>';
+
 		$content = $this->block_type->render_image_block(
 			[
 				'id'         => self::$attachment_id,
@@ -142,7 +144,7 @@ class Test_Block_Type extends \WP_UnitTestCase {
 				'href'       => 'http://example.com',
 				'align'      => 'center',
 			],
-			''
+			$default
 		);
 
 		$this->assertContains( 'https://images.unsplash.com/test.jpg', $content );
@@ -156,9 +158,9 @@ class Test_Block_Type extends \WP_UnitTestCase {
 			[
 				'id' => null,
 			],
-			''
+			$default
 		);
-		$this->assertEquals( '', $content );
+		$this->assertEquals( $default, $content );
 
 		$content = $this->block_type->render_image_block(
 			[
@@ -167,8 +169,26 @@ class Test_Block_Type extends \WP_UnitTestCase {
 				'width'    => 720,
 				'height'   => 480,
 			],
-			''
+			$default
 		);
-		$this->assertContains( 'class="wp-block-unsplash-image size-medium is-resized"', $content );
+		$this->assertContains( 'class="wp-block-unsplash-image wp-block-image size-medium is-resized"', $content );
+
+		// Assert we handle invalid attachment ID and sizeSlug default.
+		$content = $this->block_type->render_image_block(
+			[
+				'id' => 1000,
+			],
+			$default
+		);
+		$this->assertEquals( '<figure class="wp-block-unsplash-image wp-block-image size-full"><img src="http://unsplash.com/example.jpg" alt="" class="wp-image-1000" width="100%" height="100%" title="" srcset="" sizes="" /></figure>', $content );
+
+		// Assert we handle invalid attachment ID and invalid content.
+		$content = $this->block_type->render_image_block(
+			[
+				'id' => 1000,
+			],
+			'<figure><img src="" /></figure>'
+		);
+		$this->assertEquals( '<figure><img src="" /></figure>', $content );
 	}
 }

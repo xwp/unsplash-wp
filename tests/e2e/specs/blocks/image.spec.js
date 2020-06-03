@@ -57,9 +57,18 @@ describe( 'Unsplash Image Block', () => {
 		await clickButton( 'Search Unsplash' );
 		await page.waitForSelector( '.media-modal' );
 
-		await page.waitForSelector( '.unsplash-attachment' );
+		const input = await page.$( '#unsplash-search-input' );
 
-		const attachments = await page.$$( '.unsplash-attachment' );
+		await input.click();
+
+		// These search terms should return the image with ID `ZkjvMnVz-7w`
+		await page.keyboard.type( 'jar bottle shaker outdoors lowkey' );
+
+		await page.waitForSelector( '.unsplash-attachment[data-id="ZkjvMnVz-7w"]' );
+
+		const attachments = await page.$$(
+			'.unsplash-attachment[data-id="ZkjvMnVz-7w"]'
+		);
 		attachments[ 0 ].click();
 
 		const button = await page.$$( '.media-button-select' );
