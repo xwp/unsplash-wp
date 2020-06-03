@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import ImageViews from './image-views';
+import { ImageViews } from './';
 import { getConfig } from '../helpers';
 
 const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {

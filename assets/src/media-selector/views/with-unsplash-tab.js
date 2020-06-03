@@ -2,10 +2,7 @@
  * Internal dependencies
  */
 import UnsplashState from '../store/unsplash-state';
-import ImagesBrowser from './images-browser';
-import ImageView from './image-view';
-import Toolbar from './toolbar';
-import ToolbarSelect from './toolbar-select';
+import { ImagesBrowser, ImageView, Toolbar, ToolbarSelect } from './';
 import { getConfig, isApplicableLibraries, isImageIncluded } from '../helpers';
 
 export default View => {
