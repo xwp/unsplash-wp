@@ -47,7 +47,7 @@ describe( 'Unsplash Image Block', () => {
 		// Atleast one image is loaded.
 		expect(
 			( await page.$$( '.unsplash-attachment' ) ).length
-		).toBeGreaterThan( 1 );
+		).toBeGreaterThan( 0 );
 	} );
 
 	it( 'should select and insert an image', async () => {
@@ -56,6 +56,7 @@ describe( 'Unsplash Image Block', () => {
 
 		await clickButton( 'Search Unsplash' );
 		await page.waitForSelector( '.media-modal' );
+		await page.waitForSelector( '#unsplash-search-input' );
 
 		const input = await page.$( '#unsplash-search-input' );
 
