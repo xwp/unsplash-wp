@@ -37,10 +37,10 @@ describe( 'Unsplash Image Block', () => {
 		await page.waitForSelector( '.media-modal' );
 
 		// Unsplash modal is open.
-		expect( await page.$$( '.media-modal' ) ).toHaveLength( 1 );
+		expect( await page.$( '.media-modal' ) ).not.toBeNull();
 
 		// Search field exists.
-		expect( await page.$$( '#unsplash-search-input' ) ).toHaveLength( 1 );
+		expect( await page.$( '#unsplash-search-input' ) ).not.toBeNull();
 
 		await page.waitForSelector( '.unsplash-attachment' );
 
@@ -56,7 +56,7 @@ describe( 'Unsplash Image Block', () => {
 
 		await clickButton( 'Search Unsplash' );
 		await page.waitForSelector( '.media-modal' );
-		await page.waitForSelector( '#unsplash-search-input' );
+		await page.waitForSelector( '#unsplash-search-input', { visible: true } );
 
 		const input = await page.$( '#unsplash-search-input' );
 
@@ -67,17 +67,17 @@ describe( 'Unsplash Image Block', () => {
 
 		await page.waitForSelector( '.unsplash-attachment[data-id="ZkjvMnVz-7w"]' );
 
-		const attachments = await page.$$(
+		const attachment = await page.$(
 			'.unsplash-attachment[data-id="ZkjvMnVz-7w"]'
 		);
-		attachments[ 0 ].click();
+		attachment.click();
 
-		const button = await page.$$( '.media-button-select' );
-		button[ 0 ].click();
+		const button = await page.$( '.media-button-select' );
+		button.click();
 
 		await page.waitForSelector( '.wp-block-unsplash-image' );
 
 		// Image is inserted.
-		expect( await page.$$( '.wp-block-unsplash-image' ) ).toHaveLength( 1 );
+		expect( await page.$( '.wp-block-unsplash-image' ) ).not.toBeNull();
 	} );
 } );
