@@ -1,5 +1,5 @@
+/* istanbul ignore file */
 /**
  * Internal dependencies
  */
 import './style.css';
-/* istanbul ignore file */
