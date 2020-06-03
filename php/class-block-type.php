@@ -64,7 +64,7 @@ class Block_Type {
 				$metadata['render_callback'] = [ $this, $callback ];
 			}
 
-			register_block_type( $metadata['name'], $metadata );
+			\register_block_type( $metadata['name'], $metadata );
 		}
 	}
 

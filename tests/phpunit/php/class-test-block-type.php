@@ -66,7 +66,7 @@ class Test_Block_Type extends \WP_UnitTestCase {
 	 */
 	public function test_register_blocks() {
 		// Unregister the block if it's registered already.
-		unregister_block_type( 'unsplash/image' );
+		\unregister_block_type( 'unsplash/image' );
 
 		$this->block_type->register_blocks();
 
@@ -96,7 +96,7 @@ class Test_Block_Type extends \WP_UnitTestCase {
 	 * @see Block_Type::register_blocks()
 	 */
 	public function test_register_blocks_no_file() {
-		unregister_block_type( 'unsplash/image' );
+		\unregister_block_type( 'unsplash/image' );
 
 		$block_folder = get_plugin_instance()->dir_path . '/assets/js/blocks/image/';
 
