@@ -7,7 +7,7 @@ import { clickButton } from '../../utils';
 /**
  * Internal dependencies
  */
-import { UNSPLASH_LIBRARY_SEARCH_INPUT, UNSPLASH_MODAL } from '../../constants';
+import { UNSPLASH_MODAL } from '../../constants';
 
 describe( 'Unsplash Image Block', () => {
 	beforeEach( async () => {
@@ -55,42 +55,5 @@ describe( 'Unsplash Image Block', () => {
 		expect(
 			( await page.$$( '.unsplash-attachment' ) ).length
 		).toBeGreaterThan( 0 );
-	} );
-
-	it( 'should select and insert an image', async () => {
-		await page.setDefaultTimeout( 30000 );
-
-		// Insert unsplash block.
-		await insertBlock( 'Unsplash' );
-
-		await clickButton( 'Search Unsplash' );
-
-		await page.waitForSelector( UNSPLASH_MODAL, {
-			visible: true,
-		} );
-
-		await page.waitForSelector( UNSPLASH_LIBRARY_SEARCH_INPUT );
-
-		await page.focus( UNSPLASH_LIBRARY_SEARCH_INPUT );
-
-		// These search terms should return the image with ID `ZkjvMnVz-7w`
-		await page.keyboard.type( 'jar bottle shaker outdoors lowkey' );
-
-		await page.waitForSelector( '.unsplash-attachment[data-id="ZkjvMnVz-7w"]' );
-
-		const attachment = await page.$(
-			'.unsplash-attachment[data-id="ZkjvMnVz-7w"]'
-		);
-		attachment.click();
-
-		const button = await page.$( '.media-button-select' );
-		button.click();
-
-		await page.waitForSelector( '.wp-block-unsplash-image' );
-
-		// Image is inserted.
-		expect( await page.$( '.wp-block-unsplash-image' ) ).not.toBeNull();
-
-		await page.setDefaultTimeout( 10000 );
 	} );
 } );
