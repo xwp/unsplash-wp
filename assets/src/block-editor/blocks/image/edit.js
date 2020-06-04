@@ -22,12 +22,13 @@ import {
 	InspectorControls,
 	InspectorAdvancedControls,
 	RichText,
+	__experimentalBlock,
 	__experimentalImageSizeControl as ImageSizeControl,
 	__experimentalImageURLInputUI as ImageURLInputUI,
 } from '@wordpress/block-editor';
 import { useViewportMatch } from '@wordpress/compose';
 import { useSelect, useDispatch } from '@wordpress/data';
-import { useEffect, useRef, useState } from '@wordpress/element';
+import { useEffect, useRef, useState, forwardRef } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { getPath } from '@wordpress/url';
 import {
@@ -43,6 +44,13 @@ import useImageSize from '@wordpress/block-library/build/image/image-size';
  */
 import icon from './icon';
 import './editor.css';
+
+// Fallback to `figure` tag if `__experimentalBlock` is not defined.
+const Block = __experimentalBlock || {
+	figure: forwardRef( ( props, ref ) => {
+		return <figure { ...props } ref={ ref } />;
+	} ),
+};
 
 export const pickRelevantImageProps = image => {
 	const imageProps = pick( image, [ 'alt', 'id', 'link', 'caption' ] );
@@ -279,24 +287,43 @@ const ImageEdit = ( {
 		return (
 			<>
 				{ controls }
-				<Placeholder
-					icon={ icon }
-					label={ __( 'Unsplash', 'unsplash' ) }
-					instructions={ __(
-						"Search and select from the internet's source of freely usable images",
-						'unsplash'
-					) }
-					className={ 'placeholderClassName' }
-				>
-					<Button isSecondary onClick={ onOpen }>
-						{ __( 'Search Unsplash', 'unsplash' ) }
-					</Button>
-				</Placeholder>
+				<Block.figure>
+					<Placeholder
+						icon={ icon }
+						label={ __( 'Unsplash', 'unsplash' ) }
+						instructions={ __(
+							"Search and select from the internet's source of freely usable images",
+							'unsplash'
+						) }
+						className={ 'placeholderClassName' }
+					>
+						<Button isSecondary onClick={ onOpen }>
+							{ __( 'Search Unsplash', 'unsplash' ) }
+						</Button>
+					</Placeholder>
+				</Block.figure>
 			</>
 		);
 	}
 
-	const classes = classnames( className, {
+	let captionField;
+
+	if ( ! RichText.isEmpty( caption ) || isSelected ) {
+		captionField = (
+			<RichText
+				className="blocks-gallery-caption"
+				tagName="figcaption"
+				placeholder={ __( 'Write caption…', 'unsplash' ) }
+				value={ caption }
+				unstableOnFocus={ onFocusCaption }
+				onChange={ value => setAttributes( { caption: value } ) }
+				isSelected={ captionFocused }
+				inlineToolbar
+			/>
+		);
+	}
+
+	const classes = classnames( className, 'wp-block-image', {
 		'is-resized': !! width || !! height,
 		'is-focused': isSelected,
 		[ `size-${ sizeSlug }` ]: sizeSlug,
@@ -474,22 +501,10 @@ const ImageEdit = ( {
 	return (
 		<>
 			{ controls }
-			<figure ref={ ref } className={ classes }>
+			<Block.figure ref={ ref } className={ classes }>
 				{ img }
-
-				{ ( ! RichText.isEmpty( caption ) || isSelected ) && (
-					<RichText
-						className="blocks-gallery-caption"
-						tagName="figcaption"
-						placeholder={ __( 'Write caption…', 'unsplash' ) }
-						value={ caption }
-						unstableOnFocus={ onFocusCaption }
-						onChange={ value => setAttributes( { caption: value } ) }
-						isSelected={ captionFocused }
-						inlineToolbar
-					/>
-				) }
-			</figure>
+				{ captionField }
+			</Block.figure>
 		</>
 	);
 };

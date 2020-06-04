@@ -20,10 +20,16 @@ Object {
       id="a11y-speak-assertive"
       style="position: absolute;margin: -1px;padding: 0;height: 1px;width: 1px;overflow: hidden;clip: rect(1px, 1px, 1px, 1px);-webkit-clip-path: inset(50%);clip-path: inset(50%);border: 0;word-wrap: normal !important;"
     />
+    <p
+      class="a11y-speak-intro-text"
+      hidden="hidden"
+      id="a11y-speak-intro-text"
+      style="position: absolute;margin: -1px;padding: 0;height: 1px;width: 1px;overflow: hidden;clip: rect(1px, 1px, 1px, 1px);-webkit-clip-path: inset(50%);clip-path: inset(50%);border: 0;word-wrap: normal !important;"
+    >
+      Notifications
+    </p>
     <div>
-      <figure
-        class="is-style-default is-focused size-large alignleft"
-      >
+      <figure>
         <div
           class="components-resizable-box__container has-show-handle"
           style="position: relative; user-select: auto; width: auto; height: auto; max-width: 1450px; max-height: 1087.5px; min-width: 26.666666666666664px; min-height: 20px; box-sizing: border-box; flex-shrink: 0;"
@@ -173,13 +179,13 @@ Object {
                   >
                     <label
                       class="components-base-control__label"
-                      for="inspector-text-control-6"
+                      for="inspector-text-control-4"
                     >
                       Width
                     </label>
                     <input
                       class="components-text-control__input"
-                      id="inspector-text-control-6"
+                      id="inspector-text-control-4"
                       min="1"
                       type="number"
                       value="1024"
@@ -194,13 +200,13 @@ Object {
                   >
                     <label
                       class="components-base-control__label"
-                      for="inspector-text-control-7"
+                      for="inspector-text-control-5"
                     >
                       Height
                     </label>
                     <input
                       class="components-text-control__input"
-                      id="inspector-text-control-7"
+                      id="inspector-text-control-5"
                       min="1"
                       type="number"
                       value="768"
@@ -266,21 +272,21 @@ Object {
             >
               <label
                 class="components-base-control__label"
-                for="inspector-text-control-8"
+                for="inspector-text-control-2"
               >
                 Title attribute
               </label>
               <input
-                aria-describedby="inspector-text-control-8__help"
+                aria-describedby="inspector-text-control-2__help"
                 class="components-text-control__input"
-                id="inspector-text-control-8"
+                id="inspector-text-control-2"
                 type="text"
                 value=""
               />
             </div>
             <p
               class="components-base-control__help"
-              id="inspector-text-control-8__help"
+              id="inspector-text-control-2__help"
             >
               Describe the role of this image on the page.
               <a
@@ -359,9 +365,7 @@ Object {
     </div>
   </body>,
   "container": <div>
-    <figure
-      class="is-style-default is-focused size-large alignleft"
-    >
+    <figure>
       <div
         class="components-resizable-box__container has-show-handle"
         style="position: relative; user-select: auto; width: auto; height: auto; max-width: 1450px; max-height: 1087.5px; min-width: 26.666666666666664px; min-height: 20px; box-sizing: border-box; flex-shrink: 0;"
@@ -511,13 +515,13 @@ Object {
                 >
                   <label
                     class="components-base-control__label"
-                    for="inspector-text-control-6"
+                    for="inspector-text-control-4"
                   >
                     Width
                   </label>
                   <input
                     class="components-text-control__input"
-                    id="inspector-text-control-6"
+                    id="inspector-text-control-4"
                     min="1"
                     type="number"
                     value="1024"
@@ -532,13 +536,13 @@ Object {
                 >
                   <label
                     class="components-base-control__label"
-                    for="inspector-text-control-7"
+                    for="inspector-text-control-5"
                   >
                     Height
                   </label>
                   <input
                     class="components-text-control__input"
-                    id="inspector-text-control-7"
+                    id="inspector-text-control-5"
                     min="1"
                     type="number"
                     value="768"
@@ -604,21 +608,21 @@ Object {
           >
             <label
               class="components-base-control__label"
-              for="inspector-text-control-8"
+              for="inspector-text-control-2"
             >
               Title attribute
             </label>
             <input
-              aria-describedby="inspector-text-control-8__help"
+              aria-describedby="inspector-text-control-2__help"
               class="components-text-control__input"
-              id="inspector-text-control-8"
+              id="inspector-text-control-2"
               type="text"
               value=""
             />
           </div>
           <p
             class="components-base-control__help"
-            id="inspector-text-control-8__help"
+            id="inspector-text-control-2__help"
           >
             Describe the role of this image on the page.
             <a
@@ -769,10 +773,16 @@ Object {
       id="a11y-speak-assertive"
       style="position: absolute;margin: -1px;padding: 0;height: 1px;width: 1px;overflow: hidden;clip: rect(1px, 1px, 1px, 1px);-webkit-clip-path: inset(50%);clip-path: inset(50%);border: 0;word-wrap: normal !important;"
     />
+    <p
+      class="a11y-speak-intro-text"
+      hidden="hidden"
+      id="a11y-speak-intro-text"
+      style="position: absolute;margin: -1px;padding: 0;height: 1px;width: 1px;overflow: hidden;clip: rect(1px, 1px, 1px, 1px);-webkit-clip-path: inset(50%);clip-path: inset(50%);border: 0;word-wrap: normal !important;"
+    >
+      Notifications
+    </p>
     <div>
-      <figure
-        class="is-style-default is-focused size-large alignright"
-      >
+      <figure>
         <div
           class="components-resizable-box__container has-show-handle"
           style="position: relative; user-select: auto; width: auto; height: auto; max-width: 1450px; max-height: 1087.5px; min-width: 26.666666666666664px; min-height: 20px; box-sizing: border-box; flex-shrink: 0;"
@@ -922,13 +932,13 @@ Object {
                   >
                     <label
                       class="components-base-control__label"
-                      for="inspector-text-control-3"
+                      for="inspector-text-control-2"
                     >
                       Width
                     </label>
                     <input
                       class="components-text-control__input"
-                      id="inspector-text-control-3"
+                      id="inspector-text-control-2"
                       min="1"
                       type="number"
                       value="1024"
@@ -943,13 +953,13 @@ Object {
                   >
                     <label
                       class="components-base-control__label"
-                      for="inspector-text-control-4"
+                      for="inspector-text-control-3"
                     >
                       Height
                     </label>
                     <input
                       class="components-text-control__input"
-                      id="inspector-text-control-4"
+                      id="inspector-text-control-3"
                       min="1"
                       type="number"
                       value="768"
@@ -1015,21 +1025,21 @@ Object {
             >
               <label
                 class="components-base-control__label"
-                for="inspector-text-control-5"
+                for="inspector-text-control-1"
               >
                 Title attribute
               </label>
               <input
-                aria-describedby="inspector-text-control-5__help"
+                aria-describedby="inspector-text-control-1__help"
                 class="components-text-control__input"
-                id="inspector-text-control-5"
+                id="inspector-text-control-1"
                 type="text"
                 value=""
               />
             </div>
             <p
               class="components-base-control__help"
-              id="inspector-text-control-5__help"
+              id="inspector-text-control-1__help"
             >
               Describe the role of this image on the page.
               <a
@@ -1108,9 +1118,7 @@ Object {
     </div>
   </body>,
   "container": <div>
-    <figure
-      class="is-style-default is-focused size-large alignright"
-    >
+    <figure>
       <div
         class="components-resizable-box__container has-show-handle"
         style="position: relative; user-select: auto; width: auto; height: auto; max-width: 1450px; max-height: 1087.5px; min-width: 26.666666666666664px; min-height: 20px; box-sizing: border-box; flex-shrink: 0;"
@@ -1260,13 +1268,13 @@ Object {
                 >
                   <label
                     class="components-base-control__label"
-                    for="inspector-text-control-3"
+                    for="inspector-text-control-2"
                   >
                     Width
                   </label>
                   <input
                     class="components-text-control__input"
-                    id="inspector-text-control-3"
+                    id="inspector-text-control-2"
                     min="1"
                     type="number"
                     value="1024"
@@ -1281,13 +1289,13 @@ Object {
                 >
                   <label
                     class="components-base-control__label"
-                    for="inspector-text-control-4"
+                    for="inspector-text-control-3"
                   >
                     Height
                   </label>
                   <input
                     class="components-text-control__input"
-                    id="inspector-text-control-4"
+                    id="inspector-text-control-3"
                     min="1"
                     type="number"
                     value="768"
@@ -1353,21 +1361,21 @@ Object {
           >
             <label
               class="components-base-control__label"
-              for="inspector-text-control-5"
+              for="inspector-text-control-1"
             >
               Title attribute
             </label>
             <input
-              aria-describedby="inspector-text-control-5__help"
+              aria-describedby="inspector-text-control-1__help"
               class="components-text-control__input"
-              id="inspector-text-control-5"
+              id="inspector-text-control-1"
               type="text"
               value=""
             />
           </div>
           <p
             class="components-base-control__help"
-            id="inspector-text-control-5__help"
+            id="inspector-text-control-1__help"
           >
             Describe the role of this image on the page.
             <a
@@ -1518,10 +1526,16 @@ Object {
       id="a11y-speak-assertive"
       style="position: absolute;margin: -1px;padding: 0;height: 1px;width: 1px;overflow: hidden;clip: rect(1px, 1px, 1px, 1px);-webkit-clip-path: inset(50%);clip-path: inset(50%);border: 0;word-wrap: normal !important;"
     />
+    <p
+      class="a11y-speak-intro-text"
+      hidden="hidden"
+      id="a11y-speak-intro-text"
+      style="position: absolute;margin: -1px;padding: 0;height: 1px;width: 1px;overflow: hidden;clip: rect(1px, 1px, 1px, 1px);-webkit-clip-path: inset(50%);clip-path: inset(50%);border: 0;word-wrap: normal !important;"
+    >
+      Notifications
+    </p>
     <div>
-      <figure
-        class="is-style-default is-focused size-large aligncenter"
-      >
+      <figure>
         <div
           class="components-resizable-box__container has-show-handle"
           style="position: relative; user-select: auto; width: auto; height: auto; max-width: 1450px; max-height: 1087.5px; min-width: 26.666666666666664px; min-height: 20px; box-sizing: border-box; flex-shrink: 0;"
@@ -1764,21 +1778,21 @@ Object {
             >
               <label
                 class="components-base-control__label"
-                for="inspector-text-control-2"
+                for="inspector-text-control-0"
               >
                 Title attribute
               </label>
               <input
-                aria-describedby="inspector-text-control-2__help"
+                aria-describedby="inspector-text-control-0__help"
                 class="components-text-control__input"
-                id="inspector-text-control-2"
+                id="inspector-text-control-0"
                 type="text"
                 value=""
               />
             </div>
             <p
               class="components-base-control__help"
-              id="inspector-text-control-2__help"
+              id="inspector-text-control-0__help"
             >
               Describe the role of this image on the page.
               <a
@@ -1861,9 +1875,7 @@ Object {
     </div>
   </body>,
   "container": <div>
-    <figure
-      class="is-style-default is-focused size-large aligncenter"
-    >
+    <figure>
       <div
         class="components-resizable-box__container has-show-handle"
         style="position: relative; user-select: auto; width: auto; height: auto; max-width: 1450px; max-height: 1087.5px; min-width: 26.666666666666664px; min-height: 20px; box-sizing: border-box; flex-shrink: 0;"
@@ -2106,21 +2118,21 @@ Object {
           >
             <label
               class="components-base-control__label"
-              for="inspector-text-control-2"
+              for="inspector-text-control-0"
             >
               Title attribute
             </label>
             <input
-              aria-describedby="inspector-text-control-2__help"
+              aria-describedby="inspector-text-control-0__help"
               class="components-text-control__input"
-              id="inspector-text-control-2"
+              id="inspector-text-control-0"
               type="text"
               value=""
             />
           </div>
           <p
             class="components-base-control__help"
-            id="inspector-text-control-2__help"
+            id="inspector-text-control-0__help"
           >
             Describe the role of this image on the page.
             <a
@@ -2275,10 +2287,16 @@ Object {
       id="a11y-speak-assertive"
       style="position: absolute;margin: -1px;padding: 0;height: 1px;width: 1px;overflow: hidden;clip: rect(1px, 1px, 1px, 1px);-webkit-clip-path: inset(50%);clip-path: inset(50%);border: 0;word-wrap: normal !important;"
     />
+    <p
+      class="a11y-speak-intro-text"
+      hidden="hidden"
+      id="a11y-speak-intro-text"
+      style="position: absolute;margin: -1px;padding: 0;height: 1px;width: 1px;overflow: hidden;clip: rect(1px, 1px, 1px, 1px);-webkit-clip-path: inset(50%);clip-path: inset(50%);border: 0;word-wrap: normal !important;"
+    >
+      Notifications
+    </p>
     <div>
-      <figure
-        class="is-style-default is-focused size-large alignwide"
-      >
+      <figure>
         <div>
           <div
             class="components-panel__body is-opened"
@@ -2415,21 +2433,21 @@ Object {
             >
               <label
                 class="components-base-control__label"
-                for="inspector-text-control-9"
+                for="inspector-text-control-3"
               >
                 Title attribute
               </label>
               <input
-                aria-describedby="inspector-text-control-9__help"
+                aria-describedby="inspector-text-control-3__help"
                 class="components-text-control__input"
-                id="inspector-text-control-9"
+                id="inspector-text-control-3"
                 type="text"
                 value=""
               />
             </div>
             <p
               class="components-base-control__help"
-              id="inspector-text-control-9__help"
+              id="inspector-text-control-3__help"
             >
               Describe the role of this image on the page.
               <a
@@ -2494,9 +2512,7 @@ Object {
     </div>
   </body>,
   "container": <div>
-    <figure
-      class="is-style-default is-focused size-large alignwide"
-    >
+    <figure>
       <div>
         <div
           class="components-panel__body is-opened"
@@ -2633,21 +2649,21 @@ Object {
           >
             <label
               class="components-base-control__label"
-              for="inspector-text-control-9"
+              for="inspector-text-control-3"
             >
               Title attribute
             </label>
             <input
-              aria-describedby="inspector-text-control-9__help"
+              aria-describedby="inspector-text-control-3__help"
               class="components-text-control__input"
-              id="inspector-text-control-9"
+              id="inspector-text-control-3"
               type="text"
               value=""
             />
           </div>
           <p
             class="components-base-control__help"
-            id="inspector-text-control-9__help"
+            id="inspector-text-control-3__help"
           >
             Describe the role of this image on the page.
             <a
@@ -2784,7 +2800,68 @@ Object {
       id="a11y-speak-assertive"
       style="position: absolute;margin: -1px;padding: 0;height: 1px;width: 1px;overflow: hidden;clip: rect(1px, 1px, 1px, 1px);-webkit-clip-path: inset(50%);clip-path: inset(50%);border: 0;word-wrap: normal !important;"
     />
+    <p
+      class="a11y-speak-intro-text"
+      hidden="hidden"
+      id="a11y-speak-intro-text"
+      style="position: absolute;margin: -1px;padding: 0;height: 1px;width: 1px;overflow: hidden;clip: rect(1px, 1px, 1px, 1px);-webkit-clip-path: inset(50%);clip-path: inset(50%);border: 0;word-wrap: normal !important;"
+    >
+      Notifications
+    </p>
     <div>
+      <figure>
+        <div
+          class="components-placeholder placeholderClassName is-small"
+        >
+          <iframe
+            aria-hidden="true"
+            aria-label="resize-listener"
+            frameborder="0"
+            src="about:blank"
+            style="display: block; opacity: 0; position: absolute; top: 0px; left: 0px; height: 100%; width: 100%; overflow: hidden; pointer-events: none; z-index: -1;"
+            tabindex="-1"
+          />
+          <div
+            class="components-placeholder__label"
+          >
+            <svg
+              height="18"
+              version="1.1"
+              viewBox="0 0 24 24"
+              width="18"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g
+                id="surface1"
+              >
+                <path
+                  d="M 7.5 6.75 L 7.5 0 L 16.5 0 L 16.5 6.75 Z M 16.5 10.5 L 24 10.5 L 24 24 L 0 24 L 0 10.5 L 7.5 10.5 L 7.5 17.25 L 16.5 17.25 Z M 16.5 10.5 "
+                />
+              </g>
+            </svg>
+            Unsplash
+          </div>
+          <div
+            class="components-placeholder__instructions"
+          >
+            Search and select from the internet's source of freely usable images
+          </div>
+          <div
+            class="components-placeholder__fieldset"
+          >
+            <button
+              class="components-button is-secondary"
+              type="button"
+            >
+              Search Unsplash
+            </button>
+          </div>
+        </div>
+      </figure>
+    </div>
+  </body>,
+  "container": <div>
+    <figure>
       <div
         class="components-placeholder placeholderClassName is-small"
       >
@@ -2832,56 +2909,7 @@ Object {
           </button>
         </div>
       </div>
-    </div>
-  </body>,
-  "container": <div>
-    <div
-      class="components-placeholder placeholderClassName is-small"
-    >
-      <iframe
-        aria-hidden="true"
-        aria-label="resize-listener"
-        frameborder="0"
-        src="about:blank"
-        style="display: block; opacity: 0; position: absolute; top: 0px; left: 0px; height: 100%; width: 100%; overflow: hidden; pointer-events: none; z-index: -1;"
-        tabindex="-1"
-      />
-      <div
-        class="components-placeholder__label"
-      >
-        <svg
-          height="18"
-          version="1.1"
-          viewBox="0 0 24 24"
-          width="18"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <g
-            id="surface1"
-          >
-            <path
-              d="M 7.5 6.75 L 7.5 0 L 16.5 0 L 16.5 6.75 Z M 16.5 10.5 L 24 10.5 L 24 24 L 0 24 L 0 10.5 L 7.5 10.5 L 7.5 17.25 L 16.5 17.25 Z M 16.5 10.5 "
-            />
-          </g>
-        </svg>
-        Unsplash
-      </div>
-      <div
-        class="components-placeholder__instructions"
-      >
-        Search and select from the internet's source of freely usable images
-      </div>
-      <div
-        class="components-placeholder__fieldset"
-      >
-        <button
-          class="components-button is-secondary"
-          type="button"
-        >
-          Search Unsplash
-        </button>
-      </div>
-    </div>
+    </figure>
   </div>,
   "debug": [Function],
   "findAllByAltText": [Function],
@@ -2957,10 +2985,16 @@ Object {
       id="a11y-speak-assertive"
       style="position: absolute;margin: -1px;padding: 0;height: 1px;width: 1px;overflow: hidden;clip: rect(1px, 1px, 1px, 1px);-webkit-clip-path: inset(50%);clip-path: inset(50%);border: 0;word-wrap: normal !important;"
     />
+    <p
+      class="a11y-speak-intro-text"
+      hidden="hidden"
+      id="a11y-speak-intro-text"
+      style="position: absolute;margin: -1px;padding: 0;height: 1px;width: 1px;overflow: hidden;clip: rect(1px, 1px, 1px, 1px);-webkit-clip-path: inset(50%);clip-path: inset(50%);border: 0;word-wrap: normal !important;"
+    >
+      Notifications
+    </p>
     <div>
-      <figure
-        class="is-style-default is-focused size-large aligncenter"
-      >
+      <figure>
         <div
           class="components-resizable-box__container has-show-handle"
           style="position: relative; user-select: auto; width: auto; height: auto; max-width: 1450px; max-height: 1087.5px; min-width: 26.666666666666664px; min-height: 20px; box-sizing: border-box; flex-shrink: 0;"
@@ -3108,13 +3142,13 @@ Object {
                   >
                     <label
                       class="components-base-control__label"
-                      for="inspector-text-control-10"
+                      for="inspector-text-control-6"
                     >
                       Width
                     </label>
                     <input
                       class="components-text-control__input"
-                      id="inspector-text-control-10"
+                      id="inspector-text-control-6"
                       min="1"
                       type="number"
                       value="1024"
@@ -3129,13 +3163,13 @@ Object {
                   >
                     <label
                       class="components-base-control__label"
-                      for="inspector-text-control-11"
+                      for="inspector-text-control-7"
                     >
                       Height
                     </label>
                     <input
                       class="components-text-control__input"
-                      id="inspector-text-control-11"
+                      id="inspector-text-control-7"
                       min="1"
                       type="number"
                       value="768"
@@ -3201,21 +3235,21 @@ Object {
             >
               <label
                 class="components-base-control__label"
-                for="inspector-text-control-12"
+                for="inspector-text-control-4"
               >
                 Title attribute
               </label>
               <input
-                aria-describedby="inspector-text-control-12__help"
+                aria-describedby="inspector-text-control-4__help"
                 class="components-text-control__input"
-                id="inspector-text-control-12"
+                id="inspector-text-control-4"
                 type="text"
                 value=""
               />
             </div>
             <p
               class="components-base-control__help"
-              id="inspector-text-control-12__help"
+              id="inspector-text-control-4__help"
             >
               Describe the role of this image on the page.
               <a
@@ -3298,9 +3332,7 @@ Object {
     </div>
   </body>,
   "container": <div>
-    <figure
-      class="is-style-default is-focused size-large aligncenter"
-    >
+    <figure>
       <div
         class="components-resizable-box__container has-show-handle"
         style="position: relative; user-select: auto; width: auto; height: auto; max-width: 1450px; max-height: 1087.5px; min-width: 26.666666666666664px; min-height: 20px; box-sizing: border-box; flex-shrink: 0;"
@@ -3448,13 +3480,13 @@ Object {
                 >
                   <label
                     class="components-base-control__label"
-                    for="inspector-text-control-10"
+                    for="inspector-text-control-6"
                   >
                     Width
                   </label>
                   <input
                     class="components-text-control__input"
-                    id="inspector-text-control-10"
+                    id="inspector-text-control-6"
                     min="1"
                     type="number"
                     value="1024"
@@ -3469,13 +3501,13 @@ Object {
                 >
                   <label
                     class="components-base-control__label"
-                    for="inspector-text-control-11"
+                    for="inspector-text-control-7"
                   >
                     Height
                   </label>
                   <input
                     class="components-text-control__input"
-                    id="inspector-text-control-11"
+                    id="inspector-text-control-7"
                     min="1"
                     type="number"
                     value="768"
@@ -3541,21 +3573,21 @@ Object {
           >
             <label
               class="components-base-control__label"
-              for="inspector-text-control-12"
+              for="inspector-text-control-4"
             >
               Title attribute
             </label>
             <input
-              aria-describedby="inspector-text-control-12__help"
+              aria-describedby="inspector-text-control-4__help"
               class="components-text-control__input"
-              id="inspector-text-control-12"
+              id="inspector-text-control-4"
               type="text"
               value=""
             />
           </div>
           <p
             class="components-base-control__help"
-            id="inspector-text-control-12__help"
+            id="inspector-text-control-4__help"
           >
             Describe the role of this image on the page.
             <a
@@ -3710,10 +3742,16 @@ Object {
       id="a11y-speak-assertive"
       style="position: absolute;margin: -1px;padding: 0;height: 1px;width: 1px;overflow: hidden;clip: rect(1px, 1px, 1px, 1px);-webkit-clip-path: inset(50%);clip-path: inset(50%);border: 0;word-wrap: normal !important;"
     />
+    <p
+      class="a11y-speak-intro-text"
+      hidden="hidden"
+      id="a11y-speak-intro-text"
+      style="position: absolute;margin: -1px;padding: 0;height: 1px;width: 1px;overflow: hidden;clip: rect(1px, 1px, 1px, 1px);-webkit-clip-path: inset(50%);clip-path: inset(50%);border: 0;word-wrap: normal !important;"
+    >
+      Notifications
+    </p>
     <div>
-      <figure
-        class="is-style-default is-focused size-large aligncenter"
-      >
+      <figure>
         <div
           class="components-resizable-box__container has-show-handle"
           style="position: relative; user-select: auto; width: auto; height: auto; max-width: 1450px; max-height: 1087.5px; min-width: 26.666666666666664px; min-height: 20px; box-sizing: border-box; flex-shrink: 0;"
@@ -3861,13 +3899,13 @@ Object {
                   >
                     <label
                       class="components-base-control__label"
-                      for="inspector-text-control-10"
+                      for="inspector-text-control-6"
                     >
                       Width
                     </label>
                     <input
                       class="components-text-control__input"
-                      id="inspector-text-control-10"
+                      id="inspector-text-control-6"
                       min="1"
                       type="number"
                       value="1024"
@@ -3882,13 +3920,13 @@ Object {
                   >
                     <label
                       class="components-base-control__label"
-                      for="inspector-text-control-11"
+                      for="inspector-text-control-7"
                     >
                       Height
                     </label>
                     <input
                       class="components-text-control__input"
-                      id="inspector-text-control-11"
+                      id="inspector-text-control-7"
                       min="1"
                       type="number"
                       value="768"
@@ -3954,21 +3992,21 @@ Object {
             >
               <label
                 class="components-base-control__label"
-                for="inspector-text-control-12"
+                for="inspector-text-control-4"
               >
                 Title attribute
               </label>
               <input
-                aria-describedby="inspector-text-control-12__help"
+                aria-describedby="inspector-text-control-4__help"
                 class="components-text-control__input"
-                id="inspector-text-control-12"
+                id="inspector-text-control-4"
                 type="text"
                 value=""
               />
             </div>
             <p
               class="components-base-control__help"
-              id="inspector-text-control-12__help"
+              id="inspector-text-control-4__help"
             >
               Describe the role of this image on the page.
               <a
@@ -4050,6 +4088,59 @@ Object {
       </figure>
     </div>
     <div>
+      <figure>
+        <div
+          class="components-placeholder placeholderClassName is-small"
+        >
+          <iframe
+            aria-hidden="true"
+            aria-label="resize-listener"
+            frameborder="0"
+            src="about:blank"
+            style="display: block; opacity: 0; position: absolute; top: 0px; left: 0px; height: 100%; width: 100%; overflow: hidden; pointer-events: none; z-index: -1;"
+            tabindex="-1"
+          />
+          <div
+            class="components-placeholder__label"
+          >
+            <svg
+              height="18"
+              version="1.1"
+              viewBox="0 0 24 24"
+              width="18"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g
+                id="surface1"
+              >
+                <path
+                  d="M 7.5 6.75 L 7.5 0 L 16.5 0 L 16.5 6.75 Z M 16.5 10.5 L 24 10.5 L 24 24 L 0 24 L 0 10.5 L 7.5 10.5 L 7.5 17.25 L 16.5 17.25 Z M 16.5 10.5 "
+                />
+              </g>
+            </svg>
+            Unsplash
+          </div>
+          <div
+            class="components-placeholder__instructions"
+          >
+            Search and select from the internet's source of freely usable images
+          </div>
+          <div
+            class="components-placeholder__fieldset"
+          >
+            <button
+              class="components-button is-secondary"
+              type="button"
+            >
+              Search Unsplash
+            </button>
+          </div>
+        </div>
+      </figure>
+    </div>
+  </body>,
+  "container": <div>
+    <figure>
       <div
         class="components-placeholder placeholderClassName is-small"
       >
@@ -4097,56 +4188,7 @@ Object {
           </button>
         </div>
       </div>
-    </div>
-  </body>,
-  "container": <div>
-    <div
-      class="components-placeholder placeholderClassName is-small"
-    >
-      <iframe
-        aria-hidden="true"
-        aria-label="resize-listener"
-        frameborder="0"
-        src="about:blank"
-        style="display: block; opacity: 0; position: absolute; top: 0px; left: 0px; height: 100%; width: 100%; overflow: hidden; pointer-events: none; z-index: -1;"
-        tabindex="-1"
-      />
-      <div
-        class="components-placeholder__label"
-      >
-        <svg
-          height="18"
-          version="1.1"
-          viewBox="0 0 24 24"
-          width="18"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <g
-            id="surface1"
-          >
-            <path
-              d="M 7.5 6.75 L 7.5 0 L 16.5 0 L 16.5 6.75 Z M 16.5 10.5 L 24 10.5 L 24 24 L 0 24 L 0 10.5 L 7.5 10.5 L 7.5 17.25 L 16.5 17.25 Z M 16.5 10.5 "
-            />
-          </g>
-        </svg>
-        Unsplash
-      </div>
-      <div
-        class="components-placeholder__instructions"
-      >
-        Search and select from the internet's source of freely usable images
-      </div>
-      <div
-        class="components-placeholder__fieldset"
-      >
-        <button
-          class="components-button is-secondary"
-          type="button"
-        >
-          Search Unsplash
-        </button>
-      </div>
-    </div>
+    </figure>
   </div>,
   "debug": [Function],
   "findAllByAltText": [Function],

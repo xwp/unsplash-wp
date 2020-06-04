@@ -8,7 +8,7 @@ import { cloneDeep } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { registerStore } from '@wordpress/data';
+import { select } from '@wordpress/data';
 
 /**
  * Internal dependencies
@@ -21,8 +21,12 @@ import Edit, {
 // Mock the <InspectorControls> component only, so that the other components in this package behave as usual.
 jest.mock( '@wordpress/block-editor', () => {
 	const original = require.requireActual( '@wordpress/block-editor' );
+
 	return {
 		...original,
+		__experimentalBlock: {
+			figure: ( { children } ) => <figure>{ children }</figure>,
+		},
 		InspectorControls: ( { children } ) => children,
 		InspectorAdvancedControls: ( { children } ) => children,
 	};
@@ -46,56 +50,101 @@ jest.mock( '@wordpress/block-library/build/image/image-size', () => ( {
 	} ),
 } ) );
 
-const image = {
-	id: 2,
-	alt: 'Example',
-	link: 'http://example.com/image',
-	caption: 'Example Image',
-	media_details: {
-		width: 1000,
-		height: 1000,
-		file: 'example-photo.png',
-		sizes: {
-			medium: {
-				file: 'example-photo-300x240.png',
-				width: 300,
-				height: 240,
-				mime_type: 'image/png',
-				source_url: 'https://images.unsplash.com/example-photo-300x240.png',
-			},
-			thumbnail: {
-				file: 'example-photo-150x150.png',
-				width: 150,
-				height: 150,
-				mime_type: 'image/png',
-				source_url: 'https://images.unsplash.com/example-photo-150x150.png',
-			},
-			large: {
-				file: 'example-photo-large.png',
-				width: 587,
-				height: 469,
-				mime_type: 'image/png',
-				source_url: 'https://images.unsplash.com/example-photo-large.png',
-			},
-			full: {
-				file: 'example-photo.png',
-				width: 1000,
-				height: 1000,
-				mime_type: 'image/png',
-				source_url: 'https://images.unsplash.com/example-photo',
+jest.mock( '@wordpress/data', () => {
+	const imageMock = {
+		id: 2,
+		alt: 'Example',
+		link: 'http://example.com/image',
+		caption: 'Example Image',
+		media_details: {
+			width: 1000,
+			height: 1000,
+			file: 'example-photo.png',
+			sizes: {
+				medium: {
+					file: 'example-photo-300x240.png',
+					width: 300,
+					height: 240,
+					mime_type: 'image/png',
+					source_url: 'https://images.unsplash.com/example-photo-300x240.png',
+				},
+				thumbnail: {
+					file: 'example-photo-150x150.png',
+					width: 150,
+					height: 150,
+					mime_type: 'image/png',
+					source_url: 'https://images.unsplash.com/example-photo-150x150.png',
+				},
+				large: {
+					file: 'example-photo-large.png',
+					width: 587,
+					height: 469,
+					mime_type: 'image/png',
+					source_url: 'https://images.unsplash.com/example-photo-large.png',
+				},
+				full: {
+					file: 'example-photo.png',
+					width: 1000,
+					height: 1000,
+					mime_type: 'image/png',
+					source_url: 'https://images.unsplash.com/example-photo',
+				},
 			},
 		},
-	},
-};
+	};
 
-registerStore( 'core', {
-	reducer: jest.fn(),
-	selectors: {
-		getMedia: () => {
-			return image;
-		},
-	},
+	const selectFn = store => {
+		switch ( store ) {
+			case 'core':
+				return {
+					getMedia: () => {
+						return imageMock;
+					},
+				};
+
+			case 'core/block-editor':
+				return {
+					getSettings: () => ( {
+						mediaUpload: jest.fn(),
+						imageSizes: [
+							{ slug: 'thumbnail', name: 'Thumbnail' },
+							{ slug: 'medium', name: 'Medium' },
+							{ slug: 'large', name: 'Large' },
+							{ slug: 'full', name: 'Full Size' },
+						],
+						isRTL: false,
+						maxWidth: 580,
+					} ),
+				};
+
+			default:
+				return {};
+		}
+	};
+
+	const dispatchFn = store => {
+		switch ( store ) {
+			case 'core/block-editor':
+				return {
+					toggleSelection: jest.fn(),
+				};
+
+			default:
+				return {};
+		}
+	};
+
+	return {
+		useSelect: jest.fn( mapSelect => {
+			return mapSelect( selectFn );
+		} ),
+		useDispatch: jest.fn( storeName => dispatchFn( storeName ) ),
+		select: selectFn,
+		dispatch: dispatchFn,
+	};
 } );
+
+const image = select( 'core' ).getMedia();
 
 const baseProps = {
 	attributes: {
@@ -248,7 +297,7 @@ describe( 'blocks: unspash/image: edit', () => {
 				removeAllRanges: () => {},
 			};
 		};
-		// window.getComputedStyle = () => {};
+
 		document.createRange = () => ( {
 			setStart: () => {},
 			setEnd: () => {},
