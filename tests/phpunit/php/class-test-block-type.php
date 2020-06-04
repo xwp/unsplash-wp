@@ -27,13 +27,15 @@ class Test_Block_Type extends \WP_UnitTestCase {
 	 */
 	public static function wpSetUpBeforeClass( $factory ) {
 		self::$attachment_id = $factory->attachment->create_object(
-			'canola.jpg',
+			DIR_TESTDATA . '/images/canola.jpg',
 			0,
 			[
 				'post_mime_type' => 'image/jpeg',
 				'post_excerpt'   => 'A sample caption',
 			]
 		);
+
+		wp_maybe_generate_attachment_metadata( get_post( self::$attachment_id ) );
 
 		update_post_meta( self::$attachment_id, 'original_url', 'https://images.unsplash.com/test.jpg' );
 		update_post_meta( self::$attachment_id, 'original_link', 'https://www.unsplash.com/foo' );
@@ -95,7 +97,7 @@ class Test_Block_Type extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Test register_blocks when block.json does not exist.git 
+	 * Test register_blocks when block.json does not exist.
 	 *
 	 * @see Block_Type::register_blocks()
 	 */
@@ -109,13 +111,13 @@ class Test_Block_Type extends \WP_UnitTestCase {
 
 		$block_folder = get_plugin_instance()->dir_path . '/assets/js/blocks/image/';
 
-		rename( $block_folder . 'block.json', $block_folder . 'block' ); // phpcs:ignore
+		rename( $block_folder . 'block.json', $block_folder . 'block' ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_rename
 
 		$this->block_type->register_blocks();
 
 		$blocks = \WP_Block_Type_Registry::get_instance()->get_all_registered();
 
-		rename( $block_folder . 'block', $block_folder . 'block.json' ); // phpcs:ignore
+		rename( $block_folder . 'block', $block_folder . 'block.json' ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_rename
 
 		// Assert the block is not registered.
 		$this->assertFalse( array_key_exists( 'unsplash/image', $blocks ) );
@@ -181,6 +183,17 @@ class Test_Block_Type extends \WP_UnitTestCase {
 			$default
 		);
 		$this->assertContains( 'class="wp-block-unsplash-image wp-block-image size-medium is-resized"', $content );
+
+		$content = $this->block_type->render_image_block(
+			[
+				'id'       => self::$attachment_id,
+				'sizeSlug' => 'medium',
+			],
+			$default
+		);
+
+		$this->assertContains( 'class="wp-block-unsplash-image wp-block-image size-medium"', $content );
+		$this->assertContains( 'width="300" height="225"', $content );
 
 		// Assert we handle invalid attachment ID and sizeSlug default.
 		$content = $this->block_type->render_image_block(
