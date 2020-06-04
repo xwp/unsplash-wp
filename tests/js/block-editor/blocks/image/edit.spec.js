@@ -36,18 +36,15 @@ jest.mock( '@wordpress/compose', () => {
 	};
 } );
 
-jest.mock(
-	'../../../../../assets/src/block-editor/blocks/image/image-size.js',
-	() => ( {
-		__esModule: true,
-		default: () => ( {
-			imageWidth: 1024,
-			imageHeight: 768,
-			imageWidthWithinContainer: 1024,
-			imageHeightWithinContainer: 768,
-		} ),
-	} )
-);
+jest.mock( '@wordpress/block-library/build/image/image-size', () => ( {
+	__esModule: true,
+	default: () => ( {
+		imageWidth: 1024,
+		imageHeight: 768,
+		imageWidthWithinContainer: 1024,
+		imageHeightWithinContainer: 768,
+	} ),
+} ) );
 
 const image = {
 	id: 2,

@@ -72,8 +72,9 @@ const sharedConfig = {
 // These packages need to be bundled and not extracted to `wp.*`.
 const PACKAGES_TO_BUNDLE = [
 	'@wordpress/block-library/build/image/constants',
-	'@wordpress/block-library/build/image/utils',
+	'@wordpress/block-library/build/image/image-size',
 	'@wordpress/block-library/build/image/save',
+	'@wordpress/block-library/build/image/utils',
 ];
 
 const blockEditor = {

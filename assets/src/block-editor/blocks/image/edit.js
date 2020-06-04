@@ -36,11 +36,11 @@ import {
 	LINK_DESTINATION_ATTACHMENT,
 	DEFAULT_SIZE_SLUG,
 } from '@wordpress/block-library/build/image/constants';
+import useImageSize from '@wordpress/block-library/build/image/image-size';
 
 /**
  * Internal dependencies
  */
-import useImageSize from './image-size';
 import icon from './icon';
 import './editor.css';
 
