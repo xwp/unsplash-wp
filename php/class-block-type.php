@@ -86,7 +86,6 @@ class Block_Type {
 			'unsplash-block-editor-js',
 			$this->plugin->asset_url( 'assets/js/block-editor.js' ),
 			$dependencies,
-			[],
 			$version,
 			false
 		);
@@ -95,7 +94,7 @@ class Block_Type {
 			'unsplash-block-editor-css',
 			$this->plugin->asset_url( 'assets/css/block-editor-compiled.css' ),
 			[],
-			$this->plugin->asset_version()
+			$version
 		);
 
 		wp_styles()->add_data( 'unsplash-block-editor-css', 'rtl', 'replace' );

@@ -126,6 +126,7 @@ const ImageEdit = ( {
 			.state()
 			.get( 'selection' )
 			.toJSON();
+
 		const media = selected[ 0 ];
 
 		if ( ! media || ! media.url ) {
