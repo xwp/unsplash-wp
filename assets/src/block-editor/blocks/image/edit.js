@@ -327,7 +327,6 @@ const ImageEdit = ( {
 		'is-resized': !! width || !! height,
 		'is-focused': isSelected,
 		[ `size-${ sizeSlug }` ]: sizeSlug,
-		[ `align${ align }` ]: align,
 	} );
 
 	const isResizable = ! isWideAligned && isLargeViewport;
