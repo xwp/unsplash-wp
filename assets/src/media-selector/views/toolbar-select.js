@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import Toolbar from './toolbar';
+import { Toolbar } from './';
 
 const ToolbarSelect = wp.media.view.Toolbar.Select.extend( {
 	initialize() {

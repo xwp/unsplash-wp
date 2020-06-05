@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import Button from './button';
+import { Button } from './';
 
 const Toolbar = wp.media.view.Toolbar.extend( {
 	initialize() {

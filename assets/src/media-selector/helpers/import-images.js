@@ -6,9 +6,9 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import isUnsplashImage from './is-unsplash-image';
-import getConfig from './get-config';
-import preloadImage from './preload-image';
+import { getConfig, isUnsplashImage, preloadImage } from './';
+
+const { getUserSetting } = window;
 
 /**
  * Import selected Unsplash images.
@@ -108,8 +108,7 @@ const processImage = options => {
  */
 const preloadImageWp = image => {
 	const defaultProps = wp.media.view.settings.defaultProps;
-	const imageSize =
-		window.getUserSetting( 'imgsize', defaultProps.size ) || 'medium';
+	const imageSize = getUserSetting( 'imgsize', defaultProps.size ) || 'medium';
 	const { sizes } = image.attributes;
 	if ( sizes && sizes[ imageSize ] && sizes[ imageSize ].url ) {
 		return preloadImage( sizes[ imageSize ].url );

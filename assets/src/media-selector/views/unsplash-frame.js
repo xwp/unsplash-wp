@@ -1,8 +1,8 @@
 /**
  * Internal dependencies
  */
-import getConfig from '../helpers/get-config';
-import unsetUnsplashLibrary from '../helpers/unset-unsplash-library';
+import { getConfig } from '../helpers';
+import unsetUnsplashLibrary from '../controllers/unset-unsplash-library';
 
 const Select = wp.media.view.MediaFrame.Select;
 let Library = wp.media.controller.Library;
