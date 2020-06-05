@@ -96,6 +96,12 @@ class Hotlink {
 		$response['url']   = $url;
 		$response['sizes'] = $this->change_full_url( $response['sizes'], 'url', $url );
 
+		$link = get_post_meta( $attachment->ID, 'original_link', true );
+		if ( $link ) {
+			$response['originalImageName'] = esc_html__( 'Unsplash', 'unsplash' );
+			$response['originalImageURL']  = $link;
+		}
+
 		return $response;
 	}
 
