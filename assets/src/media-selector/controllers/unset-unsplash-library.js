@@ -26,6 +26,11 @@ export default Controller => {
 				setUserSetting( 'libraryContent', mode );
 			}
 
+			const isUnsplash = this.get( 'isUnsplash' );
+			if ( isUnsplash ) {
+				return;
+			}
+
 			// If current view supports the Unsplash tab save in user settings with different key.
 			const id = this.attributes.id;
 			const library = this.get( 'library' );
@@ -58,14 +63,17 @@ export default Controller => {
 				this.frame.on( 'content:activate', this.saveContentMode, this );
 				const id = this.attributes.id;
 				const library = this.get( 'library' );
+				const isUnsplash = this.get( 'isUnsplash' );
 				const {
 					props: {
 						attributes: { type },
 					},
 				} = library;
-
+				if ( isUnsplash ) {
+					this.set( 'content', 'unsplash' );
+				}
 				// If current view supports the Unsplash tab load from a user settings with different key.
-				if (
+				else if (
 					! isApplicableLibraries( id ) ||
 					( library && type && ! isImageIncluded( type ) )
 				) {

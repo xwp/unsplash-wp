@@ -3,7 +3,7 @@
  */
 import './style.css';
 import unsetUnsplashLibrary from './controllers/unset-unsplash-library';
-import { withUnsplashTab, PostFrame } from './views';
+import { PostFrame, UnsplashFrame, withUnsplashTab } from './views';
 
 // Override media frames in the respective editors to add the Unsplash tab.
 if ( wp.media && wp.media.view && wp.media.view.MediaFrame ) {
@@ -13,6 +13,13 @@ if ( wp.media && wp.media.view && wp.media.view.MediaFrame ) {
 	 */
 	if ( wp.media.view.MediaFrame.Post ) {
 		wp.media.view.MediaFrame.Post = withUnsplashTab( PostFrame );
+	}
+
+	/**
+	 * Add a custom unsplash select view with just the unsplash tab.
+	 */
+	if ( ! wp.media.view.MediaFrame.Unsplash ) {
+		wp.media.view.MediaFrame.Unsplash = withUnsplashTab( UnsplashFrame );
 	}
 	/**
 	 * The 'Select' media frame contains only one media library, and is used in Gutenberg and in other parts of WordPress

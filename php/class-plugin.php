@@ -43,6 +43,13 @@ class Plugin extends Plugin_Base {
 	public $api;
 
 	/**
+	 * API instance.
+	 *
+	 * @var Block_Type
+	 */
+	public $block_type;
+
+	/**
 	 * Initiate the plugin resources.
 	 *
 	 * @action plugins_loaded
@@ -58,6 +65,9 @@ class Plugin extends Plugin_Base {
 		$this->rest_controller->init();
 
 		$this->api = new API( $this );
+
+		$this->block_type = new Block_Type( $this );
+		$this->block_type->init();
 
 		// Manually add this filter as the plugin file name is dynamic.
 		add_filter( 'plugin_action_links_' . $this->file, [ $this, 'action_links' ] );
@@ -223,7 +233,6 @@ class Plugin extends Plugin_Base {
 
 		wp_styles()->add_data( 'unsplash-admin-style', 'rtl', 'replace' );
 	}
-
 
 	/**
 	 * Custom wp_prepare_attachment_for_js copied from core.
