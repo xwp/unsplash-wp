@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@wordpress/hooks": "^2.8.0",
-    "@wordpress/media-utils": "^1.9.1",
+    "@wordpress/media-utils": "^1.11.0",
     "macy": "^2.5.1"
   },
   "devDependencies": {
@@ -32,10 +32,13 @@
     "@babel/plugin-proposal-optional-chaining": "7.8.3",
     "@babel/polyfill": "7.8.3",
     "@babel/preset-env": "^7.10.0",
+    "@testing-library/jest-dom": "5.9.0",
     "@testing-library/react": "9.4.1",
-    "@wordpress/block-editor": "3.7.2",
+    "@wordpress/block-editor": "4.0.0",
+    "@wordpress/block-library": "2.19.0",
     "@wordpress/blocks": "6.12.0",
     "@wordpress/browserslist-config": "2.6.0",
+    "@wordpress/data": "4.19.0",
     "@wordpress/dom": "2.8.0",
     "@wordpress/dom-ready": "2.7.0",
     "@wordpress/e2e-test-utils": "4.3.0",
@@ -44,6 +47,7 @@
     "@wordpress/jest-preset-default": "6.0.0",
     "@wordpress/jest-puppeteer-axe": "1.6.0",
     "@wordpress/postcss-themes": "2.3.0",
+    "@wordpress/rich-text": "3.17.0",
     "@wordpress/scripts": "9.1.0",
     "@wordpress/server-side-render": "1.8.2",
     "@wordpress/url": "2.11.0",

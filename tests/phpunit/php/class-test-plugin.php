@@ -70,6 +70,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 		$this->assertInstanceOf( Hotlink::class, $plugin->hotlink );
 		$this->assertInstanceOf( Settings::class, $plugin->settings );
 		$this->assertInstanceOf( REST_Controller::class, $plugin->rest_controller );
+		$this->assertInstanceOf( Block_Type::class, $plugin->block_type );
 		$this->assertEquals( true, has_filter( 'plugin_action_links_' . $plugin->file, [ $plugin, 'action_links' ] ) );
 	}
 

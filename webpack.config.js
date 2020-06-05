@@ -8,6 +8,8 @@ const OptimizeCSSAssetsPlugin = require( 'optimize-css-assets-webpack-plugin' );
 const RtlCssPlugin = require( 'rtlcss-webpack-plugin' );
 const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
+const { escapeRegExp } = require( 'lodash' );
+const { sep } = require( 'path' );
 
 /**
  * WordPress dependencies
@@ -63,6 +65,56 @@ const sharedConfig = {
 		} ),
 		new RtlCssPlugin( {
 			filename: '../css/[name]-compiled-rtl.css',
+		} ),
+	],
+};
+
+// These packages need to be bundled and not extracted to `wp.*`.
+const PACKAGES_TO_BUNDLE = [
+	'@wordpress/block-library/build/image/constants',
+	'@wordpress/block-library/build/image/image-size',
+	'@wordpress/block-library/build/image/save',
+	'@wordpress/block-library/build/image/utils',
+];
+
+const blockEditor = {
+	...defaultConfig,
+	...sharedConfig,
+	entry: {
+		'block-editor': [ './assets/src/block-editor/index.js' ],
+	},
+	plugins: [
+		...sharedConfig.plugins.filter(
+			// Remove the `DependencyExtractionWebpackPlugin` if it already exists.
+			plugin => ! ( plugin instanceof DependencyExtractionWebpackPlugin )
+		),
+		new CopyWebpackPlugin( [
+			{
+				from: './assets/src/block-editor/blocks/*/block.json',
+				test: new RegExp( `([\\w-]+)${ escapeRegExp( sep ) }block\\.json$` ),
+				to: './blocks/[1]/block.json',
+			},
+		] ),
+		new DependencyExtractionWebpackPlugin( {
+			useDefaults: false,
+			requestToExternal( request ) {
+				if ( PACKAGES_TO_BUNDLE.includes( request ) ) {
+					return undefined;
+				}
+
+				return defaultRequestToExternal( request );
+			},
+			requestToHandle( request ) {
+				if ( PACKAGES_TO_BUNDLE.includes( request ) ) {
+					return 'wp-block-editor'; // Return block-editor as a dep.
+				}
+
+				return defaultRequestToHandle( request );
+			},
+		} ),
+		new WebpackBar( {
+			name: 'Block Editor',
+			color: '#f27136',
 		} ),
 	],
 };
@@ -148,4 +200,4 @@ const wpPolyfills = {
 	},
 };
 
-module.exports = [ mediaSelector, wpPolyfills, admin ];
+module.exports = [ blockEditor, mediaSelector, wpPolyfills, admin ];
