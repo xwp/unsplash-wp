@@ -1,4 +1,5 @@
 export { default as Button } from './button';
+export { default as Details } from './details';
 export { default as ImagesBrowser } from './images-browser';
 export { default as ImageView } from './image-view';
 export { default as ImageViews } from './image-views';

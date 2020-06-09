@@ -597,6 +597,106 @@ class Plugin extends Plugin_Base {
 	}
 
 	/**
+	 * Add media templates.
+	 *
+	 * @action print_media_templates
+	 */
+	public function add_media_templates(){ ?>
+		<?php // phpcs:disable  WordPress.WP.I18n.MissingArgDomain,WordPressVIPMinimum.Security.Mustache.OutputNotation
+
+		$alt_text_description = sprintf(
+		/* translators: 1: Link to tutorial, 2: Additional link attributes, 3: Accessibility text. */
+			__( '<a href="%1$s" %2$s>Describe the purpose of the image%3$s</a>. Leave empty if the image is purely decorative.' ),
+			esc_url( 'https://www.w3.org/WAI/tutorials/images/decision-tree' ),
+			'target="_blank" rel="noopener noreferrer"',
+			sprintf(
+				'<span class="screen-reader-text"> %s</span>',
+				/* translators: Accessibility text. */
+				__( '(opens in a new tab)' )
+			)
+		);
+
+		?>
+		<script type="text/html" id="tmpl-unsplash-attachment-details">
+			<h2>
+				<?php esc_html__( 'Attachment Details' ); ?>
+				<span class="settings-save-status" role="status">
+					<span class="spinner"></span>
+					<span class="saved"><?php esc_html_e( 'Saved.' ); ?></span>
+				</span>
+			</h2>
+			<div class="attachment-info">
+				<div class="thumbnail thumbnail-{{ data.type }}">
+					<# if ( data.uploading ) { #>
+						<div class="media-progress-bar"><div></div></div>
+					<# } else if ( 'image' === data.type && data.sizes ) { #>
+						<img src="{{ data.size.url }}" draggable="false" alt="" />
+					<# } else { #>
+						<img src="{{ data.icon }}" class="icon" draggable="false" alt="" />
+					<# } #>
+				</div>
+				<div class="details">
+					<div class="filename">{{ data.filename }}</div>
+					<div class="uploaded">{{ data.dateFormatted }}</div>
+
+					<div class="file-size">{{ data.filesizeHumanReadable }}</div>
+					<# if ( 'image' === data.type && ! data.uploading ) { #>
+					<# if ( data.width && data.height ) { #>
+					<div class="dimensions">
+						<?php
+						/* translators: 1: A number of pixels wide, 2: A number of pixels tall. */
+						printf( esc_html__( '%1$s by %2$s pixels' ), '{{ data.width }}', '{{ data.height }}' );
+						?>
+					</div>
+					<# } #>
+
+					<# if ( data.originalImageURL && data.originalImageName ) { #>
+					<?php _e( 'Original image:' ); ?>
+					<a href="{{ data.originalImageURL }}">{{data.originalImageName}}</a>
+					<# } #>
+
+					<# } #>
+
+					<div class="compat-meta">
+						<# if ( data.compat && data.compat.meta ) { #>
+						{{{ data.compat.meta }}}
+						<# } #>
+					</div>
+				</div>
+			</div>
+			<# var maybeReadOnly = data.can.save || data.allowLocalEdits ? '' : 'readonly'; #>
+			<# if ( 'image' === data.type ) { #>
+			<span class="setting has-description" data-setting="alt">
+				<label for="attachment-details-alt-text" class="name"><?php _e( 'Alt Text' ); ?></label>
+				<input type="text" id="attachment-details-alt-text" value="{{ data.alt }}" aria-describedby="alt-text-description" {{ maybeReadOnly }} />
+			</span>
+			<p class="description" id="alt-text-description"><?php echo wp_kses_post( $alt_text_description ); ?></p>
+			<# } #>
+			<?php if ( post_type_supports( 'attachment', 'title' ) ) : ?>
+			<span class="setting" data-setting="title">
+				<label for="attachment-details-title" class="name"><?php _e( 'Title' ); ?></label>
+				<input type="text" id="attachment-details-title" value="{{ data.title }}" {{ maybeReadOnly }} />
+			</span>
+			<?php endif; ?>
+
+			<span class="setting" data-setting="caption">
+				<label for="attachment-details-caption" class="name"><?php _e( 'Caption' ); ?></label>
+				<textarea id="attachment-details-caption" {{ maybeReadOnly }}>{{ data.caption }}</textarea>
+			</span>
+			<span class="setting" data-setting="description">
+				<label for="attachment-details-description" class="name"><?php _e( 'Description' ); ?></label>
+				<textarea id="attachment-details-description" {{ maybeReadOnly }}>{{ data.description }}</textarea>
+			</span>
+			<span class="setting" data-setting="url">
+				<label for="attachment-details-copy-link" class="name"><?php _e( 'Copy Link' ); ?></label>
+				<input type="text" id="attachment-details-copy-link" value="{{ data.url }}" readonly />
+			</span>
+		</script>
+		<?php
+		// phpcs:enable
+	}
+
+	/**
 	 * Add action link to plugin settings page.
 	 *
 	 * @param  array $links Plugin action links.
