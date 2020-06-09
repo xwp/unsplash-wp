@@ -602,7 +602,7 @@ class Plugin extends Plugin_Base {
 	 * @action print_media_templates
 	 */
 	public function add_media_templates(){ ?>
-		<?php // phpcs:disable  WordPress.WP.I18n.MissingArgDomain,WordPressVIPMinimum.Security.Mustache.OutputNotation
+		<?php // phpcs:disable  WordPress.WP.I18n.MissingArgDomain
 
 		$alt_text_description = sprintf(
 		/* translators: 1: Link to tutorial, 2: Additional link attributes, 3: Accessibility text. */
@@ -627,9 +627,7 @@ class Plugin extends Plugin_Base {
 			</h2>
 			<div class="attachment-info">
 				<div class="thumbnail thumbnail-{{ data.type }}">
-					<# if ( data.uploading ) { #>
-						<div class="media-progress-bar"><div></div></div>
-					<# } else if ( 'image' === data.type && data.sizes ) { #>
+					<# if ( 'image' === data.type && data.sizes ) { #>
 						<img src="{{ data.size.url }}" draggable="false" alt="" />
 					<# } else { #>
 						<img src="{{ data.icon }}" class="icon" draggable="false" alt="" />
@@ -641,54 +639,47 @@ class Plugin extends Plugin_Base {
 
 					<div class="file-size">{{ data.filesizeHumanReadable }}</div>
 					<# if ( 'image' === data.type && ! data.uploading ) { #>
-					<# if ( data.width && data.height ) { #>
-					<div class="dimensions">
-						<?php
-						/* translators: 1: A number of pixels wide, 2: A number of pixels tall. */
-						printf( esc_html__( '%1$s by %2$s pixels' ), '{{ data.width }}', '{{ data.height }}' );
-						?>
-					</div>
-					<# } #>
-
-					<# if ( data.originalImageURL && data.originalImageName ) { #>
-					<?php _e( 'Original image:' ); ?>
-					<a href="{{ data.originalImageURL }}">{{data.originalImageName}}</a>
-					<# } #>
-
-					<# } #>
-
-					<div class="compat-meta">
-						<# if ( data.compat && data.compat.meta ) { #>
-						{{{ data.compat.meta }}}
+						<# if ( data.width && data.height ) { #>
+						<div class="dimensions">
+							<?php
+							/* translators: 1: A number of pixels wide, 2: A number of pixels tall. */
+							printf( esc_html__( '%1$s by %2$s pixels' ), '{{ data.width }}', '{{ data.height }}' );
+							?>
+						</div>
 						<# } #>
-					</div>
+
+						<# if ( data.originalImageURL && data.originalImageName ) { #>
+						<?php esc_html_e( 'Original image:' ); ?>
+						<a href="{{ data.originalImageURL }}">{{data.originalImageName}}</a>
+						<# } #>
+					<# } #>
+
 				</div>
 			</div>
-			<# var maybeReadOnly = data.can.save || data.allowLocalEdits ? '' : 'readonly'; #>
 			<# if ( 'image' === data.type ) { #>
 			<span class="setting has-description" data-setting="alt">
-				<label for="attachment-details-alt-text" class="name"><?php _e( 'Alt Text' ); ?></label>
-				<input type="text" id="attachment-details-alt-text" value="{{ data.alt }}" aria-describedby="alt-text-description" {{ maybeReadOnly }} />
+				<label for="attachment-details-alt-text" class="name"><?php esc_html_e( 'Alt Text' ); ?></label>
+				<input type="text" id="attachment-details-alt-text" value="{{ data.alt }}" aria-describedby="alt-text-description" />
 			</span>
 			<p class="description" id="alt-text-description"><?php echo wp_kses_post( $alt_text_description ); ?></p>
 			<# } #>
 			<?php if ( post_type_supports( 'attachment', 'title' ) ) : ?>
 			<span class="setting" data-setting="title">
-				<label for="attachment-details-title" class="name"><?php _e( 'Title' ); ?></label>
-				<input type="text" id="attachment-details-title" value="{{ data.title }}" {{ maybeReadOnly }} />
+				<label for="attachment-details-title" class="name"><?php esc_html_e( 'Title' ); ?></label>
+				<input type="text" id="attachment-details-title" value="{{ data.title }}" />
 			</span>
 			<?php endif; ?>
 
 			<span class="setting" data-setting="caption">
-				<label for="attachment-details-caption" class="name"><?php _e( 'Caption' ); ?></label>
-				<textarea id="attachment-details-caption" {{ maybeReadOnly }}>{{ data.caption }}</textarea>
+				<label for="attachment-details-caption" class="name"><?php esc_html_e( 'Caption' ); ?></label>
+				<textarea id="attachment-details-caption">{{ data.caption }}</textarea>
 			</span>
 			<span class="setting" data-setting="description">
-				<label for="attachment-details-description" class="name"><?php _e( 'Description' ); ?></label>
-				<textarea id="attachment-details-description" {{ maybeReadOnly }}>{{ data.description }}</textarea>
+				<label for="attachment-details-description" class="name"><?php esc_html_e( 'Description' ); ?></label>
+				<textarea id="attachment-details-description">{{ data.description }}</textarea>
 			</span>
 			<span class="setting" data-setting="url">
-				<label for="attachment-details-copy-link" class="name"><?php _e( 'Copy Link' ); ?></label>
+				<label for="attachment-details-copy-link" class="name"><?php esc_html_e( 'Copy Link' ); ?></label>
 				<input type="text" id="attachment-details-copy-link" value="{{ data.url }}" readonly />
 			</span>
 		</script>
