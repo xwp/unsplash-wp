@@ -619,7 +619,7 @@ class Plugin extends Plugin_Base {
 		?>
 		<script type="text/html" id="tmpl-unsplash-attachment-details">
 			<h2>
-				<?php esc_html__( 'Attachment Details' ); ?>
+				<?php esc_html_e( 'Attachment Details' ); ?>
 				<span class="settings-save-status" role="status">
 					<span class="spinner"></span>
 					<span class="saved"><?php esc_html_e( 'Saved.' ); ?></span>

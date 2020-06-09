@@ -56,6 +56,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 		$this->assertEquals( 10, has_action( 'admin_enqueue_scripts', [ $plugin, 'enqueue_admin_scripts' ] ) );
 		$this->assertEquals( 10, has_action( 'init', [ $plugin, 'register_taxonomy' ] ) );
 		$this->assertEquals( 10, has_action( 'init', [ $plugin, 'register_meta' ] ) );
+		$this->assertEquals( 10, has_action( 'print_media_templates', [ $plugin, 'add_media_templates' ] ) );
 	}
 
 	/**
@@ -381,6 +382,22 @@ class Test_Plugin extends \WP_UnitTestCase {
 		$links  = $plugin->action_links( [] );
 
 		$this->assertEquals( '<a href="http://example.org/wp-admin/options-general.php?page=unsplash">Settings</a>', array_pop( $links ) );
+	}
+
+	/**
+	 * Test for add_media_templates()
+	 *
+	 * @see Plugin::add_media_templates()
+	 */
+	public function test_add_media_templates() {
+		$plugin = get_plugin_instance();
+		ob_start();
+		$plugin->add_media_templates();
+		$output = ob_get_clean();
+		$this->assertContains( 'Attachment Details', $output );
+		$this->assertContains( '(opens in a new tab)', $output );
+		$this->assertContains( 'pixels', $output );
+		$this->assertContains( 'tmpl-unsplash-attachment-details', $output );
 	}
 
 	/**
