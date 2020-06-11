@@ -177,7 +177,20 @@ class Test_Plugin extends \WP_UnitTestCase {
 	 *
 	 * @see Plugin::test_enqueue_admin_scripts()
 	 */
+	public function test_no_enqueue_admin_scripts() {
+		set_current_screen( 'post.php' );
+		$plugin = get_plugin_instance();
+		$plugin->enqueue_admin_scripts();
+		$this->assertFalse( wp_script_is( 'unsplash-media-library-js', 'enqueued' ) );
+	}
+
+	/**
+	 * Test for test_enqueue_admin_scripts() method.
+	 *
+	 * @see Plugin::test_enqueue_admin_scripts()
+	 */
 	public function test_enqueue_admin_scripts() {
+		set_current_screen( 'upload.php' );
 		$plugin = get_plugin_instance();
 		$plugin->enqueue_admin_scripts();
 		$this->assertTrue( wp_style_is( 'unsplash-admin-style', 'enqueued' ) );
