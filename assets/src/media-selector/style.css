@@ -73,7 +73,7 @@
 	position: absolute !important;
 	height: auto !important;
 	top: 100px;
-	right: 310px;
+	right: 300px;
 	left: 20px;
 	padding: 0;
 }
@@ -97,6 +97,25 @@
 .media-frame-content[data-columns="3"] .unsplash-attachment:nth-child(3n) .thumbnail,
 .media-frame-content[data-columns="1"] .unsplash-attachment .thumbnail {
 	margin-right: 8px;
+}
+
+.media-frame-content[data-columns="2"] .unsplash-attachment:nth-child(odd) .thumbnail,
+.media-frame-content[data-columns="3"] .unsplash-attachment:nth-child(3n+1) .thumbnail,
+.media-frame-content[data-columns="1"] .unsplash-attachment .thumbnail {
+
+	/* offset the first image in each row to ensure focus/active state has space */
+	margin-left: 3px;
+}
+
+.media-frame-content[data-columns="3"] .unsplash-attachment:nth-child(1) .thumbnail,
+.media-frame-content[data-columns="3"] .unsplash-attachment:nth-child(2) .thumbnail,
+.media-frame-content[data-columns="3"] .unsplash-attachment:nth-child(3) .thumbnail,
+.media-frame-content[data-columns="2"] .unsplash-attachment:nth-child(1) .thumbnail,
+.media-frame-content[data-columns="2"] .unsplash-attachment:nth-child(2) .thumbnail,
+.media-frame-content[data-columns="1"] .unsplash-attachment:nth-child(1) .thumbnail {
+
+	/* offset the images in the first row to ensure focus/active state has space */
+	margin-top: 3px;
 }
 
 @media only screen and (max-width: 900px) {
