@@ -641,7 +641,8 @@ class Plugin extends Plugin_Base {
 
 		$image_meta = (array) get_post_meta( $attachment->ID, 'unsplash_attachment_metadata', true );
 		if ( ! empty( $image_meta ) && ! empty( $image_meta['image_meta'] ) && ! empty( $image_meta['image_meta']['created_timestamp'] ) ) {
-			$response['unsplashCreatedAt'] = wp_date( esc_html__( 'F j, Y', 'unsplash' ), strtotime( $image_meta['image_meta']['created_timestamp'] ) );
+			$created_at                    = date_create( $image_meta['image_meta']['created_timestamp'] );
+			$response['unsplashCreatedAt'] = $created_at ? $created_at->format( 'F j, Y' ) : '';
 		}
 
 		return $response;

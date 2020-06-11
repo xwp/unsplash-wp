@@ -6,18 +6,14 @@ import { createNewPost, insertBlock } from '@wordpress/e2e-test-utils';
 /**
  * Internal dependencies
  */
-import { clickButton, clickSelector, deactivatePlugin } from '../../utils';
+import { clickButton, clickSelector } from '../../utils';
 import {
 	UNSPLASH_LIBRARY_BUTTON,
 	UNSPLASH_CONTRAINER,
 	UNSPLASH_MODAL,
 } from '../../constants';
 
-describe( 'Image Block', () => {
-	beforeAll( async () => {
-		await deactivatePlugin( 'classic-editor' );
-	} );
-
+describe( 'Attachment Details', () => {
 	beforeEach( async () => {
 		await createNewPost( {} );
 
@@ -39,6 +35,8 @@ describe( 'Image Block', () => {
 		await clickSelector( btnSelector );
 		const attachmentDetails = '.unsplash-attachment-details';
 		await page.waitForSelector( attachmentDetails );
+
+		expect( await page.$( `${ attachmentDetails } .details` ) ).not.toBeNull();
 
 		expect(
 			await page.evaluate(
