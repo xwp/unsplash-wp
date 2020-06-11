@@ -31,7 +31,7 @@ describe( 'Attachment Details', () => {
 	it( 'should show pre-import attachment details', async () => {
 		await page.waitForSelector( UNSPLASH_CONTRAINER );
 		const btnSelector =
-			UNSPLASH_CONTRAINER + ' .unsplash-attachment:first-of-type';
+			UNSPLASH_CONTRAINER + ' .unsplash-attachment:nth-child(3)';
 		await clickSelector( btnSelector );
 		const attachmentDetails = '.unsplash-attachment-details';
 		await page.waitForSelector( attachmentDetails );
