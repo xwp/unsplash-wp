@@ -74,7 +74,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 				'image_meta' => [
 					'created_timestamp' => '2020-05-27T03:12:33-04:00',
 				],
-			] 
+			]
 		);
 
 		// Add Unsplash user term and term_meta.
@@ -83,7 +83,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 				'taxonomy' => 'unsplash_user',
 				'name'     => 'Example User',
 				'slug'     => 'example-user',
-			) 
+			)
 		);
 
 		add_term_meta(
@@ -92,7 +92,10 @@ class Test_Plugin extends \WP_UnitTestCase {
 			[
 				'name'     => 'Example User',
 				'username' => 'example_user',
-			] 
+				'links'    => [
+					'html' => 'https://unsplash.com/@example_user',
+				],
+			]
 		);
 
 		wp_set_object_terms( self::$attachment_id, [ $term_id ], 'unsplash_user' );
@@ -178,7 +181,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 		$plugin = get_plugin_instance();
 		$plugin->enqueue_admin_scripts();
 		$this->assertTrue( wp_style_is( 'unsplash-admin-style', 'enqueued' ) );
-		$this->assertTrue( wp_script_is( 'unsplash-admin-js', 'enqueued' ) );
+		$this->assertTrue( wp_script_is( 'unsplash-media-library-js', 'enqueued' ) );
 	}
 
 	/**
@@ -242,6 +245,9 @@ class Test_Plugin extends \WP_UnitTestCase {
 			'user'            => [
 				'name'     => 'Example User',
 				'username' => 'example_user',
+				'links'    => [
+					'html' => 'https://unsplash.com/@example_user',
+				],
 			],
 		];
 		$output = $plugin->wp_prepare_attachment_for_js( $image );
@@ -255,7 +261,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 		$this->assertEquals( $output['sizes']['medium_large']['url'], 'http://www.example.com/test.jpg?fm=jpg&q=85&fit=crop&w=768&h=207' );
 		$this->assertEquals( $output['icon'], 'http://www.example.com/thumb.jpg?fm=jpg&q=85&fit=crop&w=150&h=150' );
 		$this->assertEquals( 'Example User', $output['author'] );
-		$this->assertEquals( 'example_user', $output['unsplashUsername'] );
+		$this->assertEquals( 'https://unsplash.com/@example_user', $output['unsplashAuthorLink'] );
 	}
 
 	/**
@@ -496,7 +502,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 		$result = $plugin->add_unsplash_author_meta( $photo, $image );
 
 		$this->assertEquals( 'Example User', $result['unsplashAuthor'] );
-		$this->assertEquals( 'example_user', $result['unsplashUsername'] );
+		$this->assertEquals( 'https://unsplash.com/@example_user', $result['unsplashAuthorLink'] );
 		$this->assertEquals( 'May 27, 2020', $result['unsplashCreatedAt'] );
 	}
 
@@ -514,7 +520,7 @@ class Test_Plugin extends \WP_UnitTestCase {
 		$this->assertContains( 'tmpl-unsplash-attachment-details-two-column', $output );
 		$this->assertContains( 'Attachment Preview', $output );
 		$this->assertContains( 'Photo by', $output );
-		$this->assertContains( 'data.unsplashUsername', $output );
+		$this->assertContains( 'data.unsplashAuthorLink', $output );
 		$this->assertContains( 'Date:', $output );
 		$this->assertContains( 'data.unsplashCreatedAt', $output );
 
