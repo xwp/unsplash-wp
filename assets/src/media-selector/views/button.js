@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import { importImages, isUnsplashImage } from '../helpers';
+import { importImages, isUnsplashImage, getConfig } from '../helpers';
 
 const Button = wp.media.view.Button.extend( {
 	/**
@@ -40,9 +40,10 @@ const Button = wp.media.view.Button.extend( {
 				}
 			} )
 			.catch( () => {
-				// TODO: let user know import failed
 				this.$el.attr( 'disabled', false ); // Enable button.
 				spinner.hide();
+				const errors = getConfig( 'errors' );
+				alert( errors.generic ); // eslint-disable-line
 			} );
 	},
 } );
