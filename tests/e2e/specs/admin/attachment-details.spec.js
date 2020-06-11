@@ -10,9 +10,7 @@ import { clickButton, clickSelector, deactivatePlugin } from '../../utils';
 import {
 	UNSPLASH_LIBRARY_BUTTON,
 	UNSPLASH_CONTRAINER,
-	UNSPLASH_LIBRARY_SEARCH_INPUT,
 	UNSPLASH_MODAL,
-	UNSPLASH_NO_RESULTS,
 } from '../../constants';
 
 describe( 'Image Block', () => {
