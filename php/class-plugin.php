@@ -232,6 +232,14 @@ class Plugin extends Plugin_Base {
 		);
 
 		wp_styles()->add_data( 'unsplash-admin-style', 'rtl', 'replace' );
+
+		wp_enqueue_script(
+			'unsplash-admin-js',
+			$this->asset_url( 'assets/js/admin.js' ),
+			[],
+			$this->asset_version(),
+			true
+		);
 	}
 
 	/**
@@ -247,37 +255,38 @@ class Plugin extends Plugin_Base {
 		$image       = new Image( $photo, $utm_source );
 
 		$response = [
-			'id'             => isset( $photo['id'] ) ? $photo['id'] : null,
-			'unsplash_order' => isset( $photo['unsplash_order'] ) ? $photo['unsplash_order'] : null,
-			'title'          => '',
-			'filename'       => $image->get_field( 'file' ),
-			'url'            => $image->get_field( 'original_url' ),
-			'link'           => $image->get_field( 'links' )['html'],
-			'alt'            => $image->get_field( 'alt' ),
-			'author'         => $image->get_field( 'user' )['name'],
-			'description'    => $image->get_field( 'description' ),
-			'caption'        => $image->get_caption(),
-			'color'          => $image->get_field( 'color' ),
-			'name'           => $image->get_field( 'original_id' ),
-			'height'         => $image->get_field( 'height' ),
-			'width'          => $image->get_field( 'width' ),
-			'status'         => 'inherit',
-			'uploadedTo'     => 0,
-			'date'           => strtotime( $image->get_field( 'created_at' ) ) * 1000,
-			'modified'       => strtotime( $image->get_field( 'updated_at' ) ) * 1000,
-			'menuOrder'      => 0,
-			'mime'           => $image->get_field( 'mime_type' ),
-			'type'           => 'image',
-			'subtype'        => $image->get_field( 'ext' ),
-			'icon'           => ! empty( $image->get_image_url( 'thumb' ) ) ? $this->get_original_url_with_size( $image->get_image_url( 'thumb' ), 150, 150 ) : null,
-			'dateFormatted'  => mysql2date( 'F j, Y', $image->get_field( 'created_at' ) ),
-			'nonces'         => [
+			'id'               => isset( $photo['id'] ) ? $photo['id'] : null,
+			'unsplash_order'   => isset( $photo['unsplash_order'] ) ? $photo['unsplash_order'] : null,
+			'title'            => '',
+			'filename'         => $image->get_field( 'file' ),
+			'url'              => $image->get_field( 'original_url' ),
+			'link'             => $image->get_field( 'links' )['html'],
+			'alt'              => $image->get_field( 'alt' ),
+			'author'           => $image->get_field( 'user' )['name'],
+			'unsplashUsername' => $image->get_field( 'user' )['username'],
+			'description'      => $image->get_field( 'description' ),
+			'caption'          => $image->get_caption(),
+			'color'            => $image->get_field( 'color' ),
+			'name'             => $image->get_field( 'original_id' ),
+			'height'           => $image->get_field( 'height' ),
+			'width'            => $image->get_field( 'width' ),
+			'status'           => 'inherit',
+			'uploadedTo'       => 0,
+			'date'             => strtotime( $image->get_field( 'created_at' ) ) * 1000,
+			'modified'         => strtotime( $image->get_field( 'updated_at' ) ) * 1000,
+			'menuOrder'        => 0,
+			'mime'             => $image->get_field( 'mime_type' ),
+			'type'             => 'image',
+			'subtype'          => $image->get_field( 'ext' ),
+			'icon'             => ! empty( $image->get_image_url( 'thumb' ) ) ? $this->get_original_url_with_size( $image->get_image_url( 'thumb' ), 150, 150 ) : null,
+			'dateFormatted'    => mysql2date( 'F j, Y', $image->get_field( 'created_at' ) ),
+			'nonces'           => [
 				'update' => false,
 				'delete' => false,
 				'edit'   => false,
 			],
-			'editLink'       => false,
-			'meta'           => false,
+			'editLink'         => false,
+			'meta'             => false,
 		];
 
 		$response['sizes'] = $this->add_image_sizes( $image->get_field( 'original_url' ), $image->get_field( 'width' ), $image->get_field( 'height' ) );
@@ -597,6 +606,40 @@ class Plugin extends Plugin_Base {
 	}
 
 	/**
+	 * Add unsplash author meta to admin ajax.
+	 *
+	 * @param array   $response Data for admin ajax.
+	 * @param WP_Post $attachment Attachment object.
+	 *
+	 * @filter wp_prepare_attachment_for_js, 10, 2
+	 *
+	 * @return mixed
+	 */
+	public function add_unsplash_author_meta( array $response, $attachment ) {
+		if ( ! $attachment instanceof \WP_Post ) {
+			return $response;
+		}
+
+		$author = get_the_terms( $attachment, 'unsplash_user' );
+		if ( ! empty( $author ) && ! is_wp_error( $author ) ) {
+			$author = reset( $author );
+			$meta   = get_term_meta( $author->term_id, 'unsplash_meta', true );
+
+			if ( ! empty( $meta ) ) {
+				$response['unsplashAuthor']   = isset( $meta['name'] ) ? $meta['name'] : '';
+				$response['unsplashUsername'] = isset( $meta['username'] ) ? $meta['username'] : '';
+			}
+		}
+
+		$image_meta = (array) get_post_meta( $attachment->ID, 'unsplash_attachment_metadata', true );
+		if ( ! empty( $image_meta ) && ! empty( $image_meta['image_meta'] ) && ! empty( $image_meta['image_meta']['created_timestamp'] ) ) {
+			$response['unsplashCreatedAt'] = wp_date( esc_html__( 'F j, Y', 'unsplash' ), strtotime( $image_meta['image_meta']['created_timestamp'] ) );
+		}
+
+		return $response;
+	}
+
+	/**
 	 * Add media templates.
 	 *
 	 * @action print_media_templates
@@ -612,11 +655,195 @@ class Plugin extends Plugin_Base {
 			sprintf(
 				'<span class="screen-reader-text"> %s</span>',
 				/* translators: Accessibility text. */
-				__( '(opens in a new tab)' )
+				esc_html__( '(opens in a new tab)' )
 			)
 		);
 
 		?>
+		<script type="text/html" id="tmpl-unsplash-attachment-details-two-column">
+			<div class="attachment-media-view {{ data.orientation }}">
+				<h2 class="screen-reader-text"><?php esc_html_e( 'Attachment Preview' ); ?></h2>
+				<div class="thumbnail thumbnail-{{ data.type }}">
+					<# if ( data.uploading ) { #>
+						<div class="media-progress-bar"><div></div></div>
+					<# } else if ( data.sizes && data.sizes.large ) { #>
+						<img class="details-image" src="{{ data.sizes.large.url }}" draggable="false" alt="" />
+					<# } else if ( data.sizes && data.sizes.full ) { #>
+						<img class="details-image" src="{{ data.sizes.full.url }}" draggable="false" alt="" />
+					<# } else if ( -1 === jQuery.inArray( data.type, [ 'audio', 'video' ] ) ) { #>
+						<img class="details-image icon" src="{{ data.icon }}" draggable="false" alt="" />
+					<# } #>
+
+					<# if ( 'audio' === data.type ) { #>
+					<div class="wp-media-wrapper">
+						<audio style="visibility: hidden" controls class="wp-audio-shortcode" width="100%" preload="none">
+							<source type="{{ data.mime }}" src="{{ data.url }}"/>
+						</audio>
+					</div>
+					<# } else if ( 'video' === data.type ) {
+						var w_rule = '';
+						if ( data.width ) {
+							w_rule = 'width: ' + data.width + 'px;';
+						} else if ( wp.media.view.settings.contentWidth ) {
+							w_rule = 'width: ' + wp.media.view.settings.contentWidth + 'px;';
+						}
+					#>
+					<div style="{{ w_rule }}" class="wp-media-wrapper wp-video">
+						<video controls="controls" class="wp-video-shortcode" preload="metadata"
+							<# if ( data.width ) { #>width="{{ data.width }}"<# } #>
+							<# if ( data.height ) { #>height="{{ data.height }}"<# } #>
+							<# if ( data.image && data.image.src !== data.icon ) { #>poster="{{ data.image.src }}"<# } #>>
+							<source type="{{ data.mime }}" src="{{ data.url }}"/>
+						</video>
+					</div>
+					<# } #>
+
+					<div class="attachment-actions">
+						<# if ( 'image' === data.type && ! data.uploading && data.sizes && data.can.save ) { #>
+						<button type="button" class="button edit-attachment"><?php esc_html_e( 'Edit Image' ); ?></button>
+						<# } else if ( 'pdf' === data.subtype && data.sizes ) { #>
+						<p><?php esc_html_e( 'Document Preview' ); ?></p>
+						<# } #>
+					</div>
+				</div>
+			</div>
+			<div class="attachment-info">
+				<span class="settings-save-status" role="status">
+					<span class="spinner"></span>
+					<span class="saved"><?php esc_html_e( 'Saved.' ); ?></span>
+				</span>
+				<div class="details">
+					<h2 class="screen-reader-text"><?php esc_html_e( 'Details' ); ?></h2>
+					<# if ( data.unsplashUsername ) { #>
+						<div class="author"><strong><?php esc_html_e( 'Photo by', 'unsplash' ); ?>:</strong> <a href="https://unsplash.com/@{{ data.unsplashUsername }}" target="_blank" rel="noopener noreferrer">{{ data.unsplashAuthor || data.author }}</a></div>
+					<# } #>
+
+					<div class="filename"><strong><?php esc_html_e( 'File name:' ); ?></strong> {{ data.filename }}</div>
+					<# if ( ! data.unsplashUsername ) { #>
+					<div class="filename"><strong><?php esc_html_e( 'File type:' ); ?></strong> {{ data.mime }}</div>
+					<# } #>
+					<# if ( data.unsplashCreatedAt ) { #>
+					<div class="uploaded"><strong><?php esc_html_e( 'Date:' ); ?></strong> {{ data.unsplashCreatedAt }}</div>
+					<# } #>
+					<div class="uploaded"><strong><?php esc_html_e( 'Uploaded on:' ); ?></strong> {{ data.dateFormatted }}</div>
+
+					<div class="file-size"><strong><?php esc_html_e( 'File size:' ); ?></strong> {{ data.filesizeHumanReadable }}</div>
+					<# if ( 'image' === data.type && ! data.uploading ) { #>
+						<# if ( data.width && data.height ) { #>
+							<div class="dimensions"><strong><?php esc_html_e( 'Dimensions:' ); ?></strong>
+								<?php
+								/* translators: 1: A number of pixels wide, 2: A number of pixels tall. */
+								printf( esc_html__( '%1$s by %2$s pixels' ), '{{ data.width }}', '{{ data.height }}' );
+								?>
+							</div>
+						<# } #>
+
+						<# if ( data.originalImageURL && data.originalImageName ) { #>
+							<strong><?php esc_html_e( 'Original image:' ); ?></strong>
+							<a href="{{ data.originalImageURL }}">{{data.originalImageName}}</a>
+						<# } #>
+					<# } #>
+
+					<# if ( data.fileLength && data.fileLengthHumanReadable ) { #>
+						<div class="file-length"><strong><?php esc_html_e( 'Length:' ); ?></strong>
+							<span aria-hidden="true">{{ data.fileLength }}</span>
+							<span class="screen-reader-text">{{ data.fileLengthHumanReadable }}</span>
+						</div>
+					<# } #>
+
+					<# if ( 'audio' === data.type && data.meta.bitrate ) { #>
+						<div class="bitrate">
+							<strong><?php esc_html_e( 'Bitrate:' ); ?></strong> {{ Math.round( data.meta.bitrate / 1000 ) }}kb/s
+							<# if ( data.meta.bitrate_mode ) { #>
+							{{ ' ' + data.meta.bitrate_mode.toUpperCase() }}
+							<# } #>
+						</div>
+					<# } #>
+
+					<div class="compat-meta">
+						<# if ( data.compat && data.compat.meta ) { #>
+							{{{ data.compat.meta }}} <?php // phpcs:ignore WordPressVIPMinimum.Security.Mustache.OutputNotation ?>
+						<# } #>
+					</div>
+				</div>
+
+				<div class="settings">
+					<# var maybeReadOnly = data.can.save || data.allowLocalEdits ? '' : 'readonly'; #>
+					<# if ( 'image' === data.type ) { #>
+						<span class="setting has-description" data-setting="alt">
+							<label for="attachment-details-two-column-alt-text" class="name"><?php esc_html_e( 'Alternative Text' ); ?></label>
+							<input type="text" id="attachment-details-two-column-alt-text" value="{{ data.alt }}" aria-describedby="alt-text-description" {{ maybeReadOnly }} />
+						</span>
+						<p class="description" id="alt-text-description"><?php echo wp_kses_post( $alt_text_description ); ?></p>
+					<# } #>
+					<?php if ( post_type_supports( 'attachment', 'title' ) ) : ?>
+					<span class="setting" data-setting="title">
+						<label for="attachment-details-two-column-title" class="name"><?php esc_html_e( 'Title' ); ?></label>
+						<input type="text" id="attachment-details-two-column-title" value="{{ data.title }}" {{ maybeReadOnly }} />
+					</span>
+					<?php endif; ?>
+					<# if ( 'audio' === data.type ) { #>
+					<?php
+					foreach ( array(
+						'artist' => esc_html__( 'Artist' ),
+						'album'  => esc_html__( 'Album' ),
+					) as $key => $label ) :
+						?>
+					<span class="setting" data-setting="<?php echo esc_attr( $key ); ?>">
+						<label for="attachment-details-two-column-<?php echo esc_attr( $key ); ?>" class="name"><?php echo esc_html( $label ); ?></label>
+						<input type="text" id="attachment-details-two-column-<?php echo esc_attr( $key ); ?>" value="{{ data.<?php echo esc_attr( $key ); ?> || data.meta.<?php echo esc_attr( $key ); ?> || '' }}" />
+					</span>
+					<?php endforeach; ?>
+					<# } #>
+					<span class="setting" data-setting="caption">
+						<label for="attachment-details-two-column-caption" class="name"><?php esc_html_e( 'Caption' ); ?></label>
+						<textarea id="attachment-details-two-column-caption" {{ maybeReadOnly }}>{{ data.caption }}</textarea>
+					</span>
+					<span class="setting" data-setting="description">
+						<label for="attachment-details-two-column-description" class="name"><?php esc_html_e( 'Description' ); ?></label>
+						<textarea id="attachment-details-two-column-description" {{ maybeReadOnly }}>{{ data.description }}</textarea>
+					</span>
+					<span class="setting">
+						<span class="name"><?php esc_html_e( 'Uploaded By' ); ?></span>
+						<span class="value">{{ data.authorName }}</span>
+					</span>
+					<# if ( data.uploadedToTitle ) { #>
+						<span class="setting">
+							<span class="name"><?php esc_html_e( 'Uploaded To' ); ?></span>
+							<# if ( data.uploadedToLink ) { #>
+								<span class="value"><a href="{{ data.uploadedToLink }}">{{ data.uploadedToTitle }}</a></span>
+							<# } else { #>
+								<span class="value">{{ data.uploadedToTitle }}</span>
+							<# } #>
+						</span>
+					<# } #>
+					<span class="setting" data-setting="url">
+						<label for="attachment-details-two-column-copy-link" class="name"><?php esc_html_e( 'Copy Link' ); ?></label>
+						<input type="text" id="attachment-details-two-column-copy-link" value="{{ data.url }}" readonly />
+					</span>
+					<div class="attachment-compat"></div>
+				</div>
+
+				<div class="actions">
+					<a class="view-attachment" href="{{ data.link }}"><?php esc_html_e( 'View attachment page' ); ?></a>
+					<# if ( data.can.save ) { #> |
+						<a href="{{ data.editLink }}"><?php esc_html_e( 'Edit more details' ); ?></a>
+					<# } #>
+					<# if ( ! data.uploading && data.can.remove ) { #> |
+						<?php if ( MEDIA_TRASH ) : ?>
+							<# if ( 'trash' === data.status ) { #>
+								<button type="button" class="button-link untrash-attachment"><?php esc_html_e( 'Restore from Trash' ); ?></button>
+							<# } else { #>
+								<button type="button" class="button-link trash-attachment"><?php esc_html_e( 'Move to Trash' ); ?></button>
+							<# } #>
+						<?php else : ?>
+							<button type="button" class="button-link delete-attachment"><?php esc_html_e( 'Delete Permanently' ); ?></button>
+						<?php endif; ?>
+					<# } #>
+				</div>
+			</div>
+		</script>
+
 		<script type="text/html" id="tmpl-unsplash-attachment-details">
 			<h2>
 				<?php esc_html_e( 'Attachment Details' ); ?>
@@ -633,14 +860,23 @@ class Plugin extends Plugin_Base {
 						<img src="{{ data.icon }}" class="icon" draggable="false" alt="" />
 					<# } #>
 				</div>
-				<div class="details">
-					<div class="filename">{{ data.filename }}</div>
-					<div class="uploaded">{{ data.dateFormatted }}</div>
 
-					<div class="file-size">{{ data.filesizeHumanReadable }}</div>
+				<div class="details">
+					<# if ( data.unsplashUsername ) { #>
+						<div class="author"><strong><?php esc_html_e( 'Photo by', 'unsplash' ); ?>:</strong> <a href="https://unsplash.com/@{{ data.unsplashUsername }}" target="_blank" rel="noopener noreferrer">{{ data.unsplashAuthor || data.author }}</a></div>
+					<# } #>
+
+					<div class="filename"><strong><?php esc_html_e( 'File name', 'unsplash' ); ?>:</strong> {{ data.filename }}</div>
+					<div class="uploaded"><strong><?php esc_html_e( 'Date', 'unsplash' ); ?>:</strong> {{ data.dateFormatted }}</div>
+
+					<# if ( data.filesizeHumanReadable ) { #>
+					<div class="file-size"><strong><?php esc_html_e( 'File size', 'unsplash' ); ?>:</strong> {{ data.filesizeHumanReadable }}</div>
+					<# } #>
+
 					<# if ( 'image' === data.type && ! data.uploading ) { #>
 						<# if ( data.width && data.height ) { #>
 						<div class="dimensions">
+							<strong><?php esc_html_e( 'Original dimensions', 'unsplash' ); ?>:</strong>
 							<?php
 							/* translators: 1: A number of pixels wide, 2: A number of pixels tall. */
 							printf( esc_html__( '%1$s by %2$s pixels' ), '{{ data.width }}', '{{ data.height }}' );
@@ -648,9 +884,9 @@ class Plugin extends Plugin_Base {
 						</div>
 						<# } #>
 
-						<# if ( data.originalImageURL && data.originalImageName ) { #>
-						<?php esc_html_e( 'Original image:' ); ?>
-						<a href="{{ data.originalImageURL }}">{{data.originalImageName}}</a>
+						<# if ( data.originalImageURL || data.link ) { #>
+						<strong><?php esc_html_e( 'Original image:' ); ?></strong>
+						<a href="{{ data.originalImageURL || data.link }}" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Unsplash', 'unsplash' ); ?></a>
 						<# } #>
 					<# } #>
 
