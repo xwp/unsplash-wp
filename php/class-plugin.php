@@ -233,11 +233,19 @@ class Plugin extends Plugin_Base {
 
 		wp_styles()->add_data( 'unsplash-admin-style', 'rtl', 'replace' );
 
+		// Enqueue admin JS.
+		$asset_file = $this->dir_path . '/assets/js/admin.asset.php';
+		$asset      = is_readable( $asset_file ) ? require $asset_file : [];
+		$version    = isset( $asset['version'] ) ? $asset['version'] : $this->asset_version();
+
+		$dependencies   = isset( $asset['dependencies'] ) ? $asset['dependencies'] : [];
+		$dependencies[] = 'media-views';
+
 		wp_enqueue_script(
 			'unsplash-admin-js',
 			$this->asset_url( 'assets/js/admin.js' ),
-			[],
-			$this->asset_version(),
+			$dependencies,
+			$version,
 			true
 		);
 	}
@@ -644,7 +652,7 @@ class Plugin extends Plugin_Base {
 	 *
 	 * @action print_media_templates
 	 */
-	public function add_media_templates(){ ?>
+	public function add_media_templates() { ?>
 		<?php // phpcs:disable  WordPress.WP.I18n.MissingArgDomain
 
 		$alt_text_description = sprintf(
