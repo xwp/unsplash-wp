@@ -38,6 +38,13 @@ describe( 'Attachment Details', () => {
 
 		expect( await page.$( `${ attachmentDetails } .details` ) ).not.toBeNull();
 
+		console.log( // eslint-disable-line
+			await page.evaluate(
+				node => node.innerHTML,
+				await page.$( `${ attachmentDetails } .details` )
+			)
+		);
+
 		expect(
 			await page.evaluate(
 				author => author.innerText,
