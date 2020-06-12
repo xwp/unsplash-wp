@@ -244,3 +244,7 @@
 		top: 50px;
 	}
 }
+
+.attachment-info .filename {
+	font-weight: normal;
+}

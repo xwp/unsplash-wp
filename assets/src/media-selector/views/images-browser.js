@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import { ImageViews } from './';
+import { ImageViews, Details } from './';
 import { getConfig } from '../helpers';
 
 const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
@@ -89,7 +89,7 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 
 		sidebar.set(
 			'details',
-			new wp.media.view.Attachment.Details( {
+			new Details( {
 				controller: this.controller,
 				model: single,
 				priority: 80,

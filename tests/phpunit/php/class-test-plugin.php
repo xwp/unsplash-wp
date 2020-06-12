@@ -28,6 +28,19 @@ class Test_Plugin extends \WP_UnitTestCase {
 	 */
 	protected static $subscriber_id;
 
+	/**
+	 * Test file.
+	 *
+	 * @var string
+	 */
+	protected static $test_file;
+
+	/**
+	 * Generated attachment ID.
+	 *
+	 * @var int
+	 */
+	protected static $attachment_id;
 
 	/**
 	 * Create fake data before our tests run.
@@ -41,6 +54,51 @@ class Test_Plugin extends \WP_UnitTestCase {
 		self::$subscriber_id = $factory->user->create(
 			[ 'role' => 'subscriber' ]
 		);
+
+		self::$test_file     = 'canola.jpg';
+		self::$attachment_id = $factory->attachment->create_object(
+			self::$test_file,
+			0,
+			[
+				'post_mime_type' => 'image/jpeg',
+				'post_excerpt'   => 'A sample caption',
+			]
+		);
+
+		update_post_meta( self::$attachment_id, 'original_url', 'https://images.unsplash.com/test.jpg' );
+		update_post_meta( self::$attachment_id, 'original_link', 'https://www.unsplash.com/foo' );
+		update_post_meta(
+			self::$attachment_id,
+			'unsplash_attachment_metadata',
+			[
+				'image_meta' => [
+					'created_timestamp' => '2020-05-27T03:12:33-04:00',
+				],
+			]
+		);
+
+		// Add Unsplash user term and term_meta.
+		$term_id = $factory->term->create(
+			array(
+				'taxonomy' => 'unsplash_user',
+				'name'     => 'Example User',
+				'slug'     => 'example-user',
+			)
+		);
+
+		add_term_meta(
+			$term_id,
+			'unsplash_meta',
+			[
+				'name'     => 'Example User',
+				'username' => 'example_user',
+				'links'    => [
+					'html' => 'https://unsplash.com/@example_user',
+				],
+			]
+		);
+
+		wp_set_object_terms( self::$attachment_id, [ $term_id ], 'unsplash_user' );
 	}
 
 	/**
@@ -56,6 +114,8 @@ class Test_Plugin extends \WP_UnitTestCase {
 		$this->assertEquals( 10, has_action( 'admin_enqueue_scripts', [ $plugin, 'enqueue_admin_scripts' ] ) );
 		$this->assertEquals( 10, has_action( 'init', [ $plugin, 'register_taxonomy' ] ) );
 		$this->assertEquals( 10, has_action( 'init', [ $plugin, 'register_meta' ] ) );
+		$this->assertEquals( 10, has_filter( 'wp_prepare_attachment_for_js', [ $plugin, 'add_unsplash_author_meta' ] ) );
+		$this->assertEquals( 10, has_action( 'print_media_templates', [ $plugin, 'add_media_templates' ] ) );
 	}
 
 	/**
@@ -117,10 +177,24 @@ class Test_Plugin extends \WP_UnitTestCase {
 	 *
 	 * @see Plugin::test_enqueue_admin_scripts()
 	 */
+	public function test_no_enqueue_admin_scripts() {
+		set_current_screen( 'post.php' );
+		$plugin = get_plugin_instance();
+		$plugin->enqueue_admin_scripts();
+		$this->assertFalse( wp_script_is( 'unsplash-media-library-js', 'enqueued' ) );
+	}
+
+	/**
+	 * Test for test_enqueue_admin_scripts() method.
+	 *
+	 * @see Plugin::test_enqueue_admin_scripts()
+	 */
 	public function test_enqueue_admin_scripts() {
+		set_current_screen( 'upload.php' );
 		$plugin = get_plugin_instance();
 		$plugin->enqueue_admin_scripts();
 		$this->assertTrue( wp_style_is( 'unsplash-admin-style', 'enqueued' ) );
+		$this->assertTrue( wp_script_is( 'unsplash-media-library-js', 'enqueued' ) );
 	}
 
 	/**
@@ -181,6 +255,13 @@ class Test_Plugin extends \WP_UnitTestCase {
 				'raw'   => 'http://www.example.com/test.jpg',
 				'thumb' => 'http://www.example.com/thumb.jpg',
 			],
+			'user'            => [
+				'name'     => 'Example User',
+				'username' => 'example_user',
+				'links'    => [
+					'html' => 'https://unsplash.com/@example_user',
+				],
+			],
 		];
 		$output = $plugin->wp_prepare_attachment_for_js( $image );
 		$this->assertEquals( $output['id'], $image['id'] );
@@ -192,6 +273,8 @@ class Test_Plugin extends \WP_UnitTestCase {
 		$this->assertEquals( $output['sizes']['thumbnail']['url'], 'http://www.example.com/test.jpg?fm=jpg&q=85&fit=crop&w=150&h=40' );
 		$this->assertEquals( $output['sizes']['medium_large']['url'], 'http://www.example.com/test.jpg?fm=jpg&q=85&fit=crop&w=768&h=207' );
 		$this->assertEquals( $output['icon'], 'http://www.example.com/thumb.jpg?fm=jpg&q=85&fit=crop&w=150&h=150' );
+		$this->assertEquals( 'Example User', $output['author'] );
+		$this->assertEquals( 'https://unsplash.com/@example_user', $output['unsplashAuthorLink'] );
 	}
 
 	/**
@@ -381,6 +464,83 @@ class Test_Plugin extends \WP_UnitTestCase {
 		$links  = $plugin->action_links( [] );
 
 		$this->assertEquals( '<a href="http://example.org/wp-admin/options-general.php?page=unsplash">Settings</a>', array_pop( $links ) );
+	}
+
+	/**
+	 * Test add_unsplash_author_meta.
+	 *
+	 * @covers ::add_unsplash_author_meta()
+	 */
+	public function test_no_add_unsplash_author_meta_1() {
+		$plugin = get_plugin_instance();
+		$data   = [ 'foo' => 'bar' ];
+		$result = $plugin->add_unsplash_author_meta( $data, false );
+		$this->assertEqualSets( $result, $data );
+	}
+
+	/**
+	 * Test add_unsplash_author_meta.
+	 *
+	 * @covers ::add_unsplash_author_meta()
+	 */
+	public function test_no_add_unsplash_author_meta_2() {
+		$plugin    = get_plugin_instance();
+		$second_id = $this->factory->attachment->create_object(
+			'/tmp/melon.jpg',
+			0,
+			[
+				'post_mime_type' => 'image/jpeg',
+				'post_excerpt'   => 'A sample caption 2',
+			]
+		);
+		$image     = get_post( $second_id );
+		$data      = [ 'foo' => 'bar' ];
+		$result    = $plugin->add_unsplash_author_meta( $data, $image );
+		$this->assertEqualSets( $result, $data );
+	}
+
+	/**
+	 * Test add_unsplash_author_meta.
+	 *
+	 * @covers ::add_unsplash_author_meta()
+	 */
+	public function test_add_unsplash_author_meta() {
+		$plugin = get_plugin_instance();
+		$image  = get_post( self::$attachment_id );
+		$photo  = [
+			'width'  => 999,
+			'height' => 999,
+			'urls'   => [ 'raw' => 'https://images.unsplash.com/test.jpg' ],
+		];
+		$result = $plugin->add_unsplash_author_meta( $photo, $image );
+
+		$this->assertEquals( 'Example User', $result['unsplashAuthor'] );
+		$this->assertEquals( 'https://unsplash.com/@example_user', $result['unsplashAuthorLink'] );
+		$this->assertEquals( 'May 27, 2020', $result['unsplashCreatedAt'] );
+	}
+
+	/**
+	 * Test for add_media_templates()
+	 *
+	 * @see Plugin::add_media_templates()
+	 */
+	public function test_add_media_templates() {
+		$plugin = get_plugin_instance();
+		ob_start();
+		$plugin->add_media_templates();
+		$output = ob_get_clean();
+
+		$this->assertContains( 'tmpl-unsplash-attachment-details-two-column', $output );
+		$this->assertContains( 'Attachment Preview', $output );
+		$this->assertContains( 'Photo by', $output );
+		$this->assertContains( 'data.unsplashAuthorLink', $output );
+		$this->assertContains( 'Date:', $output );
+		$this->assertContains( 'data.unsplashCreatedAt', $output );
+
+		$this->assertContains( 'Attachment Details', $output );
+		$this->assertContains( '(opens in a new tab)', $output );
+		$this->assertContains( 'pixels', $output );
+		$this->assertContains( 'tmpl-unsplash-attachment-details', $output );
 	}
 
 	/**

@@ -93,9 +93,13 @@ class Image {
 		$this->process_data['user']              = $this->get_image_field(
 			'user',
 			[
-				'name' => '',
-				'id'   => '',
-				'bio'  => '',
+				'name'     => '',
+				'id'       => '',
+				'bio'      => '',
+				'username' => '',
+				'links'    => [
+					'html' => '',
+				],
 			]
 		);
 		$this->process_data['file']              = sanitize_title_with_dashes(

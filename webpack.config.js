@@ -137,6 +137,21 @@ const mediaSelector = {
 	],
 };
 
+const mediaLibrary = {
+	...defaultConfig,
+	...sharedConfig,
+	entry: {
+		'media-library': [ './assets/src/media-library/index.js' ],
+	},
+	plugins: [
+		...sharedConfig.plugins,
+		new WebpackBar( {
+			name: 'Media Library',
+			color: '#f23688',
+		} ),
+	],
+};
+
 const admin = {
 	...defaultConfig,
 	...sharedConfig,
@@ -200,4 +215,10 @@ const wpPolyfills = {
 	},
 };
 
-module.exports = [ blockEditor, mediaSelector, wpPolyfills, admin ];
+module.exports = [
+	blockEditor,
+	mediaSelector,
+	mediaLibrary,
+	wpPolyfills,
+	admin,
+];
