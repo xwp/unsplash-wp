@@ -46,7 +46,7 @@ const Button = wp.media.view.Button.extend( {
 					alert( error.responseJSON.message.replace( /(<([^>]+)>)/gi, '' ) ); // eslint-disable-line
 				} else {
 					const errors = getConfig( 'errors' );
-					alert( errors ); // eslint-disable-line
+					alert( errors.generic ); // eslint-disable-line
 				}
 			} );
 	},
