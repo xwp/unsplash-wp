@@ -97,6 +97,9 @@ class Image {
 				'id'       => '',
 				'bio'      => '',
 				'username' => '',
+				'links'    => [
+					'html' => '',
+				],
 			]
 		);
 		$this->process_data['file']              = sanitize_title_with_dashes(
