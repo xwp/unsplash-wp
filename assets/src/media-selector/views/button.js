@@ -42,6 +42,7 @@ const Button = wp.media.view.Button.extend( {
 			.catch( error => {
 				this.$el.attr( 'disabled', false ); // Enable button.
 				spinner.hide();
+				/* istanbul ignore next */
 				if ( error && error.responseJSON && error.responseJSON.message ) {
 					alert( error.responseJSON.message.replace( /(<([^>]+)>)/gi, '' ) ); // eslint-disable-line
 				} else {
