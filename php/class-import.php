@@ -130,6 +130,7 @@ class Import {
 		$file       = $this->image->get_image_url( 'full' );
 		$tmp        = download_url( $file );
 		// If there was an error downloading, return the error.
+
 		// @codeCoverageIgnoreStart
 		if ( is_wp_error( $tmp ) ) {
 			return $tmp;
