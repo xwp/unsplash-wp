@@ -51,15 +51,13 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	public static function wpSetUpBeforeClass( $factory ) {
 		self::$test_file     = 'canola.jpg';
 		self::$attachment_id = $factory->attachment->create_object(
-			DIR_TESTDATA . '/images/canola.jpg',
+			self::$test_file,
 			0,
 			[
 				'post_mime_type' => 'image/jpeg',
 				'post_excerpt'   => 'A sample caption',
 			]
 		);
-
-		wp_maybe_generate_attachment_metadata( get_post( self::$attachment_id ) );
 
 		update_post_meta( self::$attachment_id, 'original_url', 'https://images.unsplash.com/test.jpg' );
 		update_post_meta( self::$attachment_id, 'original_link', 'https://www.unsplash.com/foo' );
@@ -192,10 +190,22 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	 * @covers ::wp_get_attachment_image_src()
 	 */
 	public function test_wp_get_attachment_image_src_900() {
-		$image = wp_get_attachment_image_src( self::$attachment_id, array( 900, 450 ), true );
+		$attachment_id = $this->factory->attachment->create_object(
+			DIR_TESTDATA . '/images/waffles.jpg',
+			0,
+			[
+				'post_mime_type' => 'image/jpeg',
+				'post_excerpt'   => 'A sample caption',
+			]
+		);
+
+		wp_maybe_generate_attachment_metadata( get_post( $attachment_id ) );
+		update_post_meta( $attachment_id, 'original_url', 'https://images.unsplash.com/waffles.jpg' );
+		$image = wp_get_attachment_image_src( $attachment_id, array( 900, 450 ), true );
 		$this->assertNotContains( 'fit', $image[0] );
+		$this->assertEquals( 'https://images.unsplash.com/waffles.jpg?fm=jpg&q=85&w=900&h=600', $image[0] );
 		$this->assertEquals( 900, $image[1] );
-		$this->assertEquals( 675, $image[2] );
+		$this->assertEquals( 600, $image[2] );
 	}
 
 	/**
