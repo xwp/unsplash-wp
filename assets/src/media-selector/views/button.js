@@ -39,11 +39,15 @@ const Button = wp.media.view.Button.extend( {
 					this.options.click.apply( this, arguments );
 				}
 			} )
-			.catch( () => {
+			.catch( error => {
 				this.$el.attr( 'disabled', false ); // Enable button.
 				spinner.hide();
-				const errors = getConfig( 'errors' );
-				alert( errors.generic ); // eslint-disable-line
+				if ( error && error.responseJSON && error.responseJSON.message ) {
+					alert( error.responseJSON.message.replace( /(<([^>]+)>)/gi, '' ) ); // eslint-disable-line
+				} else {
+					const errors = getConfig( 'errors' );
+					alert( errors ); // eslint-disable-line
+				}
 			} );
 	},
 } );
