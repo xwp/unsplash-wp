@@ -178,6 +178,9 @@ class Plugin extends Plugin_Base {
 				'noResults' => [
 					'noMedia' => esc_html__( 'No items found.', 'unsplash' ),
 				],
+				'errors'    => [
+					'generic' => esc_html__( 'The file was unable to be imported into the Media Library. Please try again', 'unsplash' ),
+				],
 
 			]
 		);

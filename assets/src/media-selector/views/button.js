@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import { importImages, isUnsplashImage } from '../helpers';
+import { importImages, isUnsplashImage, getConfig } from '../helpers';
 
 const Button = wp.media.view.Button.extend( {
 	/**
@@ -39,10 +39,16 @@ const Button = wp.media.view.Button.extend( {
 					this.options.click.apply( this, arguments );
 				}
 			} )
-			.catch( () => {
-				// TODO: let user know import failed
+			.catch( error => {
 				this.$el.attr( 'disabled', false ); // Enable button.
 				spinner.hide();
+				/* istanbul ignore next */
+				if ( error && error.responseJSON && error.responseJSON.message ) {
+					alert( error.responseJSON.message.replace( /(<([^>]+)>)/gi, '' ) ); // eslint-disable-line
+				} else {
+					const errors = getConfig( 'errors' );
+					alert( errors.generic ); // eslint-disable-line
+				}
 			} );
 	},
 } );
