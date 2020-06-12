@@ -51,13 +51,15 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	public static function wpSetUpBeforeClass( $factory ) {
 		self::$test_file     = 'canola.jpg';
 		self::$attachment_id = $factory->attachment->create_object(
-			self::$test_file,
+			DIR_TESTDATA . '/images/canola.jpg',
 			0,
 			[
 				'post_mime_type' => 'image/jpeg',
 				'post_excerpt'   => 'A sample caption',
 			]
 		);
+
+		wp_maybe_generate_attachment_metadata( get_post( self::$attachment_id ) );
 
 		update_post_meta( self::$attachment_id, 'original_url', 'https://images.unsplash.com/test.jpg' );
 		update_post_meta( self::$attachment_id, 'original_link', 'https://www.unsplash.com/foo' );
@@ -182,6 +184,18 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$image = image_downsize( $second_id );
 		$this->assertInternalType( 'array', $image );
 		$this->assertEquals( $image[0], 'http://example.org/wp-content/uploads//tmp/apple.jpg' );
+	}
+
+	/**
+	 * Test wp_get_attachment_image_src.
+	 *
+	 * @covers ::wp_get_attachment_image_src()
+	 */
+	public function test_wp_get_attachment_image_src_900() {
+		$image = wp_get_attachment_image_src( self::$attachment_id, array( 900, 450 ), true );
+		$this->assertNotContains( 'fit', $image[0] );
+		$this->assertEquals( 900, $image[1] );
+		$this->assertEquals( 675, $image[2] );
 	}
 
 	/**
