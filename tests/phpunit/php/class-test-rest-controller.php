@@ -1281,7 +1281,9 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	}
 
 	/**
-	 * @throws Exception
+	 * Helper function to force an error.
+	 *
+	 * @throws Exception Forced error.
 	 */
 	public function force_error() {
 		throw new Exception( 'Testing error' );
