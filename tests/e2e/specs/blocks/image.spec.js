@@ -73,20 +73,25 @@ describe( 'Unsplash Image Block', () => {
 
 		await page.focus( UNSPLASH_LIBRARY_SEARCH_INPUT );
 
-		// The search terms should return some images.
-		await page.keyboard.type( 'dogs' );
+		const imageSelector =
+			'.unsplash-browser .attachments .unsplash-attachment:first-of-type';
 
-		await page.waitForSelector( '.unsplash-attachment[data-id]' );
+		await page.waitForSelector( imageSelector );
 
-		const attachment = await page.$( '.unsplash-attachment[data-id]' );
-		attachment.click();
+		await page.evaluate( selector => {
+			document.querySelector( selector ).click();
+		}, imageSelector );
 
-		const button = await page.$( '.media-button-select' );
-		button.click();
+		const btnSelect = '.media-button-select';
+		await page.evaluate( selector => {
+			document.querySelector( selector ).click();
+		}, btnSelect );
 
 		await page.waitForSelector( '.wp-block-unsplash-image' );
 
 		// Image is inserted.
-		expect( await page.$( '.wp-block-unsplash-image' ) ).not.toBeNull();
+		const blockClass = '.wp-block-unsplash-image';
+		await page.waitForSelector( blockClass );
+		await expect( page ).toMatchElement( blockClass );
 	} );
 } );
