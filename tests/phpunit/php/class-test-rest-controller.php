@@ -491,6 +491,46 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		remove_filter( 'upload_dir', [ $this, 'upload_dir_patch' ] );
 	}
 
+
+	/**
+	 * Test post_process() error.
+	 *
+	 * @covers \Unsplash\Rest_Controller::post_process()
+	 * @covers \Unsplash\Rest_Controller::create_item_permissions_check()
+	 */
+	public function test_post_process_error() {
+		add_filter( 'upload_dir', [ $this, 'upload_dir_patch' ] );
+		$orig_file = DIR_TESTDATA . '/images/test-image.jpg';
+		$test_file = get_temp_dir() . 'test-image.jpg';
+		copy( $orig_file, $test_file );
+		$second_id = $this->factory->attachment->create_object(
+			$test_file,
+			0,
+			[
+				'post_mime_type' => 'image/jpeg',
+				'post_excerpt'   => 'A sample caption 2',
+			]
+		);
+		update_post_meta(
+			$second_id,
+			'unsplash_attachment_metadata',
+			[
+				'width'      => 2,
+				'foo'        => 'bar',
+				'image_meta' => [ 'aperture' => 1 ],
+				'sizes'      => null,
+			]
+		);
+		wp_set_current_user( self::$admin_id );
+		$request = new WP_REST_Request( 'POST', $this->get_route( '/post-process/' . $second_id ) );
+		$request->set_param( 'retry', '2' );
+		add_filter( 'wp_update_attachment_metadata', [ $this, 'force_error' ] );
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertErrorResponse( 'rest_unsplash_single_photo_process', $response, 400 );
+		remove_filter( 'upload_dir', [ $this, 'upload_dir_patch' ] );
+		remove_filter( 'wp_update_attachment_metadata', [ $this, 'force_error' ] );
+	}
+
 	/**
 	 * Test validate_get_attachment().
 	 *
@@ -1238,5 +1278,12 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 				],
 			]
 		);
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	public function force_error() {
+		throw new Exception( 'Testing error' );
 	}
 }

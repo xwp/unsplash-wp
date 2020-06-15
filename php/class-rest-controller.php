@@ -236,9 +236,11 @@ class Rest_Controller extends WP_REST_Controller {
 
 		$importer      = new Import( $id, $image );
 		$attachment_id = $importer->process();
+		// @codeCoverageIgnoreStart
 		if ( is_wp_error( $attachment_id ) ) {
 			return $attachment_id;
 		}
+		// @codeCoverageIgnoreEnd
 		$this->plugin->api->download( $id );
 		$response = $this->prepare_item_for_response( $results, $request );
 		$response = rest_ensure_response( $response );
@@ -290,7 +292,7 @@ class Rest_Controller extends WP_REST_Controller {
 			}
 		} catch ( \Exception $e ) {
 			$response = new WP_Error(
-				'single-photo-process',
+				'rest_unsplash_single_photo_process',
 				/* translators: %d: attachment id */
 				sprintf( esc_html__( 'Unable to process image attachment %d.', 'unsplash' ), $attachment_id ),
 				[
