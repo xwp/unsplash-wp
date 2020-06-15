@@ -62,10 +62,29 @@ describe( 'Classic editor', () => {
 	it( 'insert image', async () => {
 		await page.waitForSelector( UNSPLASH_CONTRAINER );
 		const btnSelector =
-			UNSPLASH_CONTRAINER + ' .unsplash-attachment:first-of-type';
-		await clickSelector( btnSelector );
+			'.unsplash-browser .attachments .unsplash-attachment:first-of-type';
+		await page.waitForSelector( btnSelector );
+		await page.evaluate( selector => {
+			document.querySelector( selector ).click();
+		}, btnSelector );
 		const btnSelect = '.media-button-insert';
-		await page.waitForSelector( btnSelect );
-		await expect( page ).toClick( btnSelect );
+		await page.evaluate( selector => {
+			document.querySelector( selector ).click();
+		}, btnSelect );
+		await page.waitFor( 2000 );
+
+		// Switch to HTML mode
+		await expect( page ).toClick( '#content-html' );
+
+		const textEditorContent = await page.$eval(
+			'.wp-editor-area',
+			element => element.value
+		);
+
+		expect( textEditorContent ).toMatch(
+			new RegExp( /https:\/\/images.unsplash.com\/[^"]+/ )
+		);
+
+		expect( textEditorContent ).toContain( 'Photo by ' );
 	} );
 } );

@@ -6,7 +6,7 @@ import { visitAdminPage } from '@wordpress/e2e-test-utils';
 /**
  * Internal dependencies
  */
-import { activatePlugin, clickSelector, deactivatePlugin } from '../../utils';
+import { activatePlugin, clickButton, deactivatePlugin } from '../../utils';
 import {
 	UNSPLASH_CONTRAINER,
 	UNSPLASH_LIBRARY_BUTTON,
@@ -42,10 +42,14 @@ describe( 'Classic editor', () => {
 	it( 'select image', async () => {
 		await page.waitForSelector( UNSPLASH_CONTRAINER );
 		const btnSelector =
-			UNSPLASH_CONTRAINER + ' .unsplash-attachment:first-of-type';
-		await clickSelector( btnSelector );
-		const btnSelect = '.media-button-select';
-		await page.waitForSelector( btnSelect );
-		await expect( page ).toClick( btnSelect );
+			'.unsplash-browser .attachments .unsplash-attachment:first-of-type';
+		await page.waitForSelector( btnSelector );
+		await page.evaluate( selector => {
+			document.querySelector( selector ).click();
+		}, btnSelector );
+		await clickButton( 'Set featured image' );
+		const blockClass = '.size-post-thumbnail';
+		await page.waitForSelector( blockClass );
+		await expect( page ).toMatchElement( blockClass );
 	} );
 } );

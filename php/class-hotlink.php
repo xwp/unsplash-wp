@@ -250,6 +250,39 @@ class Hotlink {
 	}
 
 	/**
+	 * Work around for image preview in Attachment screen.
+	 *
+	 * @filter wp_get_attachment_image_src, 10, 5
+	 *
+	 * @param array|false  $image rray of image data, or boolean false if no image is available.
+	 * @param int          $attachment_id Image attachment ID.
+	 * @param string|int[] $size          Requested size of image. Image size name, or array of width
+	 *                                    and height values (in that order).
+	 * @param bool         $icon          Whether the image should be treated as an icon.
+	 */
+	public function wp_get_attachment_image_src( $image, $attachment_id, $size, $icon ) {
+		if ( is_array( $size ) && array( 900, 450 ) === $size && $icon ) {
+			$unsplash_url = $this->get_unsplash_url( $attachment_id );
+			$cropped      = $this->is_cropped_image( $attachment_id );
+			if ( ! $unsplash_url || $cropped ) {
+				return $image;
+			}
+			$request_width  = 900;
+			$image_meta     = wp_get_attachment_metadata( $attachment_id );
+			$height         = absint( $image_meta['height'] );
+			$width          = absint( $image_meta['width'] );
+			$request_height = $this->plugin->get_image_height( $width, $height, $request_width );
+			$image          = [
+				$this->plugin->get_original_url_with_size( $unsplash_url, $request_width, $request_height, [ 'fit' => false ] ),
+				$request_width,
+				$request_height,
+			];
+		}
+
+		return $image;
+	}
+
+	/**
 	 * Retrieve all image tags from content.
 	 *
 	 * @param string $content Content.
