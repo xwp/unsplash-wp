@@ -73,12 +73,14 @@ describe( 'Unsplash Image Block', () => {
 
 		await page.focus( UNSPLASH_LIBRARY_SEARCH_INPUT );
 
-		// The search terms should return some images.
-		await page.keyboard.type( 'dogs' );
+		// These search terms should return the image with ID `ZkjvMnVz-7w`
+		await page.keyboard.type( 'jar bottle shaker outdoors lowkey' );
 
-		await page.waitForSelector( '.unsplash-attachment[data-id]' );
+		await page.waitForSelector( '.unsplash-attachment[data-id="ZkjvMnVz-7w"]' );
 
-		const attachment = await page.$( '.unsplash-attachment[data-id]' );
+		const attachment = await page.$(
+			'.unsplash-attachment[data-id="ZkjvMnVz-7w"]'
+		);
 		attachment.click();
 
 		const button = await page.$( '.media-button-select' );
