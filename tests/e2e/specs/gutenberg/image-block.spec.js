@@ -57,10 +57,17 @@ describe( 'Image Block', () => {
 	it( 'insert image', async () => {
 		await page.waitForSelector( UNSPLASH_CONTRAINER );
 		const btnSelector =
-			UNSPLASH_CONTRAINER + ' .unsplash-attachment:first-of-type';
-		await clickSelector( btnSelector );
+			'.unsplash-browser .attachments .unsplash-attachment:first-of-type';
+		await page.waitForSelector( btnSelector );
+		await page.evaluate( selector => {
+			document.querySelector( selector ).click();
+		}, btnSelector );
 		const btnSelect = '.media-button-select';
-		await page.waitForSelector( btnSelect );
-		await expect( page ).toClick( btnSelect );
+		await page.evaluate( selector => {
+			document.querySelector( selector ).click();
+		}, btnSelect );
+		const blockClass = '.wp-block-image';
+		await page.waitForSelector( blockClass );
+		await expect( page ).toMatchElement( blockClass );
 	} );
 } );

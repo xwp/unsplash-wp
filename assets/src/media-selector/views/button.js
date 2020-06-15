@@ -44,9 +44,15 @@ const Button = wp.media.view.Button.extend( {
 				spinner.hide();
 				/* istanbul ignore next */
 				if ( error && error.responseJSON && error.responseJSON.message ) {
-					alert( error.responseJSON.message.replace( /(<([^>]+)>)/gi, '' ) ); // eslint-disable-line
+					const message = error.responseJSON.message.replace(
+						/(<([^>]+)>)/gi,
+						''
+					);
+					console.error( message ); // eslint-disable-line
+					alert( message ); // eslint-disable-line
 				} else {
 					const errors = getConfig( 'errors' );
+					console.error( errors.generic ); // eslint-disable-line
 					alert( errors.generic ); // eslint-disable-line
 				}
 			} );
