@@ -30,6 +30,7 @@ Features
 * Easy to access: The Unsplash tab is presented whenever you want to add an image.
 * Media Library Integration: the images you select are automatically added to your WordPress site's Media Library.
 * Save time: No more having to source the image you need, download it, and upload it to your Media Library, the Unsplash plugin makes it easy for you and saves you time.
+* Custom Gutenberg block: easily search and select Unsplash images from the Unsplash Gutenberg block
 * Featured images: Support for adding images from Unsplash as your content's Featured image.
 * Hotlinking: Automatically hotlink images in your site to the Unsplash CDN, reducing your site's bandwidth usage and speeding up delivery.
 * Performance: Automatically serve the right size image to your users regardless of device and connection speed using Unsplash’s state-of-the-art CDN.
