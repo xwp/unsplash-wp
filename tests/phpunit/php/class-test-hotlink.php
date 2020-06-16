@@ -16,7 +16,12 @@ use WP_REST_Response;
  * @coversDefaultClass \Unsplash\Hotlink
  */
 class Test_Hotlink extends \WP_UnitTestCase {
-
+	/**
+	 * Admin user for test.
+	 *
+	 * @var int
+	 */
+	protected static $admin_id;
 	/**
 	 * Hotlink instance.
 	 *
@@ -49,6 +54,9 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	 * @param object $factory Factory object.
 	 */
 	public static function wpSetUpBeforeClass( $factory ) {
+		self::$admin_id      = $factory->user->create(
+			[ 'role' => 'administrator' ]
+		);
 		self::$test_file     = 'canola.jpg';
 		self::$attachment_id = $factory->attachment->create_object(
 			self::$test_file,
@@ -62,6 +70,13 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		update_post_meta( self::$attachment_id, 'original_url', 'https://images.unsplash.com/test.jpg' );
 		update_post_meta( self::$attachment_id, 'original_link', 'https://www.unsplash.com/foo' );
 		self::$image_tag = get_image_tag( self::$attachment_id, 'alt', 'title', 'left' );
+	}
+
+	/**
+	 * Remove fake data.
+	 */
+	public static function wpTearDownAfterClass() {
+		self::delete_user( self::$admin_id );
 	}
 
 	/**
@@ -162,6 +177,18 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$image = image_downsize( self::$attachment_id, 'medium' );
 		$this->assertInternalType( 'array', $image );
 		$this->assertEquals( $image[0], 'https://images.unsplash.com/test.jpg?fm=jpg&q=85&w=300&h=300' );
+
+		$image = image_downsize( self::$attachment_id, [ 333, 444 ] );
+		$this->assertInternalType( 'array', $image );
+		$this->assertEquals( $image[0], 'https://images.unsplash.com/test.jpg?fm=jpg&q=85&fit=crop&w=333&h=444' );
+
+		$image = image_downsize( self::$attachment_id, 'invalid' );
+		$this->assertInternalType( 'array', $image );
+		$this->assertEquals( $image[0], 'https://images.unsplash.com/test.jpg' );
+
+		$image = image_downsize( self::$attachment_id, [ 0, 0 ] );
+		$this->assertInternalType( 'array', $image );
+		$this->assertEquals( $image[0], 'https://images.unsplash.com/test.jpg' );
 	}
 
 	/**
@@ -592,6 +619,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	 * @covers ::rest_prepare_attachment()
 	 */
 	public function test_rest_prepare_attachment_4() {
+		wp_set_current_user( self::$admin_id );
 		$image   = get_post( self::$attachment_id );
 		$photo   = [
 
@@ -609,6 +637,12 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$result = $this->hotlink->rest_prepare_attachment( $reponse, $image, $request );
 		$data   = $result->get_data();
 		$this->assertArrayHasKey( 'nonces', $data );
+		$this->assertArrayHasKey( 'update', $data['nonces'] );
+		$this->assertArrayHasKey( 'edit', $data['nonces'] );
+		$this->assertArrayHasKey( 'delete', $data['nonces'] );
+		$this->assertNotFalse( $data['nonces']['update'] );
+		$this->assertNotFalse( $data['nonces']['edit'] );
+		$this->assertNotFalse( $data['nonces']['delete'] );
 	}
 
 	/**

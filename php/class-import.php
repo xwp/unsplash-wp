@@ -69,9 +69,11 @@ class Import {
 
 		$file       = $this->import_image();
 		$attachment = $this->create_attachment( $file );
+		// @codeCoverageIgnoreStart
 		if ( is_wp_error( $attachment ) ) {
 			return $attachment;
 		}
+		// @codeCoverageIgnoreEnd
 
 		$this->process_meta();
 		$this->process_tags();
@@ -128,9 +130,12 @@ class Import {
 		$file       = $this->image->get_image_url( 'full' );
 		$tmp        = download_url( $file );
 		// If there was an error downloading, return the error.
+
+		// @codeCoverageIgnoreStart
 		if ( is_wp_error( $tmp ) ) {
 			return $tmp;
 		}
+		// @codeCoverageIgnoreEnd
 
 		$file_array['name']     = $this->image->get_field( 'file' );
 		$file_array['tmp_name'] = $tmp;
@@ -150,11 +155,14 @@ class Import {
 
 		// See https://github.com/WordPress/WordPress/blob/12709269c19d435de019b54d2bda7e4bd1ad664e/wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php#L747-L750 .
 		$size_check = $this->check_upload_size( $file_array );
+		// @codeCoverageIgnoreStart
 		if ( is_wp_error( $size_check ) ) {
 			return $size_check;
 		}
+		// @codeCoverageIgnoreEnd
 
 		$file = wp_handle_upload( $file_array, $overrides );
+		// @codeCoverageIgnoreStart
 		if ( isset( $file['error'] ) ) {
 			$file = new WP_Error(
 				'rest_upload_unknown_error',
@@ -162,6 +170,7 @@ class Import {
 				[ 'status' => 500 ]
 			);
 		}
+		// @codeCoverageIgnoreEnd
 
 		return $file;
 	}
@@ -174,6 +183,7 @@ class Import {
 	 * @return int|WP_Error
 	 */
 	public function create_attachment( $file ) {
+		// @codeCoverageIgnoreStart
 		if ( is_wp_error( $file ) ) {
 			return $file;
 		}
@@ -181,6 +191,7 @@ class Import {
 		if ( empty( $file ) || ! is_array( $file ) ) {
 			return new WP_Error( 'no_file_found', esc_html__( 'No file found', 'unsplash' ), [ 'status' => 500 ] );
 		}
+		// @codeCoverageIgnoreEnd
 
 		$url  = $file['url'];
 		$file = $file['file'];
@@ -197,6 +208,7 @@ class Import {
 
 		// do the validation and storage stuff.
 		$this->attachment_id = wp_insert_attachment( wp_slash( $attachment ), $file, $this->parent, true );
+		// @codeCoverageIgnoreStart
 		if ( is_wp_error( $this->attachment_id ) ) {
 			if ( 'db_update_error' === $this->attachment_id->get_error_code() ) {
 				$this->attachment_id->add_data( [ 'status' => 500 ] );
@@ -204,6 +216,7 @@ class Import {
 				$this->attachment_id->add_data( [ 'status' => 400 ] );
 			}
 		}
+		// @codeCoverageIgnoreEnd
 
 		return $this->attachment_id;
 	}
