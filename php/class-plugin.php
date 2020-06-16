@@ -735,7 +735,7 @@ class Plugin extends Plugin_Base {
 				<div class="details">
 					<h2 class="screen-reader-text"><?php esc_html_e( 'Details' ); ?></h2>
 					<# if ( data.unsplashAuthorLink ) { #>
-						<div class="author"><strong><?php esc_html_e( 'Photo by', 'unsplash' ); ?>:</strong> <a href="{{ data.unsplashAuthorLink }}" target="_blank" rel="noopener noreferrer">{{ data.unsplashAuthor || data.author }}</a></div>
+						<div class="author unsplash-author-link"><strong><?php esc_html_e( 'Photo by', 'unsplash' ); ?>:</strong> <a href="{{ data.unsplashAuthorLink }}" target="_blank" rel="noopener noreferrer">{{ data.unsplashAuthor || data.author }}</a></div>
 					<# } #>
 
 					<div class="filename"><strong><?php esc_html_e( 'File name:' ); ?></strong> {{ data.filename }}</div>
@@ -743,7 +743,7 @@ class Plugin extends Plugin_Base {
 					<div class="filename"><strong><?php esc_html_e( 'File type:' ); ?></strong> {{ data.mime }}</div>
 					<# } #>
 					<# if ( data.unsplashCreatedAt ) { #>
-					<div class="uploaded"><strong><?php esc_html_e( 'Date:' ); ?></strong> {{ data.unsplashCreatedAt }}</div>
+					<div class="uploaded unsplash-created-at"><strong><?php esc_html_e( 'Date:' ); ?></strong> {{ data.unsplashCreatedAt }}</div>
 					<# } #>
 					<div class="uploaded"><strong><?php esc_html_e( 'Uploaded on:' ); ?></strong> {{ data.dateFormatted }}</div>
 
