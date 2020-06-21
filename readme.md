@@ -4,15 +4,15 @@
 ![Banner](wp-assets/banner-1544x500.png)
 Search and use the internet’s largest library of freely usable images from [Unsplash](https://unsplash.com) right from the WordPress editor.
 
-**Contributors:** [xwp](https://profiles.wordpress.org/xwp), [unsplash](https://profiles.wordpress.org/unsplash)  
-**Tags:** [Unsplash](https://wordpress.org/plugins/tags/Unsplash), [images](https://wordpress.org/plugins/tags/images), [media](https://wordpress.org/plugins/tags/media), [free](https://wordpress.org/plugins/tags/free), [photographs](https://wordpress.org/plugins/tags/photographs), [photos](https://wordpress.org/plugins/tags/photos)  
-**Requires at least:** 4.9  
-**Tested up to:** 5.4.1  
-**Stable tag:** 1.0.0-alpha  
-**License:** [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)  
-**Requires PHP:** 5.6.20  
+**Contributors:** [xwp](https://profiles.wordpress.org/xwp), [unsplash](https://profiles.wordpress.org/unsplash)
+**Tags:** [Unsplash](https://wordpress.org/plugins/tags/Unsplash), [images](https://wordpress.org/plugins/tags/images), [media](https://wordpress.org/plugins/tags/media), [free](https://wordpress.org/plugins/tags/free), [photographs](https://wordpress.org/plugins/tags/photographs), [photos](https://wordpress.org/plugins/tags/photos)
+**Requires at least:** 4.9
+**Tested up to:** 5.4.2
+**Stable tag:** 1.0.0-rc1
+**License:** [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)
+**Requires PHP:** 5.6.20
 
-[![Build Status](https://travis-ci.com/xwp/unsplash-wp.svg?token=DzyA3Sey2BLS5sL6HDJq&branch=develop)](https://travis-ci.com/xwp/unsplash-wp) [![Coverage Status](https://coveralls.io/repos/xwp/unsplash-wp/badge.svg?branch=develop&service=github&t=mLvdmf)](https://coveralls.io/github/xwp/unsplash-wp) [![Built with Grunt](https://gruntjs.com/cdn/builtwith.svg)](http://gruntjs.com) 
+[![Build Status](https://travis-ci.com/xwp/unsplash-wp.svg?token=DzyA3Sey2BLS5sL6HDJq&branch=develop)](https://travis-ci.com/xwp/unsplash-wp) [![Coverage Status](https://coveralls.io/repos/xwp/unsplash-wp/badge.svg?branch=develop&service=github&t=mLvdmf)](https://coveralls.io/github/xwp/unsplash-wp) [![Built with Grunt](https://gruntjs.com/cdn/builtwith.svg)](http://gruntjs.com)
 
 ## Description ##
 
