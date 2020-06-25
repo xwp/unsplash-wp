@@ -13,7 +13,7 @@ import {
 	UNSPLASH_MODAL,
 } from '../../constants';
 
-describe( 'Attachment Details: Media selector', () => {
+describe( 'Attachment Details', () => {
 	beforeEach( async () => {
 		await createNewPost( {} );
 
@@ -32,50 +32,6 @@ describe( 'Attachment Details: Media selector', () => {
 		await page.waitForSelector( UNSPLASH_CONTRAINER );
 		const btnSelector =
 			UNSPLASH_CONTRAINER + ' .unsplash-attachment:nth-child(3)';
-		await clickSelector( btnSelector );
-		const attachmentDetails = '.unsplash-attachment-details';
-		await page.waitForSelector( attachmentDetails );
-
-		expect( await page.$( `${ attachmentDetails } .details` ) ).not.toBeNull();
-
-		await page.waitForSelector( `${ attachmentDetails } .details .author` );
-
-		expect(
-			await page.evaluate(
-				author => author.innerText,
-				await page.$( `${ attachmentDetails } .details .author` )
-			)
-		).toContain( 'Photo by:' );
-
-		expect(
-			await page.evaluate(
-				filename => filename.innerHTML,
-				await page.$( `${ attachmentDetails } .details .filename` )
-			)
-		).toContain( '<strong>File name:</strong>' );
-
-		expect(
-			await page.evaluate(
-				uploaded => uploaded.innerText,
-				await page.$( `${ attachmentDetails } .details .uploaded` )
-			)
-		).toContain( 'Date:' );
-
-		const originalImage = await page.evaluate(
-			details => details.innerHTML,
-			await page.$( `${ attachmentDetails } .details` )
-		);
-
-		expect( originalImage ).toContain( '<strong>Original image:</strong>' );
-		expect( originalImage ).toMatch(
-			new RegExp( /https:\/\/unsplash.com\/photos\/[^"]+/ )
-		);
-	} );
-
-	it( 'should show post-import attachment details', async () => {
-		await clickSelector( '#menu-item-browse' );
-		await page.waitForSelector( '.attachments-browser' );
-		const btnSelector = '.attachments-browser .attachment';
 		await clickSelector( btnSelector );
 		const attachmentDetails = '.unsplash-attachment-details';
 		await page.waitForSelector( attachmentDetails );

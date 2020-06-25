@@ -70,4 +70,47 @@ describe( 'Image Block', () => {
 		await page.waitForSelector( blockClass );
 		await expect( page ).toMatchElement( blockClass );
 	} );
+
+	it( 'should show post-import attachment details', async () => {
+		await clickSelector( '#menu-item-browse' );
+		await page.waitForSelector( '.attachments-browser .attachment' );
+		await clickSelector( '.attachments-browser .attachment' );
+		const attachmentDetails = '.unsplash-attachment-details';
+		await page.waitForSelector( attachmentDetails );
+
+		expect( await page.$( `${ attachmentDetails } .details` ) ).not.toBeNull();
+
+		await page.waitForSelector( `${ attachmentDetails } .details .author` );
+
+		expect(
+			await page.evaluate(
+				author => author.innerText,
+				await page.$( `${ attachmentDetails } .details .author` )
+			)
+		).toContain( 'Photo by:' );
+
+		expect(
+			await page.evaluate(
+				filename => filename.innerHTML,
+				await page.$( `${ attachmentDetails } .details .filename` )
+			)
+		).toContain( '<strong>File name:</strong>' );
+
+		expect(
+			await page.evaluate(
+				uploaded => uploaded.innerText,
+				await page.$( `${ attachmentDetails } .details .uploaded` )
+			)
+		).toContain( 'Date:' );
+
+		const originalImage = await page.evaluate(
+			details => details.innerHTML,
+			await page.$( `${ attachmentDetails } .details` )
+		);
+
+		expect( originalImage ).toContain( '<strong>Original image:</strong>' );
+		expect( originalImage ).toMatch(
+			new RegExp( /https:\/\/unsplash.com\/photos\/[^"]+/ )
+		);
+	} );
 } );
