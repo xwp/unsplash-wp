@@ -135,6 +135,7 @@ async function runAxeTestsForBlockEditor() {
 			'label',
 			'landmark-one-main',
 			'link-name',
+			'list',
 			'listitem',
 			'region',
 		],
