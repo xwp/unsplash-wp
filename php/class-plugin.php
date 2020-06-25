@@ -904,11 +904,35 @@ class Plugin extends Plugin_Base {
 						</div>
 						<# } #>
 
-						<# if ( data.originalImageURL || data.link ) { #>
+						<# var originalImageURL = data.originalImageURL || data.link; #>
+						<# originalImageURL = originalImageURL.match( 'unsplash.com/' ) ? originalImageURL : false; #>
+						<# if ( originalImageURL ) { #>
 						<strong><?php esc_html_e( 'Original image:' ); ?></strong>
-						<a href="{{ data.originalImageURL || data.link }}" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Unsplash', 'unsplash' ); ?></a>
+						<a href="{{ originalImageURL }}" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Unsplash', 'unsplash' ); ?></a>
+						<# } #>
+
+						<# if ( data.can.save && data.sizes ) { #>
+							<a class="edit-attachment" href="{{ data.editLink }}&amp;image-editor" target="_blank"><?php _e( 'Edit Image' ); ?></a>
 						<# } #>
 					<# } #>
+
+					<# if ( ! data.uploading && data.can.remove ) { #>
+						<?php if ( MEDIA_TRASH ) : ?>
+						<# if ( 'trash' === data.status ) { #>
+							<button type="button" class="button-link untrash-attachment"><?php _e( 'Restore from Trash' ); ?></button>
+						<# } else { #>
+							<button type="button" class="button-link trash-attachment"><?php _e( 'Move to Trash' ); ?></button>
+						<# } #>
+						<?php else : ?>
+							<button type="button" class="button-link delete-attachment"><?php _e( 'Delete Permanently' ); ?></button>
+						<?php endif; ?>
+					<# } #>
+
+					<div class="compat-meta">
+						<# if ( data.compat && data.compat.meta ) { #>
+							{{{ data.compat.meta }}} <?php // phpcs:ignore WordPressVIPMinimum.Security.Mustache.OutputNotation ?>
+						<# } #>
+					</div>
 
 				</div>
 			</div>
