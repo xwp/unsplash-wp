@@ -7,4 +7,5 @@ export { default as PostFrame } from './post-frame';
 export { default as Toolbar } from './toolbar';
 export { default as ToolbarSelect } from './toolbar-select';
 export { default as withUnsplashTab } from './with-unsplash-tab';
+export { default as withUnsplashAttachmentDetails } from './with-unsplash-attachment-details';
 export { default as UnsplashFrame } from './unsplash-frame';
