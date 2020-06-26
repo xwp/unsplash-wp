@@ -2,7 +2,7 @@
 Contributors: XWP, Unsplash
 Tags: Unsplash, images, media, free, photographs, photos
 Requires at least: 4.9
-Stable tag: 1.0.0-rc1
+Stable tag: 1.0.0-rc2
 Tested up to: 5.4.2
 Requires PHP: 5.6.20
 License: GPLv2 or later
