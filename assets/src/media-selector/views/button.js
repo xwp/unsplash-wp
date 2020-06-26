@@ -49,12 +49,17 @@ const Button = wp.media.view.Button.extend( {
 				spinner.hide();
 				/* istanbul ignore next */
 				if ( error && error.responseJSON && error.responseJSON.message ) {
-					const message = DOMPurify.sanitize( error.responseJSON.message );
+					const message = DOMPurify.sanitize( error.responseJSON.message, {
+						ALLOWED_TAGS: [], // strip all HTML tags.
+					} );
 					console.error( message ); // eslint-disable-line
 					alert( message ); // eslint-disable-line
 				} else {
 					const genericError = DOMPurify.sanitize(
-						getConfig( 'errors' ).generic
+						getConfig( 'errors' ).generic,
+						{
+							ALLOWED_TAGS: [], // strip all HTML tags.
+						}
 					);
 					console.error( genericError ); // eslint-disable-line
 					alert( genericError ); // eslint-disable-line
