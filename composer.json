@@ -49,6 +49,12 @@
       "@composer validate --strict",
       "phpcs ."
     ],
+    "lint-js": [
+      "phpcs --standard=phpcs-js.xml ."
+    ],
+    "format-js": [
+      "phpcbf --standard=phpcs-js.xml ."
+    ],
     "post-install-cmd": [
       "@setup"
     ],
