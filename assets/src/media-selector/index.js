@@ -3,7 +3,12 @@
  */
 import './style.css';
 import unsetUnsplashLibrary from './controllers/unset-unsplash-library';
-import { PostFrame, UnsplashFrame, withUnsplashTab } from './views';
+import {
+	PostFrame,
+	UnsplashFrame,
+	withUnsplashTab,
+	withUnsplashAttachmentDetails,
+} from './views';
 
 // Override media frames in the respective editors to add the Unsplash tab.
 if ( wp.media && wp.media.view && wp.media.view.MediaFrame ) {
@@ -37,6 +42,15 @@ if ( wp.media && wp.media.view && wp.media.view.MediaFrame ) {
 	if ( wp.media.view.MediaFrame.ImageDetails ) {
 		wp.media.view.MediaFrame.ImageDetails = withUnsplashTab(
 			wp.media.view.MediaFrame.ImageDetails
+		);
+	}
+
+	/**
+	 * 	Override attachment details in media selector.
+	 */
+	if ( wp.media.view.Attachment && wp.media.view.Attachment.Details ) {
+		wp.media.view.Attachment.Details = withUnsplashAttachmentDetails(
+			wp.media.view.Attachment.Details
 		);
 	}
 }

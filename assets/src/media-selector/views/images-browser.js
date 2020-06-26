@@ -1,4 +1,9 @@
 /**
+ * External dependencies
+ */
+import DOMPurify from 'dompurify';
+
+/**
  * Internal dependencies
  */
 import { ImageViews, Details } from './';
@@ -133,7 +138,12 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 		} );
 
 		this.attachmentsNoResults.$el.addClass( 'hidden no-media' );
-		this.attachmentsNoResults.$el.append( `<h2>${ noResults.noMedia }</h2>` );
+
+		const noMedia = document.createElement( 'h2' );
+		noMedia.textContent = noResults.noMedia;
+
+		// Whitelist because of how the element is built. See above.
+		this.attachmentsNoResults.$el.append( noMedia ); // phpcs:ignore WordPressVIPMinimum.JS.HTMLExecutingFunctions.append
 
 		this.views.add( this.attachmentsNoResults );
 
@@ -178,7 +188,9 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 			this.collection.respErrorMessage()
 		) {
 			const error = this.collection.respErrorMessage();
-			errorView.$el.html( error.message );
+
+			// Whitelist because the HTML is sanitized.
+			errorView.$el.html( DOMPurify.sanitize( error.message ) ); // phpcs:ignore WordPressVIPMinimum.JS.HTMLExecutingFunctions.html
 			if ( [ 401, 403 ].includes( error.data?.status ) ) {
 				errorView.$el.removeClass( 'notice-error' );
 				errorView.$el.addClass( 'notice-warning' );

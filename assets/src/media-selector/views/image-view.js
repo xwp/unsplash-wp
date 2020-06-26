@@ -53,7 +53,12 @@ const ImageView = wp.media.view.Attachment.extend( {
 
 		this.views.detach();
 
-		this.$el.html( this.template( options ) );
+		/**
+		 * Whitelist because this is using the WP core `tmpl-attachment` Backbone template.
+		 *
+		 * @see https://github.com/WordPress/WordPress/blob/5.4-branch/wp-includes/media-template.php#L536
+		 */
+		this.$el.html( this.template( options ) ); // phpcs:ignore WordPressVIPMinimum.JS.HTMLExecutingFunctions.html
 		const img = this.$el.find( '.centered img' );
 		if (
 			1 === img.length &&

@@ -1,4 +1,9 @@
 /**
+ * External dependencies
+ */
+import DOMPurify from 'dompurify';
+
+/**
  * Internal dependencies
  */
 import { importImages, isUnsplashImage, getConfig } from '../helpers';
@@ -44,16 +49,20 @@ const Button = wp.media.view.Button.extend( {
 				spinner.hide();
 				/* istanbul ignore next */
 				if ( error && error.responseJSON && error.responseJSON.message ) {
-					const message = error.responseJSON.message.replace(
-						/(<([^>]+)>)/gi,
-						''
-					);
+					const message = DOMPurify.sanitize( error.responseJSON.message, {
+						ALLOWED_TAGS: [], // strip all HTML tags.
+					} );
 					console.error( message ); // eslint-disable-line
 					alert( message ); // eslint-disable-line
 				} else {
-					const errors = getConfig( 'errors' );
-					console.error( errors.generic ); // eslint-disable-line
-					alert( errors.generic ); // eslint-disable-line
+					const genericError = DOMPurify.sanitize(
+						getConfig( 'errors' ).generic,
+						{
+							ALLOWED_TAGS: [], // strip all HTML tags.
+						}
+					);
+					console.error( genericError ); // eslint-disable-line
+					alert( genericError ); // eslint-disable-line
 				}
 			} );
 	},
