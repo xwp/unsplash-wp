@@ -143,7 +143,7 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 		noMedia.textContent = noResults.noMedia;
 
 		// Whitelist because of how the element is built. See above.
-		this.attachmentsNoResults.$el.get( 0 ).append( noMedia ); // phpcs:ignore WordPressVIPMinimum.JS.HTMLExecutingFunctions.append
+		this.attachmentsNoResults.$el.append( noMedia ); // phpcs:ignore WordPressVIPMinimum.JS.HTMLExecutingFunctions.append
 
 		this.views.add( this.attachmentsNoResults );
 
