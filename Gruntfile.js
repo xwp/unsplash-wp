@@ -32,6 +32,7 @@ module.exports = function( grunt ) {
 					'!package.json',
 					'!package-lock.json',
 					'!phpcs.xml',
+					'!phpcs-js.xml',
 					'!phpunit.xml',
 					'!postcss.config.js',
 					'!readme.md',
