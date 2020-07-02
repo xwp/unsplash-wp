@@ -295,7 +295,7 @@ class Settings {
 						?>
 						</p>
 						<p>
-							<i><?php esc_html_e( 'Note: This action will break your current connection to Unsplash but will not remove any images previously published or imported to your media library.', 'unsplash' ); ?></i>
+							<i><?php esc_html_e( 'Note: While this action will disconnect your current OAuth integration to Unsplash, it will not remove any images previously published or imported to your media library.', 'unsplash' ); ?></i>
 						</p>
 					</form>
 					<?php
