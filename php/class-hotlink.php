@@ -587,7 +587,6 @@ class Hotlink {
 		return [ $width, $height ];
 	}
 
-
 	/**
 	 * Helper to get original url from post meta.
 	 *
@@ -708,5 +707,30 @@ class Hotlink {
 		}
 
 		return $block_content;
+	}
+
+	/**
+	 * Add Unsplash metadata for edited attachment
+	 *
+	 * @filter wp_edited_attachment_metadata, 10, 3
+	 *
+	 * @param array $data              Array of updated attachment meta data.
+	 * @param int   $new_attachment_id Attachment post ID.
+	 * @param int   $attachment_id     Original Attachment post ID.
+	 *
+	 * @return array
+	 */
+	public function add_edited_attachment_metadata( $data, $new_attachment_id, $attachment_id ) {
+		// Verify it is an Unsplash ID.
+		$unsplash_url = $this->get_unsplash_url( $attachment_id );
+		$cropped      = $this->is_cropped_image( $attachment_id );
+
+		if ( $unsplash_url && ! $cropped ) {
+			add_post_meta( $new_attachment_id, 'original_url', $unsplash_url, true );
+			add_post_meta( $new_attachment_id, 'original_id', get_post_meta( $attachment_id, 'original_id', true ), true );
+			add_post_meta( $new_attachment_id, 'original_link', get_post_meta( $attachment_id, 'original_link', true ), true );
+		}
+
+		return $data;
 	}
 }
