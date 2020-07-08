@@ -737,62 +737,6 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Test wp_get_original_image_url.
-	 *
-	 * @covers ::wp_get_original_image_url()
-	 */
-	public function test_wp_get_original_image_url() {
-		$result = $this->hotlink->wp_get_original_image_url( '', self::$attachment_id );
-		$this->assertEquals( $result, 'https://www.unsplash.com/foo' );
-	}
-
-	/**
-	 * Test wp_get_original_image_url.
-	 *
-	 * @covers ::wp_get_original_image_url()
-	 */
-	public function test_no_wp_get_original_image_url() {
-		$second_id = $this->factory->attachment->create_object(
-			'/tmp/banana.jpg',
-			0,
-			[
-				'post_mime_type' => 'image/jpeg',
-				'post_excerpt'   => 'A sample caption 2',
-			]
-		);
-		$result    = $this->hotlink->wp_get_original_image_url( 'https://www.example.com/', $second_id );
-		$this->assertEquals( 'https://www.example.com/', $result );
-	}
-
-	/**
-	 * Test wp_get_original_image_path.
-	 *
-	 * @covers ::wp_get_original_image_path()
-	 */
-	public function test_wp_get_original_image_path() {
-		$result = $this->hotlink->wp_get_original_image_path( '', self::$attachment_id );
-		$this->assertEquals( $result, 'Unsplash' );
-	}
-
-	/**
-	 * Test wp_get_original_image_path.
-	 *
-	 * @covers ::wp_get_original_image_path()
-	 */
-	public function test_no_wp_get_original_image_path() {
-		$second_id = $this->factory->attachment->create_object(
-			'/tmp/banana.jpg',
-			0,
-			[
-				'post_mime_type' => 'image/jpeg',
-				'post_excerpt'   => 'A sample caption 2',
-			]
-		);
-		$result    = $this->hotlink->wp_get_original_image_path( 'Testing', $second_id );
-		$this->assertEquals( 'Testing', $result );
-	}
-
-	/**
 	 * Test is_cropped_image.
 	 *
 	 * @covers ::is_cropped_image()

@@ -758,7 +758,10 @@ class Plugin extends Plugin_Base {
 							</div>
 						<# } #>
 
-						<# if ( data.originalImageURL && data.originalImageName ) { #>
+						<# if ( data.originalUnsplashImageURL && data.originalUnsplashImageName ) { #>
+							<strong><?php esc_html_e( 'Original image:' ); ?></strong>
+							<a href="{{ data.originalUnsplashImageURL }}">{{data.originalUnsplashImageName}}</a>
+						<# } else if ( data.originalImageURL && data.originalImageName ) { #>
 							<strong><?php esc_html_e( 'Original image:' ); ?></strong>
 							<a href="{{ data.originalImageURL }}">{{data.originalImageName}}</a>
 						<# } #>
@@ -904,11 +907,12 @@ class Plugin extends Plugin_Base {
 						</div>
 						<# } #>
 
-						<# var originalImageURL = data.originalImageURL || data.link; #>
-						<# originalImageURL = originalImageURL.match( 'unsplash.com/' ) ? originalImageURL : false; #>
-						<# if ( originalImageURL ) { #>
-						<strong><?php esc_html_e( 'Original image:' ); ?></strong>
-						<a href="{{ originalImageURL }}" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Unsplash', 'unsplash' ); ?></a>
+						<# if ( data.originalUnsplashImageURL && data.originalUnsplashImageName ) { #>
+							<strong><?php esc_html_e( 'Original image:' ); ?></strong>
+							<a href="{{ data.originalUnsplashImageURL }}">{{data.originalUnsplashImageName}}</a>
+						<# } else if ( data.originalImageURL && data.originalImageName ) { #>
+							<strong><?php esc_html_e( 'Original image:' ); ?></strong>
+							<a href="{{ data.originalImageURL }}">{{data.originalImageName}}</a>
 						<# } #>
 
 						<# if ( data.can.save && data.sizes ) { #>

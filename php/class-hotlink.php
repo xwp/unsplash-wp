@@ -98,8 +98,8 @@ class Hotlink {
 
 		$link = get_post_meta( $attachment->ID, 'original_link', true );
 		if ( $link ) {
-			$response['originalImageName'] = esc_html__( 'Unsplash', 'unsplash' );
-			$response['originalImageURL']  = $link;
+			$response['originalUnsplashImageName'] = esc_html__( 'Unsplash', 'unsplash' );
+			$response['originalUnsplashImageURL']  = $link;
 		}
 
 		return $response;
@@ -144,6 +144,12 @@ class Hotlink {
 		// Return raw image url in REST API.
 		if ( isset( $response['source_url'] ) ) {
 			$response['source_url'] = $url;
+		}
+
+		$link = get_post_meta( $attachment->ID, 'original_link', true );
+		if ( $link ) {
+			$response['originalUnsplashImageName'] = esc_html__( 'Unsplash', 'unsplash' );
+			$response['originalUnsplashImageURL']  = $link;
 		}
 
 		$context = ! empty( $wp_request['context'] ) ? $wp_request['context'] : 'view';
@@ -475,45 +481,6 @@ class Hotlink {
 
 		$new_src = $this->plugin->get_original_url_with_size( $unsplash_url, $width, $height );
 		return str_replace( $img_src, $new_src, $img_tag );
-	}
-
-	/**
-	 * Filters the URL to the original Unsplash URL.
-	 *
-	 * @filter wp_get_original_image_url, 10, 2
-	 *
-	 * @param string $original_image_url URL to original image.
-	 * @param int    $attachment_id      Attachment ID.
-	 *
-	 * @return string
-	 */
-	public function wp_get_original_image_url( $original_image_url, $attachment_id ) {
-		$link = get_post_meta( $attachment_id, 'original_link', true );
-		if ( ! $link ) {
-			return $original_image_url;
-		}
-
-
-		return $link;
-	}
-
-	/**
-	 * Filters the path the word Unsplash.
-	 *
-	 * @filter wp_get_original_image_path, 10, 2
-	 *
-	 * @param string $original_image Image path.
-	 * @param int    $attachment_id  Attachment ID.
-	 *
-	 * @return string
-	 */
-	public function wp_get_original_image_path( $original_image, $attachment_id ) {
-		$link = get_post_meta( $attachment_id, 'original_link', true );
-		if ( ! $link ) {
-			return $original_image;
-		}
-
-		return esc_html__( 'Unsplash', 'unsplash' );
 	}
 
 	/**
