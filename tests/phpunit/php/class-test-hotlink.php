@@ -514,8 +514,8 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$url      = $this->hotlink->get_attachment_url( self::$attachment_id );
 		$expected = $this->hotlink->change_full_url( $expected, 'url', $url );
 		$this->assertEqualSets( $result['sizes'], $expected );
-		$this->assertArrayHasKey( 'originalImageName', $result );
-		$this->assertArrayHasKey( 'originalImageURL', $result );
+		$this->assertArrayHasKey( 'originalUnsplashImageName', $result );
+		$this->assertArrayHasKey( 'originalUnsplashImageURL', $result );
 	}
 
 
