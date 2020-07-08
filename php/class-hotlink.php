@@ -175,6 +175,37 @@ class Hotlink {
 	}
 
 	/**
+	 * Add unsplash original link to attachment edit page.
+	 *
+	 * @action   attachment_submitbox_misc_actions, 11
+	 */
+	public function attachment_submitbox_misc_actions() {
+		$post          = get_post();
+		$attachment_id = $post->ID;
+		$unsplash_url  = $this->get_unsplash_url( $attachment_id );
+		$cropped       = $this->is_cropped_image( $attachment_id );
+		if ( ! $unsplash_url || $cropped ) {
+			return;
+		}
+		$link = get_post_meta( $attachment_id, 'original_link', true );
+		if ( $link ) {
+			?>
+			<div class="misc-pub-section misc-pub-original-unsplash-image">
+				<?php _e( 'Original image:', 'unsplash' ); ?>
+				<a href="<?php echo esc_url( $link ); ?>">
+					<?php esc_html_e( 'Unsplash', 'unsplash' ); ?>
+				</a>
+			</div>
+			<style type="text/css">
+				.misc-pub-section.misc-pub-original-image{
+					display: none;
+				}
+			</style>
+			<?php
+		}
+	}
+
+	/**
 	 * Reformat image sizes as REST API response is a little differently formatted.
 	 *
 	 * @param array  $sizes List of sizes.
