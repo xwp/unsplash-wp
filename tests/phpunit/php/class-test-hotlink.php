@@ -514,8 +514,8 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$url      = $this->hotlink->get_attachment_url( self::$attachment_id );
 		$expected = $this->hotlink->change_full_url( $expected, 'url', $url );
 		$this->assertEqualSets( $result['sizes'], $expected );
-		$this->assertArrayHasKey( 'originalImageName', $result );
-		$this->assertArrayHasKey( 'originalImageURL', $result );
+		$this->assertArrayHasKey( 'originalUnsplashImageName', $result );
+		$this->assertArrayHasKey( 'originalUnsplashImageURL', $result );
 	}
 
 
@@ -754,5 +754,48 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$this->assertFalse( $this->hotlink->is_cropped_image( $second_id ) );
 		update_post_meta( $second_id, '_wp_attachment_backup_sizes', [ 'foo' => 'bar' ] );
 		$this->assertTrue( $this->hotlink->is_cropped_image( $second_id ) );
+	}
+
+	/**
+	 * Test attachment_submitbox_misc_actions.
+	 *
+	 * @covers ::attachment_submitbox_misc_actions()
+	 */
+	public function test_no_attachment_submitbox_misc_actions() {
+		global $post;
+		$second_id = $this->factory->attachment->create_object(
+			'/tmp/melon.jpg',
+			0,
+			[
+				'post_mime_type' => 'image/jpeg',
+				'post_excerpt'   => 'A sample caption 2',
+			]
+		);
+		$post      = get_post( $second_id );
+
+		ob_start();
+		$this->hotlink->attachment_submitbox_misc_actions();
+		$content = ob_get_clean();
+
+		$this->assertEmpty( $content );
+	}
+
+	/**
+	 * Test attachment_submitbox_misc_actions.
+	 *
+	 * @covers ::attachment_submitbox_misc_actions()
+	 */
+	public function test_attachment_submitbox_misc_actions() {
+		global $post;
+		$post = get_post( self::$attachment_id );
+
+		ob_start();
+		$this->hotlink->attachment_submitbox_misc_actions();
+		$content = ob_get_clean();
+
+		$this->assertNotEmpty( $content );
+		$this->assertContains( 'misc-pub-original-unsplash-image', $content );
+		$this->assertContains( '<a href="https://www.unsplash.com/foo">', $content );
+		$this->assertContains( 'Unsplash', $content );
 	}
 }

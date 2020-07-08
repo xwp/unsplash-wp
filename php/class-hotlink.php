@@ -191,7 +191,7 @@ class Hotlink {
 		if ( $link ) {
 			?>
 			<div class="misc-pub-section misc-pub-original-unsplash-image">
-				<?php _e( 'Original image:', 'unsplash' ); ?>
+				<?php esc_html_e( 'Original image:', 'unsplash' ); ?>
 				<a href="<?php echo esc_url( $link ); ?>">
 					<?php esc_html_e( 'Unsplash', 'unsplash' ); ?>
 				</a>
