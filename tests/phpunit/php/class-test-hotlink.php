@@ -858,7 +858,6 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		);
 		$this->hotlink->add_edited_attachment_metadata( [], $second_id, self::$attachment_id );
 
-		$this->assertEquals( 'https://images.unsplash.com/test.jpg', get_post_meta( $second_id, 'original_url', true ) );
 		$this->assertEquals( 'UNSPLASH_ID', get_post_meta( $second_id, 'original_id', true ) );
 		$this->assertEquals( 'https://www.unsplash.com/foo', get_post_meta( $second_id, 'original_link', true ) );
 	}
