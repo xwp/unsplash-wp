@@ -772,10 +772,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 			]
 		);
 		$post      = get_post( $second_id );
-
-		ob_start();
-		$this->hotlink->attachment_submitbox_misc_actions();
-		$content = ob_get_clean();
+		$content   = get_echo( [ $this->hotlink, 'attachment_submitbox_misc_actions' ] );
 
 		$this->assertEmpty( $content );
 	}
@@ -787,11 +784,8 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	 */
 	public function test_attachment_submitbox_misc_actions() {
 		global $post;
-		$post = get_post( self::$attachment_id );
-
-		ob_start();
-		$this->hotlink->attachment_submitbox_misc_actions();
-		$content = ob_get_clean();
+		$post    = get_post( self::$attachment_id );
+		$content = get_echo( [ $this->hotlink, 'attachment_submitbox_misc_actions' ] );
 
 		$this->assertNotEmpty( $content );
 		$this->assertContains( 'misc-pub-original-unsplash-image', $content );

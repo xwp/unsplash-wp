@@ -907,12 +907,13 @@ class Plugin extends Plugin_Base {
 						</div>
 						<# } #>
 
+						<# var originalImageURL = data.originalImageURL || data.link; #>
 						<# if ( data.originalUnsplashImageURL && data.originalUnsplashImageName ) { #>
 							<strong><?php esc_html_e( 'Original image:' ); ?></strong>
 							<a href="{{ data.originalUnsplashImageURL }}">{{data.originalUnsplashImageName}}</a>
-						<# } else if ( data.originalImageURL && data.originalImageName ) { #>
+						<# } else if ( originalImageURL ) { #>
 							<strong><?php esc_html_e( 'Original image:' ); ?></strong>
-							<a href="{{ data.originalImageURL }}">{{data.originalImageName}}</a>
+							<a href="{{ originalImageURL }}"><?php esc_html_e( 'Unsplash', 'unsplash' ); ?></a>
 						<# } #>
 
 						<# if ( data.can.save && data.sizes ) { #>
