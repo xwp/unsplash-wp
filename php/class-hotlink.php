@@ -726,6 +726,7 @@ class Hotlink {
 		$cropped      = $this->is_cropped_image( $attachment_id );
 
 		if ( $unsplash_url && ! $cropped ) {
+			add_post_meta( $new_attachment_id, 'original_attachment_id', $attachment_id, true );
 			add_post_meta( $new_attachment_id, 'original_id', get_post_meta( $attachment_id, 'original_id', true ), true );
 			add_post_meta( $new_attachment_id, 'original_link', get_post_meta( $attachment_id, 'original_link', true ), true );
 		}
