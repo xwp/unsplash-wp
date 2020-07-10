@@ -69,6 +69,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 
 		update_post_meta( self::$attachment_id, 'original_url', 'https://images.unsplash.com/test.jpg' );
 		update_post_meta( self::$attachment_id, 'original_link', 'https://www.unsplash.com/foo' );
+		update_post_meta( self::$attachment_id, 'original_id', 'UNSPLASH_ID' );
 		self::$image_tag = get_image_tag( self::$attachment_id, 'alt', 'title', 'left' );
 	}
 
@@ -791,5 +792,54 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$this->assertContains( 'misc-pub-original-unsplash-image', $content );
 		$this->assertContains( '<a href="https://www.unsplash.com/foo">', $content );
 		$this->assertContains( 'Unsplash', $content );
+	}
+
+	/**
+	 * Test add_edited_attachment_metadata.
+	 *
+	 * @covers ::add_edited_attachment_metadata()
+	 */
+	public function test_no_add_edited_attachment_metadata() {
+		$first_id  = $this->factory->attachment->create_object(
+			'/tmp/banana.jpg',
+			0,
+			[
+				'post_mime_type' => 'image/jpeg',
+				'post_excerpt'   => 'A sample caption 1',
+			]
+		);
+		$second_id = $this->factory->attachment->create_object(
+			'/tmp/melon.jpg',
+			0,
+			[
+				'post_mime_type' => 'image/jpeg',
+				'post_excerpt'   => 'A sample caption 2',
+			]
+		);
+		$this->hotlink->add_edited_attachment_metadata( [], $second_id, $first_id );
+
+		$this->assertEmpty( get_post_meta( $second_id, 'original_url', true ) );
+		$this->assertEmpty( get_post_meta( $second_id, 'original_id', true ) );
+		$this->assertEmpty( get_post_meta( $second_id, 'original_link', true ) );
+	}
+
+	/**
+	 * Test add_edited_attachment_metadata.
+	 *
+	 * @covers ::add_edited_attachment_metadata()
+	 */
+	public function test_add_edited_attachment_metadata() {
+		$second_id = $this->factory->attachment->create_object(
+			'/tmp/melon.jpg',
+			0,
+			[
+				'post_mime_type' => 'image/jpeg',
+				'post_excerpt'   => 'A sample caption 2',
+			]
+		);
+		$this->hotlink->add_edited_attachment_metadata( [], $second_id, self::$attachment_id );
+
+		$this->assertEquals( 'UNSPLASH_ID', get_post_meta( $second_id, 'original_id', true ) );
+		$this->assertEquals( 'https://www.unsplash.com/foo', get_post_meta( $second_id, 'original_link', true ) );
 	}
 }
