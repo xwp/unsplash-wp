@@ -98,8 +98,8 @@ class Hotlink {
 
 		$link = get_post_meta( $attachment->ID, 'original_link', true );
 		if ( $link ) {
-			$response['originalImageName'] = esc_html__( 'Unsplash', 'unsplash' );
-			$response['originalImageURL']  = $link;
+			$response['originalUnsplashImageName'] = esc_html__( 'Unsplash', 'unsplash' );
+			$response['originalUnsplashImageURL']  = $link;
 		}
 
 		return $response;
@@ -146,6 +146,12 @@ class Hotlink {
 			$response['source_url'] = $url;
 		}
 
+		$link = get_post_meta( $attachment->ID, 'original_link', true );
+		if ( $link ) {
+			$response['originalUnsplashImageName'] = esc_html__( 'Unsplash', 'unsplash' );
+			$response['originalUnsplashImageURL']  = $link;
+		}
+
 		$context = ! empty( $wp_request['context'] ) ? $wp_request['context'] : 'view';
 		if ( 'edit' === $context ) {
 			$response['nonces'] = [
@@ -166,6 +172,37 @@ class Hotlink {
 		$wp_response->set_data( $response );
 
 		return $wp_response;
+	}
+
+	/**
+	 * Add unsplash original link to attachment edit page.
+	 *
+	 * @action   attachment_submitbox_misc_actions, 11
+	 */
+	public function attachment_submitbox_misc_actions() {
+		$post          = get_post();
+		$attachment_id = $post->ID;
+		$unsplash_url  = $this->get_unsplash_url( $attachment_id );
+		$cropped       = $this->is_cropped_image( $attachment_id );
+		if ( ! $unsplash_url || $cropped ) {
+			return;
+		}
+		$link = get_post_meta( $attachment_id, 'original_link', true );
+		if ( $link ) {
+			?>
+			<div class="misc-pub-section misc-pub-original-unsplash-image">
+				<?php esc_html_e( 'Original image:', 'unsplash' ); ?>
+				<a href="<?php echo esc_url( $link ); ?>">
+					<?php esc_html_e( 'Unsplash', 'unsplash' ); ?>
+				</a>
+			</div>
+			<style type="text/css">
+				.misc-pub-section.misc-pub-original-image{
+					display: none;
+				}
+			</style>
+			<?php
+		}
 	}
 
 	/**
@@ -475,45 +512,6 @@ class Hotlink {
 
 		$new_src = $this->plugin->get_original_url_with_size( $unsplash_url, $width, $height );
 		return str_replace( $img_src, $new_src, $img_tag );
-	}
-
-	/**
-	 * Filters the URL to the original Unsplash URL.
-	 *
-	 * @filter wp_get_original_image_url, 10, 2
-	 *
-	 * @param string $original_image_url URL to original image.
-	 * @param int    $attachment_id      Attachment ID.
-	 *
-	 * @return string
-	 */
-	public function wp_get_original_image_url( $original_image_url, $attachment_id ) {
-		$link = get_post_meta( $attachment_id, 'original_link', true );
-		if ( ! $link ) {
-			return $original_image_url;
-		}
-
-
-		return $link;
-	}
-
-	/**
-	 * Filters the path the word Unsplash.
-	 *
-	 * @filter wp_get_original_image_path, 10, 2
-	 *
-	 * @param string $original_image Image path.
-	 * @param int    $attachment_id  Attachment ID.
-	 *
-	 * @return string
-	 */
-	public function wp_get_original_image_path( $original_image, $attachment_id ) {
-		$link = get_post_meta( $attachment_id, 'original_link', true );
-		if ( ! $link ) {
-			return $original_image;
-		}
-
-		return esc_html__( 'Unsplash', 'unsplash' );
 	}
 
 	/**
