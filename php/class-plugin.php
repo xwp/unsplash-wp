@@ -274,38 +274,40 @@ class Plugin extends Plugin_Base {
 		$author_links = $image->get_field( 'user' )['links'];
 
 		$response = [
-			'id'                 => isset( $photo['id'] ) ? $photo['id'] : null,
-			'unsplash_order'     => isset( $photo['unsplash_order'] ) ? $photo['unsplash_order'] : null,
-			'title'              => '',
-			'filename'           => $image->get_field( 'file' ),
-			'url'                => $image->get_field( 'original_url' ),
-			'link'               => $image->get_field( 'links' )['html'],
-			'alt'                => $image->get_field( 'alt' ),
-			'author'             => $image->get_field( 'user' )['name'],
-			'unsplashAuthorLink' => ! empty( $author_links ) && ! empty( $author_links['html'] ) ? $author_links['html'] : '',
-			'description'        => $image->get_field( 'description' ),
-			'caption'            => $image->get_caption(),
-			'color'              => $image->get_field( 'color' ),
-			'name'               => $image->get_field( 'original_id' ),
-			'height'             => $image->get_field( 'height' ),
-			'width'              => $image->get_field( 'width' ),
-			'status'             => 'inherit',
-			'uploadedTo'         => 0,
-			'date'               => strtotime( $image->get_field( 'created_at' ) ) * 1000,
-			'modified'           => strtotime( $image->get_field( 'updated_at' ) ) * 1000,
-			'menuOrder'          => 0,
-			'mime'               => $image->get_field( 'mime_type' ),
-			'type'               => 'image',
-			'subtype'            => $image->get_field( 'ext' ),
-			'icon'               => ! empty( $image->get_image_url( 'thumb' ) ) ? $this->get_original_url_with_size( $image->get_image_url( 'thumb' ), 150, 150 ) : null,
-			'dateFormatted'      => mysql2date( 'F j, Y', $image->get_field( 'created_at' ) ),
-			'nonces'             => [
+			'id'                        => isset( $photo['id'] ) ? $photo['id'] : null,
+			'unsplash_order'            => isset( $photo['unsplash_order'] ) ? $photo['unsplash_order'] : null,
+			'title'                     => '',
+			'filename'                  => $image->get_field( 'file' ),
+			'url'                       => $image->get_field( 'original_url' ),
+			'link'                      => $image->get_field( 'links' )['html'],
+			'alt'                       => $image->get_field( 'alt' ),
+			'author'                    => $image->get_field( 'user' )['name'],
+			'unsplashAuthorLink'        => ! empty( $author_links ) && ! empty( $author_links['html'] ) ? $author_links['html'] : '',
+			'description'               => $image->get_field( 'description' ),
+			'caption'                   => $image->get_caption(),
+			'color'                     => $image->get_field( 'color' ),
+			'name'                      => $image->get_field( 'original_id' ),
+			'height'                    => $image->get_field( 'height' ),
+			'width'                     => $image->get_field( 'width' ),
+			'status'                    => 'inherit',
+			'uploadedTo'                => 0,
+			'date'                      => strtotime( $image->get_field( 'created_at' ) ) * 1000,
+			'modified'                  => strtotime( $image->get_field( 'updated_at' ) ) * 1000,
+			'menuOrder'                 => 0,
+			'mime'                      => $image->get_field( 'mime_type' ),
+			'type'                      => 'image',
+			'subtype'                   => $image->get_field( 'ext' ),
+			'icon'                      => ! empty( $image->get_image_url( 'thumb' ) ) ? $this->get_original_url_with_size( $image->get_image_url( 'thumb' ), 150, 150 ) : null,
+			'dateFormatted'             => mysql2date( 'F j, Y', $image->get_field( 'created_at' ) ),
+			'nonces'                    => [
 				'update' => false,
 				'delete' => false,
 				'edit'   => false,
 			],
-			'editLink'           => false,
-			'meta'               => false,
+			'editLink'                  => false,
+			'meta'                      => false,
+			'originalUnsplashImageURL'  => $image->get_field( 'links' )['html'],
+			'originalUnsplashImageName' => esc_html__( 'Unsplash', 'unsplash' ),
 		];
 
 		$response['sizes'] = $this->add_image_sizes( $image->get_field( 'original_url' ), $image->get_field( 'width' ), $image->get_field( 'height' ) );
@@ -758,7 +760,10 @@ class Plugin extends Plugin_Base {
 							</div>
 						<# } #>
 
-						<# if ( data.originalImageURL && data.originalImageName ) { #>
+						<# if ( data.originalUnsplashImageURL && data.originalUnsplashImageName ) { #>
+							<strong><?php esc_html_e( 'Original image:' ); ?></strong>
+							<a href="{{ data.originalUnsplashImageURL }}">{{data.originalUnsplashImageName}}</a>
+						<# } else if ( data.originalImageURL && data.originalImageName ) { #>
 							<strong><?php esc_html_e( 'Original image:' ); ?></strong>
 							<a href="{{ data.originalImageURL }}">{{data.originalImageName}}</a>
 						<# } #>
@@ -904,11 +909,12 @@ class Plugin extends Plugin_Base {
 						</div>
 						<# } #>
 
-						<# var originalImageURL = data.originalImageURL || data.link; #>
-						<# originalImageURL = originalImageURL.match( 'unsplash.com/' ) ? originalImageURL : false; #>
-						<# if ( originalImageURL ) { #>
-						<strong><?php esc_html_e( 'Original image:' ); ?></strong>
-						<a href="{{ originalImageURL }}" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Unsplash', 'unsplash' ); ?></a>
+						<# if ( data.originalUnsplashImageURL && data.originalUnsplashImageName ) { #>
+							<strong><?php esc_html_e( 'Original image:' ); ?></strong>
+							<a href="{{ data.originalUnsplashImageURL }}">{{data.originalUnsplashImageName}}</a>
+						<# } else if ( data.originalImageURL && data.originalImageName ) { #>
+							<strong><?php esc_html_e( 'Original image:' ); ?></strong>
+							<a href="{{ data.originalImageURL }}">{{data.originalImageName}}</a>
 						<# } #>
 
 						<# if ( data.can.save && data.sizes ) { #>
