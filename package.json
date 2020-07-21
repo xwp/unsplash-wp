@@ -116,6 +116,7 @@
     "build:run": "grunt build",
     "build:zip": "grunt create-build-zip",
     "dev": "wp-scripts start",
+    "deploy": "grunt deploy",
     "docker": "docker-compose run --rm -u 1000 --workdir=/var/www/html/wp-content/plugins/unsplash wordpress",
     "env:logs": "bin/logs.sh",
     "env:start": "bin/start.sh",
