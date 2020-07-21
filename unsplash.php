@@ -3,9 +3,9 @@
  * Plugin Name: Unsplash
  * Plugin URI: https://github.com/xwp/unsplash-wp
  * Description: Unsplash for WordPress.
- * Version: 1.0.0-rc2
- * Author: XWP
- * Author URI: https://xwp.co/
+ * Version: 1.0.0
+ * Author: Unsplash
+ * Author URI: https://unsplash.com/
  * License: GPLv2+
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain: unsplash
@@ -13,7 +13,7 @@
  * Requires at least: 4.9
  * Requires PHP: 5.6
  *
- * Copyright (c) 2020 XWP (https://xwp.co/)
+ * Copyright (c) 2020 Unsplash (https://unsplash.com/)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2 or, at

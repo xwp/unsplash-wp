@@ -379,7 +379,7 @@ class API {
 		$message = esc_html__( 'To complete setup of the Unsplash plugin you will need to add the API access key.', 'unsplash' );
 		$url     = get_admin_url( null, 'options-general.php?page=unsplash' );
 
-		$cta_link = sprintf( '<a href="%s">%s</a>', esc_url( $url ), esc_html__( 'Unspash settings page', 'unsplash' ) );
+		$cta_link = sprintf( '<a href="%s">%s</a>', esc_url( $url ), esc_html__( 'Unsplash settings page', 'unsplash' ) );
 		$cta_text = sprintf(
 			/* translators: %s: Link to Unsplash settings page. */
 			esc_html__( 'Visit the %s to complete the process.', 'unsplash' ),

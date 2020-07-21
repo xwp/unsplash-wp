@@ -73,7 +73,7 @@ module.exports = function( grunt ) {
 				command: './vendor/xwp/wp-dev-lib/scripts/generate-markdown-readme', // Generate the readme.md.
 			},
 			create_build_zip: {
-				command: 'if [ ! -e build ]; then echo "Run grunt build first."; exit 1; fi; if [ -e unsplash.zip ]; then rm unsplash.zip; fi; cd build; zip -r ../unsplash.zip .; cd ..; echo; echo "ZIP of build: $(pwd)/unsplash.zip"',
+				command: 'if [ ! -e build ]; then echo "Run grunt build first."; exit 1; fi; if [ -e unsplash.zip ]; then rm unsplash.zip; fi; mv build unsplash; zip -r ./unsplash.zip unsplash; mv unsplash build; echo; echo "ZIP of build: $(pwd)/unsplash.zip"',
 			},
 		},
 

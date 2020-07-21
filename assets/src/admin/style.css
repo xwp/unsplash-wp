@@ -1,27 +1,26 @@
-
 .settings_page_unsplash {
 
-	& .notice,
-	& div.error,
-	& div.updated {
+	.notice,
+	div.error,
+	div.updated {
 		margin: 18px 18px 2px 0;
 	}
 
-	& p.submit {
+	p.submit {
 		margin-top: 0;
 		margin-bottom: 20px;
 	}
 
-	& .notice-unsplash {
+	.notice-unsplash {
 		padding: 12px;
 		margin-left: 0;
 	}
 
-	& form {
+	form {
 		max-width: 800px;
 	}
 
-	& .unsplash-icon {
+	.unsplash-icon {
 		height: 1.5em;
 		padding-left: 0.3em;
 		vertical-align: sub;
@@ -31,11 +30,12 @@
 
 .notice-unsplash-global {
 
-	& h3 {
+	h3 {
+		margin-top: 1em;
 		margin-bottom: 0.3em;
 	}
 
-	& p {
+	p {
 		margin-bottom: 1em;
 	}
 }
