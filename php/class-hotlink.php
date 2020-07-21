@@ -710,7 +710,7 @@ class Hotlink {
 	/**
 	 * Add Unsplash metadata for edited attachment
 	 *
-	 * @filter wp_edited_attachment_metadata, 10, 3
+	 * @filter wp_edited_image_metadata, 10, 3
 	 *
 	 * @param array $data              Array of updated attachment meta data.
 	 * @param int   $new_attachment_id Attachment post ID.
