@@ -1,5 +1,5 @@
 === Unsplash ===
-Contributors: xwp, unsplash
+Contributors: unsplash, xwp
 Tags: unsplash, images, media, free, photographs, photos
 Requires at least: 4.9
 Stable tag: 1.0.0

@@ -4,7 +4,7 @@
 ![Banner](wp-assets/banner-1544x500.png)
 Search and use the internet’s largest library of freely usable images from [Unsplash](https://unsplash.com) right from the WordPress editor.
 
-**Contributors:** [xwp](https://profiles.wordpress.org/xwp), [unsplash](https://profiles.wordpress.org/unsplash)  
+**Contributors:** [unsplash](https://profiles.wordpress.org/unsplash), [xwp](https://profiles.wordpress.org/xwp)  
 **Tags:** [unsplash](https://wordpress.org/plugins/tags/unsplash), [images](https://wordpress.org/plugins/tags/images), [media](https://wordpress.org/plugins/tags/media), [free](https://wordpress.org/plugins/tags/free), [photographs](https://wordpress.org/plugins/tags/photographs), [photos](https://wordpress.org/plugins/tags/photos)  
 **Requires at least:** 4.9  
 **Tested up to:** 5.4.2  
