@@ -40,6 +40,10 @@ class Block_Type {
 	 * @action init
 	 */
 	public function register_blocks() {
+		if ( ! function_exists( 'register_block_type' ) ) {
+			return;
+		}
+
 		$blocks_dir    = $this->plugin->dir_path . '/assets/js/blocks/';
 		$block_folders = [
 			'image',
@@ -64,9 +68,7 @@ class Block_Type {
 				$metadata['render_callback'] = [ $this, $callback ];
 			}
 
-			if ( function_exists( '\register_block_type' ) ) {
-				\register_block_type( $metadata['name'], $metadata );
-			}
+			register_block_type( $metadata['name'], $metadata );
 		}
 	}
 
