@@ -19,8 +19,6 @@ require_once __DIR__ . '/php/class-plugin.php';
 
 $unsplash_plugin = new Plugin();
 
-add_action( 'plugins_loaded', [ $unsplash_plugin, 'init' ] );
-
 /**
  * Unsplash Plugin Instance
  *

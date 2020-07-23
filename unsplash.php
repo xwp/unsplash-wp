@@ -57,3 +57,13 @@ function _unsplash_php_version_error() {
 function _unsplash_php_version_text() {
 	return esc_html__( 'Unsplash plugin error: Your version of PHP is too old to run this plugin. You must be running PHP 5.6.20 or higher.', 'unsplash' );
 }
+/**
+ * Setup Unsplash plugin.
+ *
+ * @return void
+ */
+function _unsplash_load_plugin() {
+	$unsplash_plugin = \Unsplash\get_plugin_instance();
+	$unsplash_plugin->init();
+}
+add_action( 'plugins_loaded', '_unsplash_load_plugin' );
