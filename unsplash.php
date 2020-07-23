@@ -34,7 +34,7 @@
 
 if ( version_compare( phpversion(), '5.6.20', '>=' ) ) {
 	require_once __DIR__ . '/instance.php';
-	
+
 	/**
 	 * Setup Unsplash plugin.
 	 *
