@@ -34,6 +34,17 @@
 
 if ( version_compare( phpversion(), '5.6.20', '>=' ) ) {
 	require_once __DIR__ . '/instance.php';
+	
+	/**
+	 * Setup Unsplash plugin.
+	 *
+	 * @return void
+	 */
+	function _unsplash_load_plugin() {
+		$unsplash_plugin = \Unsplash\get_plugin_instance();
+		$unsplash_plugin->init();
+	}
+	add_action( 'plugins_loaded', '_unsplash_load_plugin' );
 } else {
 	if ( defined( 'WP_CLI' ) ) {
 		WP_CLI::warning( _unsplash_php_version_text() );
@@ -57,13 +68,3 @@ function _unsplash_php_version_error() {
 function _unsplash_php_version_text() {
 	return esc_html__( 'Unsplash plugin error: Your version of PHP is too old to run this plugin. You must be running PHP 5.6.20 or higher.', 'unsplash' );
 }
-/**
- * Setup Unsplash plugin.
- *
- * @return void
- */
-function _unsplash_load_plugin() {
-	$unsplash_plugin = \Unsplash\get_plugin_instance();
-	$unsplash_plugin->init();
-}
-add_action( 'plugins_loaded', '_unsplash_load_plugin' );
