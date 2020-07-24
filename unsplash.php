@@ -38,6 +38,8 @@ if ( version_compare( phpversion(), '5.6.20', '>=' ) ) {
 	/**
 	 * Setup Unsplash plugin.
 	 *
+	 * @codeCoverageIgnore
+	 *
 	 * @return void
 	 */
 	function _unsplash_load_plugin() {
