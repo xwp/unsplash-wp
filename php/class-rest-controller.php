@@ -234,7 +234,7 @@ class Rest_Controller extends WP_REST_Controller {
 		$image->set_field( 'description', $request->get_param( 'description' ) );
 		$image->set_field( 'caption', $request->get_param( 'caption' ) );
 
-		$importer      = new Import( $id, $image );
+		$importer      = new Import( $id, $image, $request->get_param( 'parent' ) );
 		$attachment_id = $importer->process();
 		// @codeCoverageIgnoreStart
 		if ( is_wp_error( $attachment_id ) ) {
