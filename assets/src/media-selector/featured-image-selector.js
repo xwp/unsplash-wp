@@ -17,5 +17,5 @@ addFilter(
 	'editor.MediaUpload',
 	'unsplash/extend-featured-image',
 	() => UnsplashMediaUpload,
-	20
+	10
 );

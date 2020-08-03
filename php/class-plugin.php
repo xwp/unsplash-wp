@@ -72,6 +72,7 @@ class Plugin extends Plugin_Base {
 
 		add_action( 'wp_default_scripts', [ $this, 'register_polyfill_scripts' ] );
 		add_action( 'wp_enqueue_media', [ $this, 'enqueue_media_scripts' ] );
+		add_action( 'enqueue_block_assets', [ $this, 'enqueue_block_assets' ], 100 );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_scripts' ] );
 		add_action( 'init', [ $this, 'register_meta' ] );
 		add_action( 'init', [ $this, 'register_taxonomy' ] );
@@ -190,29 +191,6 @@ class Plugin extends Plugin_Base {
 			]
 		);
 
-		/*
-		 * If the block editor is available, the featured image selector in the editor will need to be overridden. This
-		 * is an extension of the media selector enqueued above and is separated from it because the required dependencies
-		 * are not available in WP < 5.0. It would not make sense to polyfill these dependencies anyways since the block
-		 * editor is not officially compatible with WP < 5.0.
-		 */
-		if ( has_action( 'enqueue_block_assets' ) ) {
-			$asset_file = $this->dir_path . '/assets/js/featured-image-selector.asset.php';
-			$asset      = is_readable( $asset_file ) ? require $asset_file : [];
-			$version    = isset( $asset['version'] ) ? $asset['version'] : $this->asset_version();
-
-			$dependencies   = isset( $asset['dependencies'] ) ? $asset['dependencies'] : [];
-			$dependencies[] = 'unsplash-media-selector';
-
-			wp_enqueue_script(
-				'unsplash-featured-image-selector',
-				$this->asset_url( 'assets/js/featured-image-selector.js' ),
-				$dependencies,
-				$version,
-				true
-			);
-		}
-
 		// Enqueue media selector CSS.
 		wp_enqueue_style(
 			'unsplash-media-selector-style',
@@ -224,6 +202,32 @@ class Plugin extends Plugin_Base {
 		wp_styles()->add_data( 'unsplash-media-selector-style', 'rtl', 'replace' );
 
 		return true;
+	}
+
+	/**
+	 * Enqueue block editor assets.
+	 */
+	public function enqueue_block_assets() {
+		/*
+		 * If the block editor is available, the featured image selector in the editor will need to be overridden. This
+		 * is an extension of the media selector enqueued above and is separated from it because the required dependencies
+		 * are not available in WP < 5.0. It would not make sense to polyfill these dependencies anyways since the block
+		 * editor is not officially compatible with WP < 5.0.
+		 */
+		$asset_file = $this->dir_path . '/assets/js/featured-image-selector.asset.php';
+		$asset      = is_readable( $asset_file ) ? require $asset_file : [];
+		$version    = isset( $asset['version'] ) ? $asset['version'] : $this->asset_version();
+
+		$dependencies   = isset( $asset['dependencies'] ) ? $asset['dependencies'] : [];
+		$dependencies[] = 'unsplash-media-selector';
+
+		wp_enqueue_script(
+			'unsplash-featured-image-selector',
+			$this->asset_url( 'assets/js/featured-image-selector.js' ),
+			$dependencies,
+			$version,
+			true
+		);
 	}
 
 	/**
