@@ -733,14 +733,11 @@ class Hotlink {
 	public function make_unsplash_images_cropable( $match, $image_location, $image_meta, $attachment_id ) {
 		$unsplash_url = $this->get_unsplash_url( $attachment_id );
 		$cropped      = $this->is_cropped_image( $attachment_id );
-		if ( ! $unsplash_url || $cropped ) {
+		$is_unsplash  = strpos( $image_location, 'images.unsplash.com' );
+		if ( ! $unsplash_url || $cropped || ( false === $is_unsplash ) ) {
 			return $match;
 		}
 
-		if ( false !== strpos( $image_location, 'images.unsplash.com' ) ) {
-			return true;
-		}
-
-		return $match;
+		return true;
 	}
 }
