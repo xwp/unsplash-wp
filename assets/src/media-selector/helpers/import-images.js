@@ -48,6 +48,7 @@ const importImage = image => {
 		title,
 		description,
 		caption,
+		parent: getConfig( 'postId' ),
 	};
 
 	return wp
