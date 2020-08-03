@@ -98,8 +98,29 @@ class Rest_Controller extends WP_REST_Controller {
 			'/' . $this->rest_base . '/import/(?P<id>[\w-]+)',
 			[
 				'args'   => [
-					'id' => [
+					'id'          => [
 						'description' => esc_html__( 'Unsplash image ID.', 'unsplash' ),
+						'type'        => 'string',
+					],
+					'parent'      => [
+						'description' => esc_html__( 'Parent post ID.', 'unsplash' ),
+						'type'        => 'integer',
+						'default'     => 0,
+					],
+					'alt'         => [
+						'description' => esc_html__( 'Image alt text.', 'unsplash' ),
+						'type'        => 'string',
+					],
+					'title'       => [
+						'description' => esc_html__( 'Image title.', 'unsplash' ),
+						'type'        => 'string',
+					],
+					'description' => [
+						'description' => esc_html__( 'Image description.', 'unsplash' ),
+						'type'        => 'string',
+					],
+					'caption'     => [
+						'description' => esc_html__( 'Image caption.', 'unsplash' ),
 						'type'        => 'string',
 					],
 				],
@@ -232,7 +253,7 @@ class Rest_Controller extends WP_REST_Controller {
 		$image->set_field( 'description', $request->get_param( 'description' ) );
 		$image->set_field( 'caption', $request->get_param( 'caption' ) );
 
-		$importer      = new Import( $id, $image );
+		$importer      = new Import( $id, $image, $request->get_param( 'parent' ) );
 		$attachment_id = $importer->process();
 		// @codeCoverageIgnoreStart
 		if ( is_wp_error( $attachment_id ) ) {
