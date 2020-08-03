@@ -737,10 +737,10 @@ class Hotlink {
 			return $match;
 		}
 
-		if ( ! strpos( $image_location, 'images.unsplash.com' ) ) {
-			return $match;
+		if ( strpos( $image_location, 'images.unsplash.com' ) ) {
+			return true;
 		}
 
-		return true;
+		return $match;
 	}
 }
