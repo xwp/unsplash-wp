@@ -842,4 +842,36 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		$this->assertEquals( 'UNSPLASH_ID', get_post_meta( $second_id, 'original_id', true ) );
 		$this->assertEquals( 'https://www.unsplash.com/foo', get_post_meta( $second_id, 'original_link', true ) );
 	}
+
+	/**
+	 * Test make_unsplash_images_cropable.
+	 *
+	 * @covers ::make_unsplash_images_cropable()
+	 */
+	public function test_make_unsplash_images_cropable() {
+		$image_location = 'https://images.unsplash.com/photo-1593642703055-4b72c180d9b5?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjE0NzAzNH0&amp;fm=jpg&amp;q=85&amp;fit=crop&amp;w=1024&amp;h=683';
+		$result         = $this->hotlink->make_unsplash_images_cropable( false, $image_location, [], self::$attachment_id );
+		$this->assertTrue( $result );
+	}
+
+	/**
+	 * Test make_unsplash_images_cropable.
+	 *
+	 * @covers ::make_unsplash_images_cropable()
+	 */
+	public function test_make_unsplash_images_cropable_invalid() {
+		$first_id = $this->factory->attachment->create_object(
+			'/tmp/banana.jpg',
+			0,
+			[
+				'post_mime_type' => 'image/jpeg',
+				'post_excerpt'   => 'A sample caption 1',
+			]
+		);
+
+		$image_location = wp_get_attachment_url( $first_id );
+
+		$result = $this->hotlink->make_unsplash_images_cropable( false, $image_location, [], $first_id );
+		$this->assertFalse( $result );
+	}
 }
