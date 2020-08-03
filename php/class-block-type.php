@@ -31,13 +31,12 @@ class Block_Type {
 	 * Initiate the class.
 	 */
 	public function init() {
-		$this->plugin->add_doc_hooks( $this );
+		add_action( 'init', [ $this, 'register_blocks' ] );
+		add_action( 'enqueue_block_editor_assets', [ $this, 'register_block_editor_assets' ] );
 	}
 
 	/**
 	 * Register our custom blocks.
-	 *
-	 * @action init
 	 */
 	public function register_blocks() {
 		if ( ! function_exists( 'register_block_type' ) ) {
@@ -74,8 +73,6 @@ class Block_Type {
 
 	/**
 	 * Load Gutenberg assets.
-	 *
-	 * @action enqueue_block_editor_assets
 	 */
 	public function register_block_editor_assets() {
 		// Register block editor assets.

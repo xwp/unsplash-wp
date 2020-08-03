@@ -34,6 +34,19 @@
 
 if ( version_compare( phpversion(), '5.6.20', '>=' ) ) {
 	require_once __DIR__ . '/instance.php';
+
+	/**
+	 * Setup Unsplash plugin.
+	 *
+	 * @codeCoverageIgnore
+	 *
+	 * @return void
+	 */
+	function _unsplash_load_plugin() {
+		$unsplash_plugin = \Unsplash\get_plugin_instance();
+		$unsplash_plugin->init();
+	}
+	add_action( 'plugins_loaded', '_unsplash_load_plugin' );
 } else {
 	if ( defined( 'WP_CLI' ) ) {
 		WP_CLI::warning( _unsplash_php_version_text() );
