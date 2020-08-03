@@ -98,8 +98,28 @@ class Rest_Controller extends WP_REST_Controller {
 			'/' . $this->rest_base . '/import/(?P<id>[\w-]+)',
 			[
 				'args'   => [
-					'id' => [
+					'id'          => [
 						'description' => esc_html__( 'Unsplash image ID.', 'unsplash' ),
+						'type'        => 'string',
+					],
+					'parent'      => [
+						'description' => esc_html__( 'Parent post ID.', 'unsplash' ),
+						'type'        => 'integer',
+					],
+					'alt'         => [
+						'description' => esc_html__( 'Image alt text.', 'unsplash' ),
+						'type'        => 'string',
+					],
+					'title'       => [
+						'description' => esc_html__( 'Image title.', 'unsplash' ),
+						'type'        => 'string',
+					],
+					'description' => [
+						'description' => esc_html__( 'Image description.', 'unsplash' ),
+						'type'        => 'string',
+					],
+					'caption'     => [
+						'description' => esc_html__( 'Image caption.', 'unsplash' ),
 						'type'        => 'string',
 					],
 				],
