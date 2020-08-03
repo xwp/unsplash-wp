@@ -1,6 +1,6 @@
 === Unsplash ===
 Contributors: unsplash, xwp
-Tags: unsplash, images, media, free, photographs, photos
+Tags: unsplash, images, media, free, photographs, photos, block
 Requires at least: 4.9
 Stable tag: 1.0.0
 Tested up to: 5.4.2
