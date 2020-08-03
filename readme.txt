@@ -2,7 +2,7 @@
 Contributors: unsplash, xwp
 Tags: unsplash, images, media, free, photographs, photos, block
 Requires at least: 4.9
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 Tested up to: 5.4.2
 Requires PHP: 5.6.20
 License: GPLv2 or later
