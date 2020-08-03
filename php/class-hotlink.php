@@ -737,7 +737,7 @@ class Hotlink {
 			return $match;
 		}
 
-		if ( strpos( $image_location, 'images.unsplash.com' ) ) {
+		if ( false !== strpos( $image_location, 'images.unsplash.com' ) ) {
 			return true;
 		}
 
