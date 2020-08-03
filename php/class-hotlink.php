@@ -48,6 +48,7 @@ class Hotlink {
 		add_filter( 'wp_get_attachment_caption', [ $this, 'wp_get_attachment_caption' ], 10, 2 );
 		add_filter( 'render_block', [ $this, 'render_block' ], 10, 2 );
 		add_filter( 'wp_edited_image_metadata', [ $this, 'add_edited_attachment_metadata' ], 10, 3 );
+		add_filter( 'wp_image_file_matches_image_meta', [ $this, 'make_unsplash_images_cropable' ], 10, 4 );
 	}
 
 	/**
@@ -716,5 +717,30 @@ class Hotlink {
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Filter whether an image path or URI matches image meta.
+	 *
+	 * @param bool   $match          Whether the image relative path from the image meta
+	 *                               matches the end of the URI or path to the image file.
+	 * @param string $image_location Full path or URI to the tested image file.
+	 * @param array  $image_meta     (Unused) The image meta data as returned by 'wp_get_attachment_metadata()'.
+	 * @param int    $attachment_id  The image attachment ID or 0 if not supplied.
+	 *
+	 * @return bool Can an image cropable.
+	 */
+	public function make_unsplash_images_cropable( $match, $image_location, $image_meta, $attachment_id ) {
+		$unsplash_url = $this->get_unsplash_url( $attachment_id );
+		$cropped      = $this->is_cropped_image( $attachment_id );
+		if ( ! $unsplash_url || $cropped ) {
+			return $match;
+		}
+
+		if ( ! strpos( $image_location, 'images.unsplash.com' ) ) {
+			return $match;
+		}
+
+		return true;
 	}
 }
