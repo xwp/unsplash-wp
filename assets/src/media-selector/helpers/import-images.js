@@ -6,7 +6,7 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { getConfig, getPostId, isUnsplashImage, preloadImage } from './';
+import { getConfig, isUnsplashImage, preloadImage } from './';
 
 const { getUserSetting } = window;
 
@@ -48,7 +48,7 @@ const importImage = image => {
 		title,
 		description,
 		caption,
-		parent: getPostId(),
+		parent: getConfig( 'postId' ),
 	};
 
 	return wp

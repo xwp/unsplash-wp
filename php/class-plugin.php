@@ -165,6 +165,7 @@ class Plugin extends Plugin_Base {
 			true
 		);
 
+		$post = get_post();
 		wp_localize_script(
 			'unsplash-media-selector',
 			'unsplash',
@@ -185,7 +186,7 @@ class Plugin extends Plugin_Base {
 				'errors'    => [
 					'generic' => esc_html__( 'The file was unable to be imported into the Media Library. Please try again', 'unsplash' ),
 				],
-
+				'postId'    => ( $post ) ? $post->ID : null,
 			]
 		);
 

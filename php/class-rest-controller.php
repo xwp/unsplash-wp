@@ -105,6 +105,7 @@ class Rest_Controller extends WP_REST_Controller {
 					'parent'      => [
 						'description' => esc_html__( 'Parent post ID.', 'unsplash' ),
 						'type'        => 'integer',
+						'default'     => 0,
 					],
 					'alt'         => [
 						'description' => esc_html__( 'Image alt text.', 'unsplash' ),
