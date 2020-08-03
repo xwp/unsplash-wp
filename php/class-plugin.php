@@ -72,6 +72,7 @@ class Plugin extends Plugin_Base {
 
 		add_action( 'wp_default_scripts', [ $this, 'register_polyfill_scripts' ] );
 		add_action( 'wp_enqueue_media', [ $this, 'enqueue_media_scripts' ] );
+		add_action( 'enqueue_block_assets', [ $this, 'enqueue_block_assets' ], 100 );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_scripts' ] );
 		add_action( 'init', [ $this, 'register_meta' ] );
 		add_action( 'init', [ $this, 'register_taxonomy' ] );
@@ -204,8 +205,6 @@ class Plugin extends Plugin_Base {
 
 	/**
 	 * Enqueue block editor assets.
-	 *
-	 * @action enqueue_block_assets, 100
 	 */
 	public function enqueue_block_assets() {
 		/*
