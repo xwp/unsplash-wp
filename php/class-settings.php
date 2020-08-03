@@ -72,7 +72,9 @@ class Settings {
 	 * Initiate the class.
 	 */
 	public function init() {
-		$this->plugin->add_doc_hooks( $this );
+		add_action( 'admin_menu', [ $this, 'add_admin_menu' ] );
+		add_action( 'admin_init', [ $this, 'add_settings' ] );
+		add_action( 'admin_init', [ $this, 'handle_auth_flow' ] );
 	}
 
 	/**
@@ -167,8 +169,6 @@ class Settings {
 
 	/**
 	 * Adds the Unsplash admin menu.
-	 *
-	 * @action admin_menu
 	 */
 	public function add_admin_menu() {
 		add_options_page( 'Unsplash', 'Unsplash', 'manage_options', 'unsplash', [ $this, 'settings_page_render' ] );
@@ -176,8 +176,6 @@ class Settings {
 
 	/**
 	 * Add the Unsplash settings.
-	 *
-	 * @action admin_init
 	 */
 	public function add_settings() {
 		$args = [
@@ -345,8 +343,6 @@ class Settings {
 
 	/**
 	 * Handles the authentication flow for registering a dynamic client application.
-	 *
-	 * @action admin_init
 	 */
 	public function handle_auth_flow() {
 		$code = $this->get_code();

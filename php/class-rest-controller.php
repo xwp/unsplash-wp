@@ -48,15 +48,13 @@ class Rest_Controller extends WP_REST_Controller {
 	 * Initiate the class.
 	 */
 	public function init() {
-		$this->plugin->add_doc_hooks( $this );
+		add_action( 'rest_api_init', [ $this, 'register_routes' ] );
 	}
 
 	/**
 	 * Registers the routes for the Unsplash API.
 	 *
 	 * @see register_rest_route()
-	 *
-	 * @action rest_api_init
 	 */
 	public function register_routes() {
 		register_rest_route(
