@@ -108,7 +108,8 @@ class Test_Plugin extends \WP_UnitTestCase {
 	 */
 	public function test_construct() {
 		$plugin = new Plugin();
-		$this->assertEquals( 10, has_action( 'plugins_loaded', [ $plugin, 'init' ] ) );
+		$plugin->init();
+
 		$this->assertEquals( 10, has_action( 'wp_default_scripts', [ $plugin, 'register_polyfill_scripts' ] ) );
 		$this->assertEquals( 10, has_action( 'wp_enqueue_media', [ $plugin, 'enqueue_media_scripts' ] ) );
 		$this->assertEquals( 10, has_action( 'admin_enqueue_scripts', [ $plugin, 'enqueue_admin_scripts' ] ) );

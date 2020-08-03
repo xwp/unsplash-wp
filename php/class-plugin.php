@@ -51,8 +51,6 @@ class Plugin extends Plugin_Base {
 
 	/**
 	 * Initiate the plugin resources.
-	 *
-	 * @action plugins_loaded
 	 */
 	public function init() {
 		$this->hotlink = new Hotlink( $this );
@@ -71,14 +69,22 @@ class Plugin extends Plugin_Base {
 
 		// Manually add this filter as the plugin file name is dynamic.
 		add_filter( 'plugin_action_links_' . $this->file, [ $this, 'action_links' ] );
+
+		add_action( 'wp_default_scripts', [ $this, 'register_polyfill_scripts' ] );
+		add_action( 'wp_enqueue_media', [ $this, 'enqueue_media_scripts' ] );
+		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_scripts' ] );
+		add_action( 'init', [ $this, 'register_meta' ] );
+		add_action( 'init', [ $this, 'register_taxonomy' ] );
+		add_action( 'admin_notices', [ $this, 'admin_notice' ] );
+		add_action( 'print_media_templates', [ $this, 'add_media_templates' ] );
+
+		add_filter( 'wp_prepare_attachment_for_js', [ $this, 'add_unsplash_author_meta' ], 10, 2 );
 	}
 
 	/**
 	 * Polyfill dependencies needed to enqueue our assets on WordPress 4.9 and below.
 	 *
 	 * @codeCoverageIgnore
-	 *
-	 * @action wp_default_scripts
 	 *
 	 * @param /WP_Scripts $wp_scripts Scripts.
 	 */
@@ -127,8 +133,6 @@ class Plugin extends Plugin_Base {
 
 	/**
 	 * Load our media selector assets.
-	 *
-	 * @action wp_enqueue_media
 	 */
 	public function enqueue_media_scripts() {
 		if ( ! current_user_can( 'upload_files' ) ) {
@@ -228,8 +232,6 @@ class Plugin extends Plugin_Base {
 
 	/**
 	 * Load our admin assets.
-	 *
-	 * @action admin_enqueue_scripts
 	 */
 	public function enqueue_admin_scripts() {
 		wp_enqueue_style(
@@ -472,8 +474,6 @@ class Plugin extends Plugin_Base {
 
 	/**
 	 * Register meta field for attachments.
-	 *
-	 * @action init
 	 */
 	public function register_meta() {
 		$default_args = [
@@ -537,8 +537,6 @@ class Plugin extends Plugin_Base {
 
 	/**
 	 * Register taxonomies for attachments.
-	 *
-	 * @action init
 	 */
 	public function register_taxonomy() {
 		$default_args = [
@@ -575,8 +573,6 @@ class Plugin extends Plugin_Base {
 
 	/**
 	 * Add an admin notice on if credentials not setup.
-	 *
-	 * @action admin_notices
 	 */
 	public function admin_notice() {
 		if ( ! current_user_can( 'manage_options' ) ) {
@@ -637,8 +633,6 @@ class Plugin extends Plugin_Base {
 	 * @param array   $response Data for admin ajax.
 	 * @param WP_Post $attachment Attachment object.
 	 *
-	 * @filter wp_prepare_attachment_for_js, 10, 2
-	 *
 	 * @return mixed
 	 */
 	public function add_unsplash_author_meta( array $response, $attachment ) {
@@ -668,8 +662,6 @@ class Plugin extends Plugin_Base {
 
 	/**
 	 * Add media templates.
-	 *
-	 * @action print_media_templates
 	 */
 	public function add_media_templates() { ?>
 		<?php // phpcs:disable  WordPress.WP.I18n.MissingArgDomain
