@@ -444,14 +444,13 @@ class Settings {
 	 * @return mixed
 	 */
 	public function get_client_id( $access_token ) {
-		$url      = get_home_url( null, '/' );
-		$name     = get_bloginfo( 'name' );
-		$response = wp_remote_post(
+		$site_data = $this->get_site_data();
+		$response  = wp_remote_post(
 			'https://api.unsplash.com/clients',
 			[
 				'body'    => [
-					'name'        => $name,
-					'description' => sprintf( 'Wordpress Oauth Client application for: %1$s - %2$s', $name, $url ),
+					'name'        => $site_data['name'],
+					'description' => sprintf( 'Wordpress Oauth Client application for: %1$s - %2$s', $site_data['name'], $site_data['url'] ),
 				],
 				'headers' => [
 					'Authorization' => 'Bearer ' . $access_token,
@@ -504,7 +503,8 @@ class Settings {
 	 */
 	public function get_credentials() {
 		$options        = get_option( 'unsplash_settings' );
-		$site_name_slug = sanitize_title_with_dashes( get_bloginfo( 'name' ) );
+		$site_data      = $this->get_site_data();
+		$site_name_slug = sanitize_title_with_dashes( $site_data['name'] );
 
 		$credentials = [
 			'applicationId' => ! empty( $options['access_key'] ) ? $this->decrypt( $options['access_key'] ) : getenv( 'UNSPLASH_ACCESS_KEY' ),
@@ -520,5 +520,23 @@ class Settings {
 		$credentials = apply_filters( 'unsplash_api_credentials', $credentials, $options );
 
 		return $credentials;
+	}
+
+	/**
+	 * Get site name and url. If site name is empty, fallback to domain with dashes.
+	 *
+	 * @return array
+	 */
+	public function get_site_data() {
+		$data = [
+			'url'  => get_home_url( null, '/' ),
+			'name' => get_bloginfo( 'name' ),
+		];
+		if ( ! $data['name'] && $data['url'] ) {
+			$url          = wp_parse_url( $data['url'] );
+			$data['name'] = sanitize_title_with_dashes( $url['host'] );
+		}
+
+		return $data;
 	}
 }

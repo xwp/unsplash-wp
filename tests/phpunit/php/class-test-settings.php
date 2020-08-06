@@ -704,6 +704,7 @@ class Test_Settings extends \WP_UnitTestCase {
 	 * Test get_credentials.
 	 *
 	 * @covers ::get_credentials()
+	 * @covers ::get_site_data()
 	 */
 	public function test_get_credentials() {
 		$credentials = $this->settings->get_credentials();
