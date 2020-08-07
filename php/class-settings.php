@@ -532,9 +532,11 @@ class Settings {
 			'url'  => get_home_url( null, '/' ),
 			'name' => get_bloginfo( 'name' ),
 		];
-		if ( ! $data['name'] && $data['url'] ) {
-			$url          = wp_parse_url( $data['url'] );
-			$data['name'] = sanitize_title_with_dashes( $url['host'] );
+		if ( ! $data['name'] ) {
+			$url = wp_parse_url( $data['url'] );
+			if ( $url && array_key_exists( 'host', $url ) ) {
+				$data['name'] = sanitize_title_with_dashes( $url['host'] );
+			}
 		}
 
 		return $data;
