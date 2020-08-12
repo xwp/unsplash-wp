@@ -51,8 +51,6 @@ class Plugin extends Plugin_Base {
 
 	/**
 	 * Initiate the plugin resources.
-	 *
-	 * @action plugins_loaded
 	 */
 	public function init() {
 		$this->hotlink = new Hotlink( $this );
@@ -71,14 +69,23 @@ class Plugin extends Plugin_Base {
 
 		// Manually add this filter as the plugin file name is dynamic.
 		add_filter( 'plugin_action_links_' . $this->file, [ $this, 'action_links' ] );
+
+		add_action( 'wp_default_scripts', [ $this, 'register_polyfill_scripts' ] );
+		add_action( 'wp_enqueue_media', [ $this, 'enqueue_media_scripts' ] );
+		add_action( 'enqueue_block_assets', [ $this, 'enqueue_block_assets' ], 100 );
+		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_scripts' ] );
+		add_action( 'init', [ $this, 'register_meta' ] );
+		add_action( 'init', [ $this, 'register_taxonomy' ] );
+		add_action( 'admin_notices', [ $this, 'admin_notice' ] );
+		add_action( 'print_media_templates', [ $this, 'add_media_templates' ] );
+
+		add_filter( 'wp_prepare_attachment_for_js', [ $this, 'add_unsplash_author_meta' ], 10, 2 );
 	}
 
 	/**
 	 * Polyfill dependencies needed to enqueue our assets on WordPress 4.9 and below.
 	 *
 	 * @codeCoverageIgnore
-	 *
-	 * @action wp_default_scripts
 	 *
 	 * @param /WP_Scripts $wp_scripts Scripts.
 	 */
@@ -127,8 +134,6 @@ class Plugin extends Plugin_Base {
 
 	/**
 	 * Load our media selector assets.
-	 *
-	 * @action wp_enqueue_media
 	 */
 	public function enqueue_media_scripts() {
 		if ( ! current_user_can( 'upload_files' ) ) {
@@ -161,6 +166,7 @@ class Plugin extends Plugin_Base {
 			true
 		);
 
+		$post = get_post();
 		wp_localize_script(
 			'unsplash-media-selector',
 			'unsplash',
@@ -181,32 +187,9 @@ class Plugin extends Plugin_Base {
 				'errors'    => [
 					'generic' => esc_html__( 'The file was unable to be imported into the Media Library. Please try again', 'unsplash' ),
 				],
-
+				'postId'    => ( $post ) ? $post->ID : null,
 			]
 		);
-
-		/*
-		 * If the block editor is available, the featured image selector in the editor will need to be overridden. This
-		 * is an extension of the media selector enqueued above and is separated from it because the required dependencies
-		 * are not available in WP < 5.0. It would not make sense to polyfill these dependencies anyways since the block
-		 * editor is not officially compatible with WP < 5.0.
-		 */
-		if ( has_action( 'enqueue_block_assets' ) ) {
-			$asset_file = $this->dir_path . '/assets/js/featured-image-selector.asset.php';
-			$asset      = is_readable( $asset_file ) ? require $asset_file : [];
-			$version    = isset( $asset['version'] ) ? $asset['version'] : $this->asset_version();
-
-			$dependencies   = isset( $asset['dependencies'] ) ? $asset['dependencies'] : [];
-			$dependencies[] = 'unsplash-media-selector';
-
-			wp_enqueue_script(
-				'unsplash-featured-image-selector',
-				$this->asset_url( 'assets/js/featured-image-selector.js' ),
-				$dependencies,
-				$version,
-				true
-			);
-		}
 
 		// Enqueue media selector CSS.
 		wp_enqueue_style(
@@ -222,9 +205,33 @@ class Plugin extends Plugin_Base {
 	}
 
 	/**
+	 * Enqueue block editor assets.
+	 */
+	public function enqueue_block_assets() {
+		/*
+		 * If the block editor is available, the featured image selector in the editor will need to be overridden. This
+		 * is an extension of the media selector enqueued above and is separated from it because the required dependencies
+		 * are not available in WP < 5.0. It would not make sense to polyfill these dependencies anyways since the block
+		 * editor is not officially compatible with WP < 5.0.
+		 */
+		$asset_file = $this->dir_path . '/assets/js/featured-image-selector.asset.php';
+		$asset      = is_readable( $asset_file ) ? require $asset_file : [];
+		$version    = isset( $asset['version'] ) ? $asset['version'] : $this->asset_version();
+
+		$dependencies   = isset( $asset['dependencies'] ) ? $asset['dependencies'] : [];
+		$dependencies[] = 'unsplash-media-selector';
+
+		wp_enqueue_script(
+			'unsplash-featured-image-selector',
+			$this->asset_url( 'assets/js/featured-image-selector.js' ),
+			$dependencies,
+			$version,
+			true
+		);
+	}
+
+	/**
 	 * Load our admin assets.
-	 *
-	 * @action admin_enqueue_scripts
 	 */
 	public function enqueue_admin_scripts() {
 		wp_enqueue_style(
@@ -467,8 +474,6 @@ class Plugin extends Plugin_Base {
 
 	/**
 	 * Register meta field for attachments.
-	 *
-	 * @action init
 	 */
 	public function register_meta() {
 		$default_args = [
@@ -532,8 +537,6 @@ class Plugin extends Plugin_Base {
 
 	/**
 	 * Register taxonomies for attachments.
-	 *
-	 * @action init
 	 */
 	public function register_taxonomy() {
 		$default_args = [
@@ -570,8 +573,6 @@ class Plugin extends Plugin_Base {
 
 	/**
 	 * Add an admin notice on if credentials not setup.
-	 *
-	 * @action admin_notices
 	 */
 	public function admin_notice() {
 		if ( ! current_user_can( 'manage_options' ) ) {
@@ -632,8 +633,6 @@ class Plugin extends Plugin_Base {
 	 * @param array   $response Data for admin ajax.
 	 * @param WP_Post $attachment Attachment object.
 	 *
-	 * @filter wp_prepare_attachment_for_js, 10, 2
-	 *
 	 * @return mixed
 	 */
 	public function add_unsplash_author_meta( array $response, $attachment ) {
@@ -663,8 +662,6 @@ class Plugin extends Plugin_Base {
 
 	/**
 	 * Add media templates.
-	 *
-	 * @action print_media_templates
 	 */
 	public function add_media_templates() { ?>
 		<?php // phpcs:disable  WordPress.WP.I18n.MissingArgDomain

@@ -108,7 +108,8 @@ class Test_Plugin extends \WP_UnitTestCase {
 	 */
 	public function test_construct() {
 		$plugin = new Plugin();
-		$this->assertEquals( 10, has_action( 'plugins_loaded', [ $plugin, 'init' ] ) );
+		$plugin->init();
+
 		$this->assertEquals( 10, has_action( 'wp_default_scripts', [ $plugin, 'register_polyfill_scripts' ] ) );
 		$this->assertEquals( 10, has_action( 'wp_enqueue_media', [ $plugin, 'enqueue_media_scripts' ] ) );
 		$this->assertEquals( 10, has_action( 'admin_enqueue_scripts', [ $plugin, 'enqueue_admin_scripts' ] ) );
@@ -167,9 +168,20 @@ class Test_Plugin extends \WP_UnitTestCase {
 		$plugin = get_plugin_instance();
 		$plugin->enqueue_media_scripts();
 		$this->assertTrue( wp_script_is( 'unsplash-media-selector', 'enqueued' ) );
+	}
 
-		$featured_image_script_loads = version_compare( '5.0', get_bloginfo( 'version' ), '<=' );
-		$this->assertEquals( $featured_image_script_loads, wp_script_is( 'unsplash-featured-image-selector', 'enqueued' ) );
+	/**
+	 * Test for enqueue_block_assets() method.
+	 *
+	 * @see Plugin::enqueue_block_assets()
+	 */
+	public function test_enqueue_block_assets() {
+		wp_set_current_user( self::$admin_id );
+		set_current_screen( 'post.php' );
+		$plugin = get_plugin_instance();
+		$plugin->enqueue_block_assets();
+
+		$this->assertTrue( wp_script_is( 'unsplash-featured-image-selector', 'enqueued' ) );
 	}
 
 	/**

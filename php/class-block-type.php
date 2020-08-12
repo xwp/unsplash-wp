@@ -31,15 +31,18 @@ class Block_Type {
 	 * Initiate the class.
 	 */
 	public function init() {
-		$this->plugin->add_doc_hooks( $this );
+		add_action( 'init', [ $this, 'register_blocks' ] );
+		add_action( 'enqueue_block_editor_assets', [ $this, 'register_block_editor_assets' ] );
 	}
 
 	/**
 	 * Register our custom blocks.
-	 *
-	 * @action init
 	 */
 	public function register_blocks() {
+		if ( ! function_exists( 'register_block_type' ) ) {
+			return;
+		}
+
 		$blocks_dir    = $this->plugin->dir_path . '/assets/js/blocks/';
 		$block_folders = [
 			'image',
@@ -64,16 +67,12 @@ class Block_Type {
 				$metadata['render_callback'] = [ $this, $callback ];
 			}
 
-			if ( function_exists( '\register_block_type' ) ) {
-				\register_block_type( $metadata['name'], $metadata );
-			}
+			register_block_type( $metadata['name'], $metadata );
 		}
 	}
 
 	/**
 	 * Load Gutenberg assets.
-	 *
-	 * @action enqueue_block_editor_assets
 	 */
 	public function register_block_editor_assets() {
 		// Register block editor assets.

@@ -704,6 +704,7 @@ class Test_Settings extends \WP_UnitTestCase {
 	 * Test get_credentials.
 	 *
 	 * @covers ::get_credentials()
+	 * @covers ::get_site_data()
 	 */
 	public function test_get_credentials() {
 		$credentials = $this->settings->get_credentials();
@@ -715,6 +716,25 @@ class Test_Settings extends \WP_UnitTestCase {
 		$actual_utm   = $credentials['utmSource'];
 
 		$this->assertEquals( $expected_utm, $actual_utm );
+	}
+
+	/**
+	 *
+	 * Test get_site_data.
+	 *
+	 * @covers ::get_site_data()
+	 */
+	public function test_get_site_data() {
+		add_filter( 'pre_option_blogname', '__return_empty_string' );
+		$site_data = $this->settings->get_site_data();
+
+		$this->assertEquals( [ 'url', 'name' ], array_keys( $site_data ) );
+
+		$url  = wp_parse_url( get_home_url( null, '/' ) );
+		$name = sanitize_title_with_dashes( $url['host'] );
+
+		$this->assertEquals( $site_data['name'], $name );
+		remove_filter( 'pre_option_blogname', '__return_empty_string' );
 	}
 
 	/**

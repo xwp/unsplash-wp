@@ -72,7 +72,9 @@ class Settings {
 	 * Initiate the class.
 	 */
 	public function init() {
-		$this->plugin->add_doc_hooks( $this );
+		add_action( 'admin_menu', [ $this, 'add_admin_menu' ] );
+		add_action( 'admin_init', [ $this, 'add_settings' ] );
+		add_action( 'admin_init', [ $this, 'handle_auth_flow' ] );
 	}
 
 	/**
@@ -167,8 +169,6 @@ class Settings {
 
 	/**
 	 * Adds the Unsplash admin menu.
-	 *
-	 * @action admin_menu
 	 */
 	public function add_admin_menu() {
 		add_options_page( 'Unsplash', 'Unsplash', 'manage_options', 'unsplash', [ $this, 'settings_page_render' ] );
@@ -176,8 +176,6 @@ class Settings {
 
 	/**
 	 * Add the Unsplash settings.
-	 *
-	 * @action admin_init
 	 */
 	public function add_settings() {
 		$args = [
@@ -345,8 +343,6 @@ class Settings {
 
 	/**
 	 * Handles the authentication flow for registering a dynamic client application.
-	 *
-	 * @action admin_init
 	 */
 	public function handle_auth_flow() {
 		$code = $this->get_code();
@@ -448,14 +444,13 @@ class Settings {
 	 * @return mixed
 	 */
 	public function get_client_id( $access_token ) {
-		$url      = get_home_url( null, '/' );
-		$name     = get_bloginfo( 'name' );
-		$response = wp_remote_post(
+		$site_data = $this->get_site_data();
+		$response  = wp_remote_post(
 			'https://api.unsplash.com/clients',
 			[
 				'body'    => [
-					'name'        => $name,
-					'description' => sprintf( 'Wordpress Oauth Client application for: %1$s - %2$s', $name, $url ),
+					'name'        => $site_data['name'],
+					'description' => sprintf( 'Wordpress Oauth Client application for: %1$s - %2$s', $site_data['name'], $site_data['url'] ),
 				],
 				'headers' => [
 					'Authorization' => 'Bearer ' . $access_token,
@@ -508,7 +503,8 @@ class Settings {
 	 */
 	public function get_credentials() {
 		$options        = get_option( 'unsplash_settings' );
-		$site_name_slug = sanitize_title_with_dashes( get_bloginfo( 'name' ) );
+		$site_data      = $this->get_site_data();
+		$site_name_slug = sanitize_title_with_dashes( $site_data['name'] );
 
 		$credentials = [
 			'applicationId' => ! empty( $options['access_key'] ) ? $this->decrypt( $options['access_key'] ) : getenv( 'UNSPLASH_ACCESS_KEY' ),
@@ -524,5 +520,25 @@ class Settings {
 		$credentials = apply_filters( 'unsplash_api_credentials', $credentials, $options );
 
 		return $credentials;
+	}
+
+	/**
+	 * Get site name and url. If site name is empty, fallback to domain with dashes.
+	 *
+	 * @return array
+	 */
+	public function get_site_data() {
+		$data = [
+			'url'  => get_home_url( null, '/' ),
+			'name' => get_bloginfo( 'name' ),
+		];
+		if ( ! $data['name'] ) {
+			$url = wp_parse_url( $data['url'] );
+			if ( $url && array_key_exists( 'host', $url ) ) {
+				$data['name'] = sanitize_title_with_dashes( $url['host'] );
+			}
+		}
+
+		return $data;
 	}
 }

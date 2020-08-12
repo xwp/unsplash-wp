@@ -35,13 +35,24 @@ class Hotlink {
 	 * Initiate the class.
 	 */
 	public function init() {
-		$this->plugin->add_doc_hooks( $this );
+		add_action( 'attachment_submitbox_misc_actions', [ $this, 'attachment_submitbox_misc_actions' ], 11 );
+		add_filter( 'wp_get_attachment_url', [ $this, 'wp_get_attachment_url' ], 10, 2 );
+		add_filter( 'wp_prepare_attachment_for_js', [ $this, 'wp_prepare_attachment_for_js' ], 99, 2 );
+		add_filter( 'rest_prepare_attachment', [ $this, 'rest_prepare_attachment' ], 99, 3 );
+		add_filter( 'content_save_pre', [ $this, 'replace_hotlinked_images_in_content' ], 99, 1 );
+		add_filter( 'the_content', [ $this, 'hotlink_images_in_content' ], 99, 1 );
+		add_filter( 'wp_get_attachment_image_src', [ $this, 'wp_get_attachment_image_src' ], 10, 5 );
+		add_filter( 'image_downsize', [ $this, 'image_downsize' ], 10, 3 );
+		add_filter( 'wp_calculate_image_srcset', [ $this, 'wp_calculate_image_srcset' ], 99, 5 );
+		add_filter( 'get_image_tag', [ $this, 'get_image_tag' ], 10, 6 );
+		add_filter( 'wp_get_attachment_caption', [ $this, 'wp_get_attachment_caption' ], 10, 2 );
+		add_filter( 'render_block', [ $this, 'render_block' ], 10, 2 );
+		add_filter( 'wp_edited_image_metadata', [ $this, 'add_edited_attachment_metadata' ], 10, 3 );
+		add_filter( 'wp_image_file_matches_image_meta', [ $this, 'make_unsplash_images_cropable' ], 10, 4 );
 	}
 
 	/**
 	 * Filter wp_get_attachment_url
-	 *
-	 * @filter wp_get_attachment_url, 10, 2
 	 *
 	 * @param string $url Original URL.
 	 * @param int    $id Attachment ID.
@@ -77,8 +88,6 @@ class Hotlink {
 	 * @param array   $response Data for admin ajax.
 	 * @param WP_Post $attachment Attachment object.
 	 *
-	 * @filter wp_prepare_attachment_for_js, 99, 2
-	 *
 	 * @return mixed
 	 */
 	public function wp_prepare_attachment_for_js( array $response, $attachment ) {
@@ -111,8 +120,6 @@ class Hotlink {
 	 * @param WP_REST_Response $wp_response The response object.
 	 * @param WP_Post          $attachment  The original attachment post.
 	 * @param WP_REST_Request  $wp_request  Request used to generate the response.
-	 *
-	 * @filter rest_prepare_attachment, 99, 3
 	 *
 	 * @return mixed
 	 */
@@ -176,8 +183,6 @@ class Hotlink {
 
 	/**
 	 * Add unsplash original link to attachment edit page.
-	 *
-	 * @action   attachment_submitbox_misc_actions, 11
 	 */
 	public function attachment_submitbox_misc_actions() {
 		$post          = get_post();
@@ -240,8 +245,6 @@ class Hotlink {
 	/**
 	 * Filter image downsize.
 	 *
-	 * @filter image_downsize, 10, 3
-	 *
 	 * @param array        $should_resize Array.
 	 * @param int          $id Attachment ID.
 	 * @param array|string $size Size.
@@ -288,8 +291,6 @@ class Hotlink {
 
 	/**
 	 * Work around for image preview in Attachment screen.
-	 *
-	 * @filter wp_get_attachment_image_src, 10, 5
 	 *
 	 * @param array|false  $image rray of image data, or boolean false if no image is available.
 	 * @param int          $attachment_id Image attachment ID.
@@ -357,8 +358,6 @@ class Hotlink {
 	/**
 	 * Replace hotlinked image URLs in content with ones from WordPress.
 	 *
-	 * @filter content_save_pre, 99, 1
-	 *
 	 * @param string $content Content.
 	 * @return string Converted content with local images.
 	 */
@@ -411,8 +410,6 @@ class Hotlink {
 	 *
 	 * @param string $content The raw post content to be filtered.
 	 *
-	 * @filter the_content, 99, 1
-	 *
 	 * @return string Converted content with hotlinked images.
 	 */
 	public function hotlink_images_in_content( $content ) {
@@ -431,8 +428,6 @@ class Hotlink {
 
 	/**
 	 * Filter source sets to give hotlink images.
-	 *
-	 * @filter wp_calculate_image_srcset, 99, 5
 	 *
 	 * @param array  $sources {
 	 *     One or more arrays of source data to include in the 'srcset'.
@@ -648,8 +643,6 @@ class Hotlink {
 	 * @param string|array $size  Size of image. Image size or array of width and height values (in that order).
 	 *                            Default 'medium'.
 	 *
-	 * @filter get_image_tag, 10, 6
-	 *
 	 * @return string Image tag.
 	 */
 	public function get_image_tag( $html, $id, $alt, $title, $align, $size ) {
@@ -668,8 +661,6 @@ class Hotlink {
 	/**
 	 * Remove html for captions, as some themes esc_html captions before displaying.
 	 *
-	 * @filter wp_get_attachment_caption, 10, 2
-	 *
 	 * @param string $caption       Caption for the given attachment.
 	 * @param int    $attachment_id Attachment ID.
 	 *
@@ -687,8 +678,6 @@ class Hotlink {
 
 	/**
 	 * Filters the content of a single block.
-	 *
-	 * @filter render_block, 10, 2
 	 *
 	 * @param string $block_content The block content about to be appended.
 	 * @param array  $block         The full block, including name and attributes.
@@ -710,8 +699,6 @@ class Hotlink {
 	/**
 	 * Add Unsplash metadata for edited attachment
 	 *
-	 * @filter wp_edited_image_metadata, 10, 3
-	 *
 	 * @param array $data              Array of updated attachment meta data.
 	 * @param int   $new_attachment_id Attachment post ID.
 	 * @param int   $attachment_id     Original Attachment post ID.
@@ -730,5 +717,27 @@ class Hotlink {
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Filter whether an image path or URI matches image meta.
+	 *
+	 * @param bool   $match          Whether the image relative path from the image meta
+	 *                               matches the end of the URI or path to the image file.
+	 * @param string $image_location Full path or URI to the tested image file.
+	 * @param array  $image_meta     (Unused) The image meta data as returned by 'wp_get_attachment_metadata()'.
+	 * @param int    $attachment_id  The image attachment ID or 0 if not supplied.
+	 *
+	 * @return bool Can an image cropable.
+	 */
+	public function make_unsplash_images_cropable( $match, $image_location, $image_meta, $attachment_id ) {
+		$unsplash_url = $this->get_unsplash_url( $attachment_id );
+		$cropped      = $this->is_cropped_image( $attachment_id );
+		$is_unsplash  = strpos( $image_location, 'images.unsplash.com' );
+		if ( ! $unsplash_url || $cropped || ( false === $is_unsplash ) ) {
+			return $match;
+		}
+
+		return true;
 	}
 }
