@@ -1,7 +1,0 @@
-**/*.min.js
-**/bin/**
-**/node_modules/**
-**/vendor/**
-**/assets/js/*.js
-build/*
-data/*
