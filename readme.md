@@ -12,7 +12,7 @@ Search and use the internet’s largest library of freely usable images from [Un
 **License:** [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)  
 **Requires PHP:** 5.6.20  
 
-[![Build Status](https://travis-ci.com/xwp/unsplash-wp.svg?token=DzyA3Sey2BLS5sL6HDJq&branch=develop)](https://travis-ci.com/xwp/unsplash-wp) [![Coverage Status](https://coveralls.io/repos/xwp/unsplash-wp/badge.svg?branch=develop&service=github&t=mLvdmf)](https://coveralls.io/github/xwp/unsplash-wp) [![Built with Grunt](https://gruntjs.com/cdn/builtwith.svg)](http://gruntjs.com) 
+[![Build Status](https://travis-ci.org/xwp/unsplash-wp.svg?branch=develop)](https://travis-ci.org/xwp/unsplash-wp) [![Coverage Status](https://coveralls.io/repos/xwp/unsplash-wp/badge.svg?branch=develop)](https://coveralls.io/github/xwp/unsplash-wp) [![Built with Grunt](https://gruntjs.com/cdn/builtwith.svg)](http://gruntjs.com) 
 
 ## Description ##
 
