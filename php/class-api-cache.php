@@ -71,7 +71,7 @@ class Api_Cache {
 	 * Set cache value in transient.
 	 *
 	 * @param mixed $value Transient value. Must be serializable if non-scalar. Expected to not be SQL-escaped.
-	 * @return False if value was not set and true if value was set.
+	 * @return bool False if value was not set, true if value was set.
 	 */
 	public function set_cache( $value ) {
 		return set_transient( $this->key, $value, MINUTE_IN_SECONDS * 15 );
