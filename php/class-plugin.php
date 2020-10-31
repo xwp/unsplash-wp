@@ -87,7 +87,7 @@ class Plugin extends Plugin_Base {
 	 *
 	 * @codeCoverageIgnore
 	 *
-	 * @param /WP_Scripts $wp_scripts Scripts.
+	 * @param \WP_Scripts $wp_scripts Scripts.
 	 */
 	public function register_polyfill_scripts( $wp_scripts ) {
 
@@ -630,8 +630,8 @@ class Plugin extends Plugin_Base {
 	/**
 	 * Add unsplash author meta to admin ajax.
 	 *
-	 * @param array   $response Data for admin ajax.
-	 * @param WP_Post $attachment Attachment object.
+	 * @param array    $response Data for admin ajax.
+	 * @param \WP_Post $attachment Attachment object.
 	 *
 	 * @return mixed
 	 */
