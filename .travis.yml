@@ -18,7 +18,6 @@ dist: xenial
 
 services:
   - mysql
-  - docker
 
 addons:
   apt:
