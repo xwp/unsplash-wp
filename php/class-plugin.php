@@ -29,9 +29,9 @@ class Plugin extends Plugin_Base {
 	public $settings;
 
 	/**
-	 * REST_Controller class.
+	 * Rest_Controller class.
 	 *
-	 * @var REST_Controller
+	 * @var Rest_Controller
 	 */
 	public $rest_controller;
 
