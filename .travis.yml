@@ -18,7 +18,6 @@ dist: xenial
 
 services:
   - mysql
-  - docker
 
 addons:
   apt:
@@ -37,6 +36,7 @@ env:
     - COVERALLS_PARALLEL=true
 
 before_install:
+  - composer self-update --1
   - nvm install
   - nvm use
 
@@ -67,25 +67,25 @@ jobs:
         - source "$DEV_LIB_PATH/travis.script.sh"
         - npm run lint
 
-    - stage: unit-test
+    - stage: tests
       name: E2E tests with Docker (7.4, WordPress latest, with code coverage)
       php: "7.4"
       env: NODE_ENV=e2e WP_VERSION=latest
+      services:
+        - docker
       before_install:
         - nvm install
         - nvm use
         - unset PUPPETEER_SKIP_CHROMIUM_DOWNLOAD
-      before_script:
-        - sudo service mysql stop
-        - echo "Running E2E tests without code coverage ..."
+      before_script: skip
       script:
         - npm run env:start
         - npm run wp -- wp core install --title=WordPress --admin_user=admin --admin_password=password --admin_email=admin@example.com --skip-email --url=http://localhost:8088 --quiet
         - npm run wp -- wp plugin activate unsplash
-        - docker-compose exec wordpress bash -c "mkdir -p /var/www/html/wp-content/uploads && chown -R www-data:www-data /var/www/html/wp-content/uploads" # ensure the uploads folder is writable
+        # ensure the uploads folder is writable
+        - docker-compose exec wordpress bash -c "mkdir -p /var/www/html/wp-content/uploads && chown -R www-data:www-data /var/www/html/wp-content/uploads"
         - npm run test:e2e:coveralls
-      after_script:
-        - echo "E2E tests complete"
+      after_script: skip
 
     - name: JS unit tests (7.4, WordPress latest, with code coverage)
       php: "7.4"
