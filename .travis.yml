@@ -60,6 +60,15 @@ jobs:
   fast_finish: true
   include:
     - stage: lint
+      name: Check execution bits
+      before_install: skip
+      install: skip
+      before_script: skip
+      script:
+        # Scripts should be executable
+        - test -z "$(find bin/ -type f -name "*.sh" -not -perm /111)"
+        # All other files should not be executable
+        - test -z "$(find . -type f -not -path "./.git/*" -not -path "./bin/*.sh" -perm /111)"
       name: Lint (PHP, JavaScript, and configuration files)
       php: "7.4"
       env: WP_VERSION=latest DEV_LIB_ONLY=xmllint,phpsyntax
