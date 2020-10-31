@@ -59,7 +59,7 @@ class Plugin extends Plugin_Base {
 		$this->settings = new Settings( $this );
 		$this->settings->init();
 
-		$this->rest_controller = new REST_Controller( $this );
+		$this->rest_controller = new Rest_Controller( $this );
 		$this->rest_controller->init();
 
 		$this->api = new API( $this );
