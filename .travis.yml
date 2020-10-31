@@ -36,6 +36,7 @@ env:
     - COVERALLS_PARALLEL=true
 
 before_install:
+  - composer self-update --1
   - nvm install
   - nvm use
 
@@ -66,7 +67,7 @@ jobs:
         - source "$DEV_LIB_PATH/travis.script.sh"
         - npm run lint
 
-    - stage: e2e-tests
+    - stage: tests
       name: E2E tests with Docker (7.4, WordPress latest, with code coverage)
       php: "7.4"
       env: NODE_ENV=e2e WP_VERSION=latest
