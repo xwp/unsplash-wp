@@ -117,9 +117,9 @@ class Hotlink {
 	/**
 	 * Add unsplash image sizes to REST API.
 	 *
-	 * @param WP_REST_Response $wp_response The response object.
-	 * @param WP_Post          $attachment  The original attachment post.
-	 * @param WP_REST_Request  $wp_request  Request used to generate the response.
+	 * @param \WP_REST_Response $wp_response The response object.
+	 * @param \WP_Post          $attachment  The original attachment post.
+	 * @param \WP_REST_Request  $wp_request  Request used to generate the response.
 	 *
 	 * @return mixed
 	 */
