@@ -65,10 +65,10 @@ jobs:
       install: skip
       before_script: skip
       script:
-        # Scripts should be executable
-        - test -z "$(find bin/ -type f -name "*.sh" -not -perm /111)"
-        # All other files should not be executable
-        - test -z "$(find . -type f -not -path "./.git/*" -not -path "./bin/*.sh" -perm /111)"
+        # Scripts should be executable, all other files should not be executable
+        - |
+          test -z "$(find bin/ -type f -name "*.sh" -not -executable)"
+          test -z "$(find . -type f -not -path "./.git/*" -not -path "./bin/*.sh" -executable)"
       after_script: skip
     - name: Lint (PHP, JavaScript, and configuration files)
       php: "7.4"
