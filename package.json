@@ -129,7 +129,6 @@
     "lint:css": "wp-scripts lint-style",
     "lint:js": "wp-scripts lint-js",
     "lint:php": "composer lint",
-    "postinstall": "composer install",
     "readme": "composer readme",
     "test": "npm-run-all --parallel test:js test:e2e test:php",
     "test-with-coverage": "npm-run-all --parallel test:js:coverage test:e2e:coverage test:php:coverage",
