@@ -35,7 +35,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v2.1.5
         with:
-          node-version: '14
+          node-version: '14'
 
       - name: Cache node modules
         uses: pat-s/always-upload-cache@v2.1.5
