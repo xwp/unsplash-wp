@@ -95,7 +95,7 @@ jobs:
       - name: Install WordPress
         run: |
           npm run wp -- wp core install --title=WordPress --admin_user=admin --admin_password=password --admin_email=admin@example.com --skip-email --url=http://localhost:8088 --quiet
-          npm run wp -- wp plugin activate unsplash-wp
+          npm run wp -- wp plugin activate unsplash
 
       - name: Run E2E tests with coverage
         run: npm run test:e2e:coverage
