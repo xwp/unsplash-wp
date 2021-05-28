@@ -13,8 +13,8 @@ on:
       - '**/package.json'
       - 'package-lock.json'
     branches:
-      - main
-      - release/*
+      - master
+      - develop
   pull_request:
     # Only run if CSS/JS files changed.
     paths:

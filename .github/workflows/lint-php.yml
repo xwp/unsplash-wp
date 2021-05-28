@@ -9,8 +9,8 @@ on:
       - 'composer.json'
       - 'composer.lock'
     branches:
-      - main
-      - release/*
+      - master
+      - develop
   pull_request:
     # Only run if PHP-related files changed.
     paths:
