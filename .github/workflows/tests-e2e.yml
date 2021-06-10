@@ -21,7 +21,7 @@ jobs:
       matrix:
         include:
           - browser: 'chrome'
-            wp: 'latest'
+            wp: '5.5'
             coverage: true
 
     steps:
