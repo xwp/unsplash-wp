@@ -76,6 +76,15 @@
 	right: 300px;
 	left: 20px;
 	padding: 0;
+	overflow: auto;
+	bottom: 0;
+	outline: 0;
+}
+
+.unsplash-infinate-scroll .media-frame .unsplash-browser .unsplash-error,
+.unsplash-infinate-scroll .media-frame .unsplash-browser .no-media,
+.unsplash-infinate-scroll .media-frame .unsplash-browser .attachments {
+	right: 315px;
 }
 
 .media-frame .unsplash-browser .unsplash-error {
@@ -120,12 +129,15 @@
 
 @media only screen and (max-width: 900px) {
 
+	.unsplash-infinate-scroll .media-frame .unsplash-browser .unsplash-error,
 	.media-frame .unsplash-browser .unsplash-error {
 		right: 282px;
 	}
 
 	.media-frame .unsplash-browser .no-media,
-	.media-frame .unsplash-browser .attachments {
+	.unsplash-infinate-scroll .media-frame .unsplash-browser .no-media,
+	.media-frame .unsplash-browser .attachments,
+	.unsplash-infinate-scroll .media-frame .unsplash-browser .attachments{
 		right: 262px;
 		top: 120px;
 	}
@@ -133,6 +145,7 @@
 
 @media only screen and (max-width: 640px), screen and (max-height: 400px) {
 
+	.unsplash-infinate-scroll .media-frame .unsplash-browser .unsplash-error,
 	.media-frame .unsplash-browser .unsplash-error {
 		right: 20px;
 	}
@@ -140,6 +153,12 @@
 	.media-frame .unsplash-browser .no-media,
 	.media-frame .unsplash-browser .attachments {
 		right: 0;
+		top: 120px;
+	}
+
+	.unsplash-infinate-scroll .media-frame .unsplash-browser .no-media,
+	.unsplash-infinate-scroll .media-frame .unsplash-browser .attachments{
+		right: 20px;
 		top: 120px;
 	}
 }
