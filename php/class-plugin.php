@@ -80,6 +80,8 @@ class Plugin extends Plugin_Base {
 		add_action( 'print_media_templates', [ $this, 'add_media_templates' ] );
 
 		add_filter( 'wp_prepare_attachment_for_js', [ $this, 'add_unsplash_author_meta' ], 10, 2 );
+		add_filter( 'media_library_infinite_scrolling', '__return_true' );
+		add_filter( 'admin_body_class', [ $this, 'admin_body_class'] );
 	}
 
 	/**
@@ -130,6 +132,21 @@ class Plugin extends Plugin_Base {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Add a new class after WP 5.8 for different styles.
+	 *
+	 * @param string $classes Space-separated list of CSS classes.
+	 *
+	 * @return string
+	 */
+	public function admin_body_class( $classes ) {
+		if ( version_compare( '5.8', get_bloginfo( 'version' ), '>=' ) ) {
+			$classes .= ' unsplash-infinate-scroll';
+		}
+
+		return $classes;
 	}
 
 	/**
