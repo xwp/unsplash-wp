@@ -52,7 +52,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        
+
       - name: Setup node
         uses: actions/setup-node@v1
         with:
@@ -131,11 +131,17 @@ jobs:
       - name: Run tests
         run: |
           npm run test:php
+        env:
+          UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
+          UNSPLASH_SECRET_KEY: ${{ secrets.UNSPLASH_SECRET_KEY }}
         if: ${{ ! matrix.coverage }}
 
       - name: Run tests with coverage
         run: |
           npm run test:php:coverage
+        env:
+          UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
+          UNSPLASH_SECRET_KEY: ${{ secrets.UNSPLASH_SECRET_KEY }}
         if: ${{ matrix.coverage }}
 
       - name: Upload code coverage report
