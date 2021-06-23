@@ -93,6 +93,7 @@ jobs:
           WP_VERSION: ${{ matrix.wp }}
           UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
           UNSPLASH_SECRET_KEY: ${{ secrets.UNSPLASH_SECRET_KEY }}
+          UNSPLASH_UTM_SOURCE: ${{ secrets.UNSPLASH_UTM_SOURCE }}
 
       - name: Install WordPress
         run: |
