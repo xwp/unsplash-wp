@@ -136,7 +136,6 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 			controller: this.controller,
 			tagName: 'div',
 		} );
-
 		this.attachmentsNoResults.$el.addClass( 'hidden no-media' );
 
 		const noMedia = document.createElement( 'h2' );
