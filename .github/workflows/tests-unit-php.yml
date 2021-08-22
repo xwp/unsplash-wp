@@ -102,9 +102,6 @@ jobs:
           extensions: mysql
           coverage: ${{ matrix.coverage && 'xdebug' || 'none' }}
           tools: composer:v1, cs2pr
-        env:
-          UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
-          UNSPLASH_SECRET_KEY: ${{ secrets.UNSPLASH_SECRET_KEY }}
 
       - name: Install dependencies
         run: |
@@ -134,11 +131,17 @@ jobs:
       - name: Run tests
         run: |
           npm run test:php
+        env:
+          UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
+          UNSPLASH_SECRET_KEY: ${{ secrets.UNSPLASH_SECRET_KEY }}
         if: ${{ ! matrix.coverage }}
 
       - name: Run tests with coverage
         run: |
           npm run test:php:coverage
+        env:
+          UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
+          UNSPLASH_SECRET_KEY: ${{ secrets.UNSPLASH_SECRET_KEY }}  
         if: ${{ matrix.coverage }}
 
       - name: Upload code coverage report
