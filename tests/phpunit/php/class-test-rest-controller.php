@@ -452,7 +452,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 * @covers \Unsplash\Rest_Controller::create_item_permissions_check()
 	 */
 	public function test_post_process() {
-		if ( version_compare( '5.8', get_bloginfo( 'version' ), '>' ) ) {
+		if ( version_compare( '5.8', get_bloginfo( 'version' ), '>=' ) ) {
 			$this->markTestSkipped( 'Skip for now' );
 		}
 
