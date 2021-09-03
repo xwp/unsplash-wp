@@ -74,7 +74,6 @@ abstract class Plugin_Base {
 	 */
 	public function __construct() {
 		$location       = $this->locate_plugin();
-		var_dump($location);
 		$this->slug     = $location['dir_basename'];
 		$this->dir_path = $location['dir_path'];
 		$this->dir_url  = $location['dir_url'];

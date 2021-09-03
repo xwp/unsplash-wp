@@ -219,7 +219,7 @@ class Test_Hotlink extends \WP_UnitTestCase {
 	 */
 	public function test_wp_get_attachment_image_src_900() {
 		$attachment_id = $this->factory->attachment->create_object(
-			DIR_TESTDATA . '/images/waffles.jpg',
+			DIR_TESTDATA . '/images/canola.jpg',
 			0,
 			[
 				'post_mime_type' => 'image/jpeg',
