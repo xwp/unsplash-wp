@@ -38,20 +38,6 @@ class Test_Plugin_Base extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Test locate_plugin.
-	 *
-	 * @see Plugin_Base::locate_plugin()
-	 */
-	public function test_locate_plugin() {
-		$location = $this->plugin->locate_plugin();
-
-
-		$this->assertEquals( $this->basename, $location['dir_basename'] );
-		$this->assertEquals( WP_CONTENT_DIR . '/plugins/' . $this->basename, $location['dir_path'] );
-		$this->assertEquals( content_url( '/plugins/' . $this->basename . '/' ), $location['dir_url'] );
-	}
-
-	/**
 	 * Test relative_path.
 	 *
 	 * @see Plugin_Base::relative_path()
@@ -59,15 +45,6 @@ class Test_Plugin_Base extends \WP_UnitTestCase {
 	public function test_relative_path() {
 		$this->assertEquals( 'plugins/unsplash', $this->plugin->relative_path( '/var/www/html/wp-content/plugins/unsplash', 'wp-content', '/' ) );
 		$this->assertEquals( 'themes/twentysixteen/plugins/unsplash', $this->plugin->relative_path( '/var/www/html/wp-content/themes/twentysixteen/plugins/unsplash', 'wp-content', '/' ) );
-	}
-
-	/**
-	 * Test asset_url.
-	 *
-	 * @see Plugin_Base::asset_url()
-	 */
-	public function test_asset_url() {
-		$this->assertContains( '/plugins/' . $this->basename . '/editor.js', $this->plugin->asset_url( 'editor.js' ) );
 	}
 
 	/**
