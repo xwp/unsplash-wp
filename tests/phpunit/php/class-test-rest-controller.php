@@ -452,6 +452,10 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 * @covers \Unsplash\Rest_Controller::create_item_permissions_check()
 	 */
 	public function test_post_process() {
+		if ( version_compare( '5.8', get_bloginfo( 'version' ), '>' ) ) {
+			$this->markTestSkipped( 'Skip for now' );
+		}
+
 		add_filter( 'upload_dir', [ $this, 'upload_dir_patch' ] );
 		$orig_file = DIR_TESTDATA . '/images/test-image.jpg';
 		$test_file = get_temp_dir() . 'test-image.jpg';
@@ -478,7 +482,6 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		$request = new WP_REST_Request( 'POST', $this->get_route( '/post-process/' . $second_id ) );
 		$request->set_param( 'retry', '2' );
 		$response = rest_get_server()->dispatch( $request );
-		var_dump($response);
 		$this->assertEquals( 200, $response->get_status() );
 		$this->assertEqualSets(
 			$response->get_data(),
