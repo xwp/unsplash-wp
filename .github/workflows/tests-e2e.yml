@@ -81,10 +81,6 @@ jobs:
 
       - name: Build plugin
         run: npm run build:js
-        env:
-          # TODO: remove eventually
-          DISABLE_PREVENT: true
-          DISABLE_QUICK_TIPS: true
 
       - name: Start Docker environment
         run: npm run env:start
@@ -99,6 +95,7 @@ jobs:
         run: |
           npm run wp -- wp core install --title=WordPress --admin_user=admin --admin_password=password --admin_email=admin@example.com --skip-email --url=http://localhost:8088 --quiet
           npm run wp -- wp plugin activate unsplash
+          docker-compose exec wordpress bash -c "mkdir -p /var/www/html/wp-content/uploads && chown -R www-data:www-data /var/www/html/wp-content/uploads" # ensure the uploads folder is writable
 
       - name: Run E2E tests with coverage
         run: npm run test:e2e:coverage
