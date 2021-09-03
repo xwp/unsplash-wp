@@ -385,7 +385,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 			'created_at'      => '2019-05-27T14:23:58-04:00',
 			'width'           => 4002,
 			'height'          => 6000,
-			'color'           => '#D9E8EF',
+			'color'           => '#0c2640',
 			'description'     => '',
 			'alt_description' => 'black motorcycle',
 		];
@@ -428,7 +428,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 			'created_at'      => '2019-05-27T14:23:58-04:00',
 			'width'           => 4002,
 			'height'          => 6000,
-			'color'           => '#D9E8EF',
+			'color'           => '#0c2640',
 			'description'     => '',
 			'alt_description' => 'black motorcycle',
 		];
@@ -530,7 +530,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		$request->set_param( 'retry', '2' );
 		add_filter( 'wp_update_attachment_metadata', [ $this, 'force_error' ] );
 		$response = rest_get_server()->dispatch( $request );
-		$this->assertErrorResponse( 'rest_unsplash_single_photo_process', $response, 400 );
+		$this->assertErrorResponse( 'rest_unsplash_single_photo_process', $response );
 		remove_filter( 'upload_dir', [ $this, 'upload_dir_patch' ] );
 		remove_filter( 'wp_update_attachment_metadata', [ $this, 'force_error' ] );
 	}
