@@ -7,7 +7,7 @@ Search and use the internet’s largest library of freely usable images from [Un
 **Contributors:** [unsplash](https://profiles.wordpress.org/unsplash), [xwp](https://profiles.wordpress.org/xwp)  
 **Tags:** [unsplash](https://wordpress.org/plugins/tags/unsplash), [images](https://wordpress.org/plugins/tags/images), [media](https://wordpress.org/plugins/tags/media), [free](https://wordpress.org/plugins/tags/free), [photographs](https://wordpress.org/plugins/tags/photographs), [photos](https://wordpress.org/plugins/tags/photos), [block](https://wordpress.org/plugins/tags/block)  
 **Requires at least:** 4.9  
-**Tested up to:** 5.7  
+**Tested up to:** 5.8  
 **Stable tag:** 1.0.1  
 **License:** [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)  
 **Requires PHP:** 5.6.20  
