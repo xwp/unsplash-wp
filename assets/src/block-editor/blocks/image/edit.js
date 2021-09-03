@@ -287,7 +287,7 @@ const ImageEdit = ( {
 		return (
 			<>
 				{ controls }
-				<Block.figure>
+				<Block.figure ref={ ref }>
 					<Placeholder
 						icon={ icon }
 						label={ __( 'Unsplash', 'unsplash' ) }
