@@ -228,12 +228,12 @@ class Test_Hotlink extends \WP_UnitTestCase {
 		);
 
 		wp_maybe_generate_attachment_metadata( get_post( $attachment_id ) );
-		update_post_meta( $attachment_id, 'original_url', 'https://images.unsplash.com/waffles.jpg' );
+		update_post_meta( $attachment_id, 'original_url', 'https://images.unsplash.com/canola.jpg' );
 		$image = wp_get_attachment_image_src( $attachment_id, array( 900, 450 ), true );
 		$this->assertNotContains( 'fit', $image[0] );
-		$this->assertEquals( 'https://images.unsplash.com/waffles.jpg?fm=jpg&q=85&w=900&h=600', $image[0] );
+		$this->assertEquals( 'https://images.unsplash.com/canola.jpg?fm=jpg&q=85&w=900&h=675', $image[0] );
 		$this->assertEquals( 900, $image[1] );
-		$this->assertEquals( 600, $image[2] );
+		$this->assertEquals( 675, $image[2] );
 	}
 
 	/**
