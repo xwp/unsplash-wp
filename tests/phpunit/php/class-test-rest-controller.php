@@ -478,6 +478,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		$request = new WP_REST_Request( 'POST', $this->get_route( '/post-process/' . $second_id ) );
 		$request->set_param( 'retry', '2' );
 		$response = rest_get_server()->dispatch( $request );
+		var_dump($response);
 		$this->assertEquals( 200, $response->get_status() );
 		$this->assertEqualSets(
 			$response->get_data(),
