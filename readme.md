@@ -7,12 +7,12 @@ Search and use the internet’s largest library of freely usable images from [Un
 **Contributors:** [unsplash](https://profiles.wordpress.org/unsplash), [xwp](https://profiles.wordpress.org/xwp)  
 **Tags:** [unsplash](https://wordpress.org/plugins/tags/unsplash), [images](https://wordpress.org/plugins/tags/images), [media](https://wordpress.org/plugins/tags/media), [free](https://wordpress.org/plugins/tags/free), [photographs](https://wordpress.org/plugins/tags/photographs), [photos](https://wordpress.org/plugins/tags/photos), [block](https://wordpress.org/plugins/tags/block)  
 **Requires at least:** 4.9  
-**Tested up to:** 5.5  
+**Tested up to:** 5.8  
 **Stable tag:** 1.0.1  
 **License:** [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)  
 **Requires PHP:** 5.6.20  
 
-[![Build Status](https://travis-ci.com/xwp/unsplash-wp.svg?token=DzyA3Sey2BLS5sL6HDJq&branch=develop)](https://travis-ci.com/xwp/unsplash-wp) [![Coverage Status](https://coveralls.io/repos/xwp/unsplash-wp/badge.svg?branch=develop&service=github&t=mLvdmf)](https://coveralls.io/github/xwp/unsplash-wp) [![Built with Grunt](https://gruntjs.com/cdn/builtwith.svg)](http://gruntjs.com) 
+[![Build Status](https://travis-ci.com/xwp/unsplash-wp.svg?token=DzyA3Sey2BLS5sL6HDJq&branch=develop)](https://travis-ci.com/xwp/unsplash-wp) [![Coverage Status](https://coveralls.io/repos/xwp/unsplash-wp/badge.svg?branch=develop&service=github&t=mLvdmf)](https://coveralls.io/github/xwp/unsplash-wp) [![Built with Grunt](https://gruntjs.com/cdn/builtwith.svg)](http://gruntjs.com)
 
 ## Description ##
 
@@ -80,4 +80,3 @@ Yes, as part of the plugin's setup, you will be directed to the Unsplash website
 ## Changelog ##
 
 For the plugin’s changelog, please see [the Releases page on GitHub](https://github.com/xwp/unsplash-wp/releases).
-
