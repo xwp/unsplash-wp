@@ -136,11 +136,12 @@ const ImagesBrowser = wp.media.view.AttachmentsBrowser.extend( {
 			controller: this.controller,
 			tagName: 'div',
 		} );
+
 		this.attachmentsNoResults.$el.addClass( 'hidden no-media' );
 
 		const noMedia = document.createElement( 'h2' );
 		noMedia.textContent = noResults.noMedia;
-		
+
 		// Whitelist because of how the element is built. See above.
 		this.attachmentsNoResults.$el.append( noMedia ); // phpcs:ignore WordPressVIPMinimum.JS.HTMLExecutingFunctions.append
 
