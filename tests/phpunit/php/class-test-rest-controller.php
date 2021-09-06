@@ -452,20 +452,13 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 	 * @covers \Unsplash\Rest_Controller::create_item_permissions_check()
 	 */
 	public function test_post_process() {
-		if ( version_compare( '5.8', get_bloginfo( 'version' ), '>=' ) ) {
-			$this->markTestSkipped( 'Skip for now' );
-		}
-
 		add_filter( 'upload_dir', [ $this, 'upload_dir_patch' ] );
-		$orig_file = DIR_TESTDATA . '/images/test-image.jpg';
-		$test_file = get_temp_dir() . 'test-image.jpg';
-		copy( $orig_file, $test_file );
 		$second_id = $this->factory->attachment->create_object(
-			$test_file,
+			DIR_TESTDATA . '/images/canola.jpg',
 			0,
 			[
 				'post_mime_type' => 'image/jpeg',
-				'post_excerpt'   => 'A sample caption 2',
+				'post_excerpt'   => 'A sample caption',
 			]
 		);
 		update_post_meta(
