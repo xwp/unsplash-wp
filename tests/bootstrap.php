@@ -12,18 +12,13 @@ $_plugin_root = realpath( __DIR__ . '/..' );
 
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
 
-// Travis CI & Vagrant SSH tests directory.
-if ( empty( $_tests_dir ) ) {
-	$_tests_dir = '/tmp/wordpress-tests';
+if ( ! $_tests_dir ) {
+	$_tests_dir = rtrim( sys_get_temp_dir(), '/\\' ) . '/wordpress-tests-lib';
 }
 
-// Composer tests directory.
-if ( ! is_dir( $_tests_dir . '/includes/' ) ) {
-	$_tests_dir = $_plugin_root . '/vendor/xwp/wordpress-tests/phpunit';
-}
-
-if ( ! file_exists( $_tests_dir . '/includes/' ) ) {
-	trigger_error( 'Unable to locate wordpress-tests', E_USER_ERROR ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
+if ( ! file_exists( $_tests_dir . '/includes/functions.php' ) ) {
+	echo "Could not find $_tests_dir/includes/functions.php, have you run bin/install-wp-tests.sh ?" . PHP_EOL; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	exit( 1 );
 }
 
 require_once $_tests_dir . '/includes/functions.php';
