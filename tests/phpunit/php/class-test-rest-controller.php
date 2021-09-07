@@ -487,7 +487,7 @@ class Test_Rest_Controller extends WP_Test_REST_Controller_Testcase {
 		$this->assertArrayHasKey( 'foo', $meta );
 		$this->assertArrayHasKey( 'sizes', $meta );
 		$this->assertArrayHasKey( 'width', $meta );
-		$this->assertSame( 50, $meta['width'] );
+		$this->assertSame( 640, $meta['width'] );
 		$this->assertSame( [ 'aperture' => 1 ], $meta['image_meta'] );
 		remove_filter( 'upload_dir', [ $this, 'upload_dir_patch' ] );
 	}
