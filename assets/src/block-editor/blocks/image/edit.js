@@ -283,11 +283,17 @@ const ImageEdit = ( {
 		imageHeight,
 	} = useImageSize( ref, url, [ align ] );
 
+	const classes = classnames( className, 'wp-block-image wp-block-unsplash wp-block', {
+		'is-resized': !! width || !! height,
+		'is-focused': isSelected,
+		[ `size-${ sizeSlug }` ]: sizeSlug,
+	} );
+
 	if ( ! url ) {
 		return (
 			<>
 				{ controls }
-				<Block.figure ref={ ref }>
+				<Block.figure ref={ ref } className={ classes }>
 					<Placeholder
 						icon={ icon }
 						label={ __( 'Unsplash', 'unsplash' ) }
@@ -322,12 +328,6 @@ const ImageEdit = ( {
 			/>
 		);
 	}
-
-	const classes = classnames( className, 'wp-block-image', {
-		'is-resized': !! width || !! height,
-		'is-focused': isSelected,
-		[ `size-${ sizeSlug }` ]: sizeSlug,
-	} );
 
 	const isResizable = ! isWideAligned && isLargeViewport;
 	const imageSizeOptions = getImageSizeOptions();
